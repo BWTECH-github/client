@@ -2,6 +2,9 @@ add_library(folderwizard OBJECT
     folderwizard.cpp
     folderwizardsourcepage.ui
     folderwizardtargetpage.ui
+
+    spacespage.cpp
+    spacespage.ui
 )
 
 target_link_libraries(folderwizard PUBLIC Qt5::Widgets libsync)
