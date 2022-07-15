@@ -52,7 +52,7 @@
     <message>
         <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.ui" line="264"/>
         <source>Don&apos;t send</source>
-        <translation type="unfinished"/>
+        <translation>Ne pas envoyer</translation>
     </message>
     <message>
         <location filename="../src/3rdparty/libcrashreporter-qt/src/libcrashreporter-gui/CrashReporter.ui" line="284"/>
@@ -148,7 +148,7 @@
     <message>
         <location filename="../src/gui/folderwizardsourcepage.ui" line="29"/>
         <source>&amp;Choose...</source>
-        <translation>&amp;Choisir...</translation>
+        <translation>&amp;Sélectionner…</translation>
     </message>
 </context>
 <context>
