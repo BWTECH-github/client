@@ -11,11 +11,15 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
+
 #pragma once
 
 #include "account.h"
+#include "space.h"
 
 #include <QWidget>
+
+#include <optional>
 
 namespace Ui {
 class SpacesBrowser;
@@ -32,18 +36,15 @@ public:
     explicit SpacesBrowser(QWidget *parent = nullptr);
     ~SpacesBrowser();
 
-    void setAccount(OCC::AccountPtr acc);
+    void setItems(const AccountPtr &accountPtr, const QList<Space> &spaces);
 
-    QModelIndex currentSpace();
+    std::optional<Space> selectedSpace() const;
 
 Q_SIGNALS:
     void selectionChanged();
 
 private:
-    Ui::SpacesBrowser *ui;
-
-    OCC::AccountPtr _acc;
-    SpacesModel *_model;
+    Ui::SpacesBrowser *_ui;
 };
 
 }
