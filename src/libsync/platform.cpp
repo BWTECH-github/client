@@ -13,6 +13,8 @@
  */
 
 #include "platform.h"
+#include "platform_unix.h"
+#include "platform_win.h"
 
 namespace OCC {
 
@@ -27,6 +29,17 @@ void Platform::migrate()
 void Platform::setApplication(QCoreApplication *application)
 {
     Q_UNUSED(application);
+}
+
+std::unique_ptr<Platform> Platform::create()
+{
+#if defined(Q_OS_WIN)
+    return std::make_unique<WinPlatform>();
+#elif defined(Q_OS_LINUX)
+    return std::make_unique<UnixPlatform>();
+#else
+    Q_UNREACHABLE();
+#endif
 }
 
 } // OCC namespace
