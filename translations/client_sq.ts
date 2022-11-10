@@ -71,7 +71,7 @@
     <message>
         <location filename="../src/libsync/appprovider.cpp" line="89"/>
         <source>Failed to open %1 in web. Error: %2.</source>
-        <translation type="unfinished"/>
+        <translation>S’u arrit të hapej %1 në web. Gabim: %2.</translation>
     </message>
 </context>
 <context>
@@ -1541,7 +1541,8 @@ Ju lutemi, shihni mundësinë e heqjes së kësaj dosjeje nga llogaria dhe të s
         <location filename="../src/gui/folderstatusmodel.cpp" line="288"/>
         <source>%1
 %2</source>
-        <translation type="unfinished"/>
+        <translation>%1
+%2</translation>
     </message>
     <message>
         <location filename="../src/gui/folderstatusmodel.cpp" line="290"/>
@@ -4157,12 +4158,12 @@ Jeni i sigurt se doni të ecet më tej?</translation>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="156"/>
         <source>Cancel Setup</source>
-        <translation type="unfinished"/>
+        <translation>Anuloni Ujdisjen</translation>
     </message>
     <message>
         <location filename="../src/gui/newwizard/setupwizardwindow.cpp" line="156"/>
         <source>Do you really want to cancel the account setup?</source>
-        <translation type="unfinished"/>
+        <translation>Doni vërtet të anuloni ujdisjen e llogarisë?</translation>
     </message>
 </context>
 <context>
