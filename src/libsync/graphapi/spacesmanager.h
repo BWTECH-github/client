@@ -14,14 +14,16 @@
 
 #pragma once
 
-#include "accountfwd.h"
-#include "common/utility.h"
 #include "owncloudlib.h"
+
+#include "libsync/accountfwd.h"
+#include "libsync/graphapi/space.h"
 
 #include <OAIDrive.h>
 
 #include <algorithm>
-#include <unordered_map>
+
+#include <QFuture>
 
 class QTimer;
 
@@ -35,20 +37,31 @@ namespace GraphApi {
     public:
         SpacesManager(Account *parent);
 
-        OpenAPI::OAIDrive drive(const QString &id) const;
+        Space *space(const QString &id) const;
+
+        QVector<Space *> spaces() const;
 
         // deprecated: we need to migrate to id based spaces
-        OpenAPI::OAIDrive driveByUrl(const QUrl &url) const;
+        Space *spaceByUrl(const QUrl &url) const;
 
-        void refresh();
+        Account *account() const;
+
+        /**
+         * Only relevant during bootstraping or when disconnected
+         */
+        void checkReady() const;
 
     Q_SIGNALS:
-        void refreshed();
+        void updated();
+        void ready() const;
 
     private:
+        void refresh();
+
         Account *_account;
         QTimer *_refreshTimer;
-        std::unordered_map<QString, OpenAPI::OAIDrive> _drivesMap;
+        QHash<QString, Space *> _spacesMap;
+        bool _ready = false;
     };
 
 }
