@@ -13,17 +13,19 @@
  */
 #pragma once
 
+#include "wizardpagevalidator.h"
 #include <QObject>
 
 class QWizardPage;
 
 namespace OCC {
 
-class OAuthPageController : public QObject
+class OAuthPageController : public QObject, public WizardPageValidator
 {
     Q_OBJECT
 public:
     explicit OAuthPageController(QWizardPage *page, QObject *parent);
+    bool validate() override;
 
 private:
     QWizardPage *_page;
