@@ -2193,7 +2193,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="251"/>
-        <source>Failed to look up webfinger instances: %1</source>
+        <source>Failed to look up WebFinger instances: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
