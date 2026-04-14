@@ -206,7 +206,7 @@ Datei Synchronisations-Applikation.</translation>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="127"/>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="143"/>
         <source>Unavailable: the space is no longer available on the server</source>
-        <translation type="unfinished"/>
+        <translation>Nicht verfügbar: Der Speicherplatz ist auf dem Server nicht mehr verfügbar</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="131"/>
@@ -217,7 +217,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="141"/>
         <source>Synced</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisiert</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="147"/>
@@ -227,12 +227,12 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="153"/>
         <source>Sync pending</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisierung steht noch aus</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="158"/>
         <source>Syncing %1 of %2 (%3 %</source>
-        <translation type="unfinished"/>
+        <translation>%1 von %2 werden synchronisiert (%3 %</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="162"/>
@@ -247,7 +247,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/gui/FoldersGui/folderitem.cpp" line="208"/>
         <source> sync status </source>
-        <translation type="unfinished"/>
+        <translation>Synchronisierungsstatus</translation>
     </message>
 </context>
 <context>
@@ -374,17 +374,17 @@ Datei Synchronisations-Applikation.</translation>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="139"/>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="235"/>
         <source>Sync now</source>
-        <translation type="unfinished"/>
+        <translation>Jetzt synchronisieren</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="149"/>
         <source>Manage subfolder sync</source>
-        <translation type="unfinished"/>
+        <translation>Synchronisierung von Unterordnern verwalten</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="173"/>
         <source>Remove %1 sync</source>
-        <translation type="unfinished"/>
+        <translation>%1-Synchronisierung entfernen</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="195"/>
@@ -430,7 +430,7 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="246"/>
         <source>Activate virtual files</source>
-        <translation type="unfinished"/>
+        <translation>Virtuelle Dateien aktivieren</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="282"/>
@@ -489,32 +489,32 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="56"/>
         <source>%1 sync</source>
-        <translation type="unfinished"/>
+        <translation>%1 synchronisieren</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="65"/>
         <source>Manage your synced %1.</source>
-        <translation type="unfinished"/>
+        <translation>Verwalten Sie Ihre synchronisierten %1.</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="70"/>
         <source>Add new %1 sync…</source>
-        <translation type="unfinished"/>
+        <translation>Neue %1-Synchronisierung hinzufügen…</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="81"/>
         <source>%1 list view</source>
-        <translation type="unfinished"/>
+        <translation>%1 Listenansicht</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="82"/>
         <source>Navigate the %1 list using the up and down arrows</source>
-        <translation type="unfinished"/>
+        <translation>Navigieren Sie mit den Auf- und Ab-Pfeilen durch die Liste %1</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/accountfoldersview.cpp" line="248"/>
         <source>%1 out of %2 %3 are synchronized</source>
-        <translation type="unfinished"/>
+        <translation>%1 von %2 %3 sind synchronisiert</translation>
     </message>
 </context>
 <context>
@@ -738,7 +738,7 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="242"/>
         <source>selected path does not support using virtual file system. %1</source>
-        <translation type="unfinished"/>
+        <translation>Der ausgewählte Pfad unterstützt die Verwendung eines virtuellen Dateisystems nicht. %1</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="258"/>
@@ -799,12 +799,12 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="41"/>
         <source>%1 options button</source>
-        <translation type="unfinished"/>
+        <translation>%1-Optionen-Schaltfläche</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="42"/>
         <source>Menu button with %1 options. Use the space key to show the menu</source>
-        <translation type="unfinished"/>
+        <translation>Menü-Schaltfläche mit %1 Optionen. Drücke die Leertaste, um das Menü anzuzeigen</translation>
     </message>
 </context>
 <context>
@@ -934,7 +934,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="73"/>
         <source>could not parse Capabilities from server.</source>
-        <translation>Die Capabilities konnten nicht vom Server analysiert werden.</translation>
+        <translation>Die Capabilities vom Server konnten nicht analysiert werden.</translation>
     </message>
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="81"/>
@@ -1005,7 +1005,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location filename="../src/gui/folder.cpp" line="396"/>
         <source>The folder has been disabled or removed from the server</source>
-        <translation type="unfinished"/>
+        <translation>Der Ordner wurde deaktiviert oder vom Server entfernt</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/gui/folder.cpp" line="470"/>
@@ -1102,7 +1102,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location filename="../src/gui/FoldersGui/folderitemupdater.cpp" line="107"/>
         <source>Sync error: </source>
-        <translation type="unfinished"/>
+        <translation>Synchronisierungsfehler: </translation>
     </message>
 </context>
 <context>
@@ -1150,47 +1150,47 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location filename="../src/gui/folderman.cpp" line="965"/>
         <source>The selected path is not a folder.</source>
-        <translation type="unfinished"/>
+        <translation>Der ausgewählte Pfad ist kein Ordner.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="969"/>
         <source>The folder %1 is used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Der Ordner %1 wird in einer Ordnersynchronisierungsverbindung verwendet.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="977"/>
         <source>Folder &apos;%1&apos; is already in use by application %2.</source>
-        <translation type="unfinished"/>
+        <translation>Der Ordner „%1“ wird bereits von der Anwendung %2 verwendet.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1024"/>
         <source>There is already a sync from the server to this local folder.</source>
-        <translation type="unfinished"/>
+        <translation>Es besteht bereits eine Synchronisierung vom Server zu diesem lokalen Ordner.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1027"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Der lokale Ordner %1 enthält bereits einen Ordner, der in einer Ordnersynchronisierungsverbindung verwendet wird.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1032"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
-        <translation type="unfinished"/>
+        <translation>Der lokale Ordner %1 ist bereits in einem Ordner enthalten, der in einer Ordnersynchronisierungsverbindung verwendet wird.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1044"/>
         <source>No valid folder selected.</source>
-        <translation type="unfinished"/>
+        <translation>Es wurde kein gültiger Ordner ausgewählt.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1063"/>
         <source>The selected path does not exist.</source>
-        <translation type="unfinished"/>
+        <translation>Der angegebene Pfad existiert nicht.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="1069"/>
         <source>You have no permission to write to the selected folder.</source>
-        <translation type="unfinished"/>
+        <translation>Sie haben keine Schreibberechtigung für den ausgewählten Ordner.</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="990"/>
@@ -1208,12 +1208,12 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="110"/>
         <source>%1 options</source>
-        <translation type="unfinished"/>
+        <translation>%1 Optionen</translation>
     </message>
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="112"/>
         <source>Menu button with %1 options. Use the space key to pop the %2 options menu</source>
-        <translation type="unfinished"/>
+        <translation>Menüschaltfläche mit %1 Optionen. Drücke die Leertaste, um das %2-Optionsmenü aufzurufen.</translation>
     </message>
 </context>
 <context>
@@ -1717,7 +1717,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="51"/>
         <source>Unable to connect to server during account creation: %1.</source>
-        <translation>Unable to connect to server during account creation: %1.Verbindung zum Server konnte während der Kontoerstellung nicht hergestellt werden: %1.</translation>
+        <translation>Verbindung zum Server konnte während der Kontoerstellung nicht hergestellt werden: %1.</translation>
     </message>
 </context>
 <context>
@@ -1831,7 +1831,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="309"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
-        <translation>Sie haben sich mit Benutzer &lt;em&gt;%1&lt;/em&gt;angemeldet, müssen sich aber mit Benutzer&lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Bitte kehren Sie zum %3-Client zurück und starten Sie die Authentifizierung neu.</translation>
+        <translation>Sie haben sich mit Benutzer &lt;em&gt;%1&lt;/em&gt; angemeldet, müssen sich aber mit Benutzer &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Bitte kehren Sie zum %3-Client zurück und starten Sie die Authentifizierung neu.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="312"/>
@@ -1899,7 +1899,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="287"/>
         <source>Unable to retrieve capabilities from server.</source>
-        <translation>Die Capabilities konnten nicht vom Server abgerufen werden.</translation>
+        <translation>Die Capabilities vom Server konnten nicht abgerufen werden.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="291"/>
@@ -2488,7 +2488,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="94"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
-        <translation>IdP is unreachable. Contact your system administrator or try again later.Der Identitätsanbieter (IdP) ist nicht erreichbar. Wenden Sie sich an Ihren Systemadministrator oder versuchen Sie es später erneut.</translation>
+        <translation>Der Identitätsanbieter (IdP) ist nicht erreichbar. Wenden Sie sich an Ihren Systemadministrator oder versuchen Sie es später erneut.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="105"/>
@@ -3059,22 +3059,22 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="643"/>
         <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
-        <translation type="unfinished"/>
+        <translation>Der Speicherordner für %1 %2 konnte nicht abgerufen werden (0x%3)</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="677"/>
         <source>The folder is used by a different client: %1</source>
-        <translation type="unfinished"/>
+        <translation>Der Ordner wird von einem anderen Client verwendet: %1</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="700"/>
         <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
-        <translation type="unfinished"/>
+        <translation>Fehler beim Registrieren des StorageProviders für %1: %2 (0x%3)</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="735"/>
         <source>Unable to connect sync root: %1 error: %2</source>
-        <translation type="unfinished"/>
+        <translation>Verbindung zum Sync-Root konnte nicht hergestellt werden: %1 Fehler: %2</translation>
     </message>
     <message>
         <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="672"/>
@@ -3469,12 +3469,12 @@ Bitte prüfen Sie die Serververfügbarkeit und führen Sie den Assistenten erneu
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="48"/>
         <source>Renamed %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 wurde in %2 umbenannt</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="50"/>
         <source>Moved %1 to %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 wurde nach %2 verschoben</translation>
     </message>
     <message>
         <location filename="../src/libsync/progressdispatcher.cpp" line="54"/>
