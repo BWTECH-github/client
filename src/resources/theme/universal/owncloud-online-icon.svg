@@ -1,0 +1,9 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- Modified by BW-Tech GmbH for owncloud.online branding. -->
+<rect width="128" height="128" rx="28" fill="#00E4BD"/>
+<circle cx="52" cy="54" r="18" fill="#FFFFFF" fill-opacity=".96"/>
+<circle cx="72" cy="51" r="15" fill="#FFFFFF" fill-opacity=".9"/>
+<circle cx="38" cy="63" r="13" fill="#FFFFFF" fill-opacity=".86"/>
+<circle cx="70" cy="70" r="19" fill="#FFFFFF" fill-opacity=".96"/>
+<path d="M31 80.5h66a18.5 18.5 0 0 0-18.5-18.5h-29A18.5 18.5 0 0 0 31 80.5Z" fill="#FFFFFF"/>
+</svg>
