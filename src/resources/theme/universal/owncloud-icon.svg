@@ -1,10 +1,9 @@
 <svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
 <!-- Modified by BW-Tech GmbH for owncloud.online branding. Source palette: owncloud.online. -->
-<rect width="128" height="128" rx="29" fill="#00c8b4"/>
-<circle cx="56" cy="59" r="23" fill="#ffffff" fill-opacity=".95"/>
-<circle cx="77" cy="56" r="19" fill="#ffffff" fill-opacity=".88"/>
-<circle cx="40" cy="70" r="16" fill="#ffffff" fill-opacity=".82"/>
-<circle cx="75" cy="77" r="22" fill="#ffffff" fill-opacity=".94"/>
-<path d="M32 88h64a18.7 18.7 0 0 0-18.7-18.7H50.7A18.7 18.7 0 0 0 32 88Z" fill="#ffffff"/>
-<text x="64" y="111" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="13" font-weight="700" fill="#064e4a">ONLINE</text>
+<rect width="128" height="128" rx="28" fill="#00E4BD"/>
+<circle cx="52" cy="54" r="18" fill="#FFFFFF" fill-opacity=".96"/>
+<circle cx="72" cy="51" r="15" fill="#FFFFFF" fill-opacity=".9"/>
+<circle cx="38" cy="63" r="13" fill="#FFFFFF" fill-opacity=".86"/>
+<circle cx="70" cy="70" r="19" fill="#FFFFFF" fill-opacity=".96"/>
+<path d="M31 80.5h66a18.5 18.5 0 0 0-18.5-18.5h-29A18.5 18.5 0 0 0 31 80.5Z" fill="#FFFFFF"/>
 </svg>
