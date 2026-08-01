@@ -72,6 +72,19 @@ Function .onInit
   ${If} $INSTDIR == ""
     StrCpy $INSTDIR "$EXEDIR"
   ${EndIf}
+  ; $9 = "1" only when the resolved directory demonstrably IS a client
+  ; installation. Recorded NOW, before anything gets deleted: the recursive
+  ; directory removal later is gated on it, so a stale registry value or a
+  ; helper copied to e.g. the Downloads folder can never wipe a foreign
+  ; directory.
+  StrCpy $9 "0"
+  ${If} ${FileExists} "$INSTDIR\bin\*.*"
+    StrCpy $9 "1"
+  ${ElseIf} ${FileExists} "$INSTDIR\uninstall.exe"
+    StrCpy $9 "1"
+  ${ElseIf} ${FileExists} "$INSTDIR\${HELPER_EXE}"
+    StrCpy $9 "1"
+  ${EndIf}
   MessageBox MB_YESNO|MB_ICONQUESTION \
     "owncloud.online Client wirklich deinstallieren?$\r$\n($INSTDIR)$\r$\n$\r$\nReally uninstall the owncloud.online client?" \
     /SD IDYES IDYES proceed
@@ -116,7 +129,12 @@ Section "-remove"
   ; touching any registry, so Apps & Features keeps a working entry to retry.
   ${If} ${FileExists} "$INSTDIR\uninstall.exe"
     DetailPrint "Starte eingebetteten Uninstaller / running embedded uninstaller ..."
+    ClearErrors
     ExecWait '"$INSTDIR\uninstall.exe" /S _?=$INSTDIR' $0
+    ; ExecWait leaves $0 untouched when the process could not be started at
+    ; all (AV block, corrupt exe) - treat that as failure, not success
+    IfErrors 0 +2
+      StrCpy $0 "-1"
     DetailPrint "Uninstaller exit code: $0"
     ${If} $0 != 0
       MessageBox MB_OK|MB_ICONEXCLAMATION \
@@ -162,6 +180,12 @@ Section "-remove"
       DeleteRegKey HKCU "Software\Classes\CLSID\$2"
       DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\$2"
       DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Explorer\HideDesktopIcons\NewStartPanel" "$2"
+      ; if the delete did not take effect (restrictive ACL), advance the
+      ; index anyway so the loop cannot spin on the same key forever
+      ReadRegStr $4 HKCU "Software\Classes\CLSID\$2" "ApplicationName"
+      ${If} $4 == "${APPNAME_MARKER}"
+        IntOp $1 $1 + 1
+      ${EndIf}
     ${Else}
       IntOp $1 $1 + 1
     ${EndIf}
@@ -179,7 +203,13 @@ Section "-remove"
   ${If} "$EXEDIR" != "$INSTDIR"
     Delete /REBOOTOK "$EXEDIR\${HELPER_EXE}"
   ${EndIf}
-  RMDir /r /REBOOTOK "$INSTDIR"
+  ; recursive removal only when .onInit verified this is an installation
+  ; directory - never on a stale/foreign path
+  ${If} $9 == "1"
+    RMDir /r /REBOOTOK "$INSTDIR"
+  ${Else}
+    DetailPrint "Verzeichnis sieht nicht wie eine Installation aus - wird nicht rekursiv geloescht / directory does not look like an installation - not removing recursively: $INSTDIR"
+  ${EndIf}
 
   ; ---- 7. registry: both views, both hives (only after verified success) ---
   ; the embedded uninstaller already removed its SHCTX (32-bit view) keys;

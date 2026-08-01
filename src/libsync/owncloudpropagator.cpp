@@ -172,8 +172,14 @@ static SyncJournalErrorBlacklistRecord createBlacklistEntry(
     } else if (item._httpErrorCode == 413 || item._httpErrorCode == 415) {
         qCWarning(lcPropagator) << "Fatal Error condition" << item._httpErrorCode << ", maximum blacklist ignore time!";
         entry._ignoreDuration = maxBlacklistTime;
+    } else if (item._httpErrorCode == 507) {
+        // Insufficient storage is a persistent condition - keep the normal
+        // escalating backoff instead of the fast-retry cap below.
     } else if ((item._direction == SyncFileItem::Down
-                   || (item._direction == SyncFileItem::Up && item._type == ItemTypeFile))
+                   || (item._direction == SyncFileItem::Up && item._type == ItemTypeFile
+                          // local soft errors (e.g. permanently locked files)
+                          // are not interrupted transfers - let them back off
+                          && !(item._httpErrorCode == 0 && item._status == SyncFileItem::SoftError)))
         && (item._httpErrorCode == 0 || item._httpErrorCode >= 500)) {
         // Interrupted transfers are cheap to resume (downloads from the
         // partial temp file, chunked uploads from the chunks already on the
