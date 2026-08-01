@@ -131,8 +131,12 @@ void NetworkSettings::setupBWLimitUi()
 
     connect(_uploadLimitCheckBox, &QAbstractButton::toggled, _uploadLimitSpinBox, &QWidget::setEnabled);
     connect(_downloadLimitCheckBox, &QAbstractButton::toggled, _downloadLimitSpinBox, &QWidget::setEnabled);
-    connect(_uploadLimitCheckBox, &QAbstractButton::toggled, this, &NetworkSettings::saveBWLimitSettings);
-    connect(_downloadLimitCheckBox, &QAbstractButton::toggled, this, &NetworkSettings::saveBWLimitSettings);
+    // clicked, not toggled: loadBWLimitSettings() calls setChecked(), and a
+    // save fired from that programmatic toggle would overwrite the stored
+    // state of the not-yet-loaded other checkbox (same pattern as the
+    // metered checkbox above)
+    connect(_uploadLimitCheckBox, &QAbstractButton::clicked, this, &NetworkSettings::saveBWLimitSettings);
+    connect(_downloadLimitCheckBox, &QAbstractButton::clicked, this, &NetworkSettings::saveBWLimitSettings);
     connect(_uploadLimitSpinBox, &QAbstractSpinBox::editingFinished, this, &NetworkSettings::saveBWLimitSettings);
     connect(_downloadLimitSpinBox, &QAbstractSpinBox::editingFinished, this, &NetworkSettings::saveBWLimitSettings);
 

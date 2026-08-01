@@ -126,6 +126,21 @@ void PropagateUploadCommon::slotComputeContentChecksum()
         return;
     }
 
+    // Or a resumable chunked upload session already persisted it: reuse the
+    // stored checksum when size and modtime still match (the same predicate
+    // UploadInfo::validate() trusts for resuming the chunks themselves).
+    // Recomputing would re-read the whole file - minutes for multi-GB files -
+    // on every resume attempt after an interrupted transfer.
+    const auto dbInfo = propagator()->_journal->getUploadInfo(_item->_file);
+    if (dbInfo._valid && dbInfo.isChunked() && dbInfo._size == _item->_size && dbInfo._modtime == _item->_modtime) {
+        const auto cachedHeader = ChecksumHeader::parseChecksumHeader(dbInfo._contentChecksum);
+        if (cachedHeader.isValid() && cachedHeader.type() == checksumType) {
+            qCInfo(lcPropagateUpload) << "Reusing stored content checksum for resumable upload of" << _item->_file;
+            slotComputeTransmissionChecksum(checksumType, cachedHeader.checksum());
+            return;
+        }
+    }
+
     // we must be able to read the file
     if (FileSystem::isFileLocked(filePath, FileSystem::LockMode::SharedRead)) {
         Q_EMIT propagator()->seenLockedFile(filePath, FileSystem::LockMode::SharedRead);

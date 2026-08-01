@@ -365,7 +365,13 @@ void AbstractNetworkJob::retry()
     qCInfo(lcNetworkJob) << "Restarting" << this << "for the" << _retryCount << "time";
     if (_requestBody) {
         if (!_requestBody->isSequential()) {
-            Q_ASSERT(_requestBody->isOpen());
+            // a Q_ASSERT here would abort release builds (QT_FORCE_ASSERTS)
+            // when a retry is scheduled after the job already closed its body
+            if (!_requestBody->isOpen()) {
+                qCWarning(lcNetworkJob) << "Can't resend request, body already closed" << this;
+                abort();
+                return;
+            }
             _requestBody->seek(0);
         } else {
             qCWarning(lcNetworkJob) << "Can't resend request, body not suitable" << this;

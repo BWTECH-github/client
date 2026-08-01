@@ -211,15 +211,27 @@ bool PropagateUploadFileNG::markRangeAsDone(qint64 start, qint64 size)
 {
     bool found = false;
     for (auto iter = _rangesToUpload.begin(); iter != _rangesToUpload.end(); ++iter) {
-        /* Only remove if they start at exactly the same chunk */
         if (iter->start == start && iter->size >= size) {
+            /* Range starts exactly at the completed chunk: shrink it. */
             found = true;
             iter->start += size;
             iter->size -= size;
             if (iter->size <= 0) {
                 _rangesToUpload.erase(iter);
-                break;
             }
+            break;
+        } else if (start > iter->start && start + size <= iter->end()) {
+            /* Completed chunk lies strictly inside the range - a "hole"
+             * (lost chunk of a parallel burst) precedes it. Split the range
+             * around the chunk so the finished data is reused instead of
+             * being discarded and re-uploaded. */
+            const UploadRangeInfo tail = { start + size, iter->end() - (start + size) };
+            iter->size = start - iter->start;
+            found = true;
+            if (tail.size > 0) {
+                _rangesToUpload.insert(iter + 1, tail);
+            }
+            break;
         }
     }
 
@@ -300,7 +312,18 @@ void PropagateUploadFileNG::slotPropfindFinishedWithError()
         abortWithError(status, job->errorStringParsingBody());
         return;
     }
-    startNewUpload();
+    // Only start over when the server says the upload session is gone
+    // (404/410). Any other error here (connection still flaky, proxy 5xx)
+    // must NOT discard the session: startNewUpload() would overwrite the
+    // journal upload info and orphan every chunk already on the server even
+    // though both sides could still resume. Abort instead - the journal
+    // entry survives and the next sync run retries the resume PROPFIND.
+    if (_item->_httpErrorCode == 404 || _item->_httpErrorCode == 410) {
+        startNewUpload();
+        return;
+    }
+    propagator()->_activeJobList.removeOne(this);
+    abortWithError(status, job->errorStringParsingBody());
 }
 
 void PropagateUploadFileNG::slotDeleteJobFinished()

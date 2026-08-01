@@ -205,7 +205,10 @@ jobs:
         $version = "$maj.$min.$pat"
         $out = "${env:GITHUB_WORKSPACE}/binaries/$($exe.BaseName)-Setup.exe"
         Set-Location "${env:GITHUB_WORKSPACE}/admin/win"
-        & $makensis "/DSOURCE_EXE=$($exe.FullName)" "/DOUTFILE=$out" "/DVERSION=$version" restart-wrapper.nsi
+        $helper = "${env:RUNNER_TEMP}\owncloud.online-uninstall.exe"
+        & $makensis "/DOUTFILE=$helper" "/DVERSION=$version" uninstall-helper.nsi
+        if ($LASTEXITCODE -ne 0) { exit 1 }
+        & $makensis "/DSOURCE_EXE=$($exe.FullName)" "/DOUTFILE=$out" "/DVERSION=$version" "/DUNINSTALL_HELPER_EXE=$helper" restart-wrapper.nsi
         if ($LASTEXITCODE -ne 0) { exit 1 }
         Get-ChildItem "${env:GITHUB_WORKSPACE}/binaries"
 

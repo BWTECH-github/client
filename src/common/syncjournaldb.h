@@ -126,8 +126,14 @@ public:
 
         bool validate(qint64 size, qint64 modtime, const QByteArray &checksum) const
         {
-            Q_ASSERT(!checksum.isEmpty());
-            Q_ASSERT(!_valid || !_contentChecksum.isEmpty());
+            // No Q_ASSERT here: an empty checksum is reachable in release
+            // builds (server advertises no supported checksum type), and with
+            // QT_FORCE_ASSERTS an assert would abort the client at resume
+            // time. Without a checksum to compare, the session cannot be
+            // validated - restart the upload instead.
+            if (checksum.isEmpty() || (_valid && _contentChecksum.isEmpty())) {
+                return false;
+            }
             return _valid && _size == size && _modtime == modtime && _contentChecksum == checksum;
         }
     };

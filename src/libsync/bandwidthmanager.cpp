@@ -386,20 +386,39 @@ void BandwidthManager::setCurrentDownloadLimit(qint64 newDownloadLimit)
 
 void BandwidthManager::absoluteLimitTimerExpired()
 {
+    // Divide the budget only among consumers that can actually use it:
+    // devices at EOF and jobs whose reply is gone (retry gap) would silently
+    // swallow their share and starve the live transfers.
     if (usingAbsoluteUploadLimit() && !_absoluteUploadDeviceList.empty()) {
-        qint64 quotaPerDevice = _currentUploadLimit / _absoluteUploadDeviceList.size();
-        qCDebug(lcBandwidthManager) << quotaPerDevice << _absoluteUploadDeviceList.size() << _currentUploadLimit;
+        qint64 activeDevices = 0;
         for (auto *device : std::as_const(_absoluteUploadDeviceList)) {
-            device->giveBandwidthQuota(quotaPerDevice);
-            qCDebug(lcBandwidthManager) << "Gave " << quotaPerDevice / 1024.0 << " kB to" << device;
+            if (!device->atEnd()) {
+                ++activeDevices;
+            }
+        }
+        if (activeDevices > 0) {
+            const qint64 quotaPerDevice = _currentUploadLimit / activeDevices;
+            qCDebug(lcBandwidthManager) << quotaPerDevice << activeDevices << "of" << _absoluteUploadDeviceList.size() << _currentUploadLimit;
+            for (auto *device : std::as_const(_absoluteUploadDeviceList)) {
+                device->giveBandwidthQuota(quotaPerDevice);
+                qCDebug(lcBandwidthManager) << "Gave " << quotaPerDevice / 1024.0 << " kB to" << device;
+            }
         }
     }
     if (usingAbsoluteDownloadLimit() && !_downloadJobList.empty()) {
-        qint64 quotaPerJob = _currentDownloadLimit / _downloadJobList.size();
-        qCDebug(lcBandwidthManager) << quotaPerJob << _downloadJobList.size() << _currentDownloadLimit;
+        qint64 activeJobs = 0;
         for (auto *j : _downloadJobList) {
-            j->giveBandwidthQuota(quotaPerJob);
-            qCDebug(lcBandwidthManager) << "Gave " << quotaPerJob / 1024.0 << " kB to" << j;
+            if (j->hasReply()) {
+                ++activeJobs;
+            }
+        }
+        if (activeJobs > 0) {
+            const qint64 quotaPerJob = _currentDownloadLimit / activeJobs;
+            qCDebug(lcBandwidthManager) << quotaPerJob << activeJobs << "of" << _downloadJobList.size() << _currentDownloadLimit;
+            for (auto *j : _downloadJobList) {
+                j->giveBandwidthQuota(quotaPerJob);
+                qCDebug(lcBandwidthManager) << "Gave " << quotaPerJob / 1024.0 << " kB to" << j;
+            }
         }
     }
 }

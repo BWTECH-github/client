@@ -87,10 +87,12 @@ qint64 UploadDevice::writeData(const char *, qint64)
 qint64 UploadDevice::readData(char *data, qint64 maxLen)
 {
     if (_size - _read <= 0) {
-        // at end
-        if (_bandwidthManager) {
-            _bandwidthManager->unregisterUploadDevice(this);
-        }
+        // At end. Do NOT unregister from the bandwidth manager here: the
+        // device may be reused via seek(0) when AbstractNetworkJob::retry()
+        // resends the request (401 refresh, HTTP/2 resend, redirect), and an
+        // unregistered device never receives bandwidth quota again - the
+        // retried upload would stall at zero bytes forever. Unregistration
+        // happens reliably in the destructor.
         return -1;
     }
     maxLen = qMin(maxLen, _size - _read);

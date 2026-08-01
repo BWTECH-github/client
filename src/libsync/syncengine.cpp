@@ -187,10 +187,17 @@ void SyncEngine::deleteStaleDownloadInfos(const SyncFileItemSet &syncItems)
 
 void SyncEngine::deleteStaleUploadInfos(const SyncFileItemSet &syncItems)
 {
-    // Find all blacklisted paths that we want to preserve.
+    // Find all upload paths whose chunk progress we want to preserve. An
+    // upload that is merely suppressed by a temporary error-blacklist entry
+    // (instruction rewritten to IGNORE by checkErrorBlacklisting()) must keep
+    // its journal upload info: wiping it here would discard all chunks
+    // already on the server and restart the transfer from byte 0 once the
+    // blacklist window expires.
     QSet<QString> upload_file_paths;
     for (const auto &it : syncItems) {
-        if (it->_direction == SyncFileItem::Up && it->_type == ItemTypeFile && isFileTransferInstruction(it->instruction())) {
+        if (it->_direction == SyncFileItem::Up && it->_type == ItemTypeFile
+            && (isFileTransferInstruction(it->instruction())
+                || (it->instruction() == CSYNC_INSTRUCTION_IGNORE && it->_hasBlacklistEntry))) {
             upload_file_paths.insert(it->_file);
         }
     }

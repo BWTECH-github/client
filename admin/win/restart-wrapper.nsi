@@ -25,6 +25,15 @@ Unicode true
   !define VERSION "0.0.0"
 !endif
 
+; Compiled uninstall helper (admin/win/uninstall-helper.nsi), built first by
+; CI and embedded here; it becomes the Apps & Features uninstall entry so
+; shortcuts, shell-extension registration and the restart requirement are
+; handled on uninstall too.
+!ifndef UNINSTALL_HELPER_EXE
+  !error "UNINSTALL_HELPER_EXE must point at the compiled uninstall helper (see main.yml)"
+!endif
+!define HELPER_EXE "owncloud.online-uninstall.exe"
+
 Name "owncloud.online Client ${VERSION}"
 OutFile "${OUTFILE}"
 RequestExecutionLevel admin
@@ -165,10 +174,16 @@ Section "Install"
     ; make sure the registry entries describe the NEW installation (the
     ; embedded installer generation writes in the default 32-bit view)
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "DisplayName" "owncloud.online Client ${VERSION}"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString" '"$INSTDIR\uninstall.exe"'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString" '"$INSTDIR\${HELPER_EXE}"'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "QuietUninstallString" '"$INSTDIR\${HELPER_EXE}" /S'
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "DisplayVersion" "${VERSION}"
     WriteRegStr HKLM "Software\ownCloud GmbH\ownCloud" "Install_Dir" "$INSTDIR"
   ${EndIf}
+
+  ; ---- Install the uninstall helper -----------------------------------------
+  DetailPrint "Installiere Deinstallations-Helfer / installing uninstall helper ..."
+  SetOutPath "$INSTDIR"
+  File "/oname=${HELPER_EXE}" "${UNINSTALL_HELPER_EXE}"
 
   ; ---- Rebrand the Apps & Features entry ------------------------------------
   ; The embedded installer writes its uninstall entry with upstream branding
@@ -180,6 +195,10 @@ Section "Install"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "DisplayName" "owncloud.online Client ${VERSION}"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "Publisher" "BW.Tech GmbH"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "URLInfoAbout" "https://github.com/GrossLukas/client"
+    ; route Apps & Features through the uninstall helper (shortcuts, shell
+    ; extensions and the restart requirement are handled there)
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString" '"$INSTDIR\${HELPER_EXE}"'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "QuietUninstallString" '"$INSTDIR\${HELPER_EXE}" /S'
   ${EndIf}
   SetRegView 64
   ReadRegStr $7 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "DisplayName"
@@ -187,6 +206,10 @@ Section "Install"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "DisplayName" "owncloud.online Client ${VERSION}"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "Publisher" "BW.Tech GmbH"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "URLInfoAbout" "https://github.com/GrossLukas/client"
+    ; route Apps & Features through the uninstall helper (shortcuts, shell
+    ; extensions and the restart requirement are handled there)
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString" '"$INSTDIR\${HELPER_EXE}"'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "QuietUninstallString" '"$INSTDIR\${HELPER_EXE}" /S'
   ${EndIf}
   SetRegView 32
 

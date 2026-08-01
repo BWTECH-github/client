@@ -578,10 +578,14 @@ void ConfigFile::setShowInExplorerNavigationPane(bool show)
 
 bool ConfigFile::enableHttp2() const
 {
-    // On by default (opt-out): HTTP/2 multiplexes many requests over one
-    // connection, which speeds up syncing lots of small files. Users can still
-    // disable it if their server/proxy has HTTP/2 problems.
-    return getValue(enableHttp2C(), QString(), true).toBool();
+    // Opt-in, OFF by default (matches accessmanager.cpp): Qt HTTP/2 can stall
+    // with some server setups (Apache proxy GOAWAY/resets surface as
+    // ContentReSendError resends), and it multiplies parallel chunk uploads,
+    // which makes interrupted-transfer recovery lose more work. Large-transfer
+    // robustness matters more to this client's deployments than the small-file
+    // multiplexing speedup; users can still opt in via settings or
+    // OWNCLOUD_HTTP2_ENABLED=1.
+    return getValue(enableHttp2C(), QString(), false).toBool();
 }
 
 void ConfigFile::setEnableHttp2(bool enabled)

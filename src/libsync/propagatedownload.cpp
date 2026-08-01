@@ -250,7 +250,13 @@ void GETFileJob::finished()
     if (reply()->bytesAvailable() && _httpOk) {
         // we were throttled, write out the remaining data
         slotReadyRead();
-        Q_ASSERT(!reply()->bytesAvailable());
+        // the drain can legitimately leave bytes behind when it hit a read or
+        // device-write error (it aborts and returns early); a Q_ASSERT here
+        // would abort release builds (QT_FORCE_ASSERTS) - the size check in
+        // slotGetFinished() reports truncated downloads properly
+        if (reply()->bytesAvailable()) {
+            qCWarning(lcGetJob) << this << "finished with" << reply()->bytesAvailable() << "bytes still buffered";
+        }
     }
 }
 
