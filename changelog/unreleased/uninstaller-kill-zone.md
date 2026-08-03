@@ -9,8 +9,13 @@ itself before anything was removed. Uninstalling via Windows
 manually worked (started directly, it relocates itself to %TEMP% and runs
 outside that kill zone).
 
-The helper now relaunches itself from %TEMP% and also runs the original
-uninstaller as a %TEMP% copy - both outside the kill zone - keeping the
-real wait-and-exit-code behavior. It additionally verifies afterwards that
-the client binary is really gone before touching any registry entries, and
-reports a clear error otherwise.
+The helper now moves its own running image out of the installation
+directory (a same-volume rename, fully synchronous - silent callers such
+as baramundi keep the real exit code) and runs the original uninstaller as
+a %TEMP% copy - both outside the kill zone. Only when the rename is
+impossible (e.g. %TEMP% on a different volume) does it fall back to
+relaunching a %TEMP% copy of itself, which detaches from the caller. It
+verifies afterwards that the client binary is really gone before touching
+any registry entries, restores itself when the uninstall failed (so the
+Apps & Features entry keeps working for a retry), and reports clear
+errors.

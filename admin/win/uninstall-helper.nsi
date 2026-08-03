@@ -58,14 +58,20 @@ InstallDir "$PROGRAMFILES64\owncloud.online" ; placeholder - resolved in .onInit
 !insertmacro MUI_LANGUAGE "German"
 !insertmacro MUI_LANGUAGE "English"
 
+; non-empty when the running helper image was renamed out of $INSTDIR
+Var HelperMovedTo
+
 Function .onInit
-  ; A relaunched instance (see below) carries the resolved target dir.
+  ; $R8 = "1" when this is a relaunched instance (it carries the resolved
+  ; target dir and has already been confirmed by the first instance)
+  StrCpy $R8 "0"
   ${GetParameters} $R0
   ClearErrors
   ${GetOptions} $R0 "/INSTDIR=" $R1
   ${IfNot} ${Errors}
   ${AndIf} $R1 != ""
     StrCpy $INSTDIR "$R1"
+    StrCpy $R8 "1"
   ${Else}
     ; Resolve the install dir exactly the way the embedded uninstaller's
     ; MultiUser un.onInit will: Install_Dir from the HKLM 32-bit view (this
@@ -94,36 +100,65 @@ Function .onInit
   ${ElseIf} ${FileExists} "$INSTDIR\${HELPER_EXE}"
     StrCpy $9 "1"
   ${EndIf}
+  ; Confirm FIRST, once, in the initial instance (silent: auto-yes) - the
+  ; helper must still be at its registered location while aborting is
+  ; possible, so the Apps & Features entry keeps working after a "No".
+  ${If} $R8 == "0"
+    MessageBox MB_YESNO|MB_ICONQUESTION \
+      "owncloud.online Client wirklich deinstallieren?$\r$\n($INSTDIR)$\r$\n$\r$\nReally uninstall the owncloud.online client?" \
+      /SD IDYES IDYES confirmed
+      Abort
+    confirmed:
+  ${EndIf}
   ; Get OUT of the kill zone: the embedded uninstaller terminates every
   ; process running from $INSTDIR (its silent default answer is "Yes, kill"),
   ; which would kill this helper mid-uninstall when it runs from the install
-  ; directory - the TC-03 "nothing was removed" failure. Copy ourselves to
-  ; %TEMP% and relaunch from there, forwarding the parameters (/S,
-  ; /norestart) and the resolved target directory.
-  ${If} "$EXEDIR" == "$INSTDIR"
+  ; directory - the TC-03 "nothing was removed" failure.
+  ; Preferred: RENAME the running image out of the directory (legal on the
+  ; same volume; the process then no longer counts as running from
+  ; $INSTDIR). Fully synchronous - the caller keeps the real exit code.
+  ; Fallback (rename impossible, e.g. %TEMP% on another volume): copy and
+  ; relaunch from %TEMP%; the /INSTDIR marker ($R8) prevents relaunch loops.
+  ${If} $R8 == "0"
+  ${AndIf} "$EXEDIR" == "$INSTDIR"
     GetTempFileName $R2
     Delete "$R2"
     StrCpy $R2 "$R2.exe"
     ClearErrors
-    CopyFiles /SILENT "$EXEPATH" "$R2"
+    Rename "$EXEPATH" "$R2"
     ${IfNot} ${Errors}
-    ${AndIf} ${FileExists} "$R2"
-      Exec '"$R2" $R0 /INSTDIR="$INSTDIR"'
-      Quit
+      StrCpy $HelperMovedTo "$R2"
+    ${Else}
+      ClearErrors
+      CopyFiles /SILENT "$EXEPATH" "$R2"
+      ${IfNot} ${Errors}
+      ${AndIf} ${FileExists} "$R2"
+        ClearErrors
+        Exec '"$R2" $R0 /INSTDIR="$INSTDIR"'
+        ${IfNot} ${Errors}
+          Quit
+        ${EndIf}
+        Delete "$R2"
+      ${EndIf}
+      ; escape failed entirely: continue in place. The TEMP-run uninstaller
+      ; may then kill this helper - it still completes the file/registry
+      ; removal itself, and the caller sees a nonzero exit code.
     ${EndIf}
-    ; self-copy failed: continue in place. The TEMP-run uninstaller may then
-    ; kill this helper as a process inside $INSTDIR - it still completes the
-    ; file/registry removal itself, which beats aborting the uninstall here.
   ${EndIf}
-  MessageBox MB_YESNO|MB_ICONQUESTION \
-    "owncloud.online Client wirklich deinstallieren?$\r$\n($INSTDIR)$\r$\n$\r$\nReally uninstall the owncloud.online client?" \
-    /SD IDYES IDYES proceed
-    Abort
-  proceed:
+FunctionEnd
+
+Function RestoreHelper
+  ; put the renamed-away helper back so the Apps & Features entry keeps
+  ; working after an aborted uninstall (a running image can be read/copied)
+  ${If} $HelperMovedTo != ""
+    CopyFiles /SILENT "$HelperMovedTo" "$INSTDIR\${HELPER_EXE}"
+  ${EndIf}
 FunctionEnd
 
 Section "-remove"
   SetDetailsPrint both
+  ; release any working-directory handle on the install dir
+  SetOutPath "$TEMP"
 
   ; ---- 1. stop a running client (both binary name generations) -------------
   DetailPrint "Beende laufenden owncloud.online Client / stopping running client ..."
@@ -184,15 +219,28 @@ Section "-remove"
       Delete "$R3"
     ${EndIf}
     ${If} $0 != 0
+      Call RestoreHelper
       MessageBox MB_OK|MB_ICONEXCLAMATION \
         "Deinstallation fehlgeschlagen (Code $0). Bitte erneut versuchen.$\r$\n$\r$\nUninstallation failed (exit code $0). Please retry." /SD IDOK
       SetErrorLevel 2
       Abort "Deinstallation fehlgeschlagen / uninstallation failed (exit code $0)."
     ${EndIf}
     ; belt and braces: a "successful" exit with the client binary still in
-    ; place means the uninstall did NOT actually happen - say so instead of
-    ; wiping registry entries of a still-existing installation
+    ; place (any layout generation) means the uninstall did NOT actually
+    ; happen - say so instead of wiping registry entries of a still-existing
+    ; installation
+    StrCpy $5 ""
     ${If} ${FileExists} "$INSTDIR\bin\owncloud.online.exe"
+      StrCpy $5 "x"
+    ${ElseIf} ${FileExists} "$INSTDIR\owncloud.online.exe"
+      StrCpy $5 "x"
+    ${ElseIf} ${FileExists} "$INSTDIR\bin\owncloud.exe"
+      StrCpy $5 "x"
+    ${ElseIf} ${FileExists} "$INSTDIR\owncloud.exe"
+      StrCpy $5 "x"
+    ${EndIf}
+    ${If} $5 != ""
+      Call RestoreHelper
       MessageBox MB_OK|MB_ICONEXCLAMATION \
         "Deinstallation unvollstaendig: der Client ist noch vorhanden. Bitte erneut versuchen.$\r$\n$\r$\nUninstallation incomplete: the client is still present. Please retry." /SD IDOK
       SetErrorLevel 2
@@ -259,6 +307,9 @@ Section "-remove"
   ; also this very executable - covers the randomly named %TEMP% relaunch
   ; copy; a running exe cannot be deleted immediately, /REBOOTOK schedules it
   Delete /REBOOTOK "$EXEPATH"
+  ${If} $HelperMovedTo != ""
+    Delete /REBOOTOK "$HelperMovedTo"
+  ${EndIf}
   ; recursive removal only when .onInit verified this is an installation
   ; directory - never on a stale/foreign path
   ${If} $9 == "1"
