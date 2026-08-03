@@ -58,32 +58,30 @@ InstallDir "$PROGRAMFILES64\owncloud.online" ; placeholder - resolved in .onInit
 !insertmacro MUI_LANGUAGE "German"
 !insertmacro MUI_LANGUAGE "English"
 
-; non-empty when the running helper image was renamed out of $INSTDIR
-Var HelperMovedTo
-
 Function .onInit
-  ; $R8 = "1" when this is a relaunched instance (it carries the resolved
-  ; target dir and has already been confirmed by the first instance)
-  StrCpy $R8 "0"
-  ${GetParameters} $R0
-  ClearErrors
-  ${GetOptions} $R0 "/INSTDIR=" $R1
-  ${IfNot} ${Errors}
-  ${AndIf} $R1 != ""
-    StrCpy $INSTDIR "$R1"
-    StrCpy $R8 "1"
-  ${Else}
-    ; Resolve the install dir exactly the way the embedded uninstaller's
-    ; MultiUser un.onInit will: Install_Dir from the HKLM 32-bit view (this
-    ; is a 32-bit process, plain HKLM reads land in WOW6432Node). Preferring
-    ; the registry value keeps our _?= consistent with the override
-    ; un.onInit performs. Fallbacks: HKCU (per-user install), then $EXEDIR
-    ; (the wrapper copies this helper into the install dir).
-    ReadRegStr $INSTDIR HKLM "${REGKEY}" "Install_Dir"
-    ${If} $INSTDIR == ""
-      ReadRegStr $INSTDIR HKCU "${REGKEY}" "Install_Dir"
-    ${EndIf}
-    ${If} $INSTDIR == ""
+  ; This helper is installed OUTSIDE the client installation directory
+  ; (C:\ProgramData\owncloud.online, see restart-wrapper.nsi): the embedded
+  ; (un)installer terminates every process running from the install dir
+  ; before it removes anything, and a helper inside that directory would be
+  ; killed mid-run (the 7.10.2 TC-03 "nothing was removed" failure). Out
+  ; here it is never in that kill zone, stays fully synchronous for silent
+  ; callers, and needs no relocation tricks.
+  ;
+  ; Resolve the install dir exactly the way the embedded uninstaller's
+  ; MultiUser un.onInit will: Install_Dir from the HKLM 32-bit view (this is
+  ; a 32-bit process, plain HKLM reads land in WOW6432Node). Fallbacks:
+  ; HKCU (per-user install), the default location if it demonstrably holds
+  ; an installation, then $EXEDIR as a last resort.
+  ReadRegStr $INSTDIR HKLM "${REGKEY}" "Install_Dir"
+  ${If} $INSTDIR == ""
+    ReadRegStr $INSTDIR HKCU "${REGKEY}" "Install_Dir"
+  ${EndIf}
+  ${If} $INSTDIR == ""
+    ${If} ${FileExists} "$PROGRAMFILES64\owncloud.online\bin\*.*"
+      StrCpy $INSTDIR "$PROGRAMFILES64\owncloud.online"
+    ${ElseIf} ${FileExists} "$PROGRAMFILES64\owncloud.online\uninstall.exe"
+      StrCpy $INSTDIR "$PROGRAMFILES64\owncloud.online"
+    ${Else}
       StrCpy $INSTDIR "$EXEDIR"
     ${EndIf}
   ${EndIf}
@@ -100,59 +98,11 @@ Function .onInit
   ${ElseIf} ${FileExists} "$INSTDIR\${HELPER_EXE}"
     StrCpy $9 "1"
   ${EndIf}
-  ; Confirm FIRST, once, in the initial instance (silent: auto-yes) - the
-  ; helper must still be at its registered location while aborting is
-  ; possible, so the Apps & Features entry keeps working after a "No".
-  ${If} $R8 == "0"
-    MessageBox MB_YESNO|MB_ICONQUESTION \
-      "owncloud.online Client wirklich deinstallieren?$\r$\n($INSTDIR)$\r$\n$\r$\nReally uninstall the owncloud.online client?" \
-      /SD IDYES IDYES confirmed
-      Abort
-    confirmed:
-  ${EndIf}
-  ; Get OUT of the kill zone: the embedded uninstaller terminates every
-  ; process running from $INSTDIR (its silent default answer is "Yes, kill"),
-  ; which would kill this helper mid-uninstall when it runs from the install
-  ; directory - the TC-03 "nothing was removed" failure.
-  ; Preferred: RENAME the running image out of the directory (legal on the
-  ; same volume; the process then no longer counts as running from
-  ; $INSTDIR). Fully synchronous - the caller keeps the real exit code.
-  ; Fallback (rename impossible, e.g. %TEMP% on another volume): copy and
-  ; relaunch from %TEMP%; the /INSTDIR marker ($R8) prevents relaunch loops.
-  ${If} $R8 == "0"
-  ${AndIf} "$EXEDIR" == "$INSTDIR"
-    GetTempFileName $R2
-    Delete "$R2"
-    StrCpy $R2 "$R2.exe"
-    ClearErrors
-    Rename "$EXEPATH" "$R2"
-    ${IfNot} ${Errors}
-      StrCpy $HelperMovedTo "$R2"
-    ${Else}
-      ClearErrors
-      CopyFiles /SILENT "$EXEPATH" "$R2"
-      ${IfNot} ${Errors}
-      ${AndIf} ${FileExists} "$R2"
-        ClearErrors
-        Exec '"$R2" $R0 /INSTDIR="$INSTDIR"'
-        ${IfNot} ${Errors}
-          Quit
-        ${EndIf}
-        Delete "$R2"
-      ${EndIf}
-      ; escape failed entirely: continue in place. The TEMP-run uninstaller
-      ; may then kill this helper - it still completes the file/registry
-      ; removal itself, and the caller sees a nonzero exit code.
-    ${EndIf}
-  ${EndIf}
-FunctionEnd
-
-Function RestoreHelper
-  ; put the renamed-away helper back so the Apps & Features entry keeps
-  ; working after an aborted uninstall (a running image can be read/copied)
-  ${If} $HelperMovedTo != ""
-    CopyFiles /SILENT "$HelperMovedTo" "$INSTDIR\${HELPER_EXE}"
-  ${EndIf}
+  MessageBox MB_YESNO|MB_ICONQUESTION \
+    "owncloud.online Client wirklich deinstallieren?$\r$\n($INSTDIR)$\r$\n$\r$\nReally uninstall the owncloud.online client?" \
+    /SD IDYES IDYES confirmed
+    Abort
+  confirmed:
 FunctionEnd
 
 Section "-remove"
@@ -219,7 +169,6 @@ Section "-remove"
       Delete "$R3"
     ${EndIf}
     ${If} $0 != 0
-      Call RestoreHelper
       MessageBox MB_OK|MB_ICONEXCLAMATION \
         "Deinstallation fehlgeschlagen (Code $0). Bitte erneut versuchen.$\r$\n$\r$\nUninstallation failed (exit code $0). Please retry." /SD IDOK
       SetErrorLevel 2
@@ -240,7 +189,6 @@ Section "-remove"
       StrCpy $5 "x"
     ${EndIf}
     ${If} $5 != ""
-      Call RestoreHelper
       MessageBox MB_OK|MB_ICONEXCLAMATION \
         "Deinstallation unvollstaendig: der Client ist noch vorhanden. Bitte erneut versuchen.$\r$\n$\r$\nUninstallation incomplete: the client is still present. Please retry." /SD IDOK
       SetErrorLevel 2
@@ -303,12 +251,14 @@ Section "-remove"
   ; everything still locked (this exe, shell DLLs held by Explorer) for the
   ; reboot this helper mandates anyway.
   Delete /REBOOTOK "$INSTDIR\uninstall.exe"
-  Delete /REBOOTOK "$INSTDIR\${HELPER_EXE}"
-  ; also this very executable - covers the randomly named %TEMP% relaunch
-  ; copy; a running exe cannot be deleted immediately, /REBOOTOK schedules it
+  Delete /REBOOTOK "$INSTDIR\${HELPER_EXE}" ; stale 7.10.2-generation helper
+  ; this helper itself lives in ProgramData: schedule its own removal (a
+  ; running exe cannot be deleted immediately, /REBOOTOK defers it to the
+  ; mandated reboot); the non-recursive RMDir only removes an EMPTY dir, so
+  ; a manually copied helper elsewhere cannot take anything else with it
   Delete /REBOOTOK "$EXEPATH"
-  ${If} $HelperMovedTo != ""
-    Delete /REBOOTOK "$HelperMovedTo"
+  ${If} "$EXEDIR" != "$INSTDIR"
+    RMDir /REBOOTOK "$EXEDIR"
   ${EndIf}
   ; recursive removal only when .onInit verified this is an installation
   ; directory - never on a stale/foreign path

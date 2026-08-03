@@ -135,6 +135,21 @@ Section "Install"
   Call FindClientExe
   StrCpy $9 "$ClientExe"
 
+  ; ---- Install the uninstall helper (OUTSIDE the install dir) ---------------
+  ; The embedded (un)installer kills every process running from the install
+  ; directory before removing anything - an uninstall helper inside it would
+  ; be terminated mid-run. It therefore lives in C:\ProgramData
+  ; ($APPDATA with SetShellVarContext all). $R7 carries the directory for
+  ; the UninstallString rewrites below.
+  SetShellVarContext all
+  StrCpy $R7 "$APPDATA\owncloud.online"
+  DetailPrint "Installiere Deinstallations-Helfer / installing uninstall helper ..."
+  CreateDirectory "$R7"
+  SetOutPath "$R7"
+  File "/oname=${HELPER_EXE}" "${UNINSTALL_HELPER_EXE}"
+  ; remove the misplaced 7.10.2-generation helper from the install dir
+  Delete "$INSTDIR\${HELPER_EXE}"
+
   ; ---- Migrate away from the old default directory --------------------------
   ; Earlier versions installed to "$PROGRAMFILES64\ownCloud". Remove such an
   ; installation only now, after the new install has been VERIFIED in its new
@@ -174,16 +189,11 @@ Section "Install"
     ; make sure the registry entries describe the NEW installation (the
     ; embedded installer generation writes in the default 32-bit view)
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "DisplayName" "owncloud.online Client ${VERSION}"
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString" '"$INSTDIR\${HELPER_EXE}"'
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "QuietUninstallString" '"$INSTDIR\${HELPER_EXE}" /S'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString" '"$R7\${HELPER_EXE}"'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "QuietUninstallString" '"$R7\${HELPER_EXE}" /S'
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "DisplayVersion" "${VERSION}"
     WriteRegStr HKLM "Software\ownCloud GmbH\ownCloud" "Install_Dir" "$INSTDIR"
   ${EndIf}
-
-  ; ---- Install the uninstall helper -----------------------------------------
-  DetailPrint "Installiere Deinstallations-Helfer / installing uninstall helper ..."
-  SetOutPath "$INSTDIR"
-  File "/oname=${HELPER_EXE}" "${UNINSTALL_HELPER_EXE}"
 
   ; ---- Rebrand the Apps & Features entry ------------------------------------
   ; The embedded installer writes its uninstall entry with upstream branding
@@ -197,8 +207,8 @@ Section "Install"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "URLInfoAbout" "https://github.com/GrossLukas/client"
     ; route Apps & Features through the uninstall helper (shortcuts, shell
     ; extensions and the restart requirement are handled there)
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString" '"$INSTDIR\${HELPER_EXE}"'
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "QuietUninstallString" '"$INSTDIR\${HELPER_EXE}" /S'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString" '"$R7\${HELPER_EXE}"'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "QuietUninstallString" '"$R7\${HELPER_EXE}" /S'
   ${EndIf}
   SetRegView 64
   ReadRegStr $7 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "DisplayName"
@@ -208,8 +218,8 @@ Section "Install"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "URLInfoAbout" "https://github.com/GrossLukas/client"
     ; route Apps & Features through the uninstall helper (shortcuts, shell
     ; extensions and the restart requirement are handled there)
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString" '"$INSTDIR\${HELPER_EXE}"'
-    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "QuietUninstallString" '"$INSTDIR\${HELPER_EXE}" /S'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString" '"$R7\${HELPER_EXE}"'
+    WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "QuietUninstallString" '"$R7\${HELPER_EXE}" /S'
   ${EndIf}
   SetRegView 32
 
