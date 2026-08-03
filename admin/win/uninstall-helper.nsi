@@ -60,7 +60,7 @@ InstallDir "$PROGRAMFILES64\owncloud.online" ; placeholder - resolved in .onInit
 
 Function .onInit
   ; This helper is installed OUTSIDE the client installation directory
-  ; (C:\ProgramData\owncloud.online, see restart-wrapper.nsi): the embedded
+  ; ($PROGRAMFILES64\owncloud.online-uninstall, see restart-wrapper.nsi): the embedded
   ; (un)installer terminates every process running from the install dir
   ; before it removes anything, and a helper inside that directory would be
   ; killed mid-run (the 7.10.2 TC-03 "nothing was removed" failure). Out
@@ -94,8 +94,6 @@ Function .onInit
   ${If} ${FileExists} "$INSTDIR\bin\*.*"
     StrCpy $9 "1"
   ${ElseIf} ${FileExists} "$INSTDIR\uninstall.exe"
-    StrCpy $9 "1"
-  ${ElseIf} ${FileExists} "$INSTDIR\${HELPER_EXE}"
     StrCpy $9 "1"
   ${EndIf}
   MessageBox MB_YESNO|MB_ICONQUESTION \
@@ -252,7 +250,8 @@ Section "-remove"
   ; reboot this helper mandates anyway.
   Delete /REBOOTOK "$INSTDIR\uninstall.exe"
   Delete /REBOOTOK "$INSTDIR\${HELPER_EXE}" ; stale 7.10.2-generation helper
-  ; this helper itself lives in ProgramData: schedule its own removal (a
+  ; this helper itself lives in its own directory next to the installation:
+  ; schedule its own removal (a
   ; running exe cannot be deleted immediately, /REBOOTOK defers it to the
   ; mandated reboot); the non-recursive RMDir only removes an EMPTY dir, so
   ; a manually copied helper elsewhere cannot take anything else with it

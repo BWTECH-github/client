@@ -138,11 +138,13 @@ Section "Install"
   ; ---- Install the uninstall helper (OUTSIDE the install dir) ---------------
   ; The embedded (un)installer kills every process running from the install
   ; directory before removing anything - an uninstall helper inside it would
-  ; be terminated mid-run. It therefore lives in C:\ProgramData
-  ; ($APPDATA with SetShellVarContext all). $R7 carries the directory for
-  ; the UninstallString rewrites below.
-  SetShellVarContext all
-  StrCpy $R7 "$APPDATA\owncloud.online"
+  ; be terminated mid-run. It lives in its own directory NEXT TO (not
+  ; inside) the installation: outside the kill zone (which is exactly
+  ; $INSTDIR\*), and admin-only-writable - a helper in a user-writable
+  ; location like ProgramData could be replaced by any local user and would
+  ; then run elevated. $R7 carries the directory for the UninstallString
+  ; rewrites below.
+  StrCpy $R7 "$PROGRAMFILES64\owncloud.online-uninstall"
   DetailPrint "Installiere Deinstallations-Helfer / installing uninstall helper ..."
   CreateDirectory "$R7"
   SetOutPath "$R7"

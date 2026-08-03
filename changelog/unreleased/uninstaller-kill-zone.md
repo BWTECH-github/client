@@ -9,9 +9,10 @@ uninstaller itself before anything was removed. Uninstalling via Windows
 manually worked (started directly, it relocates itself to %TEMP% and runs
 outside that kill zone).
 
-The helper is now installed to C:\ProgramData\owncloud.online - outside
-the kill zone by construction - and runs the original uninstaller as a
-%TEMP% copy, so neither process can be terminated by the process check.
+The helper is now installed to its own admin-only-writable directory next
+to (not inside) the installation - outside the kill zone by construction -
+and runs the original uninstaller as a %TEMP% copy, so neither process can
+be terminated by the process check.
 The flow stays fully synchronous for silent callers (real exit codes:
 2 on failure, 3010 for "reboot required" with /S /norestart). The helper
 additionally verifies afterwards that the client binary is really gone
