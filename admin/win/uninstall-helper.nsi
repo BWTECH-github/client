@@ -59,18 +59,27 @@ InstallDir "$PROGRAMFILES64\owncloud.online" ; placeholder - resolved in .onInit
 !insertmacro MUI_LANGUAGE "English"
 
 Function .onInit
-  ; Resolve the install dir exactly the way the embedded uninstaller's
-  ; MultiUser un.onInit will: Install_Dir from the HKLM 32-bit view (this is
-  ; a 32-bit process, plain HKLM reads land in WOW6432Node). Preferring the
-  ; registry value keeps our _?= consistent with the override un.onInit
-  ; performs. Fallbacks: HKCU (per-user install), then $EXEDIR (the wrapper
-  ; copies this helper into the install dir).
-  ReadRegStr $INSTDIR HKLM "${REGKEY}" "Install_Dir"
-  ${If} $INSTDIR == ""
-    ReadRegStr $INSTDIR HKCU "${REGKEY}" "Install_Dir"
-  ${EndIf}
-  ${If} $INSTDIR == ""
-    StrCpy $INSTDIR "$EXEDIR"
+  ; A relaunched instance (see below) carries the resolved target dir.
+  ${GetParameters} $R0
+  ClearErrors
+  ${GetOptions} $R0 "/INSTDIR=" $R1
+  ${IfNot} ${Errors}
+  ${AndIf} $R1 != ""
+    StrCpy $INSTDIR "$R1"
+  ${Else}
+    ; Resolve the install dir exactly the way the embedded uninstaller's
+    ; MultiUser un.onInit will: Install_Dir from the HKLM 32-bit view (this
+    ; is a 32-bit process, plain HKLM reads land in WOW6432Node). Preferring
+    ; the registry value keeps our _?= consistent with the override
+    ; un.onInit performs. Fallbacks: HKCU (per-user install), then $EXEDIR
+    ; (the wrapper copies this helper into the install dir).
+    ReadRegStr $INSTDIR HKLM "${REGKEY}" "Install_Dir"
+    ${If} $INSTDIR == ""
+      ReadRegStr $INSTDIR HKCU "${REGKEY}" "Install_Dir"
+    ${EndIf}
+    ${If} $INSTDIR == ""
+      StrCpy $INSTDIR "$EXEDIR"
+    ${EndIf}
   ${EndIf}
   ; $9 = "1" only when the resolved directory demonstrably IS a client
   ; installation. Recorded NOW, before anything gets deleted: the recursive
@@ -84,6 +93,27 @@ Function .onInit
     StrCpy $9 "1"
   ${ElseIf} ${FileExists} "$INSTDIR\${HELPER_EXE}"
     StrCpy $9 "1"
+  ${EndIf}
+  ; Get OUT of the kill zone: the embedded uninstaller terminates every
+  ; process running from $INSTDIR (its silent default answer is "Yes, kill"),
+  ; which would kill this helper mid-uninstall when it runs from the install
+  ; directory - the TC-03 "nothing was removed" failure. Copy ourselves to
+  ; %TEMP% and relaunch from there, forwarding the parameters (/S,
+  ; /norestart) and the resolved target directory.
+  ${If} "$EXEDIR" == "$INSTDIR"
+    GetTempFileName $R2
+    Delete "$R2"
+    StrCpy $R2 "$R2.exe"
+    ClearErrors
+    CopyFiles /SILENT "$EXEPATH" "$R2"
+    ${IfNot} ${Errors}
+    ${AndIf} ${FileExists} "$R2"
+      Exec '"$R2" $R0 /INSTDIR="$INSTDIR"'
+      Quit
+    ${EndIf}
+    ; self-copy failed: continue in place. The TEMP-run uninstaller may then
+    ; kill this helper as a process inside $INSTDIR - it still completes the
+    ; file/registry removal itself, which beats aborting the uninstall here.
   ${EndIf}
   MessageBox MB_YESNO|MB_ICONQUESTION \
     "owncloud.online Client wirklich deinstallieren?$\r$\n($INSTDIR)$\r$\n$\r$\nReally uninstall the owncloud.online client?" \
@@ -121,26 +151,52 @@ Section "-remove"
     Pop $0
   ${EndIf}
 
-  ; ---- 3. run the embedded uninstaller -------------------------------------
-  ; _?= makes it run in-place (no temp self-copy), so ExecWait really waits
-  ; and the exit code is real. Its MultiUser un.onInit re-reads Install_Dir
-  ; from the HKLM 32-bit view and overrides _?= - .onInit above resolved
-  ; $INSTDIR from that same value, so both agree. On failure: ABORT without
-  ; touching any registry, so Apps & Features keeps a working entry to retry.
+  ; ---- 3. run the embedded uninstaller (as a %TEMP% copy) ------------------
+  ; NEVER run it in-place with _?=: its process check (EndProcessWithDialog)
+  ; lists every process running from $INSTDIR - in-place that includes the
+  ; uninstaller ITSELF - and the silent default answer "Yes" kills them all
+  ; before anything is removed (the TC-03 "nothing was deleted" failure).
+  ; A copy in %TEMP% started with _?=$INSTDIR runs outside that kill zone,
+  ; ExecWait really waits and the exit code is real. Its MultiUser un.onInit
+  ; re-reads Install_Dir (same value .onInit resolved), so the target agrees.
+  ; On failure: ABORT without touching any registry, so Apps & Features
+  ; keeps a working entry to retry.
   ${If} ${FileExists} "$INSTDIR\uninstall.exe"
     DetailPrint "Starte eingebetteten Uninstaller / running embedded uninstaller ..."
+    GetTempFileName $R3
+    Delete "$R3"
+    StrCpy $R3 "$R3.exe"
     ClearErrors
-    ExecWait '"$INSTDIR\uninstall.exe" /S _?=$INSTDIR' $0
+    CopyFiles /SILENT "$INSTDIR\uninstall.exe" "$R3"
+    ${If} ${Errors}
+    ${OrIfNot} ${FileExists} "$R3"
+      ; copy failed - run in place as a last resort (pre-7.10.3 behavior)
+      StrCpy $R3 "$INSTDIR\uninstall.exe"
+    ${EndIf}
+    ClearErrors
+    ExecWait '"$R3" /S _?=$INSTDIR' $0
     ; ExecWait leaves $0 untouched when the process could not be started at
     ; all (AV block, corrupt exe) - treat that as failure, not success
     IfErrors 0 +2
       StrCpy $0 "-1"
     DetailPrint "Uninstaller exit code: $0"
+    ${If} "$R3" != "$INSTDIR\uninstall.exe"
+      Delete "$R3"
+    ${EndIf}
     ${If} $0 != 0
       MessageBox MB_OK|MB_ICONEXCLAMATION \
         "Deinstallation fehlgeschlagen (Code $0). Bitte erneut versuchen.$\r$\n$\r$\nUninstallation failed (exit code $0). Please retry." /SD IDOK
       SetErrorLevel 2
       Abort "Deinstallation fehlgeschlagen / uninstallation failed (exit code $0)."
+    ${EndIf}
+    ; belt and braces: a "successful" exit with the client binary still in
+    ; place means the uninstall did NOT actually happen - say so instead of
+    ; wiping registry entries of a still-existing installation
+    ${If} ${FileExists} "$INSTDIR\bin\owncloud.online.exe"
+      MessageBox MB_OK|MB_ICONEXCLAMATION \
+        "Deinstallation unvollstaendig: der Client ist noch vorhanden. Bitte erneut versuchen.$\r$\n$\r$\nUninstallation incomplete: the client is still present. Please retry." /SD IDOK
+      SetErrorLevel 2
+      Abort "Deinstallation unvollstaendig / uninstallation incomplete."
     ${EndIf}
   ${Else}
     DetailPrint "Eingebetteter Uninstaller nicht gefunden - fahre mit Bereinigung fort / embedded uninstaller not found - continuing with cleanup."
@@ -200,9 +256,9 @@ Section "-remove"
   ; reboot this helper mandates anyway.
   Delete /REBOOTOK "$INSTDIR\uninstall.exe"
   Delete /REBOOTOK "$INSTDIR\${HELPER_EXE}"
-  ${If} "$EXEDIR" != "$INSTDIR"
-    Delete /REBOOTOK "$EXEDIR\${HELPER_EXE}"
-  ${EndIf}
+  ; also this very executable - covers the randomly named %TEMP% relaunch
+  ; copy; a running exe cannot be deleted immediately, /REBOOTOK schedules it
+  Delete /REBOOTOK "$EXEPATH"
   ; recursive removal only when .onInit verified this is an installation
   ; directory - never on a stale/foreign path
   ${If} $9 == "1"
