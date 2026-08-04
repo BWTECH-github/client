@@ -136,7 +136,7 @@ void UploadDevice::setChoked(bool b)
     }
 }
 
-void UploadDevice::giveBandwidthQuota(qint64 bwq)
+void UploadDevice::giveBandwidthQuota(qint64 bwq, qint64 capGrants)
 {
     if (!atEnd()) {
         // accumulate instead of replace: budget the pipeline could not
@@ -144,7 +144,7 @@ void UploadDevice::giveBandwidthQuota(qint64 bwq)
         // would otherwise be discarded and permanently lost throughput.
         // Cap at 20 grants (= 2 seconds of budget at the 100 ms tick) so an
         // idle device cannot hoard an unbounded burst.
-        _bandwidthQuota = qMin(_bandwidthQuota + bwq, bwq * 20);
+        _bandwidthQuota = qMin(_bandwidthQuota + bwq, bwq * capGrants);
         QMetaObject::invokeMethod(this, &UploadDevice::readyRead, Qt::QueuedConnection); // tell QNAM that we have quota
     }
 }

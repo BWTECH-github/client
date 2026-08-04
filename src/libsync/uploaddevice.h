@@ -47,7 +47,7 @@ public:
     bool isBandwidthLimited() { return _bandwidthLimited; }
     void setChoked(bool);
     bool isChoked() { return _choked; }
-    void giveBandwidthQuota(qint64 bwq);
+    void giveBandwidthQuota(qint64 bwq, qint64 capGrants = 20);
 
 public Q_SLOTS:
     void slotJobUploadProgress(qint64 sent, qint64 t);

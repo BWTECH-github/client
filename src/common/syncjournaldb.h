@@ -128,9 +128,9 @@ public:
         {
             // No Q_ASSERT here: an empty checksum is reachable in release
             // builds (server advertises no usable checksum type, or the
-            // capabilities are not loaded yet right after a reconnect), and
-            // with QT_FORCE_ASSERTS an assert would abort the client at
-            // resume time.
+            // checksum computation transiently failed - e.g. the file was
+            // briefly unreadable while hashing), and with QT_FORCE_ASSERTS
+            // an assert would abort the client at resume time.
             if (checksum.isEmpty() || _contentChecksum.isEmpty()) {
                 // no checksum comparison possible (either side lacks one):
                 // size + modtime are the best identity signal available -

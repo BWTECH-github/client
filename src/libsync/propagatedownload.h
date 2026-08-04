@@ -63,7 +63,7 @@ public:
     // Bandwidth limiting (driven by the BandwidthManager)
     void setChoked(bool c);
     void setBandwidthLimited(bool b);
-    void giveBandwidthQuota(qint64 q);
+    void giveBandwidthQuota(qint64 q, qint64 capGrants = 20);
     void setBandwidthManager(BandwidthManager *bwm);
 
     QString &etag() { return _etag; }

@@ -197,7 +197,9 @@ void BandwidthManager::relativeUploadMeasuringTimerExpired()
     for (auto *ud : _relativeUploadDeviceList) {
         ud->setBandwidthLimited(true);
         ud->setChoked(false);
-        ud->giveBandwidthQuota(quotaPerDevice);
+        // relative mode: one grant is a whole measuring cycle's budget -
+        // cap at a single grant so stalled devices cannot hoard bursts
+        ud->giveBandwidthQuota(quotaPerDevice, 1);
         qCDebug(lcBandwidthManager) << "Gave" << quotaPerDevice / 1024.0 << "kB to" << ud;
     }
     _relativeLimitCurrentMeasuredDevice = nullptr;
@@ -317,7 +319,8 @@ void BandwidthManager::relativeDownloadMeasuringTimerExpired()
     for (auto *gfj : _downloadJobList) {
         gfj->setBandwidthLimited(true);
         gfj->setChoked(false);
-        gfj->giveBandwidthQuota(quotaPerJob);
+        // relative mode: single-grant cap, see upload side
+        gfj->giveBandwidthQuota(quotaPerJob, 1);
         qCDebug(lcBandwidthManager) << "Gave" << quotaPerJob / 1024.0 << "kB to" << gfj;
     }
     // This is the download measuring cycle: reset the measured *job*, not the upload
@@ -423,6 +426,9 @@ void BandwidthManager::absoluteLimitTimerExpired()
             const qint64 quotaPerJob = _currentDownloadLimit / 10 / activeJobs;
             qCDebug(lcBandwidthManager) << quotaPerJob << activeJobs << "of" << _downloadJobList.size() << _currentDownloadLimit;
             for (auto *j : _downloadJobList) {
+                if (!j->hasReply()) {
+                    continue; // not counted in the divisor - no grant either
+                }
                 j->giveBandwidthQuota(quotaPerJob);
                 qCDebug(lcBandwidthManager) << "Gave " << quotaPerJob / 1024.0 << " kB to" << j;
             }

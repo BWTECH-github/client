@@ -392,18 +392,18 @@ void GETFileJob::setBandwidthLimited(bool b)
     }
 }
 
-void GETFileJob::giveBandwidthQuota(qint64 q)
+void GETFileJob::giveBandwidthQuota(qint64 q, qint64 capGrants)
 {
     // accumulate with a 2-second cap (20 grants at the 100 ms tick) instead
     // of replacing - see UploadDevice::giveBandwidthQuota
-    _bandwidthQuota = qMin(_bandwidthQuota + q, q * 20);
+    _bandwidthQuota = qMin(_bandwidthQuota + q, q * capGrants);
     QMetaObject::invokeMethod(this, &GETFileJob::slotReadyRead, Qt::QueuedConnection);
 }
 
 void GETFileJob::slotReadyRead()
 {
     // The bandwidth manager wakes jobs up through the event queue (setChoked /
-    // giveBandwidthQuota use queued invocations) and its 1-second quota timer
+    // giveBandwidthQuota use queued invocations) and its quota timer
     // fires for every registered job. Such a wakeup can arrive after the reply
     // is already gone - with QT_FORCE_ASSERTS the old Q_ASSERT(reply()) then
     // crashed the client as soon as a bandwidth limit was active.
