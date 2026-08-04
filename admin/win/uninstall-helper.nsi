@@ -213,6 +213,14 @@ Section "-remove"
   RMDir "$SMPROGRAMS\ownCloud"
   Delete "$DESKTOP\ownCloud.lnk"
 
+  ; autostart entry written by the client at first run
+  ; (Utility::setLaunchOnStartup -> HKCU Run, value = app name; that key is
+  ; shared between registry views, one delete per name suffices; the legacy
+  ; upstream name is removed defensively too)
+  DetailPrint "Entferne Autostart-Eintrag / removing startup entry ..."
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "owncloud.online"
+  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "ownCloud"
+
   ; ---- 5. best-effort: navigation-pane entries of the elevating user -------
   ; navigationpanehelper.cpp writes them from the 64-bit client, so
   ; HKCU\Software\Classes\CLSID entries live in the 64-bit view. Recognize

@@ -64,7 +64,10 @@ ShareDialog::ShareDialog(AccountState *accountState, const QString &remotePath, 
     const QString name = QFileInfo(localPath.isEmpty() ? remotePath : localPath).fileName();
     setWindowTitle(tr("Share %1").arg(name));
     setAttribute(Qt::WA_DeleteOnClose);
-    setMinimumWidth(480);
+    // wide enough that the copy/delete buttons of listed links are visible
+    // without manual resizing (QA feedback TC-07)
+    setMinimumWidth(620);
+    resize(700, 440);
 
     auto *mainLayout = new QVBoxLayout(this);
 
