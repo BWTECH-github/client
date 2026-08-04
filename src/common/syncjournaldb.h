@@ -127,18 +127,17 @@ public:
         bool validate(qint64 size, qint64 modtime, const QByteArray &checksum) const
         {
             // No Q_ASSERT here: an empty checksum is reachable in release
-            // builds (server advertises no usable checksum type), and with
-            // QT_FORCE_ASSERTS an assert would abort the client at resume
-            // time.
-            if (checksum.isEmpty() && _contentChecksum.isEmpty()) {
-                // no checksum available on either side: size + modtime are
-                // the best identity signal there is - still resume
+            // builds (server advertises no usable checksum type, or the
+            // capabilities are not loaded yet right after a reconnect), and
+            // with QT_FORCE_ASSERTS an assert would abort the client at
+            // resume time.
+            if (checksum.isEmpty() || _contentChecksum.isEmpty()) {
+                // no checksum comparison possible (either side lacks one):
+                // size + modtime are the best identity signal available -
+                // still resume. Treating this as "stale" instead would
+                // DELETE the server-side chunks of a perfectly resumable
+                // session whenever the checksum is transiently unavailable.
                 return _valid && _size == size && _modtime == modtime;
-            }
-            if (checksum.isEmpty() || (_valid && _contentChecksum.isEmpty())) {
-                // one side has a checksum and the other does not - cannot
-                // validate the session, restart the upload
-                return false;
             }
             return _valid && _size == size && _modtime == modtime && _contentChecksum == checksum;
         }

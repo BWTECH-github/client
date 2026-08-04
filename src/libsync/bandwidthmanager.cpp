@@ -51,9 +51,13 @@ BandwidthManager::BandwidthManager(OwncloudPropagator *p)
     , _relativeLimitCurrentMeasuredJob(nullptr)
     , _currentDownloadLimit(0)
 {
-    // absolute uploads/downloads
+    // absolute uploads/downloads. 100 ms ticks, not 1 s: each quota grant
+    // wakes Qt's HTTP pipeline exactly once, and one wake moves at most
+    // ~144 KiB (socket buffer fill + one write) - with 1-second ticks that
+    // caps throughput at ~147 kB/s REGARDLESS of the configured limit.
+    // Ten wakes per second put the configured limit back in charge.
     QObject::connect(&_absoluteLimitTimer, &QTimer::timeout, this, &BandwidthManager::absoluteLimitTimerExpired);
-    _absoluteLimitTimer.setInterval(1000);
+    _absoluteLimitTimer.setInterval(100);
     _absoluteLimitTimer.start();
 
     // Relative uploads
@@ -397,7 +401,10 @@ void BandwidthManager::absoluteLimitTimerExpired()
             }
         }
         if (activeDevices > 0) {
-            const qint64 quotaPerDevice = _currentUploadLimit / activeDevices;
+            // the timer ticks 10x per second - grant a tenth of the
+            // per-second budget each tick (devices accumulate unconsumed
+            // quota up to a small cap, see giveBandwidthQuota)
+            const qint64 quotaPerDevice = _currentUploadLimit / 10 / activeDevices;
             qCDebug(lcBandwidthManager) << quotaPerDevice << activeDevices << "of" << _absoluteUploadDeviceList.size() << _currentUploadLimit;
             for (auto *device : std::as_const(_absoluteUploadDeviceList)) {
                 device->giveBandwidthQuota(quotaPerDevice);
@@ -413,7 +420,7 @@ void BandwidthManager::absoluteLimitTimerExpired()
             }
         }
         if (activeJobs > 0) {
-            const qint64 quotaPerJob = _currentDownloadLimit / activeJobs;
+            const qint64 quotaPerJob = _currentDownloadLimit / 10 / activeJobs;
             qCDebug(lcBandwidthManager) << quotaPerJob << activeJobs << "of" << _downloadJobList.size() << _currentDownloadLimit;
             for (auto *j : _downloadJobList) {
                 j->giveBandwidthQuota(quotaPerJob);

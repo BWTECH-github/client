@@ -394,7 +394,9 @@ void GETFileJob::setBandwidthLimited(bool b)
 
 void GETFileJob::giveBandwidthQuota(qint64 q)
 {
-    _bandwidthQuota = q;
+    // accumulate with a 2-second cap (20 grants at the 100 ms tick) instead
+    // of replacing - see UploadDevice::giveBandwidthQuota
+    _bandwidthQuota = qMin(_bandwidthQuota + q, q * 20);
     QMetaObject::invokeMethod(this, &GETFileJob::slotReadyRead, Qt::QueuedConnection);
 }
 

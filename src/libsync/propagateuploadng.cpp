@@ -276,6 +276,12 @@ void PropagateUploadFileNG::slotPropfindFinished()
     }
 
     qCInfo(lcPropagateUploadNG) << "Resuming " << _item->_file << "; sent =" << _sent << "; total=" << _bytesToUpload;
+    // make the reused bytes visible immediately: without this the UI stays
+    // at zero until the first NEW chunk completes - at throttled speeds that
+    // is minutes in which a successful resume looks like a full restart
+    if (_sent > 0) {
+        propagator()->reportProgress(*_item, _sent);
+    }
 
     if (!_serverChunks.isEmpty()) {
         qCInfo(lcPropagateUploadNG) << "To Delete" << _serverChunks.keys();
@@ -319,6 +325,10 @@ void PropagateUploadFileNG::slotPropfindFinishedWithError()
     // though both sides could still resume. Abort instead - the journal
     // entry survives and the next sync run retries the resume PROPFIND.
     if (_item->_httpErrorCode == 404 || _item->_httpErrorCode == 410) {
+        // distinguishable in QA logs from a client-side discard: here the
+        // SERVER no longer has the upload session (expired/cleaned up)
+        qCInfo(lcPropagateUploadNG) << "Upload session for" << _item->_file
+                                    << "is gone on the server (HTTP" << _item->_httpErrorCode << ") - starting over";
         startNewUpload();
         return;
     }
