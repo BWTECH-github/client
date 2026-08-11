@@ -14,9 +14,11 @@
 
 #include "vfs_mac.h"
 
+#include "fileproviderdomain.h"
 #include "filesystem.h"
 #include "syncfileitem.h"
 
+#include <QCryptographicHash>
 #include <QLoggingCategory>
 
 using namespace OCC;
@@ -37,13 +39,18 @@ Vfs::Mode VfsMac::mode() const
 
 void VfsMac::stop()
 {
-    // TODO(M1): disconnect the NSFileProviderDomain for this folder.
+    // Leave the domain registered: it must survive a client restart the same way
+    // the Windows sync root does, otherwise the Finder entry would disappear
+    // whenever the client quits.
 }
 
 void VfsMac::unregisterFolder()
 {
-    // TODO(M1): remove the NSFileProviderDomain so no stale Finder sidebar
-    // entry survives removing/switching the folder.
+    if (_domainIdentifier.isEmpty()) {
+        return;
+    }
+    Mac::unregisterDomain(_domainIdentifier);
+    _domainIdentifier.clear();
 }
 
 bool VfsMac::socketApiPinStateActionsShown() const
@@ -109,8 +116,27 @@ Result<Vfs::ConvertToPlaceholderResult, QString> VfsMac::updateMetadata(const Sy
 void VfsMac::startImpl(const VfsSetupParams &params)
 {
     qCInfo(lcVfsMac) << "Starting macOS File Provider vfs for" << params.filesystemPath;
-    // TODO(M1): register the NSFileProviderDomain for this folder and only
-    // then emit started(). Registration must be idempotent - startImpl() may
-    // be called again before a previous start finished (see Vfs docs).
-    Q_EMIT started();
+
+    // A domain identifier has to be stable across restarts (it keys the Finder
+    // entry and the extension's state) and must not leak the account or path,
+    // so derive it from the folder's remote identity.
+    const QByteArray seed = (params.baseUrl().toString() + QLatin1Char('|') + params.remotePath).toUtf8();
+    _domainIdentifier = QString::fromLatin1(QCryptographicHash::hash(seed, QCryptographicHash::Sha1).toHex());
+
+    const QString displayName = params.providerDisplayName.isEmpty()
+        ? QStringLiteral("owncloud.online")
+        : params.providerDisplayName;
+
+    Mac::registerDomain(_domainIdentifier, displayName, [this](Mac::DomainResult result, const QString &detail) {
+        if (result == Mac::DomainResult::Ok) {
+            Q_EMIT started();
+            return;
+        }
+        const QString message = Mac::domainResultMessage(result);
+        qCWarning(lcVfsMac) << "Could not register File Provider domain:" << message << detail;
+        Q_EMIT error(message);
+        // Still report the start as finished so the folder does not hang in a
+        // half-configured state; syncing simply behaves like plain sync.
+        Q_EMIT started();
+    });
 }

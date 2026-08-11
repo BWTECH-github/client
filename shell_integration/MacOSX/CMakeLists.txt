@@ -24,5 +24,34 @@ add_dependencies(mac_overlayplugin owncloud) # for the ownCloud.icns to be gener
 add_custom_command(TARGET mac_overlayplugin POST_BUILD COMMAND ${CMAKE_COMMAND}
     ARGS -E copy_directory "${CMAKE_CURRENT_BINARY_DIR}/${XCODE_CONFIG}/FinderSyncExt.appex" "$<TARGET_FILE_DIR:owncloud>/../PlugIns/FinderSyncExt.appex" MAIN_DEPENDENCY "${mac_overlayplugin}")
 
+# Experimental macOS virtual files (File Provider).
+#
+# Unlike the Finder Sync extension this one cannot be ad-hoc signed: a File
+# Provider extension only activates when it is signed with a real Team ID and
+# shares an app group with the client. Builds without a signing identity (CI,
+# packagers) therefore leave it off, which is why this is opt-in.
+option(BUILD_MAC_FILE_PROVIDER "Build the experimental macOS File Provider extension (needs a signing identity)" OFF)
+if(BUILD_MAC_FILE_PROVIDER)
+    if(NOT SOCKETAPI_TEAM_IDENTIFIER_PREFIX)
+        message(FATAL_ERROR "BUILD_MAC_FILE_PROVIDER requires SOCKETAPI_TEAM_IDENTIFIER_PREFIX to be set to '<TEAMID>.'")
+    endif()
+    # The prefix carries a trailing dot; xcodebuild wants the bare team id.
+    string(REGEX REPLACE "\\.$" "" MAC_FILE_PROVIDER_TEAM "${SOCKETAPI_TEAM_IDENTIFIER_PREFIX}")
+
+    add_custom_target( mac_fileproviderplugin ALL
+        xcodebuild -project ${CMAKE_SOURCE_DIR}/shell_integration/MacOSX/OwnCloudFileProvider/OwnCloudFileProvider.xcodeproj
+            -target FileProviderExt -configuration "${XCODE_CONFIG}" "SYMROOT=${CMAKE_CURRENT_BINARY_DIR}"
+            -allowProvisioningUpdates
+            "DEVELOPMENT_TEAM=${MAC_FILE_PROVIDER_TEAM}"
+            "OC_APPLICATION_NAME=${APPLICATION_NAME}"
+            "OC_APPLICATION_REV_DOMAIN=${APPLICATION_REV_DOMAIN}"
+            "OC_SOCKETAPI_TEAM_IDENTIFIER_PREFIX=${SOCKETAPI_TEAM_IDENTIFIER_PREFIX}"
+        COMMENT building the macOS File Provider extension
+        VERBATIM)
+    add_dependencies(mac_fileproviderplugin owncloud)
+    add_custom_command(TARGET mac_fileproviderplugin POST_BUILD COMMAND ${CMAKE_COMMAND}
+        ARGS -E copy_directory "${CMAKE_CURRENT_BINARY_DIR}/${XCODE_CONFIG}/FileProviderExt.appex" "$<TARGET_FILE_DIR:owncloud>/../PlugIns/FileProviderExt.appex" MAIN_DEPENDENCY "${mac_fileproviderplugin}")
+endif()
+
 endif()
 

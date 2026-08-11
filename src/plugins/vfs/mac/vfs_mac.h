@@ -65,6 +65,10 @@ public Q_SLOTS:
 protected:
     Result<ConvertToPlaceholderResult, QString> updateMetadata(const SyncFileItem &, const QString &, const QString &) override;
     void startImpl(const VfsSetupParams &) override;
+
+private:
+    /// Stable identifier of the NSFileProviderDomain backing this folder.
+    QString _domainIdentifier;
 };
 
 

@@ -1,0 +1,66 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXFileReference section */
+		FP00000000000000000006 /* FileProviderExt.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FileProviderExt.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		FP00000000000000000001 /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
+		FP00000000000000000002 /* FileProviderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
+		FP00000000000000000003 /* FileProviderEnumerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderEnumerator.swift; sourceTree = "<group>"; };
+		FP00000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FP00000000000000000005 /* FileProviderExt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FileProviderExt.entitlements; sourceTree = "<group>"; };
+		FP00000000000000000007 /* FileProvider.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileProvider.framework; path = System/Library/Frameworks/FileProvider.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXBuildFile section */
+		FP00000000000000000011 /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FP00000000000000000001 /* FileProviderExtension.swift */; };
+		FP00000000000000000012 /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FP00000000000000000002 /* FileProviderItem.swift */; };
+		FP00000000000000000013 /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FP00000000000000000003 /* FileProviderEnumerator.swift */; };
+		FP00000000000000000014 /* FileProvider.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FP00000000000000000007 /* FileProvider.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FP00000000000000000022 /* Frameworks */ = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = ( FP00000000000000000014 /* FileProvider.framework in Frameworks */, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FP00000000000000000050 /* main group */ = {isa = PBXGroup; children = ( FP00000000000000000051 /* FileProviderExt */, FP00000000000000000053 /* Frameworks */, FP00000000000000000052 /* Products */, ); sourceTree = "<group>"; };
+		FP00000000000000000051 /* FileProviderExt */ = {isa = PBXGroup; children = ( FP00000000000000000001 /* FileProviderExtension.swift */, FP00000000000000000002 /* FileProviderItem.swift */, FP00000000000000000003 /* FileProviderEnumerator.swift */, FP00000000000000000004 /* Info.plist */, FP00000000000000000005 /* FileProviderExt.entitlements */, ); path = FileProviderExt; sourceTree = "<group>"; };
+		FP00000000000000000052 /* Products */ = {isa = PBXGroup; children = ( FP00000000000000000006 /* FileProviderExt.appex */, ); name = Products; sourceTree = "<group>"; };
+		FP00000000000000000053 /* Frameworks */ = {isa = PBXGroup; children = ( FP00000000000000000007 /* FileProvider.framework */, ); name = Frameworks; sourceTree = "<group>"; };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FP00000000000000000031 /* FileProviderExt */ = {isa = PBXNativeTarget; buildConfigurationList = FP00000000000000000041 /* Build configuration list for PBXNativeTarget "FileProviderExt" */; buildPhases = ( FP00000000000000000021 /* Sources */, FP00000000000000000022 /* Frameworks */, FP00000000000000000023 /* Resources */, ); buildRules = ( ); dependencies = ( ); name = FileProviderExt; productName = FileProviderExt; productReference = FP00000000000000000006 /* FileProviderExt.appex */; productType = "com.apple.product-type.app-extension"; };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FP00000000000000000060 /* Project object */ = {isa = PBXProject; attributes = { BuildIndependentTargetsInParallel = 1; LastSwiftUpdateCheck = 1500; LastUpgradeCheck = 1500; TargetAttributes = { FP00000000000000000031 = {CreatedOnToolsVersion = 15.0; }; }; }; buildConfigurationList = FP00000000000000000061 /* Build configuration list for PBXProject "OwnCloudFileProvider" */; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = ( en, Base, ); mainGroup = FP00000000000000000050 /* main group */; productRefGroup = FP00000000000000000052 /* Products */; projectDirPath = ""; projectRoot = ""; targets = ( FP00000000000000000031 /* FileProviderExt */, ); };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FP00000000000000000023 /* Resources */ = {isa = PBXResourcesBuildPhase; buildActionMask = 2147483647; files = ( ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FP00000000000000000021 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ( FP00000000000000000011 /* FileProviderExtension.swift in Sources */, FP00000000000000000012 /* FileProviderItem.swift in Sources */, FP00000000000000000013 /* FileProviderEnumerator.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FP00000000000000000062 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; COPY_PHASE_STRIP = NO; MACOSX_DEPLOYMENT_TARGET = 13.0; ONLY_ACTIVE_ARCH = YES; SDKROOT = macosx; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; SWIFT_VERSION = 5.0; }; name = Debug; };
+		FP00000000000000000063 /* Release */ = {isa = XCBuildConfiguration; buildSettings = { ALWAYS_SEARCH_USER_PATHS = NO; CLANG_ENABLE_MODULES = YES; MACOSX_DEPLOYMENT_TARGET = 13.0; SDKROOT = macosx; SWIFT_VERSION = 5.0; }; name = Release; };
+		FP00000000000000000042 /* Debug */ = {isa = XCBuildConfiguration; buildSettings = { CODE_SIGN_ENTITLEMENTS = FileProviderExt/FileProviderExt.entitlements; CODE_SIGN_STYLE = Automatic; INFOPLIST_FILE = FileProviderExt/Info.plist; OC_APPLICATION_NAME = ownCloud; OC_APPLICATION_REV_DOMAIN = com.owncloud.desktopclient; OC_SOCKETAPI_TEAM_IDENTIFIER_PREFIX = ""; PRODUCT_BUNDLE_IDENTIFIER = "$(OC_APPLICATION_REV_DOMAIN).FileProviderExt"; PRODUCT_NAME = "$(TARGET_NAME)"; SKIP_INSTALL = YES; }; name = Debug; };
+		FP00000000000000000043 /* Release */ = {isa = XCBuildConfiguration; buildSettings = { CODE_SIGN_ENTITLEMENTS = FileProviderExt/FileProviderExt.entitlements; CODE_SIGN_STYLE = Automatic; INFOPLIST_FILE = FileProviderExt/Info.plist; OC_APPLICATION_NAME = ownCloud; OC_APPLICATION_REV_DOMAIN = com.owncloud.desktopclient; OC_SOCKETAPI_TEAM_IDENTIFIER_PREFIX = ""; PRODUCT_BUNDLE_IDENTIFIER = "$(OC_APPLICATION_REV_DOMAIN).FileProviderExt"; PRODUCT_NAME = "$(TARGET_NAME)"; SKIP_INSTALL = YES; }; name = Release; };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FP00000000000000000061 /* Build configuration list for PBXProject "OwnCloudFileProvider" */ = {isa = XCConfigurationList; buildConfigurations = ( FP00000000000000000062 /* Debug */, FP00000000000000000063 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+		FP00000000000000000041 /* Build configuration list for PBXNativeTarget "FileProviderExt" */ = {isa = XCConfigurationList; buildConfigurations = ( FP00000000000000000042 /* Debug */, FP00000000000000000043 /* Release */, ); defaultConfigurationIsVisible = 0; defaultConfigurationName = Release; };
+/* End XCConfigurationList section */
+	};
+	rootObject = FP00000000000000000060 /* Project object */;
+}
