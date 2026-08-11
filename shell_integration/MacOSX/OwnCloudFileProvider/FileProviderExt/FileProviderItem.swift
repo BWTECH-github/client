@@ -17,8 +17,8 @@ import UniformTypeIdentifiers
 
 /// An item exposed to the Finder, backed by a WebDAV PROPFIND entry.
 ///
-/// Milestone 2 is read-only: files hydrate on demand (GET) but cannot be
-/// changed from the Finder yet; uploads and deletes arrive with milestone 3.
+/// Identifiers are the server's stable file ids (oc:fileid), so they survive
+/// renames and moves the way the File Provider contract requires.
 final class FileProviderItem: NSObject, NSFileProviderItem {
     let identifier: NSFileProviderItemIdentifier
     let parentIdentifier: NSFileProviderItemIdentifier
@@ -44,9 +44,9 @@ final class FileProviderItem: NSObject, NSFileProviderItem {
         self.modified = modified
     }
 
-    convenience init(entry: DavEntry) {
+    convenience init(entry: DavEntry, parent: NSFileProviderItemIdentifier) {
         self.init(identifier: entry.identifier,
-                  parent: entry.parentIdentifier,
+                  parent: parent,
                   name: entry.path.isEmpty ? "owncloud.online" : entry.name,
                   isFolder: entry.isFolder,
                   size: entry.size,
@@ -70,7 +70,11 @@ final class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     var capabilities: NSFileProviderItemCapabilities {
-        isFolder ? [.allowsReading, .allowsContentEnumerating] : [.allowsReading]
+        if isFolder {
+            return [.allowsReading, .allowsContentEnumerating, .allowsAddingSubItems,
+                    .allowsRenaming, .allowsReparenting, .allowsDeleting]
+        }
+        return [.allowsReading, .allowsWriting, .allowsRenaming, .allowsReparenting, .allowsDeleting]
     }
 
     var documentSize: NSNumber? { isFolder ? nil : NSNumber(value: size) }
