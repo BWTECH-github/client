@@ -109,7 +109,7 @@ public:
      *
      * Currently plugins and modes are one-to-one but that's not required.
      */
-    enum Mode { Off, WindowsCfApi };
+    enum Mode { Off, WindowsCfApi, MacFileProvider };
     Q_ENUM(Mode)
     enum class ConvertToPlaceholderResult {
         Ok,

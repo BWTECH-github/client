@@ -50,6 +50,8 @@ Vfs::Mode Vfs::modeFromString(const QString &str)
         return Off;
     } else if (str == QLatin1String("wincfapi")) {
         return WindowsCfApi;
+    } else if (str == QLatin1String("macfileprovider")) {
+        return MacFileProvider;
     }
     return Off;
 }
@@ -62,6 +64,8 @@ QString Utility::enumToString(Vfs::Mode mode)
     switch (mode) {
     case Vfs::Mode::WindowsCfApi:
         return QStringLiteral("wincfapi");
+    case Vfs::Mode::MacFileProvider:
+        return QStringLiteral("macfileprovider");
     case Vfs::Mode::Off:
     default:
         return QStringLiteral("off");
@@ -232,6 +236,15 @@ Vfs::Mode OCC::VfsPluginManager::bestAvailableVfsMode() const
     if (isVfsPluginAvailable(Vfs::WindowsCfApi)) {
         return Vfs::WindowsCfApi;
     }
+
+#ifdef Q_OS_MAC
+    // Experimental macOS File Provider backend, opt-in only: until the Finder
+    // integration is complete this mode must never be picked automatically.
+    // Windows behaviour is unaffected - the CfApi check above stays first.
+    if (qEnvironmentVariableIntValue("OWNCLOUD_ENABLE_MAC_VFS") == 1 && isVfsPluginAvailable(Vfs::MacFileProvider)) {
+        return Vfs::MacFileProvider;
+    }
+#endif
 
     return Vfs::Off;
 }
