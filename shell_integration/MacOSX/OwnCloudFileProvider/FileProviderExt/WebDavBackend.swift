@@ -23,10 +23,20 @@ import os.log
 /// moves the secret into the keychain and pushes settings over XPC instead.
 struct DavConfig: Codable {
     /// Full WebDAV root for this domain, e.g.
-    /// `http://localhost:8080/remote.php/dav/files/admin`.
+    /// `http://localhost:8080/remote.php/dav/files/admin` (oC10, single root) or
+    /// a per-space `webDavUrl()` (oCIS).
     let webDavUrl: String
     let username: String
-    let password: String
+    /// Basic-auth password / app password (oC10). Optional so an OAuth config
+    /// carries only a bearer token.
+    let password: String?
+    /// OAuth2/OIDC access token (oCIS). Optional; the client rewrites it when it
+    /// refreshes.
+    let bearerToken: String?
+
+    enum CodingKeys: String, CodingKey {
+        case webDavUrl, username, password, bearerToken
+    }
 
     var rootURL: URL? { URL(string: webDavUrl) }
 
@@ -48,8 +58,12 @@ struct DavConfig: Codable {
         return comps.url
     }
 
-    var basicAuthHeader: String {
-        let raw = Data("\(username):\(password)".utf8).base64EncodedString()
+    /// The Authorization header value: Bearer for OAuth (oCIS), Basic otherwise.
+    var authHeader: String {
+        if let token = bearerToken, !token.isEmpty {
+            return "Bearer \(token)"
+        }
+        let raw = Data("\(username):\(password ?? "")".utf8).base64EncodedString()
         return "Basic \(raw)"
     }
 
@@ -78,11 +92,23 @@ struct DavConfig: Codable {
         return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: group)
     }
 
-    static func load() -> DavConfig? {
+    /// Load the settings the client wrote for this domain. Prefers the
+    /// per-domain file (multi-account / multi-space), falling back to a single
+    /// shared file used by the local test harness.
+    static func load(domainIdentifier: String? = nil) -> DavConfig? {
         guard let container = groupContainer() else { return nil }
-        let file = container.appendingPathComponent("FileProviderConfig.json")
-        guard let data = try? Data(contentsOf: file) else { return nil }
-        return try? JSONDecoder().decode(DavConfig.self, from: data)
+        var candidates: [URL] = []
+        if let id = domainIdentifier {
+            candidates.append(container.appendingPathComponent("FileProviderConfig-\(id).json"))
+        }
+        candidates.append(container.appendingPathComponent("FileProviderConfig.json"))
+        for file in candidates {
+            if let data = try? Data(contentsOf: file),
+               let config = try? JSONDecoder().decode(DavConfig.self, from: data) {
+                return config
+            }
+        }
+        return nil
     }
 }
 
@@ -269,7 +295,7 @@ final class WebDavClient {
     private func request(path: String, method: String, depth: String? = nil) throws -> URLRequest {
         var request = URLRequest(url: try url(for: path))
         request.httpMethod = method
-        request.setValue(config.basicAuthHeader, forHTTPHeaderField: "Authorization")
+        request.setValue(config.authHeader, forHTTPHeaderField: "Authorization")
         if let depth = depth {
             request.setValue(depth, forHTTPHeaderField: "Depth")
         }
@@ -304,7 +330,7 @@ final class WebDavClient {
         url.appendPathComponent(fileId)
         var request = URLRequest(url: url)
         request.httpMethod = "PROPFIND"
-        request.setValue(config.basicAuthHeader, forHTTPHeaderField: "Authorization")
+        request.setValue(config.authHeader, forHTTPHeaderField: "Authorization")
         request.setValue("0", forHTTPHeaderField: "Depth")
         request.setValue("application/xml", forHTTPHeaderField: "Content-Type")
         request.httpBody = Data("""

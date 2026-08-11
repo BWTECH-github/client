@@ -30,11 +30,12 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
 
     required init(domain: NSFileProviderDomain) {
         self.domain = domain
-        if let config = DavConfig.load(), config.isTransportAcceptable {
+        let loaded = DavConfig.load(domainIdentifier: domain.identifier.rawValue)
+        if let config = loaded, config.isTransportAcceptable {
             self.client = WebDavClient(config: config)
             self.store = ItemStore(domainIdentifier: domain.identifier.rawValue)
         } else {
-            if let config = DavConfig.load(), !config.isTransportAcceptable {
+            if let config = loaded, !config.isTransportAcceptable {
                 Logger(subsystem: "online.owncloud.desktopclient", category: "fileprovider")
                     .error("Refusing plain-http WebDAV for a non-local host; use https")
             }
