@@ -110,21 +110,21 @@ void OAuthPageController::buildPage()
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel, Qt::AlignCenter);
+    layout->addWidget(logoLabel);
     layout->addSpacing(16);
-    layout->addWidget(instructionLabel, Qt::AlignCenter);
+    layout->addWidget(instructionLabel);
 
     QHBoxLayout *urlAreaLayout = new QHBoxLayout();
     urlAreaLayout->setContentsMargins(0, 0, 0, 0);
     urlAreaLayout->setSpacing(0);
-    urlAreaLayout->addWidget(_urlField, Qt::AlignLeft);
+    urlAreaLayout->addWidget(_urlField);
     urlAreaLayout->addWidget(_copyButton);
-    layout->addLayout(urlAreaLayout, Qt::AlignCenter);
+    layout->addLayout(urlAreaLayout);
 
-    layout->addWidget(_errorField, Qt::AlignLeft);
+    layout->addWidget(_errorField);
 
     if (footerLogoLabel)
-        layout->addWidget(footerLogoLabel, Qt::AlignCenter);
+        layout->addWidget(footerLogoLabel);
     layout->addStretch(1);
     _page->setLayout(layout);
 

@@ -177,6 +177,15 @@ jobs:
             # package without crash reporter
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=false owncloud/owncloud-client
         }
+        if ($IsMacOS) {
+            # The craft blueprint (craft-blueprints-owncloud, owncloud-client.py)
+            # derives defines["apppath"] = Applications/KDE/<APPLICATION_EXECUTABLE>.app
+            # from these env vars, falling back to "owncloud". Our branded bundle
+            # is owncloud.online.app - without them the packager assembles a bogus
+            # owncloud.app and fails the absolute-library-path check.
+            $env:APPLICATION_EXECUTABLE = "owncloud.online"
+            $env:APPLICATION_SHORTNAME  = "owncloud.online"
+        }
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --package owncloud/owncloud-client
 
     - name: Prepare artifacts

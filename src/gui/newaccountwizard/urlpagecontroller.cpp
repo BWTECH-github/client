@@ -121,14 +121,14 @@ void UrlPageController::buildPage()
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel, Qt::AlignCenter);
+    layout->addWidget(logoLabel);
     layout->addSpacing(16);
-    layout->addWidget(welcomeLabel, Qt::AlignCenter);
-    layout->addWidget(_instructionLabel, Qt::AlignCenter);
-    layout->addWidget(_urlField, Qt::AlignCenter);
-    layout->addWidget(_errorField, Qt::AlignLeft);
+    layout->addWidget(welcomeLabel);
+    layout->addWidget(_instructionLabel);
+    layout->addWidget(_urlField);
+    layout->addWidget(_errorField);
     if (footerLogoLabel)
-        layout->addWidget(footerLogoLabel, Qt::AlignCenter);
+        layout->addWidget(footerLogoLabel);
     layout->addStretch(1);
     _page->setLayout(layout);
 

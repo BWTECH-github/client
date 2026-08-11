@@ -67,26 +67,26 @@ void AdvancedSettingsPageController::buildPage()
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(titleLabel, Qt::AlignLeft);
+    layout->addWidget(titleLabel);
     layout->addSpacing(8);
-    layout->addWidget(syncOptionsLabel, Qt::AlignLeft);
+    layout->addWidget(syncOptionsLabel);
 
     QRadioButton *vfsButton = new QRadioButton(tr("Use virtual files (download on demand)"), _page);
     vfsButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(vfsButton, NewAccount::SyncType::USE_VFS);
-    layout->addWidget(vfsButton, Qt::AlignLeft);
+    layout->addWidget(vfsButton);
 
     QRadioButton *syncAllButton = new QRadioButton(tr("Download and sync all files"), _page);
     syncAllButton->setObjectName("SyncAllRadioButton");
     syncAllButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(syncAllButton, NewAccount::SyncType::SYNC_ALL);
-    layout->addWidget(syncAllButton, Qt::AlignLeft);
+    layout->addWidget(syncAllButton);
 
     QRadioButton *selectiveSyncButton = new QRadioButton(tr("Choose folders to sync manually"), _page);
     selectiveSyncButton->setObjectName("SelectiveSyncRadioButton");
     selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
-    layout->addWidget(selectiveSyncButton, Qt::AlignLeft);
+    layout->addWidget(selectiveSyncButton);
 
     connect(_buttonGroup, &QButtonGroup::idClicked, this, &AdvancedSettingsPageController::syncTypeChanged);
 
@@ -144,10 +144,10 @@ void AdvancedSettingsPageController::buildPage()
     connect(_folderButton, &QPushButton::clicked, this, &AdvancedSettingsPageController::showFolderPicker);
 
     layout->addSpacing(8);
-    layout->addWidget(syncRootLabel, Qt::AlignLeft);
+    layout->addWidget(syncRootLabel);
 
     QHBoxLayout *folderPickerLayout = new QHBoxLayout();
-    folderPickerLayout->addWidget(_rootDirEdit, Qt::AlignLeft);
+    folderPickerLayout->addWidget(_rootDirEdit);
     folderPickerLayout->addWidget(_folderButton);
     layout->addLayout(folderPickerLayout);
 

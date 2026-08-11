@@ -102,21 +102,26 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     layout->setContentsMargins(50, 50, 50, 50);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel, Qt::AlignCenter);
+    // NOTE: addWidget(w, Qt::AlignCenter) would bind the alignment constant
+    // to the int STRETCH parameter (no alignment applied, and the huge
+    // stretch value out-competes the two addStretch(1) spacers, pinning the
+    // content to the top-right corner instead of centering it) - always use
+    // the three-argument overload for alignments.
+    layout->addWidget(logoLabel, 0, Qt::AlignCenter);
     layout->addSpacing(16);
     layout->addWidget(titleLabel);
-    layout->addWidget(instructionLabel, Qt::AlignCenter);
+    layout->addWidget(instructionLabel);
 
     QHBoxLayout *urlAreaLayout = new QHBoxLayout();
     urlAreaLayout->setContentsMargins(0, 0, 0, 0);
     urlAreaLayout->setSpacing(0);
-    urlAreaLayout->addWidget(_urlField, Qt::AlignLeft);
+    urlAreaLayout->addWidget(_urlField);
     urlAreaLayout->addWidget(_copyButton);
-    layout->addLayout(urlAreaLayout, Qt::AlignCenter);
-    layout->addWidget(_errorField, Qt::AlignLeft);
+    layout->addLayout(urlAreaLayout);
+    layout->addWidget(_errorField);
 
     if (footerLogoLabel)
-        layout->addWidget(footerLogoLabel, Qt::AlignCenter);
+        layout->addWidget(footerLogoLabel, 0, Qt::AlignCenter);
     layout->addStretch(1);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
@@ -124,7 +129,7 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     buttonLayout->addStretch(1);
     buttonLayout->addWidget(_cancelButton);
     buttonLayout->addWidget(_signInButton);
-    layout->addLayout(buttonLayout, Qt::AlignRight);
+    layout->addLayout(buttonLayout);
 
     setLayout(layout);
 
