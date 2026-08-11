@@ -85,6 +85,7 @@ protected Q_SLOTS:
 
 protected:
     void setVisible(bool visible) override;
+    void showEvent(QShowEvent *event) override;
 
 
 private:
@@ -92,6 +93,9 @@ private:
 
 
     QHash<QUuid, AccountView *> _viewForAccount;
+    // set when no (on-screen) window placement could be restored - the first
+    // showEvent then centers the window on its screen
+    bool _centerOnFirstShow = false;
 
     ActivitySettings *_activitySettings;
     ownCloudGui *_gui;

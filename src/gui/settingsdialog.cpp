@@ -28,6 +28,7 @@
 
 #include <QMessageBox>
 #include <QScreen>
+#include <QShowEvent>
 #include <QWindow>
 
 #ifdef Q_OS_MAC
@@ -123,7 +124,13 @@ SettingsDialog::SettingsDialog(ownCloudGui *gui, QWidget *parent)
     connect(_generalSettings, &GeneralSettings::showAbout, gui, &ownCloudGui::slotAbout);
     connect(_generalSettings, &GeneralSettings::syncOptionsChanged, FolderMan::instance(), &FolderMan::slotReloadSyncOptions);
 
-    ConfigFile().restoreGeometry(this);
+    // Center the window on first show when no stored placement exists (or
+    // the stored one is no longer on any screen): QWidget::restoreGeometry
+    // is a no-op then and the platform drops the window wherever it likes -
+    // e.g. a corner of the screen - which looks broken, especially for the
+    // sign-in step. Presentation only.
+    _centerOnFirstShow = !ConfigFile().restoreGeometry(this)
+        || QGuiApplication::screenAt(frameGeometry().center()) == nullptr;
 #ifdef Q_OS_MAC
     setActivationPolicy(ActivationPolicy::Accessory);
 #endif
@@ -186,6 +193,20 @@ void SettingsDialog::onAccountRemoved(AccountState *state)
         //  go to the settings page if the last account was removed
         if (_viewForAccount.isEmpty()) {
             _ui->stack->setCurrentWidget(_generalSettings);
+        }
+    }
+}
+
+void SettingsDialog::showEvent(QShowEvent *event)
+{
+    QMainWindow::showEvent(event);
+    if (_centerOnFirstShow) {
+        _centerOnFirstShow = false;
+        QScreen *target = screen() ? screen() : QGuiApplication::primaryScreen();
+        if (target) {
+            QRect frame = frameGeometry();
+            frame.moveCenter(target->availableGeometry().center());
+            move(frame.topLeft());
         }
     }
 }

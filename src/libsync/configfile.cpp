@@ -190,9 +190,11 @@ void ConfigFile::saveGeometry(QWidget *w)
     settings.sync();
 }
 
-void ConfigFile::restoreGeometry(QWidget *w)
+bool ConfigFile::restoreGeometry(QWidget *w)
 {
-    w->restoreGeometry(getValue(geometryC(), w->objectName()).toByteArray());
+    // false when nothing was stored yet (QWidget::restoreGeometry is a no-op
+    // then) - callers may want to pick a sensible initial placement
+    return w->restoreGeometry(getValue(geometryC(), w->objectName()).toByteArray());
 }
 
 void ConfigFile::saveGeometryHeader(QHeaderView *header)

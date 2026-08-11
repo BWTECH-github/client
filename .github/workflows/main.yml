@@ -35,10 +35,12 @@ jobs:
               useSonarCloud: ${{ github.event_name != 'pull_request' }}
               testOptions: --options '[Compile]Jobs=1'
             # TODO: align the target with the name
-            # macOS ist noch WIP (FileProvider-VFS in Arbeit) und kein
-            # Release-Target; das Craft-Packaging (absolute dylib-Pfade) schlaegt
-            # dort vorbestehend fehl. Build + Tests laufen weiter und bleiben als
-            # Signal sichtbar, blockieren aber die Gesamt-CI nicht.
+            # macOS: Build + Tests + Packaging (dmg, siehe Package-Step:
+            # APPLICATION_EXECUTABLE-Export) laufen; das dmg wird von
+            # publish-release.yml mit veroeffentlicht. FileProvider-VFS ist
+            # weiterhin in Arbeit (docs/mac-vfs-implementation-plan.md).
+            # continueOnError bleibt vorerst, damit ein Mac-Packaging-Fehler
+            # die Windows/Linux-Releases nicht blockiert.
             - name: macos-clang-arm64
               target: macos-clang-arm64
               os: macos-14

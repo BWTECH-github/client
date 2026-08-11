@@ -179,7 +179,7 @@ public:
     std::chrono::seconds timeout() const;
 
     void saveGeometry(QWidget *w);
-    void restoreGeometry(QWidget *w);
+    bool restoreGeometry(QWidget *w);
 
     // how often the check about new versions runs
     std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;

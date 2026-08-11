@@ -102,11 +102,10 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     layout->setContentsMargins(50, 50, 50, 50);
     layout->setSpacing(12);
     layout->addStretch(1);
-    // NOTE: addWidget(w, Qt::AlignCenter) would bind the alignment constant
-    // to the int STRETCH parameter (no alignment applied, and the huge
-    // stretch value out-competes the two addStretch(1) spacers, pinning the
-    // content to the top-right corner instead of centering it) - always use
-    // the three-argument overload for alignments.
+    // NOTE: addWidget(w, Qt::AlignCenter) binds the alignment constant to
+    // the int STRETCH parameter - the alignment is silently never applied.
+    // Always use the three-argument overload for alignments; the labels'
+    // own setAlignment() does the horizontal centering here.
     layout->addWidget(logoLabel, 0, Qt::AlignCenter);
     layout->addSpacing(16);
     layout->addWidget(titleLabel);
