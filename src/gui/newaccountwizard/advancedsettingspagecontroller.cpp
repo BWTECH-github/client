@@ -167,7 +167,7 @@ void AdvancedSettingsPageController::buildPage()
 
 void AdvancedSettingsPageController::gatherSyncInfo()
 {
-    _vfsIsAvailable = VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi;
+    _vfsIsAvailable = VfsPluginManager::instance().isVirtualFilesAvailable();
     _forceVfs = _vfsIsAvailable && Theme::instance()->forceVirtualFilesOption();
     if (!_vfsIsAvailable)
         _defaultSyncType = NewAccount::SyncType::SYNC_ALL;

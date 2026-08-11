@@ -95,7 +95,7 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, Account *account)
     q->setPage(FolderWizard::Page_Source, _folderWizardSourcePage);
 
     // When VFS is available (currently only with Windows' CFApi), and it is forced on, Spaces are meant to be synced as a whole.
-    const bool showPage = VfsPluginManager::instance().bestAvailableVfsMode() != Vfs::WindowsCfApi || !Theme::instance()->forceVirtualFilesOption();
+    const bool showPage = !VfsPluginManager::instance().isVirtualFilesAvailable() || !Theme::instance()->forceVirtualFilesOption();
     if (showPage) {
         _folderWizardSelectiveSyncPage = new FolderWizardSelectiveSync(_account, this);
         q->setPage(FolderWizard::Page_SelectiveSync, _folderWizardSelectiveSyncPage);
@@ -162,7 +162,7 @@ bool FolderWizardPrivate::useVirtualFiles() const
     // for vfs if vfs is generally available. "Use virtual files" should not rely on the folder path check at all, as we should
     // block use of unsupported paths from the start (generally via account wizard and folder wizard gui's)
     const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
-    const bool useVirtualFiles = (Theme::instance()->forceVirtualFilesOption() && mode == Vfs::WindowsCfApi) || (_folderWizardSelectiveSyncPage && _folderWizardSelectiveSyncPage->useVirtualFiles());
+    const bool useVirtualFiles = (Theme::instance()->forceVirtualFilesOption() && mode != Vfs::Off) || (_folderWizardSelectiveSyncPage && _folderWizardSelectiveSyncPage->useVirtualFiles());
     if (useVirtualFiles) {
         QString vfsSupported = Vfs::pathSupportDetail(initialLocalPath(), mode);
         if (!vfsSupported.isEmpty()) {

@@ -1219,7 +1219,7 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
     // folder as a plain sync (useVfs == false), which is why no Cloud Files sync root
     // (and thus no OneDrive-like Explorer entry) got registered.
     const bool forceVfs = Theme::instance()->forceVirtualFilesOption()
-        && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::WindowsCfApi;
+        && VfsPluginManager::instance().isVirtualFilesAvailable();
     if (useVfs || forceVfs) {
         folderDefinition.setVirtualFilesMode(VfsPluginManager::instance().bestAvailableVfsMode());
     }
@@ -1227,7 +1227,10 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
     auto newFolder = addFolder(accountState, folderDefinition);
 
     if (newFolder) {
-        if (newFolder->vfs().mode() != Vfs::WindowsCfApi) {
+        // A virtual-files folder shows up through the platform integration
+        // (Explorer sync root / Finder File Provider), so only plain-sync
+        // folders get a Finder/Explorer favourite link.
+        if (newFolder->vfs().mode() == Vfs::Off) {
             Utility::setupFavLink(folderDefinition.localPath());
         }
         qCDebug(lcFolderMan) << "Local sync folder" << folderDefinition.localPath() << "successfully created!";

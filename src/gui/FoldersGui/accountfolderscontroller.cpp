@@ -166,7 +166,7 @@ void AccountFoldersController::buildMenuActions()
     _chooseSync->setObjectName("selectiveSyncAction");
 
     Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode();
-    if (mode == Vfs::WindowsCfApi) {
+    if (mode != Vfs::Off) {
         // need extra checks:
         if (Theme::instance()->forceVirtualFilesOption()) {
             // get rid of choose sync action as it can never be enabled
@@ -208,7 +208,7 @@ void AccountFoldersController::buildMenuActions()
 
 void AccountFoldersController::onEnableVfs()
 {
-    if (!_currentFolder || VfsPluginManager::instance().bestAvailableVfsMode() != Vfs::WindowsCfApi)
+    if (!_currentFolder || !VfsPluginManager::instance().isVirtualFilesAvailable())
         return;
 
     if (!_currentFolder->virtualFilesEnabled()) {

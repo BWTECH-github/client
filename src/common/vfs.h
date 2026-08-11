@@ -301,6 +301,11 @@ public:
     /// Return the best available VFS mode.
     Vfs::Mode bestAvailableVfsMode() const;
 
+    /// Whether any real virtual-files backend is available on this platform
+    /// (Windows Cloud Files API, or the macOS File Provider). Prefer this over
+    /// comparing bestAvailableVfsMode() against a specific platform mode.
+    bool isVirtualFilesAvailable() const { return bestAvailableVfsMode() != Vfs::Off; }
+
     /// Create a VFS instance for the mode, returns nullptr on failure.
     std::unique_ptr<Vfs> createVfsFromPlugin(Vfs::Mode mode) const;
 
