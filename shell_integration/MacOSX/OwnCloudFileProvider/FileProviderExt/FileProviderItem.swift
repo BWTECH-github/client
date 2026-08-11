@@ -15,49 +15,76 @@
 import FileProvider
 import UniformTypeIdentifiers
 
-/// An item exposed to the Finder.
+/// An item exposed to the Finder, backed by a WebDAV PROPFIND entry.
 ///
-/// Milestone 1 serves a small static tree so the whole pipeline (domain ->
-/// extension -> Finder) can be verified without any network access. The WebDAV
-/// backed model replaces `Placeholder.tree` in milestone 2; everything else in
-/// this class stays as is.
+/// Milestone 2 is read-only: files hydrate on demand (GET) but cannot be
+/// changed from the Finder yet; uploads and deletes arrive with milestone 3.
 final class FileProviderItem: NSObject, NSFileProviderItem {
     let identifier: NSFileProviderItemIdentifier
     let parentIdentifier: NSFileProviderItemIdentifier
     let name: String
     let isFolder: Bool
     let size: Int64
+    let etag: String
+    let modified: Date?
 
     init(identifier: NSFileProviderItemIdentifier,
          parent: NSFileProviderItemIdentifier,
          name: String,
          isFolder: Bool,
-         size: Int64 = 0) {
+         size: Int64 = 0,
+         etag: String = "static",
+         modified: Date? = nil) {
         self.identifier = identifier
         self.parentIdentifier = parent
         self.name = name
         self.isFolder = isFolder
         self.size = size
+        self.etag = etag
+        self.modified = modified
+    }
+
+    convenience init(entry: DavEntry) {
+        self.init(identifier: entry.identifier,
+                  parent: entry.parentIdentifier,
+                  name: entry.path.isEmpty ? "owncloud.online" : entry.name,
+                  isFolder: entry.isFolder,
+                  size: entry.size,
+                  etag: entry.etag.isEmpty ? "unknown" : entry.etag,
+                  modified: entry.modified)
     }
 
     var itemIdentifier: NSFileProviderItemIdentifier { identifier }
     var parentItemIdentifier: NSFileProviderItemIdentifier { parentIdentifier }
     var filename: String { name }
-    var contentType: UTType { isFolder ? .folder : .data }
+
+    var contentType: UTType {
+        if isFolder {
+            return .folder
+        }
+        let ext = (name as NSString).pathExtension
+        if ext.isEmpty {
+            return .data
+        }
+        return UTType(filenameExtension: ext) ?? .data
+    }
 
     var capabilities: NSFileProviderItemCapabilities {
         isFolder ? [.allowsReading, .allowsContentEnumerating] : [.allowsReading]
     }
 
     var documentSize: NSNumber? { isFolder ? nil : NSNumber(value: size) }
+    var contentModificationDate: Date? { modified }
 
     var itemVersion: NSFileProviderItemVersion {
-        NSFileProviderItemVersion(contentVersion: Data("1".utf8),
-                                  metadataVersion: Data("1".utf8))
+        NSFileProviderItemVersion(contentVersion: Data(etag.utf8),
+                                  metadataVersion: Data(etag.utf8))
     }
 }
 
-/// The static milestone-1 tree.
+/// Static fallback tree, served when no server configuration exists yet. It
+/// keeps the extension verifiable (milestone 1 behaviour) on machines where
+/// the client has not written `FileProviderConfig.json`.
 enum Placeholder {
     static let root = FileProviderItem(identifier: .rootContainer,
                                        parent: .rootContainer,

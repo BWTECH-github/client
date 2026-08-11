@@ -11,6 +11,7 @@
 		FP00000000000000000001 /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
 		FP00000000000000000002 /* FileProviderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
 		FP00000000000000000003 /* FileProviderEnumerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderEnumerator.swift; sourceTree = "<group>"; };
+		FP00000000000000000008 /* WebDavBackend.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebDavBackend.swift; sourceTree = "<group>"; };
 		FP00000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FP00000000000000000005 /* FileProviderExt.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FileProviderExt.entitlements; sourceTree = "<group>"; };
 		FP00000000000000000007 /* FileProvider.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileProvider.framework; path = System/Library/Frameworks/FileProvider.framework; sourceTree = SDKROOT; };
@@ -20,6 +21,7 @@
 		FP00000000000000000011 /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = FP00000000000000000001 /* FileProviderExtension.swift */; };
 		FP00000000000000000012 /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FP00000000000000000002 /* FileProviderItem.swift */; };
 		FP00000000000000000013 /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = FP00000000000000000003 /* FileProviderEnumerator.swift */; };
+		FP00000000000000000015 /* WebDavBackend.swift in Sources */ = {isa = PBXBuildFile; fileRef = FP00000000000000000008 /* WebDavBackend.swift */; };
 		FP00000000000000000014 /* FileProvider.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FP00000000000000000007 /* FileProvider.framework */; };
 /* End PBXBuildFile section */
 
@@ -29,7 +31,7 @@
 
 /* Begin PBXGroup section */
 		FP00000000000000000050 /* main group */ = {isa = PBXGroup; children = ( FP00000000000000000051 /* FileProviderExt */, FP00000000000000000053 /* Frameworks */, FP00000000000000000052 /* Products */, ); sourceTree = "<group>"; };
-		FP00000000000000000051 /* FileProviderExt */ = {isa = PBXGroup; children = ( FP00000000000000000001 /* FileProviderExtension.swift */, FP00000000000000000002 /* FileProviderItem.swift */, FP00000000000000000003 /* FileProviderEnumerator.swift */, FP00000000000000000004 /* Info.plist */, FP00000000000000000005 /* FileProviderExt.entitlements */, ); path = FileProviderExt; sourceTree = "<group>"; };
+		FP00000000000000000051 /* FileProviderExt */ = {isa = PBXGroup; children = ( FP00000000000000000001 /* FileProviderExtension.swift */, FP00000000000000000002 /* FileProviderItem.swift */, FP00000000000000000003 /* FileProviderEnumerator.swift */, FP00000000000000000008 /* WebDavBackend.swift */, FP00000000000000000004 /* Info.plist */, FP00000000000000000005 /* FileProviderExt.entitlements */, ); path = FileProviderExt; sourceTree = "<group>"; };
 		FP00000000000000000052 /* Products */ = {isa = PBXGroup; children = ( FP00000000000000000006 /* FileProviderExt.appex */, ); name = Products; sourceTree = "<group>"; };
 		FP00000000000000000053 /* Frameworks */ = {isa = PBXGroup; children = ( FP00000000000000000007 /* FileProvider.framework */, ); name = Frameworks; sourceTree = "<group>"; };
 /* End PBXGroup section */
@@ -47,7 +49,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		FP00000000000000000021 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ( FP00000000000000000011 /* FileProviderExtension.swift in Sources */, FP00000000000000000012 /* FileProviderItem.swift in Sources */, FP00000000000000000013 /* FileProviderEnumerator.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
+		FP00000000000000000021 /* Sources */ = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = ( FP00000000000000000011 /* FileProviderExtension.swift in Sources */, FP00000000000000000012 /* FileProviderItem.swift in Sources */, FP00000000000000000013 /* FileProviderEnumerator.swift in Sources */, FP00000000000000000015 /* WebDavBackend.swift in Sources */, ); runOnlyForDeploymentPostprocessing = 0; };
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
