@@ -23,6 +23,34 @@ security find-identity -v -p codesigning | grep "Developer ID Application"
 (Only the account holder can create this, and there is a small per-team limit —
 reuse the existing one if it already exists.)
 
+### Account gotchas (learned the hard way)
+
+- **App-specific passwords fail** for the `bw.tech` domain account with
+  `HTTP 401 … not allowed for primary authentication` — federated / managed
+  Apple IDs (custom email domain) do not accept app-specific passwords. Use the
+  App Store Connect API key below instead.
+- The account must be **provisioned for App Store Connect**. Right after joining
+  the Developer Program you may see *"Your Apple Account is not set up for
+  iTunes Connect"* on appstoreconnect.apple.com — wait until Apple finishes
+  provisioning (can take a few hours), and make sure you sign in with the Apple
+  ID that actually holds the paid membership (team 4545KLA52K), not a different
+  address.
+
+### codesign keychain access
+
+A freshly created "Developer ID Application" key is only authorised for Xcode,
+so `codesign` from a script can fail with `errSecInternalComponent`. Run
+`notarize.sh` from an interactive Terminal (approve the keychain prompt with
+"Always Allow"), or pre-authorise codesign once:
+
+```
+security set-key-partition-list -S apple-tool:,apple:,codesign: -s \
+  -k <login-keychain-password> ~/Library/Keychains/login.keychain-db
+```
+
+Note: a detached/background shell has no keychain access at all — always sign in
+the foreground.
+
 ## 2. notarytool credential profile
 
 Preferred: an **App Store Connect API key** (no password stored, works headless).
