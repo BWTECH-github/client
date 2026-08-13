@@ -2,69 +2,68 @@
 
 # owncloud.online Desktop Client
 
-The owncloud.online Desktop Client is based on the ownCloud Desktop Client and
-is adapted for owncloud.online server builds.
+Hält Dateien zwischen einem owncloud.online-Server und dem eigenen Rechner
+abgeglichen — für Windows, macOS und Linux.
 
-## Introduction
+## Was er kann
 
-The owncloud.online Desktop Client is a tool to synchronize files from owncloud.online Server
-with your computer.
+* **Abgleich in beide Richtungen** für ausgewählte Ordner
+* **Selektiver Abgleich** — nur die Ordner holen, die man wirklich braucht
+* **Virtuelle Dateien** unter Windows: Der Explorer zeigt alle Dateien, geladen
+  wird erst beim Öffnen
+* **Große Dateien** werden in Stücken übertragen und lassen sich nach einem
+  Abbruch fortsetzen
+* **Viele kleine Dateien** gehen gebündelt in einer Anfrage über die Leitung
+* **owncloudcmd** für den Abgleich ohne Oberfläche, etwa auf Servern
 
-## Download
+## Herunterladen
 
-### Binary packages
+Fertige Pakete: <https://owncloud.online>
 
-- Refer to the download page https://owncloud.online
+## Aus dem Quelltext bauen
 
-### Source code
+Das Projekt nutzt CMake, dazu KDE Craft als übergeordnetes Bausystem.
 
-The ownCloud Desktop Client is developed in Git. Since Git makes it easy to
-fork and improve the source code and to adapt it to your need, many copies
-can be found on the Internet, in particular on GitHub. However, the
-authoritative repository maintained by the developers is located at
-https://github.com/owncloud/client.
+* CMake: <https://cmake.org/documentation/>
+* KDE Craft: <https://community.kde.org/Craft>
 
-### Building from source
+Unter Windows werden die Visual-Studio-Bauwerkzeuge (`vcvars`) und Ninja
+benötigt. Die Schritte im Einzelnen stehen in der
+[Dokumentation](https://docs.owncloud.online/).
 
-This project uses CMake as build system. Please refer to the cmake documentation
-for general instructions on how to use CMake: https://cmake.org/documentation/.
+## Fehler melden und mitarbeiten
 
-Further more as meta build system KDE Craft is used. Please refer to the KDE Craft
-documentation for instructions on how to use Craft: https://community.kde.org/Craft.
+Fehler bitte als
+[Issue](https://github.com/BWTECH-github/client/issues) melden, nicht per Mail
+an einzelne Personen — sonst geht die Meldung verloren.
 
-For easy to use instructions on how to build the ownCloud Desktop Client please have 
-a look at https://github.com/owncloud/ownbuild.
+Hilfreich ist:
 
-## Reporting issues and contributing
+* Version des Clients und des Servers
+* Betriebssystem
+* Auszug aus dem Abgleich-Protokoll (im Client unter *Allgemein →
+  Protokolleinstellungen*), vorher auf Pfade und Namen durchgesehen
 
-If you find any bugs or have any suggestion for improvement, please
-file an issue at https://github.com/owncloud/client/issues. Do not
-contact the authors directly by mail, as this increases the chance
-of your report being lost.
+Änderungen als [Pull Request](https://github.com/BWTECH-github/client/pulls).
 
-If you created a patch, please submit a [Pull
-Request](https://github.com/owncloud/client/pulls). For non-trivial
-patches, we need you to sign the [Contributor
-Agreement](https://owncloud.online) before
-we can accept your patch.
+**Sicherheitslücken nicht als Issue melden**, sondern vertraulich an
+**security@bw.tech**.
 
+## Herkunft
 
-## Maintainers and Contributors
+Dieser Client ist ein Fork des ownCloud Desktop Clients und wird von der
+BW-Tech GmbH für owncloud.online gepflegt. Der Dank für die ursprüngliche
+Arbeit gehört der ownCloud-Gemeinschaft und den bisherigen Betreuern:
 
-ownCloud Desktop Client is developed by the ownCloud community and [receives
-patches from a variety of authors](https://github.com/owncloud/client/graphs/contributors).
+- Markus Goetz
+- Olivier Goffart
+- Christian Kamm
+- Thomas Müller
+- Klaas Freitag
+- Daniel Molkentin
+- Andreas Schneider
 
-Past maintainers:
-
-- Markus Goetz <guruz@owncloud.com>
-- Olivier Goffart <ogoffart@owncloud.com>
-- Christian Kamm <mail@ckamm.de>
-- Thomas Müller <thomas.mueller@owncloud.com>
-- Klaas Freitag <freitag@owncloud.com>
-- Daniel Molkentin <daniel@molkentin.de>
-- Andreas Schneider <asn@cryptomilk.org>
-
-## License
+## Lizenz
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -76,3 +75,6 @@ Past maintainers:
     or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
     for more details.
 
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
