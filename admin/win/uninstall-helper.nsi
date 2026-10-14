@@ -11,9 +11,17 @@
 ;  5. best-effort removes the per-user navigation-pane registry entries
 ;     created at runtime by the client (navigationpanehelper.cpp),
 ;  6. removes leftover files/registry in both registry views,
-;  7. requires + performs the Windows restart that unloads the Explorer
-;     integration (interactive: finish page; silent: Reboot unless /norestart,
-;     which exits with 3010 = reboot required).
+;  7. reports the Windows restart that unloads the Explorer integration:
+;     interactive via the finish page ("Reboot now" / "later"); silent (/S)
+;     NEVER restarts on its own - exit code 3010 = restart pending (msiexec
+;     convention), 0 = nothing pending; /S /forcerestart restarts right away,
+;     /S /norestart is still accepted and behaves like plain /S.
+;
+; Everything here is limited to this client's own names (owncloud.online):
+; the process owncloud.exe, "ownCloud" shortcuts and the autostart entry
+; "ownCloud" belong to the official ownCloud client and are never touched.
+; The embedded uninstaller and the recursive directory removal only run for
+; a directory that demonstrably holds THIS client (bin\owncloud.online.exe).
 ;
 ; NOTE: this is a plain installer-mode NSIS exe, NOT an NSIS uninstaller -
 ; the section below must not be named "Uninstall" (that name is reserved for
@@ -85,16 +93,28 @@ Function .onInit
       StrCpy $INSTDIR "$EXEDIR"
     ${EndIf}
   ${EndIf}
-  ; $9 = "1" only when the resolved directory demonstrably IS a client
-  ; installation. Recorded NOW, before anything gets deleted: the recursive
-  ; directory removal later is gated on it, so a stale registry value or a
-  ; helper copied to e.g. the Downloads folder can never wipe a foreign
-  ; directory.
+  ; $9 = "1" only when the resolved directory demonstrably holds THIS client
+  ; (its own binary name: bin\owncloud.online.exe since 7.4.0, or
+  ; owncloud.online.exe for a flat layout). Recorded NOW, before anything
+  ; gets deleted: the embedded uninstaller and the recursive directory
+  ; removal are gated on it, so a stale registry value or a helper copied to
+  ; e.g. the Downloads folder can never touch a foreign directory.
+  ; $8 = "1" when the directory holds the OFFICIAL ownCloud client instead
+  ; (upstream binary name owncloud.exe, none of our markers): then even the
+  ; shared registry keys are left alone - they describe that installation.
   StrCpy $9 "0"
-  ${If} ${FileExists} "$INSTDIR\bin\*.*"
+  ${If} ${FileExists} "$INSTDIR\bin\owncloud.online.exe"
     StrCpy $9 "1"
-  ${ElseIf} ${FileExists} "$INSTDIR\uninstall.exe"
+  ${ElseIf} ${FileExists} "$INSTDIR\owncloud.online.exe"
     StrCpy $9 "1"
+  ${EndIf}
+  StrCpy $8 "0"
+  ${If} $9 == "0"
+    ${If} ${FileExists} "$INSTDIR\bin\owncloud.exe"
+      StrCpy $8 "1"
+    ${ElseIf} ${FileExists} "$INSTDIR\owncloud.exe"
+      StrCpy $8 "1"
+    ${EndIf}
   ${EndIf}
   MessageBox MB_YESNO|MB_ICONQUESTION \
     "owncloud.online Client wirklich deinstallieren?$\r$\n($INSTDIR)$\r$\n$\r$\nReally uninstall the owncloud.online client?" \
@@ -108,30 +128,35 @@ Section "-remove"
   ; release any working-directory handle on the install dir
   SetOutPath "$TEMP"
 
-  ; ---- 1. stop a running client (both binary name generations) -------------
+  ; ---- 1. stop a running client (own process name only) --------------------
+  ; owncloud.exe is the official ownCloud client and is never stopped here
+  ; (our builds have been named owncloud.online.exe since 7.4.0)
   DetailPrint "Beende laufenden owncloud.online Client / stopping running client ..."
   nsExec::ExecToLog 'taskkill /F /IM "${CLIENT_PROCESS}"'
-  Pop $0
-  nsExec::ExecToLog 'taskkill /F /IM "owncloud.exe"'
   Pop $0
   Sleep 1500
 
   ; ---- 2. unregister the shell extensions (while the DLLs still exist) -----
   ; 64-bit DLLs -> 64-bit regsvr32: from this 32-bit process that is
   ; $WINDIR\SysNative; fall back to $SYSDIR (same pattern as the wrapper).
+  ; Only for a directory proven to be ours ($9): the official ownCloud
+  ; client ships DLLs of the same name, and unregistering those would strip
+  ; its Explorer integration.
   StrCpy $6 "$WINDIR\SysNative\regsvr32.exe"
   ${IfNot} ${FileExists} "$6"
     StrCpy $6 "$SYSDIR\regsvr32.exe"
   ${EndIf}
-  ${If} ${FileExists} "$INSTDIR\bin\OCOverlays.dll"
-    DetailPrint "Deregistriere Overlay-Symbole / unregistering overlay icons ..."
-    nsExec::ExecToLog '"$6" /u /s "$INSTDIR\bin\OCOverlays.dll"'
-    Pop $0
-  ${EndIf}
-  ${If} ${FileExists} "$INSTDIR\bin\OCContextMenu.dll"
-    DetailPrint "Deregistriere Kontextmenue / unregistering context menu ..."
-    nsExec::ExecToLog '"$6" /u /s "$INSTDIR\bin\OCContextMenu.dll"'
-    Pop $0
+  ${If} $9 == "1"
+    ${If} ${FileExists} "$INSTDIR\bin\OCOverlays.dll"
+      DetailPrint "Deregistriere Overlay-Symbole / unregistering overlay icons ..."
+      nsExec::ExecToLog '"$6" /u /s "$INSTDIR\bin\OCOverlays.dll"'
+      Pop $0
+    ${EndIf}
+    ${If} ${FileExists} "$INSTDIR\bin\OCContextMenu.dll"
+      DetailPrint "Deregistriere Kontextmenue / unregistering context menu ..."
+      nsExec::ExecToLog '"$6" /u /s "$INSTDIR\bin\OCContextMenu.dll"'
+      Pop $0
+    ${EndIf}
   ${EndIf}
 
   ; ---- 3. run the embedded uninstaller (as a %TEMP% copy) ------------------
@@ -144,7 +169,10 @@ Section "-remove"
   ; re-reads Install_Dir (same value .onInit resolved), so the target agrees.
   ; On failure: ABORT without touching any registry, so Apps & Features
   ; keeps a working entry to retry.
-  ${If} ${FileExists} "$INSTDIR\uninstall.exe"
+  ; Only for a directory proven to be ours ($9): an uninstall.exe in a
+  ; directory without our binary belongs to another product.
+  ${If} $9 == "1"
+  ${AndIf} ${FileExists} "$INSTDIR\uninstall.exe"
     DetailPrint "Starte eingebetteten Uninstaller / running embedded uninstaller ..."
     GetTempFileName $R3
     Delete "$R3"
@@ -173,17 +201,13 @@ Section "-remove"
       Abort "Deinstallation fehlgeschlagen / uninstallation failed (exit code $0)."
     ${EndIf}
     ; belt and braces: a "successful" exit with the client binary still in
-    ; place (any layout generation) means the uninstall did NOT actually
-    ; happen - say so instead of wiping registry entries of a still-existing
-    ; installation
+    ; place (own binary name, either layout) means the uninstall did NOT
+    ; actually happen - say so instead of wiping registry entries of a
+    ; still-existing installation
     StrCpy $5 ""
     ${If} ${FileExists} "$INSTDIR\bin\owncloud.online.exe"
       StrCpy $5 "x"
     ${ElseIf} ${FileExists} "$INSTDIR\owncloud.online.exe"
-      StrCpy $5 "x"
-    ${ElseIf} ${FileExists} "$INSTDIR\bin\owncloud.exe"
-      StrCpy $5 "x"
-    ${ElseIf} ${FileExists} "$INSTDIR\owncloud.exe"
       StrCpy $5 "x"
     ${EndIf}
     ${If} $5 != ""
@@ -192,34 +216,32 @@ Section "-remove"
       SetErrorLevel 2
       Abort "Deinstallation unvollstaendig / uninstallation incomplete."
     ${EndIf}
+  ${ElseIf} $8 == "1"
+    DetailPrint "$INSTDIR gehoert nicht zu owncloud.online (offizieller ownCloud-Client) - bleibt unangetastet, nur eigene Eintraege werden entfernt / belongs to the official ownCloud client - left untouched, removing own entries only."
   ${Else}
-    DetailPrint "Eingebetteter Uninstaller nicht gefunden - fahre mit Bereinigung fort / embedded uninstaller not found - continuing with cleanup."
+    DetailPrint "Keine owncloud.online-Installation in $INSTDIR gefunden - fahre mit Bereinigung der eigenen Eintraege fort / no owncloud.online installation found - continuing with cleanup of own entries."
   ${EndIf}
 
-  ; ---- 4. remove the shortcuts (branded + defensive upstream names) --------
+  ; ---- 4. remove the shortcuts (branded names only) ------------------------
+  ; "ownCloud.lnk" shortcuts belong to the official ownCloud client and are
+  ; never touched; the broken one the embedded installer creates is already
+  ; removed by the setup wrapper, and the embedded uninstaller (step 3)
+  ; removes its own Start menu folder.
   DetailPrint "Entferne Verknuepfungen / removing shortcuts ..."
   SetShellVarContext all
   Delete "$SMPROGRAMS\owncloud.online.lnk"
   Delete "$DESKTOP\owncloud.online.lnk"
-  Delete "$SMPROGRAMS\ownCloud.lnk"
-  Delete "$SMPROGRAMS\ownCloud\ownCloud.lnk"
-  RMDir "$SMPROGRAMS\ownCloud"
-  Delete "$DESKTOP\ownCloud.lnk"
   SetShellVarContext current
   Delete "$SMPROGRAMS\owncloud.online.lnk"
   Delete "$DESKTOP\owncloud.online.lnk"
-  Delete "$SMPROGRAMS\ownCloud.lnk"
-  Delete "$SMPROGRAMS\ownCloud\ownCloud.lnk"
-  RMDir "$SMPROGRAMS\ownCloud"
-  Delete "$DESKTOP\ownCloud.lnk"
 
   ; autostart entry written by the client at first run
-  ; (Utility::setLaunchOnStartup -> HKCU Run, value = app name; that key is
-  ; shared between registry views, one delete per name suffices; the legacy
-  ; upstream name is removed defensively too)
+  ; (Utility::setLaunchOnStartup -> HKCU Run, value = app name
+  ; "owncloud.online" since 7.4.0; that key is shared between registry
+  ; views, one delete suffices). The value "ownCloud" is the official
+  ; client's and stays.
   DetailPrint "Entferne Autostart-Eintrag / removing startup entry ..."
   DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "owncloud.online"
-  DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "ownCloud"
 
   ; ---- 5. best-effort: navigation-pane entries of the elevating user -------
   ; navigationpanehelper.cpp writes them from the 64-bit client, so
@@ -255,63 +277,87 @@ Section "-remove"
   ; A plain installer-mode exe cannot use the NSIS uninstaller self-copy
   ; trick: Delete /REBOOTOK on ourselves + RMDir /r /REBOOTOK schedule
   ; everything still locked (this exe, shell DLLs held by Explorer) for the
-  ; reboot this helper mandates anyway.
-  Delete /REBOOTOK "$INSTDIR\uninstall.exe"
+  ; next restart - which is then reported (finish page / exit code 3010).
+  ${If} $9 == "1"
+    Delete /REBOOTOK "$INSTDIR\uninstall.exe"
+  ${EndIf}
   Delete /REBOOTOK "$INSTDIR\${HELPER_EXE}" ; stale 7.10.2-generation helper
   ; this helper itself lives in its own directory next to the installation:
   ; schedule its own removal (a
   ; running exe cannot be deleted immediately, /REBOOTOK defers it to the
-  ; mandated reboot); the non-recursive RMDir only removes an EMPTY dir, so
+  ; next restart); the non-recursive RMDir only removes an EMPTY dir, so
   ; a manually copied helper elsewhere cannot take anything else with it
   Delete /REBOOTOK "$EXEPATH"
   ${If} "$EXEDIR" != "$INSTDIR"
     RMDir /REBOOTOK "$EXEDIR"
   ${EndIf}
   ; recursive removal only when .onInit verified this is an installation
-  ; directory - never on a stale/foreign path
+  ; of THIS client - never on a stale/foreign path
   ${If} $9 == "1"
     RMDir /r /REBOOTOK "$INSTDIR"
   ${Else}
-    DetailPrint "Verzeichnis sieht nicht wie eine Installation aus - wird nicht rekursiv geloescht / directory does not look like an installation - not removing recursively: $INSTDIR"
+    DetailPrint "Verzeichnis ist keine owncloud.online-Installation - wird nicht rekursiv geloescht / directory is not an owncloud.online installation - not removing recursively: $INSTDIR"
   ${EndIf}
 
   ; ---- 7. registry: both views, both hives (only after verified success) ---
   ; the embedded uninstaller already removed its SHCTX (32-bit view) keys;
-  ; cover the 64-bit view and per-user remnants defensively.
-  DeleteRegKey HKLM "${UNINSTKEY}"
-  DeleteRegKey HKLM "${REGKEY}"
-  DeleteRegKey /ifempty HKLM "Software\ownCloud GmbH"
-  DeleteRegKey HKCU "${UNINSTKEY}"
-  DeleteRegKey HKCU "${REGKEY}"
-  DeleteRegKey /ifempty HKCU "Software\ownCloud GmbH"
-  SetRegView 64
-  DeleteRegKey HKLM "${UNINSTKEY}"
-  DeleteRegKey HKLM "${REGKEY}"
-  DeleteRegKey /ifempty HKLM "Software\ownCloud GmbH"
-  DeleteRegKey HKCU "${UNINSTKEY}"
-  DeleteRegKey HKCU "${REGKEY}"
-  DeleteRegKey /ifempty HKCU "Software\ownCloud GmbH"
-  SetRegView 32
+  ; cover the 64-bit view and per-user remnants defensively. NOT when the
+  ; keys describe the official craft-built ownCloud client ($8): they are
+  ; its Apps & Features entry and install location, not ours.
+  ${If} $8 == "1"
+    DetailPrint "Registrierungseintraege beschreiben den offiziellen ownCloud-Client - bleiben erhalten / registry entries describe the official ownCloud client - kept."
+  ${Else}
+    DeleteRegKey HKLM "${UNINSTKEY}"
+    DeleteRegKey HKLM "${REGKEY}"
+    DeleteRegKey /ifempty HKLM "Software\ownCloud GmbH"
+    DeleteRegKey HKCU "${UNINSTKEY}"
+    DeleteRegKey HKCU "${REGKEY}"
+    DeleteRegKey /ifempty HKCU "Software\ownCloud GmbH"
+    SetRegView 64
+    DeleteRegKey HKLM "${UNINSTKEY}"
+    DeleteRegKey HKLM "${REGKEY}"
+    DeleteRegKey /ifempty HKLM "Software\ownCloud GmbH"
+    DeleteRegKey HKCU "${UNINSTKEY}"
+    DeleteRegKey HKCU "${REGKEY}"
+    DeleteRegKey /ifempty HKCU "Software\ownCloud GmbH"
+    SetRegView 32
+  ${EndIf}
 
-  ; The Explorer integration only unloads reliably after a restart.
-  SetRebootFlag true
+  ; Interactive: keep offering the Windows restart on the finish page (the
+  ; Explorer integration unloads reliably only after one). Silent: leave the
+  ; flag to NSIS - it is set only when a file had to be scheduled for the
+  ; next restart via /REBOOTOK (this helper itself always is, shell DLLs
+  ; held by Explorer usually are) - so the exit code below reports a pending
+  ; restart only when there really is one.
+  ${IfNot} ${Silent}
+    SetRebootFlag true
+  ${EndIf}
 SectionEnd
 
 Function .onInstSuccess
-  ; Silent mode has no finish page: reboot directly, unless the caller
-  ; (e.g. a baramundi job managing reboots itself) passed /norestart - then
-  ; exit with 3010 (the Windows "reboot required" convention) so deployment
-  ; tools schedule the restart themselves.
+  ; Silent mode has no finish page. The helper never restarts Windows on its
+  ; own: deployment tools (baramundi, Intune, SCCM) manage reboots themselves
+  ; and expect the msiexec convention - exit code 3010 = "removed, restart
+  ; pending", 0 = nothing pending.
+  ;   /S                -> no restart; 3010 if a restart is pending, else 0
+  ;   /S /norestart     -> same (kept for existing deployment jobs)
+  ;   /S /forcerestart  -> restarts Windows right away (optional)
   ; (Identical pattern to restart-wrapper.nsi.)
-  IfSilent 0 interactiveDone
-    ${GetParameters} $R0
-    ClearErrors
-    ${GetOptions} $R0 "/norestart" $R1
-    IfErrors 0 norestartGiven
-    DetailPrint "Starte Windows neu / rebooting ..."
+  ${IfNot} ${Silent}
+    Return
+  ${EndIf}
+  ${GetParameters} $R0
+  ClearErrors
+  ${GetOptions} $R0 "/forcerestart" $R1
+  ${IfNot} ${Errors}
+    DetailPrint "Starte Windows neu (/forcerestart) / restarting Windows ..."
     Reboot
-    Goto interactiveDone
-  norestartGiven:
+    ; only reached when the restart could not be initiated
     SetErrorLevel 3010
-  interactiveDone:
+    Return
+  ${EndIf}
+  ${If} ${RebootFlag}
+    DetailPrint "Neustart ausstehend, Exit-Code 3010 / restart pending, exit code 3010."
+    SetErrorLevel 3010
+  ${EndIf}
 FunctionEnd
