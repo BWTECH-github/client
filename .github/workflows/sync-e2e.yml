@@ -1,0 +1,177 @@
+name: Sync E2E
+
+# Sync-Ende-zu-Ende-Suite: owncloudcmd aus dem Linux-Artefakt eines CI-Laufs gegen einen
+# echten owncloud.online-Server, der hier im Runner aufgesetzt wird (Release-Tarball,
+# SQLite, php -S). Fälle und Prüfungen: test/e2e/sync/run-suite.sh.
+#
+#   gh workflow run sync-e2e.yml --ref <zweig> -f run_id=<CI-Lauf> [-f server_tag=v11.0.22]
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "ID des CI-Laufs (ownCloud CI), dessen Artefakt linux-gcc-x86_64 getestet wird"
+        required: true
+      server_tag:
+        description: "Release-Tag von BWTECH-github/owncloud.online für den Testserver"
+        required: false
+        default: "v11.0.22"
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  sync-e2e:
+    name: owncloudcmd gegen owncloud.online
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ inputs.run_id }}
+      SERVER_TAG: ${{ inputs.server_tag }}
+      SERVER_REPO: BWTECH-github/owncloud.online
+      OC_URL: http://127.0.0.1:8080
+      OC_USER: e2e
+    steps:
+      - name: Check out test suite
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          sparse-checkout: test/e2e
+          persist-credentials: false
+
+      - name: Check inputs
+        run: |
+          [[ "$RUN_ID" =~ ^[0-9]+$ ]] || { echo "::error::run_id muss eine Zahl sein"; exit 1; }
+          [[ "$SERVER_TAG" =~ ^v[0-9]+(\.[0-9]+)*$ ]] || { echo "::error::server_tag ungültig"; exit 1; }
+          mkdir -p "$RUNNER_TEMP/e2e"
+          echo "E2E_OUT=$RUNNER_TEMP/e2e" >> "$GITHUB_ENV"
+
+      - name: Set up PHP 8.4
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: "8.4"
+          extensions: intl, gd, zip, mbstring, sqlite3, pdo_sqlite, curl, xml, apcu
+          # Werte wie in der .user.ini des Kerns; php -S liest diese Datei nicht
+          ini-values: memory_limit=1G, post_max_size=513M, upload_max_filesize=513M, apc.enable_cli=1
+          coverage: none
+
+      - name: Install runtime libraries for owncloudcmd
+        run: |
+          # owncloudcmd hängt über libsync an Qt Gui/OpenGL; GL-Bibliotheken bündelt das AppImage nicht
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
+            libopengl0 libglx0 libgl1 libegl1 libxkbcommon0 libfontconfig1 libdbus-1-3 > /dev/null
+
+      - name: Fetch owncloudcmd from run ${{ inputs.run_id }}
+        run: |
+          set -euo pipefail
+          gh run view "$RUN_ID" -R "$GITHUB_REPOSITORY" \
+            --json databaseId,workflowName,headBranch,headSha,displayTitle,conclusion,createdAt,url > "$E2E_OUT/client-run.json"
+          jq -r '"\(.workflowName) #\(.databaseId): \(.headBranch) @ \(.headSha[0:9]) (\(.conclusion))"' "$E2E_OUT/client-run.json"
+          art="$RUNNER_TEMP/client-artifact"
+          gh run download "$RUN_ID" -R "$GITHUB_REPOSITORY" -n linux-gcc-x86_64 -D "$art"
+          img=$(find "$art" -maxdepth 1 -name '*.AppImage' | head -1)
+          [ -n "$img" ] || { echo "::error::kein AppImage im Artefakt linux-gcc-x86_64"; exit 1; }
+          if [ -f "$img.sha256" ]; then echo "$(cut -c1-64 "$img.sha256")  $img" | sha256sum -c -; fi
+          chmod +x "$img"
+          mkdir -p "$RUNNER_TEMP/client"
+          (cd "$RUNNER_TEMP/client" && "$img" --appimage-extract > /dev/null)
+          ocmd=$(find "$RUNNER_TEMP/client/squashfs-root" -type f -name owncloudcmd | head -1)
+          [ -n "$ocmd" ] || { echo "::error::owncloudcmd fehlt im AppImage"; exit 1; }
+          missing=$(ldd "$ocmd" | grep 'not found' | sort -u || true)
+          [ -z "$missing" ] || { echo "::error::owncloudcmd: Bibliotheken fehlen: $missing"; exit 1; }
+          "$ocmd" --help > "$E2E_OUT/owncloudcmd-help.txt"
+          head -3 "$E2E_OUT/owncloudcmd-help.txt"
+          echo "OCMD=$ocmd" >> "$GITHUB_ENV"
+
+      - name: Set up owncloud.online ${{ inputs.server_tag }}
+        run: |
+          set -euo pipefail
+          srv="$RUNNER_TEMP/server"
+          mkdir -p "$srv/dl" "$srv/www" "$srv/data"
+          gh release download "$SERVER_TAG" -R "$SERVER_REPO" -D "$srv/dl" -p 'owncloud-online-*.tar.gz' -p SHA256SUMS.txt
+          (cd "$srv/dl" && grep -E '  owncloud-online-[0-9.]+\.tar\.gz$' SHA256SUMS.txt | sha256sum -c -)
+          tar -xzf "$srv"/dl/owncloud-online-*.tar.gz -C "$srv/www"
+          root=$(dirname "$(find "$srv/www" -maxdepth 2 -type f -name occ | head -1)")
+          # Kennwörter nur für diesen Lauf, zufällig erzeugt
+          admin_pass="Adm-$(openssl rand -hex 16)-X"
+          OC_PASS="E2e-$(openssl rand -hex 16)-X"
+          echo "::add-mask::$admin_pass"
+          echo "::add-mask::$OC_PASS"
+          cd "$root"
+          php occ maintenance:install --no-interaction --database sqlite --database-name owncloud \
+            --admin-user admin --admin-pass "$admin_pass" --data-dir "$srv/data"
+          php occ config:system:set trusted_domains 0 --value=localhost
+          php occ config:system:set trusted_domains 1 --value=127.0.0.1
+          php occ config:system:set overwrite.cli.url --value="$OC_URL"
+          php occ config:system:set skeletondirectory --value=''
+          php occ config:system:set memcache.local --value='\OC\Memcache\APCu'
+          OC_PASS="$OC_PASS" php occ user:add --password-from-env --display-name "Sync E2E" "$OC_USER"
+          php occ config:system:get version
+          nohup php -S 127.0.0.1:8080 -t "$root" > "$srv/php-server.log" 2>&1 &
+          for _ in $(seq 1 30); do
+            curl -sf "$OC_URL/status.php" | grep -q '"installed":true' && break
+            sleep 1
+          done
+          curl -sf "$OC_URL/status.php"
+          echo
+          {
+            echo "OC_PASS=$OC_PASS"
+            echo "OC_SRV=$srv"
+          } >> "$GITHUB_ENV"
+
+      - name: Check server capabilities (bulk upload, NG chunking)
+        run: |
+          set -euo pipefail
+          curl -sf -u "$OC_USER:$OC_PASS" -H 'OCS-APIRequest: true' \
+            "$OC_URL/ocs/v1.php/cloud/capabilities?format=json" > "$E2E_OUT/capabilities.json"
+          jq '{version: .ocs.data.version.string, dav: .ocs.data.capabilities.dav,
+               bigfilechunking: .ocs.data.capabilities.files.bigfilechunking}' "$E2E_OUT/capabilities.json"
+          jq -e '.ocs.data.capabilities.dav | (.chunking == "1.0") and ((.bulkupload // "") != "")' \
+            "$E2E_OUT/capabilities.json" > /dev/null \
+            || { echo "::error::Server bewirbt NG-Chunking oder Bulk-Upload nicht"; exit 1; }
+
+      - name: Run sync suite
+        env:
+          E2E_RUN_TIMEOUT: "300"
+        run: bash test/e2e/sync/run-suite.sh
+
+      - name: Summary
+        if: always() && env.E2E_OUT != ''
+        run: |
+          {
+            echo "## Sync-E2E: owncloudcmd gegen owncloud.online $SERVER_TAG"
+            echo
+            if [ -f "$E2E_OUT/client-run.json" ]; then
+              jq -r '"Client: [\(.workflowName) #\(.databaseId)](\(.url)) – \(.headBranch) @ `\(.headSha[0:9])`"' "$E2E_OUT/client-run.json"
+            fi
+            if [ -f "$E2E_OUT/capabilities.json" ]; then
+              echo
+              jq -r '"Server: \(.ocs.data.version.string), dav: `\(.ocs.data.capabilities.dav | tojson)`"' "$E2E_OUT/capabilities.json"
+            fi
+            echo
+            cat "$E2E_OUT/results.md" 2> /dev/null || echo "_Keine Ergebnisse – die Suite lief nicht bis zum Ende._"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Collect logs
+        if: always() && env.E2E_OUT != ''
+        run: |
+          mkdir -p "$E2E_OUT/server"
+          cp "${OC_SRV:-/nonexistent}/php-server.log" "${OC_SRV:-/nonexistent}/data/owncloud.log" "$E2E_OUT/server/" 2> /dev/null || true
+          # Testdaten nicht hochladen, das Kennwort nicht in den Protokollen lassen
+          rm -rf "$E2E_OUT/work"
+          if [ -n "${OC_PASS:-}" ]; then
+            { grep -rlF -- "$OC_PASS" "$E2E_OUT" || true; } | xargs -r sed -i "s/$OC_PASS/[redacted]/g"
+          fi
+
+      - name: Upload results
+        if: always() && env.E2E_OUT != ''
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: sync-e2e-${{ inputs.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.E2E_OUT }}
+          if-no-files-found: warn
