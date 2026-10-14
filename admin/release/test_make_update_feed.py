@@ -1,0 +1,391 @@
+#!/usr/bin/env python3
+"""Selbsttest für make-update-feed.py.
+
+Liest die erzeugten Feeds so, wie der Desktop-Client sie liest
+(src/gui/updater/updateinfo.cpp, ocupdater.cpp, appimageupdater.cpp), und
+prüft den Versionsvergleich mit der Logik von QVersionNumber. Die Vertragstests
+lesen die Feldnamen und Kanalregeln direkt aus dem Client-Code, damit Generator
+und Client nicht unbemerkt auseinanderlaufen.
+
+Nur Standardbibliothek:
+
+    python3 admin/release/test_make_update_feed.py -v
+"""
+
+import importlib.util
+import io
+import re
+import tempfile
+import unittest
+from contextlib import redirect_stderr, redirect_stdout
+from pathlib import Path
+from xml.dom import minidom
+
+HERE = Path(__file__).resolve().parent
+REPO = HERE.parent.parent
+
+
+def load_generator():
+    spec = importlib.util.spec_from_file_location("make_update_feed", HERE / "make-update-feed.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+feed = load_generator()
+
+RELEASES = "https://github.com/BWTECH-github/client/releases"
+WEB = RELEASES + "/tag/v7.11.1"
+SETUP = RELEASES + "/download/v7.11.1/owncloud.online-client-7.11.1-win-x64-Setup.exe"
+ZSYNC = RELEASES + "/download/v7.11.1/owncloud.online-client-7.11.1-linux-x86_64.AppImage.zsync"
+RC_WEB = RELEASES + "/tag/v11.0.0-rc1"
+RC_SETUP = RELEASES + "/download/v11.0.0-rc1/owncloud.online-client-11.0.0-rc1-win-x64-Setup.exe"
+ALL_PLATFORMS = {"win-x64": SETUP, "linux-x86_64": None, "macos-arm64": None}
+
+
+# ---- Nachbau der Client-Logik ------------------------------------------------
+
+def dom_text(node):
+    """QDomElement::text(): aller Text und CDATA darunter, Kommentare nicht."""
+    parts = []
+    for child in node.childNodes:
+        if child.nodeType in (child.TEXT_NODE, child.CDATA_SECTION_NODE):
+            parts.append(child.data)
+        elif child.nodeType == child.ELEMENT_NODE:
+            parts.append(dom_text(child))
+    return "".join(parts)
+
+
+def parse_like_client(data):
+    """UpdateInfo::parseString/parseElement (updateinfo.cpp:54-106).
+
+    Der Client dekodiert die Antwort als UTF-8 (ocupdater.cpp:234), parst ohne
+    Namensräume, verlangt das Wurzelelement owncloudclient, übernimmt die vier
+    bekannten Kindelemente (ein späteres gewinnt) und übergeht alle anderen.
+    Gibt None zurück, wo der Client ok=false meldet.
+    """
+    text = data.decode("utf-8") if isinstance(data, bytes) else data
+    try:
+        root = minidom.parseString(text.encode("utf-8")).documentElement
+    except Exception:
+        return None
+    if root.tagName != "owncloudclient":
+        return None
+    info = {"version": "", "versionstring": "", "web": "", "downloadurl": ""}
+    for child in root.childNodes:
+        if child.nodeType == child.ELEMENT_NODE and child.tagName in info:
+            info[child.tagName] = dom_text(child)
+    return info
+
+
+def qversion(text):
+    """QVersionNumber::fromString: Zahlen durch Punkte getrennt, der Rest (Suffix) zählt nicht."""
+    segments = []
+    pos = 0
+    while True:
+        match = re.match(r"[0-9]+", text[pos:])
+        if not match or int(match.group()) > 2**31 - 1:
+            break
+        segments.append(int(match.group()))
+        pos += match.end()
+        if text[pos:pos + 1] != ".":
+            break
+        pos += 1
+    # Tupelvergleich == QVersionNumber::compare, auch "1.2" < "1.2.0"
+    return tuple(segments)
+
+
+def windows_updater(info, installed, skipped=""):
+    """WindowsUpdater::versionInfoArrived (ocupdater.cpp:329-370)."""
+    if not info["version"]:
+        return "up-to-date"
+    available = qversion(info["version"])
+    if available <= qversion(installed) or available <= qversion(skipped):
+        return "up-to-date"
+    # ohne downloadurl nur der Hinweis mit Link auf <web> (showNewVersionAvailableWidget)
+    return "download" if info["downloadurl"] else "show-web"
+
+
+def passive_notifier(info, installed):
+    """PassiveUpdateNotifier::versionInfoArrived (ocupdater.cpp:542-551): Linux ohne AppImage-Updater, macOS ohne Sparkle."""
+    if not info["version"] or qversion(installed) >= qversion(info["version"]):
+        return "up-to-date"
+    return "through-system"
+
+
+def update_succeeded(installed, target):
+    """OCUpdater::updateSucceeded (ocupdater.cpp:214-220), beim ersten Start nach dem Update."""
+    return qversion(installed) >= qversion(target)
+
+
+def client_download_file_name(url):
+    """WindowsUpdater: Zieldatei = letztes Pfadstück der Adresse (ocupdater.cpp:354)."""
+    return url[url.rfind("/") + 1:]
+
+
+def build(**overrides):
+    arguments = {"tag": "v7.11.1", "web": WEB, "platforms": dict(ALL_PLATFORMS)}
+    arguments.update(overrides)
+    return feed.build_feeds(**arguments)
+
+
+# ---- Tests ---------------------------------------------------------------------
+
+class ClientContract(unittest.TestCase):
+    """Annahmen des Generators gegen den Client-Code dieses Stands."""
+
+    def read_source(self, relative):
+        path = REPO / relative
+        if not path.is_file():
+            self.skipTest(relative + " fehlt (Generator außerhalb des Repositorys?)")
+        return path.read_text(encoding="utf-8")
+
+    def test_feed_elements_are_the_ones_the_client_parses(self):
+        source = self.read_source("src/gui/updater/updateinfo.cpp")
+        root = re.findall(r'tagName\(\)\s*!=\s*QLatin1String\("(\w+)"\)', source)
+        fields = re.findall(r'tagName\(\)\s*==\s*QLatin1String\("(\w+)"\)', source)
+        self.assertEqual(root, [feed.ROOT_ELEMENT])
+        self.assertEqual(sorted(fields), sorted(feed.FIELDS))
+
+    def test_channel_rule_is_the_one_of_update_channel(self):
+        source = self.read_source("src/gui/updater/updater.cpp")
+        body = source[source.index("QString updateChannel()"):]
+        body = body[:body.index("\n}\n")]
+        prefixes = re.findall(r'suffix\.startsWith\(QLatin1String\("(\w+)"\)\)', body)
+        self.assertEqual(sorted(prefixes), sorted(feed.BETA_SUFFIX_PREFIXES))
+        self.assertIn('QStringLiteral("beta")', body)
+        self.assertIn('QStringLiteral("stable")', body)
+
+    def test_package_names_match_publish_release(self):
+        publish = self.read_source(".github/workflows/publish-release.yml")
+        update = self.read_source(".github/workflows/update-feed.yml")
+        for package in ("win-x64-Setup.exe", "linux-x86_64.AppImage", "macos-arm64.dmg"):
+            name = "owncloud.online-client-${VER}-" + package
+            self.assertIn(name, publish)
+            self.assertIn(name, update)
+
+
+class FeedFiles(unittest.TestCase):
+
+    def test_stable_release_feeds_both_channels_on_every_platform(self):
+        names = set(build())
+        expected = {
+            "owncloud.online-update-%s-%s.xml" % (platform, channel)
+            for platform in ("win-x64", "linux-x86_64", "macos-arm64")
+            for channel in ("stable", "beta")
+        }
+        self.assertEqual(names, expected)
+
+    def test_prerelease_feeds_only_the_beta_channel(self):
+        feeds = build(tag="v11.0.0-rc1", web=RC_WEB, platforms={"win-x64": RC_SETUP})
+        self.assertEqual(list(feeds), ["owncloud.online-update-win-x64-beta.xml"])
+
+    def test_windows_feed_is_exactly_the_expected_document(self):
+        expected = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            "<owncloudclient>\n"
+            "  <version>7.11.1</version>\n"
+            "  <versionstring>owncloud.online 7.11.1</versionstring>\n"
+            "  <web>" + WEB + "</web>\n"
+            "  <downloadurl>" + SETUP + "</downloadurl>\n"
+            "</owncloudclient>\n"
+        )
+        self.assertEqual(build()["owncloud.online-update-win-x64-stable.xml"], expected)
+
+    def test_client_reads_every_field(self):
+        info = parse_like_client(build()["owncloud.online-update-win-x64-stable.xml"])
+        self.assertEqual(info, {
+            "version": "7.11.1",
+            "versionstring": "owncloud.online 7.11.1",
+            "web": WEB,
+            "downloadurl": SETUP,
+        })
+
+    def test_platforms_without_download_only_link_the_web_page(self):
+        feeds = build()
+        for name in ("owncloud.online-update-macos-arm64-stable.xml", "owncloud.online-update-linux-x86_64-stable.xml"):
+            self.assertNotIn("<downloadurl>", feeds[name])
+            self.assertEqual(parse_like_client(feeds[name])["web"], WEB)
+
+    def test_linux_download_is_the_zsync_file_for_the_appimage_updater(self):
+        feeds = build(platforms={"linux-x86_64": ZSYNC})
+        info = parse_like_client(feeds["owncloud.online-update-linux-x86_64-stable.xml"])
+        self.assertEqual(info["downloadurl"], ZSYNC)
+
+    def test_xml_special_characters_survive(self):
+        web = "https://owncloud.online/download?os=win&channel=stable"
+        info = parse_like_client(build(web=web)["owncloud.online-update-win-x64-stable.xml"])
+        self.assertEqual(info["web"], web)
+
+    def test_same_input_gives_identical_files(self):
+        feeds = build()
+        self.assertTrue(feeds)
+        self.assertEqual(feeds, build())
+
+    def test_downloaded_setup_gets_a_name_unique_to_the_version(self):
+        info = parse_like_client(build()["owncloud.online-update-win-x64-stable.xml"])
+        self.assertEqual(client_download_file_name(info["downloadurl"]),
+                         "owncloud.online-client-7.11.1-win-x64-Setup.exe")
+
+    def test_explicit_version_with_build_number(self):
+        info = parse_like_client(build(version="7.11.1.4711")["owncloud.online-update-win-x64-stable.xml"])
+        self.assertEqual(info["version"], "7.11.1.4711")
+
+
+class ClientVersionCheck(unittest.TestCase):
+    """Was der Client mit dem Feed anfängt (installiert = Version::versionWithBuildNumber(), immer vierstellig)."""
+
+    def windows_info(self, **overrides):
+        return parse_like_client(build(**overrides)["owncloud.online-update-win-x64-stable.xml"])
+
+    def test_qversionnumber_semantics(self):
+        self.assertLess(qversion("1.2"), qversion("1.2.0"))  # Beispiel aus der Qt-Doku
+        self.assertEqual(qversion("7.11.1-rc1"), (7, 11, 1))
+        self.assertEqual(qversion(""), ())
+
+    def test_older_client_downloads_the_setup(self):
+        self.assertEqual(windows_updater(self.windows_info(), installed="7.11.0.0"), "download")
+
+    def test_same_version_counts_as_up_to_date(self):
+        self.assertEqual(windows_updater(self.windows_info(), installed="7.11.1.0"), "up-to-date")
+        self.assertEqual(windows_updater(self.windows_info(), installed="7.11.1.4711"), "up-to-date")
+
+    def test_skipped_version_is_not_offered_again(self):
+        self.assertEqual(windows_updater(self.windows_info(), installed="7.11.0.0", skipped="7.11.1"), "up-to-date")
+
+    def test_newer_client_never_downgrades(self):
+        self.assertEqual(windows_updater(self.windows_info(), installed="11.0.0.0"), "up-to-date")
+
+    def test_jump_to_the_11_line_is_offered(self):
+        setup = RELEASES + "/download/v11.0.0/owncloud.online-client-11.0.0-win-x64-Setup.exe"
+        info = self.windows_info(tag="v11.0.0", web=RELEASES + "/tag/v11.0.0", platforms={"win-x64": setup})
+        self.assertEqual(windows_updater(info, installed="7.11.1.0"), "download")
+
+    def test_successful_update_is_recognised_after_restart(self):
+        self.assertTrue(update_succeeded(installed="7.11.1.0", target=self.windows_info()["version"]))
+
+    def test_build_number_above_the_real_build_reports_a_failed_update(self):
+        # deshalb --version nur mit der Build-Nummer, die der Bau wirklich trägt
+        self.assertFalse(update_succeeded(installed="7.11.1.0", target="7.11.1.5"))
+
+    def test_platforms_without_installer_only_notify(self):
+        info = parse_like_client(build()["owncloud.online-update-macos-arm64-stable.xml"])
+        self.assertEqual(passive_notifier(info, installed="7.11.0.0"), "through-system")
+        self.assertEqual(passive_notifier(info, installed="7.11.1.0"), "up-to-date")
+
+    def test_release_candidate_sees_the_final_release_only_with_build_numbers(self):
+        # Suffix zählt nicht, die Build-Nummer ist heute immer 0: 11.0.0-rc1 == 11.0.0.0
+        final = self.windows_info(tag="v11.0.0", web=RELEASES + "/tag/v11.0.0", platforms={
+            "win-x64": RELEASES + "/download/v11.0.0/owncloud.online-client-11.0.0-win-x64-Setup.exe"})
+        self.assertEqual(windows_updater(final, installed="11.0.0.0"), "up-to-date")
+        with_build = dict(final, version="11.0.0.130")
+        self.assertEqual(windows_updater(with_build, installed="11.0.0.120"), "download")
+
+
+class InputValidation(unittest.TestCase):
+
+    def assertRejected(self, pattern, **overrides):
+        with self.assertRaisesRegex(feed.FeedError, pattern):
+            build(**overrides)
+
+    def test_plain_http_is_rejected(self):
+        self.assertRejected("https", web="http://github.com/BWTECH-github/client/releases/tag/v7.11.1")
+        self.assertRejected("https", platforms={"win-x64": SETUP.replace("https:", "http:")})
+
+    def test_query_or_fragment_in_download_is_rejected(self):
+        self.assertRejected("Query|Fragment", platforms={"win-x64": SETUP + "?x=1"})
+        self.assertRejected("Query|Fragment", platforms={"win-x64": SETUP + "#x"})
+
+    def test_download_name_must_carry_the_version(self):
+        self.assertRejected("Version", platforms={"win-x64": RELEASES + "/download/v7.11.1/owncloud.online-Setup.exe"})
+        self.assertRejected("Version", platforms={"win-x64": SETUP.replace("7.11.1-win", "7.11.10-win")})
+
+    def test_unknown_platform_is_rejected(self):
+        self.assertRejected("Plattform", platforms={"win-arm64": None})
+
+    def test_platform_specific_download_types(self):
+        self.assertRejected("macos-arm64", platforms={
+            "macos-arm64": RELEASES + "/download/v7.11.1/owncloud.online-client-7.11.1-macos-arm64.dmg"})
+        self.assertRejected(r"\.exe", platforms={
+            "win-x64": RELEASES + "/download/v7.11.1/owncloud.online-client-7.11.1-win-x64.7z"})
+        self.assertRejected(r"\.zsync", platforms={
+            "linux-x86_64": RELEASES + "/download/v7.11.1/owncloud.online-client-7.11.1-linux-x86_64.AppImage"})
+
+    def test_version_must_match_the_tag(self):
+        self.assertRejected("Tag", version="7.11.2")
+        self.assertRejected("Version", version="7.11.1.4.2")
+        self.assertRejected("Version", version="7.11")
+
+    def test_stable_channel_needs_a_tag_without_suffix(self):
+        self.assertRejected("stable", tag="v11.0.0-rc1", web=RC_WEB, platforms={"win-x64": RC_SETUP}, channels=["stable"])
+
+    def test_unknown_suffix_needs_an_explicit_channel(self):
+        setup = RELEASES + "/download/v7.2.0-perf-test/owncloud.online-client-7.2.0-perf-test-win-x64-Setup.exe"
+        arguments = dict(tag="v7.2.0-perf-test", web=RELEASES + "/tag/v7.2.0-perf-test", platforms={"win-x64": setup})
+        self.assertRejected("Kanal", **arguments)
+        self.assertEqual(list(build(channels=["beta"], **arguments)), ["owncloud.online-update-win-x64-beta.xml"])
+
+    def test_at_least_one_platform_is_required(self):
+        self.assertRejected("Plattform", platforms={})
+
+    def test_characters_that_break_out_of_the_client_html_are_rejected(self):
+        self.assertRejected("Zeichen", web=WEB + "'onmouseover")
+        self.assertRejected("Zeichen", version_string="owncloud.online <b>7.11.1</b>")
+
+    def test_malformed_tag_is_rejected(self):
+        self.assertRejected("Tag", tag="7.11")
+        self.assertRejected("Tag", tag="v7.11.1 ")
+
+    def test_segments_beyond_qversionnumber_range_are_rejected(self):
+        self.assertRejected("groß", version="7.11.1.4294967296")
+
+
+class CommandLine(unittest.TestCase):
+
+    def run_main(self, *arguments):
+        stdout, stderr = io.StringIO(), io.StringIO()
+        with redirect_stdout(stdout), redirect_stderr(stderr):
+            code = feed.main(list(arguments))
+        return code, stdout.getvalue(), stderr.getvalue()
+
+    def test_writes_one_lf_file_per_platform_and_channel(self):
+        with tempfile.TemporaryDirectory() as out:
+            code, stdout, _ = self.run_main(
+                "--tag", "v7.11.1", "--web", WEB, "--out", out,
+                "--platform", "win-x64=" + SETUP, "--platform", "linux-x86_64", "--platform", "macos-arm64")
+            files = sorted(Path(out).iterdir())
+            self.assertEqual(code, 0)
+            self.assertEqual(len(files), 6)
+            for path in files:
+                data = path.read_bytes()
+                self.assertNotIn(b"\r\n", data)
+                self.assertIsNotNone(parse_like_client(data), path.name)
+                self.assertIn(path.name, stdout)
+
+    def test_invalid_input_exits_with_code_2_and_writes_nothing(self):
+        with tempfile.TemporaryDirectory() as out:
+            code, _, stderr = self.run_main(
+                "--tag", "v7.11.1", "--web", WEB.replace("https:", "http:"), "--out", out,
+                "--platform", "win-x64=" + SETUP)
+            self.assertEqual(code, 2)
+            self.assertIn("Fehler", stderr)
+            self.assertEqual(list(Path(out).iterdir()), [])
+
+    def test_platform_given_twice_is_rejected(self):
+        with tempfile.TemporaryDirectory() as out:
+            code, _, stderr = self.run_main(
+                "--tag", "v7.11.1", "--web", WEB, "--out", out,
+                "--platform", "win-x64=" + SETUP, "--platform", "win-x64")
+            self.assertEqual(code, 2)
+            self.assertIn("win-x64", stderr)
+
+    def test_empty_download_after_equals_sign_is_rejected(self):
+        with tempfile.TemporaryDirectory() as out:
+            code, _, stderr = self.run_main(
+                "--tag", "v7.11.1", "--web", WEB, "--out", out, "--platform", "linux-x86_64=")
+            self.assertEqual(code, 2)
+            self.assertIn("linux-x86_64", stderr)
+
+
+if __name__ == "__main__":
+    unittest.main()
