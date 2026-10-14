@@ -16,13 +16,13 @@
 
 #include "accessmanager.h"
 #include "advancedsettingspagecontroller.h"
+#include "application.h"
 #include "authsuccesspagecontroller.h"
 #include "common/utility.h"
+#include "mainwindow/colormanager.h"
 #include "newaccountmodel.h"
 #include "newaccountwizard.h"
 #include "oauthpagecontroller.h"
-#include "owncloudgui.h"
-#include "resources/template.h"
 #include "theme.h"
 #include "urlpagecontroller.h"
 
@@ -30,8 +30,9 @@
 
 namespace OCC {
 
-NewAccountWizardController::NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, QObject *parent)
+NewAccountWizardController::NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, ColorManager *colorManager, QObject *parent)
     : QObject{parent}
+    , _colorManager(colorManager)
     , _model(model)
     , _wizard(view)
 {
@@ -74,22 +75,27 @@ void NewAccountWizardController::buildPages()
 
     QWizardPage *urlPage = new QWizardPage(_wizard);
     UrlPageController *urlController = new UrlPageController(urlPage, _accessManager, this);
+    connect(_colorManager, &ColorManager::appColorsChanged, urlController, &UrlPageController::updateColorsAndIcons);
     connect(urlController, &UrlPageController::success, this, &NewAccountWizardController::onUrlValidationCompleted);
     _urlPageIndex = _wizard->addPage(urlPage, urlController);
 
     QWizardPage *oauthPage = new QWizardPage(_wizard);
     _oauthController = new OAuthPageController(oauthPage, _accessManager, this);
+    // needs to listen for appColorsChanged as the copy icon is colored relative to current palette
+    connect(_colorManager, &ColorManager::appColorsChanged, _oauthController, &OAuthPageController::updateIcons);
     connect(_oauthController, &OAuthPageController::success, this, &NewAccountWizardController::onOAuthValidationCompleted);
     connect(_oauthController, &OAuthPageController::failure, this, &NewAccountWizardController::onOauthValidationFailed);
     _oauthPageIndex = _wizard->addPage(oauthPage, _oauthController);
 
     QWizardPage *authSuccessPage = new QWizardPage(_wizard);
     AuthSuccessPageController *authSuccessController = new AuthSuccessPageController(authSuccessPage, this);
+    connect(_colorManager, &ColorManager::appColorsChanged, authSuccessController, &AuthSuccessPageController::updateIcons);
     _authSuccessPageIndex = _wizard->addPage(authSuccessPage, authSuccessController);
     authSuccessPage->setFinalPage(true);
 
     QWizardPage *advancedSettingsPage = new QWizardPage(_wizard);
     AdvancedSettingsPageController *advancedSettingsController = new AdvancedSettingsPageController(advancedSettingsPage, this);
+    connect(_colorManager, &ColorManager::appColorsChanged, advancedSettingsController, &AdvancedSettingsPageController::updateColors);
     connect(advancedSettingsController, &AdvancedSettingsPageController::success, this, &NewAccountWizardController::onAdvancedSettingsCompleted);
     _advancedSettingsPageIndex = _wizard->addPage(advancedSettingsPage, advancedSettingsController);
     advancedSettingsPage->setFinalPage(true);
@@ -177,7 +183,7 @@ void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPage
     _model->setWebfingerUserInfoUrl(results.webfingerUserUrl);
 
     _wizard->setCurrentId(_authSuccessPageIndex);
-    ownCloudGui::raise();
+    ocApp()->ensureVisible();
     // on mac, for unknown reasons, the main window is active after raise
     _wizard->activateWindow();
 }
@@ -187,7 +193,7 @@ void NewAccountWizardController::onOauthValidationFailed(const OCC::OAuthPageRes
     if (!_wizard)
         return;
     Q_UNUSED(results);
-    ownCloudGui::raise();
+    ocApp()->ensureVisible();
     _wizard->activateWindow();
 }
 

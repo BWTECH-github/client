@@ -19,13 +19,18 @@
 
 using namespace OCC;
 
-SyncOptions::SyncOptions(QSharedPointer<Vfs> vfs)
+SyncOptions::SyncOptions(Vfs *vfs)
     : _vfs(vfs)
 {
 }
 
 SyncOptions::~SyncOptions()
 {
+}
+
+bool SyncOptions::isValid() const
+{
+    return !_vfs.isNull();
 }
 
 void SyncOptions::fillFromEnvironmentVariables()
@@ -57,22 +62,4 @@ void SyncOptions::verifyChunkSizes()
 {
     _minChunkSize = qMin(_minChunkSize, _initialChunkSize);
     _maxChunkSize = qMax(_maxChunkSize, _initialChunkSize);
-}
-
-QRegularExpression SyncOptions::fileRegex() const
-{
-    return _fileRegex;
-}
-
-void SyncOptions::setFilePattern(const QString &pattern)
-{
-    // full match or a path ending with this pattern
-    setPathPattern(QStringLiteral("(^|/|\\\\)") + pattern + QLatin1Char('$'));
-}
-
-void SyncOptions::setPathPattern(const QString &pattern)
-{
-    _fileRegex.setPatternOptions(
-        Utility::fsCasePreservingButCaseInsensitive() ? QRegularExpression::CaseInsensitiveOption : QRegularExpression::NoPatternOption);
-    _fileRegex.setPattern(pattern);
 }

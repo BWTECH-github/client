@@ -22,9 +22,6 @@
 #include "common/checksums.h"
 #include "common/syncjournaldb.h"
 
-#include "libsync/theme.h"
-
-
 #include <QFile>
 #include <QFileInfo>
 #include <QThreadPool>
@@ -116,11 +113,7 @@ void ProcessDirectoryJob::process()
         // local stat function.
         // Recall file shall not be ignored (#4420)
         const bool isHidden = [&] {
-            if (Q_UNLIKELY(Theme::instance()->enableCernBranding())) {
-                return e.localEntry.isHidden || (f.first[0] == QLatin1Char('.') && f.first != QLatin1String(".sys.admin#recall#"));
-            } else {
                 return e.localEntry.isHidden || f.first[0] == QLatin1Char('.');
-            }
         }();
         if (handleExcluded(path._target,
                 e.localEntry.name,
@@ -343,6 +336,11 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
     const SyncFileItemPtr &item, PathTuple path, const LocalInfo &localEntry,
     const RemoteInfo &serverEntry, const SyncJournalFileRecord &dbEntry)
 {
+    if (!_discoveryData->_syncOptions.isValid()) {
+        emit _discoveryData->fatalError(tr("the VFS instance is missing. Unable to continue."));
+        return;
+    }
+
     item->_checksumHeader = serverEntry.checksumHeader;
     item->_fileId = serverEntry.fileId;
     item->_remotePerm = serverEntry.remotePerm;
@@ -387,7 +385,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
             item->_size = serverEntry.size;
             if (dbEntry.isDirectory()) {
                 // TODO: move the decision to the backend
-                if (_discoveryData->_syncOptions._vfs->mode() != Vfs::Off && _pinState != PinState::AlwaysLocal) {
+                if (_discoveryData->_syncOptions.vfs()->mode() != Vfs::Off && _pinState != PinState::AlwaysLocal) {
                     item->_type = ItemTypeVirtualFile;
                 }
             }
@@ -438,7 +436,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
         // A new directory on the server may need explicit user approval before it
         // is synced: larger than the configured limit, or on an external storage.
         // Needs an async size PROPFIND, so the entry is finalized from the callback.
-        if (serverEntry.isDirectory && opts._vfs->mode() == Vfs::Off
+        if (serverEntry.isDirectory && opts.vfs()->mode() == Vfs::Off
             && (opts._newBigFolderSizeLimit >= 0 || opts._confirmExternalStorage)) {
             _pendingAsyncJobs++;
             _discoveryData->checkSelectiveSyncNewFolder(path._server, serverEntry.remotePerm, [=](bool needsConfirmation) mutable {
@@ -455,9 +453,7 @@ void ProcessDirectoryJob::processFileAnalyzeRemoteInfo(
 
         // Turn new remote files into virtual files if the option is enabled.
         // TODO: move the decision to the backend
-        if (!localEntry.isValid()
-            && item->_type == ItemTypeFile
-            && opts._vfs->mode() != Vfs::Off
+        if (!localEntry.isValid() && item->_type == ItemTypeFile && opts.vfs()->mode() != Vfs::Off
             && _pinState != PinState::AlwaysLocal) {
             item->_type = ItemTypeVirtualFile;
         }
@@ -682,6 +678,10 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
     const SyncFileItemPtr &item, const PathTuple &path, const LocalInfo &localEntry,
     const RemoteInfo &serverEntry, const SyncJournalFileRecord &dbEntry, QueryMode recurseQueryServer)
 {
+    if (!_discoveryData->_syncOptions.isValid()) {
+        emit _discoveryData->fatalError(tr("the VFS instance is missing. Unable to continue."));
+        return;
+    }
     const bool noServerEntry = (_queryServer != ParentNotChanged && !serverEntry.isValid()) || (_queryServer == ParentNotChanged && !dbEntry.isValid());
 
     if (noServerEntry) {
@@ -773,9 +773,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
                 item->_direction = SyncFileItem::Down;
                 item->setInstruction(CSYNC_INSTRUCTION_SYNC);
                 item->_type = ItemTypeVirtualFileDehydration;
-            } else if (!serverModified
-                && (dbEntry._inode != localEntry.inode
-                    || _discoveryData->_syncOptions._vfs->needsMetadataUpdate(*item))) {
+            } else if (!serverModified && (dbEntry._inode != localEntry.inode || _discoveryData->_syncOptions.vfs()->needsMetadataUpdate(*item))) {
                 item->setInstruction(CSYNC_INSTRUCTION_UPDATE_METADATA);
                 item->_direction = SyncFileItem::Down;
             }
@@ -848,7 +846,7 @@ void ProcessDirectoryJob::processFileAnalyzeLocalInfo(
 
     auto postProcessLocalNew = [item, localEntry, this](const PathTuple &path) {
         if (localEntry.isVirtualFile) {
-            const bool isPlaceHolder = _discoveryData->_syncOptions._vfs->isDehydratedPlaceholder(_discoveryData->_localDir + path._local);
+            const bool isPlaceHolder = _discoveryData->_syncOptions.vfs()->isDehydratedPlaceholder(_discoveryData->_localDir + path._local);
             if (isPlaceHolder) {
                 qCWarning(lcDisco) << "Wiping virtual file without db entry for" << path._local;
                 item->setInstruction(CSYNC_INSTRUCTION_REMOVE);
@@ -1326,13 +1324,13 @@ int ProcessDirectoryJob::processSubJobs(int nbJobs)
 
 void ProcessDirectoryJob::dbError()
 {
-    Q_EMIT _discoveryData->fatalError(tr("Error while reading the database"));
+    Q_EMIT _discoveryData->fatalError(tr("Error while reading the database."));
 }
 
 DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
 {
     if (_discoveryData->_account == nullptr) {
-        Q_EMIT _discoveryData->fatalError(tr("account was deleted. Unable to continue"));
+        Q_EMIT _discoveryData->fatalError(tr("account was deleted. Unable to continue."));
         return nullptr;
     }
 
@@ -1390,8 +1388,13 @@ DiscoverySingleDirectoryJob *ProcessDirectoryJob::startAsyncServerQuery()
 
 void ProcessDirectoryJob::startAsyncLocalQuery()
 {
+    if (!_discoveryData->_syncOptions.isValid()) {
+        emit _discoveryData->fatalError(tr("the VFS instance is missing. Unable to continue."));
+        return;
+    }
+
     QString localPath = _discoveryData->_localDir + _currentFolder._local;
-    auto localJob = new DiscoverySingleLocalDirectoryJob(localPath, _discoveryData->_syncOptions._vfs.data());
+    auto localJob = new DiscoverySingleLocalDirectoryJob(localPath, _discoveryData->_syncOptions.vfs());
 
     _discoveryData->_currentlyActiveJobs++;
     _pendingAsyncJobs++;
@@ -1442,9 +1445,14 @@ void ProcessDirectoryJob::startAsyncLocalQuery()
 
 void ProcessDirectoryJob::computePinState(PinState parentState)
 {
+    if (!_discoveryData->_syncOptions.isValid()) {
+        emit _discoveryData->fatalError(tr("the VFS instance is missing. Unable to continue."));
+        return;
+    }
+
     _pinState = parentState;
     if (_queryLocal != ParentDontExist) {
-        if (auto state = _discoveryData->_syncOptions._vfs->pinState(_currentFolder._local)) // ouch! pin local or original?
+        if (auto state = _discoveryData->_syncOptions.vfs()->pinState(_currentFolder._local)) // ouch! pin local or original?
             _pinState = *state;
     }
 }

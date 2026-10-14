@@ -20,7 +20,7 @@
 #include "libsync/networkjobs.h"
 #include "libsync/theme.h"
 
-#include "resources/resources.h"
+#include "resources/iconresources.h"
 
 #include <QHeaderView>
 #include <QLabel>
@@ -53,6 +53,14 @@ public:
     SelectiveSyncTreeViewItem(QTreeWidgetItem *parent, int type = QTreeWidgetItem::Type)
         : QTreeWidgetItem(parent, type)
     {
+    }
+
+    QVariant data(int column, int role) const override
+    {
+        if (column == 0 && role == Qt::DecorationRole)
+            return IconResources::getCoreIcon("folder-sync");
+
+        return QTreeWidgetItem::data(column, role);
     }
 
 private:
@@ -203,7 +211,6 @@ void SelectiveSyncWidget::recursiveInsert(QTreeWidgetItem *parent, QStringList p
                     item->setCheckState(0, Qt::Unchecked);
                 }
             }
-            item->setIcon(0, Resources::getCoreIcon(QStringLiteral("folder-sync")));
             item->setText(0, pathTrail.first());
             if (!pinStateMode() && size >= 0) {
                 item->setText(1, Utility::octetsToString(size));
@@ -281,7 +288,7 @@ void SelectiveSyncWidget::slotUpdateDirectories(QStringList list)
     if (!root) {
         root = new SelectiveSyncTreeViewItem(_folderTree);
         root->setText(0, _rootName);
-        root->setIcon(0, Theme::instance()->applicationIcon());
+        root->setIcon(0, IconResources::getBrandingIcon(Theme::instance()->applicationIconName()));
         root->setData(0, Qt::UserRole, QString());
         if (!pinStateMode()) {
             root->setCheckState(0, Qt::Checked);

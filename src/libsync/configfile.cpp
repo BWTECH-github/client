@@ -83,7 +83,6 @@ const QString pauseSyncWhenMeteredC()
 {
     return QStringLiteral("pauseWhenMetered");
 }
-const QString moveToTrashC() { return QStringLiteral("moveToTrash"); }
 const QString showMainDialogOnStartupC() { return QStringLiteral("showMainDialogOnStartup"); }
 // key names match the classic 2.x client so existing configs keep working
 const QString newBigFolderSizeLimitC() { return QStringLiteral("newBigFolderSizeLimit"); }
@@ -506,17 +505,6 @@ bool ConfigFile::pauseSyncWhenMetered() const
 void ConfigFile::setPauseSyncWhenMetered(bool isChecked)
 {
     setValue(pauseSyncWhenMeteredC(), isChecked);
-}
-
-bool ConfigFile::moveToTrash() const
-{
-    bool defaultValue = Theme::instance()->moveToTrashDefaultValue();
-    return getValue(moveToTrashC(), QString(), defaultValue).toBool();
-}
-
-void ConfigFile::setMoveToTrash(bool isChecked)
-{
-    setValue(moveToTrashC(), isChecked);
 }
 
 bool ConfigFile::showMainDialogOnStartup() const

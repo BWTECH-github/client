@@ -18,7 +18,6 @@
 #include "libsync/networkjobs.h"
 #include "libsync/networkjobs/resources.h"
 
-#include "resources/resources.h"
 
 using namespace OCC;
 using namespace GraphApi;
@@ -47,8 +46,8 @@ Space::Space(SpacesManager *spacesManager, const OpenAPI::OAIDrive &drive, const
     // "new" space is immediately followed by setDrive.
     if (_spaceManager->account())
         _accountId = _spaceManager->account()->uuid();
-    setDrive(drive);
     connect(_image, &SpaceImage::imageChanged, this, &Space::imageChanged);
+    setDrive(drive);
 }
 
 QUuid Space::accountId() const

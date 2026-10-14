@@ -13,6 +13,7 @@
  */
 
 #include "updatedownloadedwidget.h"
+#include "iconresources.h"
 #include "theme.h"
 #include "ui_updatedownloadedwidget.h"
 
@@ -22,18 +23,15 @@
 namespace OCC {
 
 UpdateDownloadedWidget::UpdateDownloadedWidget(QWidget *parent, const QString &statusMessage)
-    : QWidget(parent)
+    : QDialog(parent)
     , _ui(new ::Ui::UpdateDownloadedWidget)
 {
     _ui->setupUi(this);
 
-    _ui->iconLabel->setPixmap(Theme::instance()->applicationIcon().pixmap(128, 128));
+    _ui->iconLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->applicationIconName()).pixmap(128, 128));
     _ui->iconLabel->setText(QString());
 
     _ui->descriptionLabel->setText(statusMessage);
-
-    connect(_ui->buttonBox, &QDialogButtonBox::rejected, this, &UpdateDownloadedWidget::reject);
-    connect(_ui->buttonBox, &QDialogButtonBox::accepted, this, &UpdateDownloadedWidget::accept);
 
     const auto noButton = _ui->buttonBox->button(QDialogButtonBox::No);
     const auto yesButton = _ui->buttonBox->button(QDialogButtonBox::Yes);
@@ -49,14 +47,4 @@ UpdateDownloadedWidget::~UpdateDownloadedWidget()
     delete _ui;
 }
 
-void UpdateDownloadedWidget::accept()
-{
-    Q_EMIT accepted();
-    Q_EMIT finished();
-}
-
-void UpdateDownloadedWidget::reject()
-{
-    Q_EMIT finished();
-}
 } // OCC namespace

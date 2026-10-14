@@ -86,7 +86,7 @@ void DiscoveryPhase::checkSelectiveSyncNewFolder(const QString &path, RemotePerm
     if (findPathInList(_selectiveSyncWhiteList, path)) {
         return callback(false);
     }
-    if (_syncOptions._confirmExternalStorage && _syncOptions._vfs->mode() == Vfs::Off
+    if (_syncOptions._confirmExternalStorage && _syncOptions.vfs()->mode() == Vfs::Off
         && remotePerm.hasPermission(RemotePermissions::IsMounted)) {
         // external storage mount point: always ask, regardless of size
         Q_EMIT newBigFolder(path, true);

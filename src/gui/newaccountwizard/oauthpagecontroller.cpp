@@ -18,6 +18,7 @@
 #include "account.h"
 #include "accountmanager.h"
 #include "config/appconfig.h"
+#include "iconresources.h"
 #include "networkadapters/fetchcapabilitiesadapter.h"
 #include "networkadapters/userinfoadapter.h"
 #include "networkadapters/webfingerlookupadapter.h"
@@ -26,6 +27,7 @@
 
 #include <QBuffer>
 #include <QClipboard>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QImageReader>
 #include <QLabel>
@@ -55,11 +57,10 @@ void OAuthPageController::buildPage()
 
     QString appName = Theme::instance()->appNameGUI();
 
-    QLabel *logoLabel = new QLabel({}, _page);
-    logoLabel->setPixmap(Theme::instance()->wizardHeaderLogo().pixmap(200, 100));
-    logoLabel->setAlignment(Qt::AlignCenter);
-    logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
+    _logoLabel = new QLabel(_page);
+    _logoLabel->setAlignment(Qt::AlignCenter);
+    _logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
 
     QLabel *instructionLabel =
         new QLabel(tr("Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address."), _page);
@@ -77,7 +78,7 @@ void OAuthPageController::buildPage()
     _urlField->setAccessibleName(tr("Sign in URL")); // Prevent screen readers from reading the full URL!!!
     _urlField->setAccessibleDescription(tr("To copy the sign in URL to the clipboard, use the copy button"));
 
-    _copyButton = new QPushButton(copyIcon(), QString(), _page);
+    _copyButton = new QPushButton(_page);
     _copyButton->setObjectName("CopyUrlToClipboardButton");
     _copyButton->setFlat(true);
     _copyButton->setContentsMargins(0, 0, 0, 0);
@@ -97,9 +98,9 @@ void OAuthPageController::buildPage()
     _errorField->setTextInteractionFlags(Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
 
     QLabel *footerLogoLabel = nullptr;
-    if (!Theme::instance()->wizardFooterLogo().isNull()) {
+    if (!Theme::instance()->wizardFooterLogoName().isEmpty()) {
         footerLogoLabel = new QLabel({}, _page);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
+        footerLogoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardFooterLogoName()).pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -110,7 +111,7 @@ void OAuthPageController::buildPage()
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel);
+    layout->addWidget(_logoLabel);
     layout->addSpacing(16);
     layout->addWidget(instructionLabel);
 
@@ -128,8 +129,15 @@ void OAuthPageController::buildPage()
     layout->addStretch(1);
     _page->setLayout(layout);
 
+    updateIcons();
     // seed the copy button tooltip for the first go
     clipboardChanged();
+}
+
+void OAuthPageController::updateIcons()
+{
+    _logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
+    _copyButton->setIcon(copyIcon());
 }
 
 void OAuthPageController::handleError(const QString &error)
@@ -145,7 +153,7 @@ QIcon OAuthPageController::copyIcon()
     // color that "fits" based on the current
     // normally we would want to cache this but for this very special one off case I don't think it makes sense
     const QString iconPath = QStringLiteral(":/client/resources/core/copy.svg");
-    QPalette pagePalette = _page->palette();
+    QPalette pagePalette = qGuiApp->palette();
     const QString color = pagePalette.color(QPalette::Text).name();
     QByteArray data = Resources::Template::renderTemplateFromFile(iconPath, {{QStringLiteral("color"), color}}).toUtf8();
     QBuffer buffer(&data);
@@ -224,7 +232,13 @@ bool OAuthPageController::validate()
 void OAuthPageController::authUrlReady()
 {
     _authEndpoint = _oauth->authorisationLink().toString(QUrl::FullyEncoded);
-    Q_ASSERT(!_authEndpoint.isEmpty());
+
+    // I hit this when demo was down - browser showed "We're having trouble connecting to the login service.
+    // If the problem continues, please contact support."
+    if (_authEndpoint.isEmpty()) {
+        handleError(tr("Unable to connect to the login service. If the problem continues, please contact support."));
+        return;
+    }
 
     QFontMetrics metrics(_urlField->font());
     QString elidedText = metrics.elidedText(_authEndpoint, Qt::ElideRight, _urlField->width());

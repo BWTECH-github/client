@@ -19,6 +19,7 @@
 #include "gui/owncloudguilib.h"
 
 #include "connectionvalidator.h"
+#include "fetchserversettings.h"
 #include "jobqueue.h"
 
 #include "account.h"
@@ -38,7 +39,6 @@ namespace OCC {
 
 class QuotaInfo;
 class TlsErrorDialog;
-class FetchServerSettingsJob;
 
 /**
  * @brief Extra info about an ownCloud server account.
@@ -160,9 +160,9 @@ public:
     /// Triggers a ping to the server to update state, connection status and errors.
     /// blockJobs determines if we block the job queue while the connection is checked
     void checkConnectivity(bool blockJobs = false);
+    void fetchServerSettings();
 
 private:
-
     void setState(State state);
 
 Q_SIGNALS:
@@ -172,6 +172,7 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
+    void slotFetchServerSettingsResult(OCC::FetchServerSettingsRunner::Result result);
     void slotInvalidCredentials();
     void slotCredentialsFetched();
 
@@ -220,7 +221,18 @@ private:
 
     QuotaInfo *_quotaInfo = nullptr;
 
-    QPointer<FetchServerSettingsJob> _fetchCapabilitiesJob;
+    QPointer<FetchServerSettingsRunner> _fetchServerSettingsRunner;
+
+    // this flag is used to trigger fetchServerSettings after the next successful reconnect
+    // reasons the flag is set to true:
+    //      we just started the app
+    //      account was just created
+    //      user re-authenticated (by choice or by server demand)
+    //      last attempt to fetch the settings was somehow interrupted - since the attempt was underway, re-run it next opportunity
+    bool _needsServerSettingsRefresh = false;
+
+    // interval to run fetchServerSettings on a timer: default to 60 minutes
+    int _fetchServerSettingsInterval = 3600000;
 };
 }
 

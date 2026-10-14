@@ -14,81 +14,29 @@
  */
 
 #include "theme.h"
-#include "common/depreaction.h"
 #include "common/utility.h"
 #include "common/version.h"
 #include "common/vfs.h"
 #include "config.h"
-#include "configfile.h"
 
-#include "resources/qmlresources.h"
-#include "resources/resources.h"
-
+#include <QGuiApplication>
 #include <QSslSocket>
 #include <QStyle>
-#include <QtCore>
-#include <QtGui>
-
-#include "themewatcher.h"
 
 #ifdef THEME_INCLUDE
 #include THEME_INCLUDE
 #endif
 
-namespace {
-QString whiteTheme()
-{
-    return QStringLiteral("white");
-}
-
-QString blackTheme()
-{
-    return QStringLiteral("black");
-}
-
-QString darkTheme()
-{
-    return QStringLiteral("dark");
-}
-
-QString coloredTheme()
-{
-    return QStringLiteral("colored");
-}
-}
 namespace OCC {
 
 Theme *Theme::_instance = nullptr;
-
-QmlUrlButton::QmlUrlButton() { }
-
-QmlUrlButton::QmlUrlButton(const std::tuple<QString, QString, QUrl> &tuple)
-    : icon(QStringLiteral("urlIcons/%1").arg(std::get<0>(tuple)))
-    , name(std::get<1>(tuple))
-    , url(std::get<2>(tuple))
-{
-}
-
-bool QmlButtonColor::valid() const
-{
-    return color.isValid() && textColor.isValid() && textColorDisabled.isValid();
-}
 
 Theme *Theme::instance()
 {
     if (!_instance) {
         _instance = new THEME_CLASS;
-        auto *watcher = new Resources::ThemeWatcher(_instance);
-        connect(watcher, &Resources::ThemeWatcher::themeChanged, _instance, &Theme::themeChanged);
     }
     return _instance;
-}
-
-Theme *Theme::create(QQmlEngine *qmlEngine, QJSEngine *)
-{
-    Q_ASSERT(qmlEngine->thread() == Theme::instance()->thread());
-    QJSEngine::setObjectOwnership(Theme::instance(), QJSEngine::CppOwnership);
-    return instance();
 }
 
 Theme::~Theme() { }
@@ -118,79 +66,23 @@ QString Theme::configFileName() const
     return QStringLiteral(APPLICATION_EXECUTABLE ".cfg");
 }
 
-QIcon Theme::applicationIcon() const
-{
-    return Resources::themeUniversalIcon(applicationIconName() + QStringLiteral("-icon"));
-}
-
 QString Theme::applicationIconName() const
 {
-    return QStringLiteral(APPLICATION_ICON_NAME);
+    // attention! if APPLICATION_ICON_NAME is not defined, it is auto-set to APPLICATION_SHORTNAME in CMakeLists.txt:131
+    // I STRONGLY prefer to move that "fallback" here, to avoid confusion, as *how many cmake files do we have to navigate to
+    // find these values*?
+    // it's not ok, imo. I quasi understand the "need" for these vars but they are nothing but trouble.
+    return QStringLiteral(APPLICATION_SHORTNAME) + "-icon";
 }
 
-QIcon Theme::aboutIcon() const
+QString Theme::aboutIconName() const
 {
-    return applicationIcon();
-}
-
-QIcon Theme::themeTrayIcon(const SyncResult &result, [[maybe_unused]] bool sysTrayMenuVisible, Resources::IconType iconType) const
-{
-    auto systrayIconFlavor = [&]() {
-        QString flavor;
-        if (_mono) {
-            flavor = Utility::hasDarkSystray() ? whiteTheme() : blackTheme();
-
-#ifdef Q_OS_MAC
-            if (sysTrayMenuVisible) {
-                flavor = whiteTheme();
-            }
-#endif
-        } else {
-            // we have a dark sys tray and the theme has support for that
-            flavor = (Utility::hasDarkSystray() && Resources::hasDarkTheme()) ? darkTheme() : coloredTheme();
-        }
-        return flavor;
-    };
-    auto icon = Resources::loadIcon(systrayIconFlavor(), QStringLiteral("state-%1").arg(syncStateIconName(result)), iconType);
-#ifdef Q_OS_MAC
-    // This defines the icon as a template and enables automatic macOS color handling
-    // See https://bugreports.qt.io/browse/QTBUG-42109
-    icon.setIsMask(_mono && !sysTrayMenuVisible);
-#endif
-    return icon;
+    return applicationIconName();
 }
 
 Theme::Theme()
     : QObject(nullptr)
 {
-}
-
-QList<QmlUrlButton> Theme::qmlUrlButtons() const
-{
-    const auto urls = urlButtons();
-    QList<QmlUrlButton> out;
-    out.reserve(urls.size());
-    for (const auto &u : urls) {
-        out.append(QmlUrlButton(u));
-    }
-    return out;
-}
-
-// If this option returns true, the client only supports one folder to sync.
-// The Add-Button is removed accordingly.
-bool Theme::singleSyncFolder() const
-{
-    return false;
-}
-
-bool Theme::multiAccount() const
-{
-    return true;
-}
-
-QString Theme::defaultServerFolder() const
-{
-    return QStringLiteral("/");
 }
 
 QString Theme::helpUrl() const
@@ -213,26 +105,9 @@ QString Theme::overrideServerUrl() const
     return QString();
 }
 
-QString Theme::overrideServerUrlV2() const
-{
-    static const auto serverOverride = qEnvironmentVariable("OWNCLOUD_OVERRIDE_SERVER_URL");
-    if (serverOverride.isEmpty()) {
-        OC_DISABLE_DEPRECATED_WARNING
-        return overrideServerUrl();
-        OC_ENABLE_DEPRECATED_WARNING
-    }
-    return serverOverride;
-}
-
 QString Theme::overrideServerPath() const
 {
     return {};
-}
-
-void Theme::setSystrayUseMonoIcons(bool mono)
-{
-    _mono = mono;
-    Q_EMIT systrayUseMonoIconsChanged(mono);
 }
 
 QUrl Theme::updateCheckUrl() const
@@ -242,11 +117,6 @@ QUrl Theme::updateCheckUrl() const
 #else
     return QUrl(QStringLiteral(APPLICATION_UPDATE_URL));
 #endif
-}
-
-bool Theme::wizardSkipAdvancedPage() const
-{
-    return false;
 }
 
 QString Theme::gitSHA1(VersionFormat format) const
@@ -276,7 +146,8 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
             : QCoreApplication::translate("ownCloudTheme::qtVer", "%1 (Built against Qt %2)").arg(qtVersion, QStringLiteral(QT_VERSION_STR)));
     QString _version = Version::displayString();
     QString gitUrl;
-    if (!Version::gitSha().isEmpty()) {
+    // just use the version::gitSha if (!Version::gitSha().isEmpty())
+    {
         if (format != Theme::VersionFormat::Url) {
             _version = QCoreApplication::translate("ownCloudTheme::versionWithSha", "%1 %2").arg(_version, gitSHA1(format));
         } else {
@@ -316,50 +187,9 @@ QString Theme::about() const
             aboutVersions(Theme::VersionFormat::RichText));
 }
 
-bool Theme::aboutShowCopyright() const
-{
-    return true;
-}
-
-QString Theme::syncStateIconName(const SyncResult &result) const
-{
-    switch (result.status()) {
-    case SyncResult::NotYetStarted:
-        [[fallthrough]];
-    case SyncResult::SyncRunning:
-        return QStringLiteral("sync");
-    case SyncResult::SyncAbortRequested:
-        [[fallthrough]];
-    case SyncResult::Paused:
-        return QStringLiteral("pause");
-    case SyncResult::SyncPrepare:
-        [[fallthrough]];
-    case SyncResult::Success:
-        if (!result.hasUnresolvedConflicts()) {
-            return QStringLiteral("ok");
-        }
-        [[fallthrough]];
-    case SyncResult::Problem:
-        [[fallthrough]];
-    case SyncResult::Undefined:
-        // this can happen if no sync connections are configured.
-        return QStringLiteral("information");
-    case SyncResult::Offline:
-        return QStringLiteral("offline");
-    case SyncResult::Error:
-        [[fallthrough]];
-    case SyncResult::Unavailable:
-        [[fallthrough]];
-    case SyncResult::SetupError:
-        // FIXME: Use problem once we have an icon.
-        return QStringLiteral("error");
-    }
-    Q_UNREACHABLE();
-}
-
 QColor Theme::wizardHeaderTitleColor() const
 {
-    return qApp->palette().text().color();
+    return QColor();
 }
 
 QColor Theme::wizardHeaderBackgroundColor() const
@@ -367,88 +197,39 @@ QColor Theme::wizardHeaderBackgroundColor() const
     return QColor();
 }
 
-QmlButtonColor Theme::primaryButtonColor() const
+QColor Theme::accentColor(bool) const
+{
+    return QColor();
+}
+
+QColor Theme::accentTextColor(bool) const
+{
+    return QColor();
+}
+
+QColor Theme::errorColor(bool) const
+{
+    return QColor();
+}
+
+QColor Theme::selectionColor() const
+{
+    return QColor();
+}
+
+QString Theme::wizardHeaderLogoName() const
+{
+    return applicationIconName();
+}
+
+QString Theme::wizardFooterLogoName() const
 {
     return {};
-}
-
-QmlButtonColor Theme::secondaryButtonColor() const
-{
-    return {};
-}
-
-QIcon Theme::wizardHeaderLogo() const
-{
-    return applicationIcon();
-}
-
-QIcon Theme::wizardFooterLogo() const
-{
-    return QIcon();
-}
-
-QColor Theme::avatarColor() const
-{
-    // owncloud.online brand: resting account chips use a calmer teal so the
-    // active account (avatarColorChecked, the full brand turquoise) stands out.
-    return QColor(0x00, 0xb6, 0x97);
-}
-
-QColor Theme::avatarColorChecked() const
-{
-    // owncloud.online brand turquoise (matches the app icon)
-    return QColor(0x00, 0xe2, 0xbb);
-}
-
-QString Theme::webDavPath() const
-{
-    return QStringLiteral("remote.php/webdav/");
-}
-
-bool Theme::linkSharing() const
-{
-    return true;
-}
-
-bool Theme::userGroupSharing() const
-{
-    return true;
 }
 
 bool Theme::forceSystemNetworkProxy() const
 {
     return false;
-}
-
-Theme::UserIDType Theme::userIDType() const
-{
-    return UserIDType::UserIDUserName;
-}
-
-QString Theme::customUserID() const
-{
-    return QString();
-}
-
-QString Theme::userIDHint() const
-{
-    return QString();
-}
-
-
-QString Theme::wizardUrlPostfix() const
-{
-    return QString();
-}
-
-QString Theme::wizardUrlPlaceholder() const
-{
-    return QString();
-}
-
-QString Theme::quotaBaseFolder() const
-{
-    return QStringLiteral("/");
 }
 
 QString Theme::oauthClientId() const
@@ -459,16 +240,6 @@ QString Theme::oauthClientId() const
 QString Theme::oauthClientSecret() const
 {
     return QStringLiteral("UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh");
-}
-
-QString Theme::oauthLocalhost() const
-{
-    return QStringLiteral("http://localhost");
-}
-
-QPair<QString, QString> Theme::oauthOverrideAuthUrl() const
-{
-    return {};
 }
 
 QVector<quint16> Theme::oauthPorts() const
@@ -487,19 +258,9 @@ QString Theme::openIdConnectPrompt() const
     return QStringLiteral("select_account consent");
 }
 
-bool Theme::oidcEnableDynamicRegistration() const
+QString Theme::wizardUrlPlaceholder() const
 {
-    return true;
-}
-
-QString Theme::versionSwitchOutput() const
-{
-    return aboutVersions(Theme::VersionFormat::Url);
-}
-
-bool Theme::showVirtualFilesOption() const
-{
-    return true;
+    return QString();
 }
 
 bool Theme::forceVirtualFilesOption() const
@@ -520,39 +281,9 @@ bool Theme::forceVirtualFilesOption() const
     return false;
 }
 
-bool Theme::connectionValidatorClearCookies() const
-{
-    return false;
-}
-
-bool Theme::enableSocketApiIconSupport() const
-{
-    return true;
-}
-
-bool Theme::warnOnMultipleDb() const
-{
-    return Resources::isVanillaTheme();
-}
-
-bool Theme::allowDuplicatedFolderSyncPair() const
-{
-    return true;
-}
-
-bool Theme::wizardEnableWebfinger() const
-{
-    return false;
-}
-
-QVector<std::tuple<QString, QString, QUrl>> Theme::urlButtons() const
+QVector<std::tuple<QString, QString, QUrl>> Theme::urlActions() const
 {
     return {};
-}
-
-bool Theme::enableMoveToTrash() const
-{
-    return true;
 }
 
 bool Theme::moveToTrashDefaultValue() const
@@ -566,11 +297,6 @@ bool Theme::allowSystemConfigOverrides() const
 }
 
 bool Theme::syncNewlyDiscoveredSpaces() const
-{
-    return false;
-}
-
-bool Theme::enableCernBranding() const
 {
     return false;
 }

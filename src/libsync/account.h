@@ -14,8 +14,7 @@
  */
 
 
-#ifndef SERVERCONNECTION_H
-#define SERVERCONNECTION_H
+#pragma once
 
 #include "owncloudlib.h"
 
@@ -61,17 +60,6 @@ class ResourcesCache;
 class OWNCLOUDSYNC_EXPORT Account : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QUuid uid READ uuid CONSTANT)
-    Q_PROPERTY(QString davUser READ davUser CONSTANT)
-    Q_PROPERTY(QString davDisplayName READ davDisplayName NOTIFY displayNameChanged)
-    Q_PROPERTY(QString displayNameWithHost READ displayNameWithHost NOTIFY displayNameChanged)
-    Q_PROPERTY(QString initials READ initials NOTIFY displayNameChanged)
-    Q_PROPERTY(QString hostName READ hostName CONSTANT)
-    Q_PROPERTY(bool hasAvatar READ hasAvatar NOTIFY avatarChanged)
-    Q_PROPERTY(QGradient::Preset avatarGradient READ avatarGradient NOTIFY displayNameChanged)
-    Q_PROPERTY(QUrl url READ url CONSTANT)
-    QML_ELEMENT
-    QML_UNCREATABLE("Only created in the C++ code")
 
 public:
     /**
@@ -96,6 +84,9 @@ public:
      * The user associated with the account.
      * This value is immutable after construction.
      *
+     * note that this isn't always a human readable "user name" - with some servers it will be an account id
+     * and not a normal "name"
+     *
      */
     QString davUser() const;
 
@@ -104,6 +95,7 @@ public:
      * This value is immutable after construction.
      */
     QUrl url() const;
+
 
     /***
      * This is the default folder containing all spaces.
@@ -125,17 +117,23 @@ public:
     QString davDisplayName() const;
     void setDavDisplayName(const QString &newDisplayName);
 
-    QIcon avatar() const;
+    QIcon avatar();
     void setAvatar(const QIcon &img);
-    bool hasAvatar() const;
+
+    // alias for the account which appears in the toolbar button text.
+    // the user can edit to make each account easily identifiable.
+    // default value is first section of davDisplayName() (all text appearing before first whitespace)
+    QString accountAlias() const;
+    void setAccountAlias(const QString &newAlias);
+    QString calculateAlias() const;
 
     /// The name of the account as shown in the toolbar
     QString displayNameWithHost() const;
     QString initials() const;
-    QGradient::Preset avatarGradient() const;
 
     /// The value used to group the account's setttings
     QString groupIndex() const;
+    void setGroupIndex(const QString &index);
 
     QString hostName() const;
 
@@ -231,10 +229,11 @@ Q_SIGNALS:
     // todo: #15
     void wantsAccountSaved(Account *acc);
 
-    void serverVersionChanged();
+    void serverVersionChanged(Account *account);
 
     void avatarChanged();
     void displayNameChanged();
+    void accountAliasChanged(const QString &newAlias);
 
     void unknownConnectionState();
 
@@ -249,6 +248,7 @@ private:
     QUuid _uuid;
     QString _davUser;
     QString _displayName;
+    QString _alias;
     QString _defaultSyncRoot;
     QIcon _avatarImg;
     
@@ -269,7 +269,6 @@ private:
     AppProvider _appProvider;
 
     GraphApi::SpacesManager *_spacesManager = nullptr;
-    friend class AccountManager;
 };
 }
 
@@ -277,5 +276,3 @@ Q_DECLARE_METATYPE(OCC::Account)
 
 
 QDebug OWNCLOUDSYNC_EXPORT operator<<(QDebug debug, const OCC::Account *job);
-
-#endif //SERVERCONNECTION_H

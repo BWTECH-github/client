@@ -16,6 +16,8 @@
 
 #include "account.h"
 #include "accountstate.h"
+#include "libsync/theme.h"
+#include "mainwindow/colormanager.h"
 #include "networkjobs/jsonjob.h"
 
 #include <QCheckBox>
@@ -137,8 +139,10 @@ ShareDialog::ShareDialog(AccountState *accountState, const QString &remotePath, 
 void ShareDialog::showStatus(const QString &message, bool isError)
 {
     _statusLabel->setVisible(true);
-    // explicit colors that read on light and dark palettes
-    _statusLabel->setStyleSheet(isError ? QStringLiteral("color: #e0245e;") : QStringLiteral("color: #00a98c;"));
+    // Farben aus dem Theme passend zum Farbschema (mindestens 4,5:1); das frühere #00a98c erreichte auf Weiß nur 3:1
+    const bool dark = ColorManager::isDarkPalette();
+    const QColor color = isError ? Theme::instance()->errorColor(dark) : Theme::instance()->accentColor(dark);
+    _statusLabel->setStyleSheet(color.isValid() ? QStringLiteral("color: %1;").arg(color.name()) : QString());
     _statusLabel->setText(message);
 }
 

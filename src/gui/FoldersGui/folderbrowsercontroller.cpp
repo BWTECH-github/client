@@ -23,7 +23,7 @@
 #include "folderman.h"
 #include "networkjobs.h"
 
-#include "resources/resources.h"
+#include "resources/iconresources.h"
 
 #include <QApplication>
 #include <QCollator>
@@ -438,7 +438,7 @@ void FolderBrowserController::populateListing(Folder *folder, const QString &par
         QStandardItem *child = existing.take(entry.relPath);
         if (!child) {
             child = new QStandardItem(name);
-            child->setIcon(Resources::getCoreIcon(QStringLiteral("folder-sync")));
+            child->setIcon(IconResources::getCoreIcon(QStringLiteral("folder-sync")));
             child->setToolTip(entry.relPath);
             child->setData(static_cast<int>(FolderTreeItemKind::BrowserFolder), FolderItemRoles::ItemKindRole);
             child->setData(entry.relPath, FolderItemRoles::RemotePathRole);

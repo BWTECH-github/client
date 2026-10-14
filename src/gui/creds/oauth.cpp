@@ -15,6 +15,7 @@
 #include "oauth.h"
 
 #include "accessmanager.h"
+#include "common/asserts.h"
 #include "creds/credentialssupport.h"
 #include "gui/networkadapters/userinfoadapter.h"
 #include "libsync/creds/credentialmanager.h"
@@ -43,6 +44,8 @@ namespace {
 const QString wellKnownPathC = QStringLiteral("/.well-known/openid-configuration");
 const QString ownCloudOAuthAuthorizePathC = QStringLiteral("/index.php/apps/oauth2/authorize");
 const QString ownCloudOAuthTokenPathC = QStringLiteral("/index.php/apps/oauth2/api/v1/token");
+// owncloud.online: Theme::oauthLocalhost() ist upstream entfallen (DC-308); die oC10-OAuth2-App erwartet localhost
+const QString ownCloudOAuthRedirectUrlC = QStringLiteral("http://localhost");
 
 OAuth::PromptValuesSupportedFlags defaultOauthPromptValue(const OpenIdConfig& config)
 {
@@ -112,7 +115,7 @@ void OAuth::startAuthentication()
     }
 
     _pkceCodeVerifier = generateRandomString(24);
-    OC_ASSERT(_pkceCodeVerifier.size() == 128)
+    OC_ASSERT(_pkceCodeVerifier.size() == 128);
     _state = generateRandomString(8);
 
     connect(this, &OAuth::fetchWellKnownFinished, this, &OAuth::authorisationLinkChanged);
@@ -385,7 +388,7 @@ void OAuth::fetchWellKnown()
     auto useOwnCloudOAuthFallback = [this]() {
         _authEndpoint = Utility::concatUrlPath(_serverUrl, ownCloudOAuthAuthorizePathC);
         _tokenEndpoint = Utility::concatUrlPath(_serverUrl, ownCloudOAuthTokenPathC);
-        _redirectUrl = Theme::instance()->oauthLocalhost();
+        _redirectUrl = ownCloudOAuthRedirectUrlC;
         _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
     };
 
@@ -412,7 +415,7 @@ void OAuth::fetchWellKnown()
         if (err.error == QJsonParseError::NoError) {
             _authEndpoint = QUrl::fromEncoded(data[QStringLiteral("authorization_endpoint")].toString().toUtf8());
             _tokenEndpoint = QUrl::fromEncoded(data[QStringLiteral("token_endpoint")].toString().toUtf8());
-            _redirectUrl = Theme::instance()->oauthLocalhost();
+            _redirectUrl = ownCloudOAuthRedirectUrlC;
 
             const auto authMethods = data.value(QStringLiteral("token_endpoint_auth_methods_supported")).toArray();
             if (authMethods.contains(QStringLiteral("client_secret_basic"))) {

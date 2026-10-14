@@ -25,6 +25,8 @@ class QMenu;
 
 namespace OCC {
 
+class ButtonDelegate;
+
 class AccountFoldersView : public QWidget
 {
     Q_OBJECT
@@ -35,6 +37,7 @@ public:
     void setFolderActions(QList<QAction *> actions);
     void enableAddFolder(bool enableAdd);
     void setMenuActions(QList<QAction *> actions);
+    void updatePaletteAndIcons();
 
     /// shows/hides the apply bar for pending selective sync changes made in the folder browser rows
     void setSelectiveSyncPending(bool pending);
@@ -52,6 +55,8 @@ signals:
 protected:
     bool eventFilter(QObject *obj, QEvent *ev) override;
 
+    void updatePalette();
+
 private:
     void buildView();
     void popItemMenu(const QPoint &pos);
@@ -59,6 +64,7 @@ private:
     bool performBizarreSetupOnTreeView();
 
     QTreeView *_treeView = nullptr;
+    ButtonDelegate *_buttonDel = nullptr;
     QPushButton *_addFolderButton = nullptr;
     QMenu *_itemMenu = nullptr;
     QWidget *_selectiveSyncApplyBar = nullptr;

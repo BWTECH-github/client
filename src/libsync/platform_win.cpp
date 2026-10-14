@@ -21,15 +21,18 @@
 #include <QApplication>
 #include <QGuiApplication>
 #include <QIcon>
+#include <QLoggingCategory>
 #include <QQuickStyle>
+#include <QStyleFactory>
 
 
 #include <chrono>
 #include <thread>
 
-#include "theme.h"
-
 #include "common/asserts.h"
+#include "common/utility.h"
+#include "iconresources.h"
+#include "theme.h"
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
@@ -67,6 +70,9 @@ void WinPlatform::setApplication(QCoreApplication *application)
 
     if (auto guiApp = qobject_cast<QGuiApplication *>(application)) {
         // let qt pick which style for windows instead of hard coding it.
+        // nope - unfortunately win11 style is full of bugs. Set it back to fusion until we can update qt lib which
+        // allegedly has fixes for win 11 style.
+        QApplication::setStyle(QStyleFactory::create("Fusion"));
         // can't set quick style to anything other than fusion or it will crash on start
         // qml is going away so no, I am not going to take the time to find out how to load the other default windows
         // styles for qml. Frankly I'm pretty shocked it doesn't just work naturally the way normal style does.
@@ -95,7 +101,7 @@ void WinPlatform::startShutdownWatcher()
     // ensure to initialise the icon in the main thread
     HICON icon = {};
     if (qobject_cast<QGuiApplication *>(qApp)) {
-        icon = Theme::instance()->applicationIcon().pixmap(64, 64).toImage().toHICON();
+        icon = IconResources::getBrandingIcon(Theme::instance()->applicationIconName()).pixmap(64, 64).toImage().toHICON();
     }
     watchWMCtx.watcherThread = new std::thread([icon] {
         WNDCLASS wc = {};

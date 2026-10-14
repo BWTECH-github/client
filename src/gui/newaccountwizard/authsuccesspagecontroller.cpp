@@ -13,6 +13,7 @@
  */
 #include "authsuccesspagecontroller.h"
 
+#include "iconresources.h"
 #include "theme.h"
 
 #include <QHBoxLayout>
@@ -38,11 +39,10 @@ void AuthSuccessPageController::buildPage()
 
     QString appName = Theme::instance()->appNameGUI();
 
-    QLabel *logoLabel = new QLabel({}, _page);
-    logoLabel->setPixmap(Theme::instance()->wizardHeaderLogo().pixmap(200, 100));
-    logoLabel->setAlignment(Qt::AlignCenter);
-    logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
+    _logoLabel = new QLabel(_page);
+    _logoLabel->setAlignment(Qt::AlignCenter);
+    _logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
 
     QLabel *instructionLabel = new QLabel(tr("You are almost set! The synchronization options are under Advanced. By default the client enables the Virtual File System (VFS) and only downloads files when you open them."), _page);
     QFont font = instructionLabel->font();
@@ -54,9 +54,9 @@ void AuthSuccessPageController::buildPage()
     instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     QLabel *footerLogoLabel = nullptr;
-    if (!Theme::instance()->wizardFooterLogo().isNull()) {
+    if (!Theme::instance()->wizardFooterLogoName().isEmpty()) {
         footerLogoLabel = new QLabel({}, _page);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
+        footerLogoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardFooterLogoName()).pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         // this is not the same logo as the header logo but we have no idea what this logo could be.
@@ -68,7 +68,7 @@ void AuthSuccessPageController::buildPage()
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel);
+    layout->addWidget(_logoLabel);
     layout->addSpacing(16);
     layout->addWidget(instructionLabel);
 
@@ -76,6 +76,13 @@ void AuthSuccessPageController::buildPage()
         layout->addWidget(footerLogoLabel);
     layout->addStretch(1);
     _page->setLayout(layout);
+
+    updateIcons();
+}
+
+void AuthSuccessPageController::updateIcons()
+{
+    _logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
 }
 
 bool AuthSuccessPageController::validate()

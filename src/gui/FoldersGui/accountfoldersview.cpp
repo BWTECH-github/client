@@ -111,25 +111,12 @@ void AccountFoldersView::buildView()
     _treeView->header()->setSectionsMovable(false);
     _treeView->setHeaderHidden(true);
 
-    // this method of correcting the row selection color to match the app button highlight does not work when user has changed system settings (the color sticks
-    // with the color that matched the system settings on creation of the view, which is bad. this color correction has been moved to the item delegates for now
-    // because we can always grab the true current color on paint.
-    // TODO: #60 - if we really need to implement full palettes for both light and dark mode, my rec would be to use a QStyle sub but will
-    // make a decision when the time comes.
-    QPalette treePalette = _treeView->palette();
-    // owncloud.online brand: keep the indent area consistent with the
-    // translucent turquoise selection painted by the item delegates
-    treePalette.setColor(QPalette::Highlight, QColor(0x00, 0xe2, 0xbb, 64));
-    _treeView->setPalette(treePalette);
-
-
     FolderItemDelegate *delegate = new FolderItemDelegate(_treeView->indentation(), _treeView);
     _treeView->setItemDelegateForColumn(0, delegate);
-    // note this is not the normal ellipses character, it's vertically centered instead of positioned at font baseline. This is better
-    // for this button than normal ellipses. We also have an elipses icon (core/more.svg) but it looks quite bad in the button so text it is
-    ButtonDelegate *buttonDel = new ButtonDelegate("⋯", _treeView);
-    buttonDel->setMenu(_itemMenu);
-    _treeView->setItemDelegateForColumn(1, buttonDel);
+    _buttonDel = new ButtonDelegate(_treeView);
+    _buttonDel->setMenu(_itemMenu);
+
+    _treeView->setItemDelegateForColumn(1, _buttonDel);
 
     _treeView->setEditTriggers(QAbstractItemView::CurrentChanged | QAbstractItemView::EditKeyPressed | QAbstractItemView::SelectedClicked);
 
@@ -162,6 +149,29 @@ void AccountFoldersView::buildView()
 
 
     setLayout(mainLayout);
+
+    updatePalette();
+}
+
+void AccountFoldersView::updatePalette()
+{
+    // this method of correcting the row selection color to match the app button highlight does not work when user has changed system settings (the color sticks
+    // with the color that matched the system settings on creation of the view, which is bad. this color correction has been moved to the item delegates for now
+    // because we can always grab the true current color on paint.
+    // TODO: #60 - if we really need to implement full palettes for both light and dark mode, my rec would be to use a QStyle sub but will
+    // make a decision when the time comes.
+    // owncloud.online: dieselbe halbtransparente Auswahlfarbe wie in den Delegates, damit der Einzug unter dem
+    // Aufklapppfeil zur übrigen Zeile passt
+    QPalette treePalette = _treeView->palette();
+    treePalette.setColor(QPalette::Highlight, FolderItemDelegate::selectionColor());
+    _treeView->setPalette(treePalette);
+    _treeView->repaint();
+}
+
+void AccountFoldersView::updatePaletteAndIcons()
+{
+    updatePalette();
+    _buttonDel->refreshIcon();
 }
 
 bool AccountFoldersView::performBizarreSetupOnTreeView()

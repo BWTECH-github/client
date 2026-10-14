@@ -15,12 +15,13 @@
 
 #include "accountmanager.h"
 #include "account.h"
+#include "common/asserts.h"
 #include "configfile.h"
 #include "creds/credentialmanager.h"
 #include "creds/credentials.h"
 #include "guiutility.h"
 
-#include <theme.h>
+#include <QQmlEngine>
 
 #ifdef Q_OS_WIN
 #include "common/utility_win.h"
@@ -49,6 +50,11 @@ QString davUserC()
 QString davUserDisplyNameC()
 {
     return "display-name";
+}
+
+QString accountAliasC()
+{
+    return "account-alias";
 }
 
 QString userUUIDC()
@@ -108,7 +114,7 @@ bool AccountManager::restore()
     for (const auto &accountIndex : childGroups) {
         settings->beginGroup(accountIndex);
         if (auto acc = loadAccountHelper(*settings)) {
-            acc->_groupIndex = accountIndex;
+            acc->setGroupIndex(accountIndex);
             if (auto accState = AccountState::loadFromSettings(acc, *settings)) {
                 addAccountState(accState);
             }
@@ -124,6 +130,7 @@ Account *AccountManager::createAccount(const NewAccountModel &model)
     auto account = new Account(QUuid::createUuid(), model.davUser(), model.effectiveUserInfoUrl());
 
     account->setDavDisplayName(model.displayName());
+    account->setAccountAlias(account->calculateAlias());
 
     Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), account);
     account->setCredentials(creds);
@@ -161,9 +168,10 @@ void AccountManager::saveAccount(Account *account)
     auto settings = ConfigFile::settingsWithGroup(accountsC());
     settings->beginGroup(account->groupIndex());
 
-    settings->setValue(urlC(), account->_url.toString());
-    settings->setValue(davUserC(), account->_davUser);
-    settings->setValue(davUserDisplyNameC(), account->_displayName);
+    settings->setValue(urlC(), account->url().toString());
+    settings->setValue(davUserC(), account->davUser());
+    settings->setValue(davUserDisplyNameC(), account->davDisplayName());
+    settings->setValue(accountAliasC(), account->accountAlias());
     settings->setValue(userUUIDC(), account->uuid());
     if (account->hasCapabilities()) {
         settings->setValue(capabilitesC(), account->capabilities().raw());
@@ -283,6 +291,10 @@ Account *AccountManager::loadAccountHelper(QSettings &settings)
     auto acc = new Account(uid, user, url);
 
     acc->setDavDisplayName(settings.value(davUserDisplyNameC()).toString());
+    QString alias = settings.value(accountAliasC()).toString();
+    if (alias.isEmpty())
+        alias = acc->calculateAlias();
+    acc->setAccountAlias(alias);
     acc->setCapabilities(caps);
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
@@ -332,7 +344,7 @@ AccountState *AccountManager::addAccount(Account *newAccount)
     if (id.isEmpty() || !isAccountIndexAvailable(id)) {
         id = generateFreeAccountIndex();
     }
-    newAccount->_groupIndex = id;
+    newAccount->setGroupIndex(id);
 
 
     return addAccountState(new AccountState(newAccount));

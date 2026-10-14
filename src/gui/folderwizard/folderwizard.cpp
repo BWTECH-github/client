@@ -25,7 +25,6 @@
 #include "common/asserts.h"
 #include "common/vfs.h"
 #include "gui/application.h"
-#include "gui/settingsdialog.h"
 #include "theme.h"
 
 #include "gui/folderman.h"
@@ -132,9 +131,6 @@ QUrl FolderWizardPrivate::davUrl() const
     }
 
     auto url = _spacesPage->currentSpace()->webDavUrl();
-    if (!url.path().endsWith(QLatin1Char('/'))) {
-        url.setPath(url.path() + QLatin1Char('/'));
-    }
     return url;
 }
 
@@ -167,7 +163,7 @@ bool FolderWizardPrivate::useVirtualFiles() const
         QString vfsSupported = Vfs::pathSupportDetail(initialLocalPath(), mode);
         if (!vfsSupported.isEmpty()) {
             auto msg = new QMessageBox(QMessageBox::Warning, FolderWizard::tr("Virtual files are not available for the selected folder"), vfsSupported,
-                QMessageBox::Ok, ocApp()->gui()->settingsDialog());
+                QMessageBox::Ok, ocApp()->mainWindow());
             msg->setAttribute(Qt::WA_DeleteOnClose);
             msg->open();
             return false;

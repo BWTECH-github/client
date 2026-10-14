@@ -30,6 +30,7 @@ class AccountState;
 class FolderBrowserController;
 class FolderModelController;
 class AccountModalWidget;
+class ColorManager;
 
 class AccountFoldersController : public QObject
 {
@@ -39,16 +40,16 @@ public:
 
 signals:
     void removeFolderFromGui(OCC::Folder *f);
-    void requestShowModalWidget(QWidget *widget);
+    void requestAddFolder(QUuid accountId);
+
     void requestAccountModalWidget(OCC::AccountModalWidget *widget);
 
 protected:
     void onUnsyncedSpaceCountChanged(const QUuid &accountId, int unsyncedSpaceCount, int totalSpaceCount);
     void onAddFolder();
-    void onFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result);
 
 private:
-    AccountState *_accountState = nullptr;
+    QPointer<AccountState> _accountState;
     QUuid _accountId;
     QPointer<Folder> _currentFolder = nullptr;
     AccountFoldersView *_view = nullptr;

@@ -29,8 +29,12 @@ public:
     ownCloudTheme();
     QColor wizardHeaderBackgroundColor() const override;
     QColor wizardHeaderTitleColor() const override;
-    QIcon wizardHeaderLogo() const override;
-    QIcon aboutIcon() const override;
+    QColor accentColor(bool darkScheme) const override;
+    QColor accentTextColor(bool darkScheme) const override;
+    QColor errorColor(bool darkScheme) const override;
+    QColor selectionColor() const override;
+    QString wizardHeaderLogoName() const override;
+    QString aboutIconName() const override;
     bool moveToTrashDefaultValue() const override;
     bool allowSystemConfigOverrides() const override;
 };

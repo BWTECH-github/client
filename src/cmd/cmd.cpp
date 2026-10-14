@@ -45,13 +45,20 @@ void startSync(Account *account, const QString &localDir, const QString &remoteP
     const QString dbPath = localDir + SyncJournalDb::makeDbName(localDir);
     auto *db = new SyncJournalDb(dbPath, qApp);
 
-    SyncOptions opt{ QSharedPointer<Vfs>(VfsPluginManager::instance().createVfsFromPlugin(Vfs::Off).release()) };
+    // owncloudcmd lädt immer alles herunter (Vfs::Off). SyncOptions hält die VFS seit DC-257 nur noch als
+    // QPointer, sie gehört deshalb der Datenbank und lebt so lange wie Engine und Journal.
+    Vfs *vfs = VfsPluginManager::instance().createVfsFromPlugin(Vfs::Off, db);
+    if (!vfs) {
+        qCritical() << "Could not load the vfs plugin for mode off";
+        qApp->exit(EXIT_FAILURE);
+        return;
+    }
+    SyncOptions opt(vfs);
     opt.fillFromEnvironmentVariables();
     opt.verifyChunkSizes();
 
-    auto *engine = new SyncEngine(account, account->davUrl(), localDir, remotePath, db);
+    auto *engine = new SyncEngine(account, account->davUrl(), localDir, remotePath, db, db);
     engine->setSyncOptions(opt);
-    engine->setParent(db);
     SyncEngine::minimumFileAgeForUpload = std::chrono::seconds(0);
 
     QObject::connect(engine, &SyncEngine::finished, qApp, [](bool ok) {
@@ -66,9 +73,8 @@ void startSync(Account *account, const QString &localDir, const QString &remoteP
     QObject::connect(engine, &SyncEngine::syncError, qApp,
         [](const QString &error, ErrorCategory) { qWarning() << "Sync error:" << error; });
 
+    // lädt die System- und die Benutzer-Ausschlussliste (ConfigFile::setupDefaultExcludeFilePaths)
     engine->loadDefaultExcludes();
-    engine->addExcludeList(ConfigFile::excludeFileFromSystem());
-    engine->reloadExcludes();
     engine->startSync();
 }
 

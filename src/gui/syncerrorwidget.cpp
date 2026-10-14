@@ -28,6 +28,7 @@
 #include "theme.h"
 
 #include <QActionGroup>
+#include <QMenu>
 #include <QTimer>
 
 #include "ui_syncerrorwidget.h"
@@ -268,14 +269,15 @@ SyncErrorWidget::~SyncErrorWidget()
 
 void SyncErrorWidget::onFolderListChanged(const QUuid &accountId, const QList<Folder *> folders)
 {
-    Q_UNUSED(accountId);
-    _model->remove_if([folders](const ProtocolItem &item) { return (!folders.contains(item.folder())); });
+    _model->remove_if([accountId, folders](const ProtocolItem &item) {
+        return (item.folder() == nullptr || (item.folder()->accountState()->account()->uuid() == accountId && !folders.contains(item.folder())));
+    });
 }
 
 void SyncErrorWidget::onFolderRemoved(const QUuid &accountId, Folder *f)
 {
     Q_UNUSED(accountId);
-    _model->remove_if([f](const ProtocolItem &item) { return item.folder() == f; });
+    _model->remove_if([f](const ProtocolItem &item) { return item.folder() == nullptr || item.folder() == f; });
 }
 
 QMenu *SyncErrorWidget::showFilterMenu(QWidget *parent)
@@ -314,8 +316,10 @@ void SyncErrorWidget::slotProgressInfo(Folder *folder, const ProgressInfo &progr
     if (progress.status() == ProgressInfo::Reconcile) {
         // Wipe all non-persistent entries - as well as the persistent ones
         // in cases where a local discovery was done.
-        const auto &engine = folder->syncEngine();
-        const auto style = engine.lastLocalDiscoveryStyle();
+        SyncEngine *engine = folder->syncEngine();
+        if (!engine)
+            return;
+        const auto style = engine->lastLocalDiscoveryStyle();
         _model->remove_if([&](const ProtocolItem &item) {
             if (item.folder() != folder) {
                 return false;
@@ -340,7 +344,7 @@ void SyncErrorWidget::slotProgressInfo(Folder *folder, const ProgressInfo &progr
             if (path == QLatin1Char('.'))
                 path.clear();
 
-            return engine.shouldDiscoverLocally(path);
+            return engine->shouldDiscoverLocally(path);
         });
     }
     if (progress.status() == ProgressInfo::Done) {

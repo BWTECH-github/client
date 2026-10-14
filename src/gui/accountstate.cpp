@@ -17,11 +17,11 @@
 #include "application.h"
 #include "configfile.h"
 
-#include "fetchserversettings.h"
+// #include "fetchserversettings.h"
+#include "libsync/networkjobs/jsonjob.h"
 
 #include "libsync/creds/abstractcredentials.h"
 
-#include "gui/settingsdialog.h"
 #include "gui/tlserrordialog.h"
 
 #include "socketapi/socketapi.h"
@@ -58,6 +58,7 @@ AccountState::AccountState(Account *account)
     , _waitingForNewCredentials(false)
     , _connectionValidator(nullptr)
     , _maintenanceToConnectedDelay(1min + minutes(QRandomGenerator::global()->generate() % 4)) // 1-5min delay
+    , _needsServerSettingsRefresh(true)
 {
     qRegisterMetaType<AccountState *>("AccountState*");
 
@@ -103,9 +104,9 @@ void AccountState::connectAccount()
     connect(_account.data(), &Account::unknownConnectionState, this, [this] { checkConnectivity(true); });
 
     connect(_account.data(), &Account::appProviderErrorOccured, this, [](const QString &error) {
-        QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, Theme::instance()->appNameGUI(), error, {}, ocApp()->gui()->settingsDialog());
+        QMessageBox *msgBox = new QMessageBox(QMessageBox::Information, Theme::instance()->appNameGUI(), error, {}, ocApp()->mainWindow());
         msgBox->setAttribute(Qt::WA_DeleteOnClose);
-        ownCloudGui::raise();
+        ocApp()->ensureVisible();
         msgBox->open();
     });
 }
@@ -190,28 +191,113 @@ void AccountState::setState(State state)
         }
     }
 
-    // might not have changed but the underlying _connectionErrors might have
+    // only do this once when the state actually changes from something to connected
+    // todo: need to investigate whether it's ever the case that we go from connected to connected.
+    // so far it looks to me as if this happens when the connection validator confirms all is still well?
     if (_state == Connected) {
-        QTimer::singleShot(0, this, [this, oldState] {
-            // ensure the connection validator is done
-            _queueGuard.unblock();
+        // the account is briefly connected when setting up. If we're in this setup state, don't fetch the
+        // server settings yet!
+        if (_needsServerSettingsRefresh && !_settingUp) {
             // update capabilities and fetch relevant settings
-            _fetchCapabilitiesJob = new FetchServerSettingsJob(_account, this);
-            connect(_fetchCapabilitiesJob.get(), &FetchServerSettingsJob::finishedSignal, this, [oldState, this] {
-                // Lisa todo: I do not understand this logic at all - review it
-                if (oldState == Connected || _state == Connected) {
-                    _fetchCapabilitiesJob.clear();
-                    Q_EMIT isConnectedChanged();
-                }
-            });
-            _fetchCapabilitiesJob->start();
-        });
+            // in the code path we unblock the queue *after* the caps retrieval has succeeded
+            fetchServerSettings();
+        } else
+            _queueGuard.unblock();
     }
 
     if (oldState != _state) {
         Q_EMIT stateChanged(_state);
+        // the old->new state is confirmed to be different and one of them is connected state so
+        // isConnected did actually change
+        if (oldState == Connected || _state == Connected)
+            emit isConnectedChanged();
     }
 }
+
+void AccountState::fetchServerSettings()
+{
+    // basically if we're not connected, be sure it's run next time the connection is recovered
+    // this is only needed to support polling
+    if (_state != Connected) {
+        _needsServerSettingsRefresh = true;
+        return;
+    }
+
+    Q_ASSERT(_fetchServerSettingsRunner == nullptr);
+    _fetchServerSettingsRunner = new FetchServerSettingsRunner(_account, this);
+
+    connect(_fetchServerSettingsRunner, &FetchServerSettingsRunner::finishedSignal, this, &AccountState::slotFetchServerSettingsResult);
+    _fetchServerSettingsRunner->start();
+}
+
+void AccountState::slotFetchServerSettingsResult(FetchServerSettingsRunner::Result result)
+{
+    if (_state != Connected) {
+        // kill the last runner as something clearly went wrong
+        _fetchServerSettingsRunner->deleteLater();
+        _needsServerSettingsRefresh = true;
+        return;
+    }
+
+    _connectionErrors.clear();
+
+    State newState = _state;
+
+    switch (result) {
+    case FetchServerSettingsRunner::Result::UnsupportedServer:
+        _connectionErrors.append(tr("The server is not supported by this client."));
+        newState = ConfigurationError;
+        break;
+    case FetchServerSettingsRunner::Result::InvalidCredentials:
+        slotInvalidCredentials();
+        break;
+    case FetchServerSettingsRunner::Result::TimeOut:
+        _connectionErrors.append(tr("Retrieving user settings and server capabilities timed out."));
+        // hmmm...do we need to retry in this case? I'm guessing yes but needs discussion
+        // actually no, we should not need to do it explicitly as the next round(s) of connection validator should
+        // hopefully resolve it
+        newState = NetworkError;
+        break;
+    case FetchServerSettingsRunner::Result::Undefined:
+        _connectionErrors.append(tr("Unable to retrieve user settings and server capabilities."));
+        newState = Disconnected;
+        break;
+    case FetchServerSettingsRunner::Result::Success:
+        break;
+    }
+
+    // this step is done, delete after this slot finishes else the self deleting jobs inside get munged up -> crash. TODO: evaluate whether there is any
+    // value to use the parenting mechanism for the AbstractNetworkJobs inside the FetchServerSettingsJob - I find it really questionable to parent
+    // self deleting objects but this needs deeper investigation.
+    _fetchServerSettingsRunner->deleteLater();
+
+    if (newState != Connected) {
+        setState(newState);
+        return;
+    }
+
+    // these are both self deleting.
+    // they can finish whenever, everything else can carry on.
+    if (_account->capabilities().avatarsAvailable()) {
+        auto *avatarJob = new AvatarJob(_account, _account->davUser(), 128, nullptr);
+        connect(avatarJob, &AvatarJob::avatarPixmap, this, [this](const QPixmap &img) { _account->setAvatar(AvatarJob::makeCircularAvatar(img)); });
+        avatarJob->start();
+    }
+
+    if (_account->capabilities().appProviders().enabled) {
+        auto *jsonJob = new JsonJob(_account, _account->capabilities().appProviders().appsUrl, {}, "GET");
+        connect(jsonJob, &JsonJob::finishedSignal, this, [jsonJob, this] { _account->setAppProvider(AppProvider{jsonJob->data()}); });
+        jsonJob->start();
+    }
+
+    _needsServerSettingsRefresh = false;
+    // trying to keep this simple: just run it again in an hour (or whatever the _fetchServerSettingsInterval turns out to be)
+    QTimer::singleShot(_fetchServerSettingsInterval, this, &AccountState::fetchServerSettings);
+    _queueGuard.unblock();
+    // ehhhhhhh - this is only needed to trigger readyForSync is called again by whoever, as it should now pass. Not a fan.
+    emit isConnectedChanged();
+}
+
 
 bool AccountState::isSignedOut() const
 {
@@ -355,8 +441,8 @@ void AccountState::handleSslConnectionErrors(const QList<QSslError> &errors, boo
         for (const auto &error : std::as_const(filteredErrors)) {
             certs << error.certificate();
         }
-        TlsErrorDialog tlsDlg(filteredErrors, _account->url().host(), ocApp()->gui()->settingsDialog());
-        ownCloudGui::raise();
+        TlsErrorDialog tlsDlg(filteredErrors, _account->url().host(), ocApp()->mainWindow());
+        ocApp()->ensureVisible();
         int res = tlsDlg.exec();
         if (res == TlsErrorDialog::Accepted) {
             _account->addApprovedCerts(certs);
@@ -492,8 +578,6 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
         setState(Disconnected);
         break;
     case ConnectionValidator::ClientUnsupported:
-        [[fallthrough]];
-    case ConnectionValidator::ServerVersionMismatch:
         setState(ConfigurationError);
         break;
     case ConnectionValidator::StatusNotFound:
@@ -558,6 +642,8 @@ void AccountState::slotCredentialsFetched()
     qCInfo(lcAccountState) << "Fetched credentials for" << _account->url().toString()
                            << "attempting to connect";
     _waitingForNewCredentials = false;
+    // refresh the creds/avatar/app providers/etc any time the user re-auths
+    _needsServerSettingsRefresh = true;
     checkConnectivity();
 }
 
@@ -593,7 +679,12 @@ void AccountState::setSettingUp(bool settingUp)
 }
 bool AccountState::readyForSync() const
 {
-    return !_fetchCapabilitiesJob && isConnected();
+    // this is highly questionable.
+    // first, this explains why the folders aren't ever syncing after refactoring the fetchServerSettings job. Folder::canSync calls this and
+    // that is checked when trying to enqueue the folder
+    // net is that because we can't cleanly get rid of the fetshServerSettingsJob (yet) this always returns false! or at least it does
+    // on first folder load.
+    return !_needsServerSettingsRefresh && isConnected();
 }
 
 } // namespace OCC

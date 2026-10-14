@@ -48,7 +48,7 @@ jobs:
             # die Windows/Linux-Releases nicht blockiert.
             - name: macos-clang-arm64
               target: macos-clang-arm64
-              os: macos-14
+              os: macos-15
               container:
               useSonarCloud:
               testOptions:
@@ -60,7 +60,8 @@ jobs:
               useSonarCloud:
               testOptions:
     name: ${{ matrix.name }}
-
+    #let the other builds run even if one fails
+    #continue-on-error: true
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.continueOnError || false }}
 
@@ -77,21 +78,21 @@ jobs:
     steps:
     - name: Check out full source code for tooling
       if: ${{ matrix.useSonarCloud || matrix.name  == 'linux-gcc-x86_64' }}
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         fetch-depth: 0
 
     - name: Check out latest commit
       if: ${{ !matrix.useSonarCloud && matrix.name  != 'linux-gcc-x86_64' }}
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+    - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
       if: matrix.name  == 'windows-cl-x86_64'
       with:
         python-version: '3.12'
 
     - name: Restore cache
-      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ~/cache
         key: ${{ runner.os }}-${{ matrix.target }}
@@ -338,7 +339,7 @@ jobs:
       run: Remove-Item (Join-Path $env:RUNNER_TEMP 'sm_client.p12') -Force -ErrorAction SilentlyContinue
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: ${{ matrix.name }}
         path: ${{ github.workspace }}/binaries/*

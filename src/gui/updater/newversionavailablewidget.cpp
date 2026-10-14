@@ -13,6 +13,7 @@
  */
 
 #include "newversionavailablewidget.h"
+#include "iconresources.h"
 #include "theme.h"
 #include "ui_newversionavailablewidget.h"
 
@@ -22,21 +23,21 @@
 namespace OCC {
 
 NewVersionAvailableWidget::NewVersionAvailableWidget(QWidget *parent, const QString &statusMessage)
-    : QWidget(parent)
+    : QDialog(parent)
     , _ui(new ::Ui::Ui_NewVersionAvailableWidget)
 {
     _ui->setupUi(this);
 
-    _ui->icon->setPixmap(Theme::instance()->applicationIcon().pixmap(128, 128));
+    _ui->icon->setPixmap(IconResources::getBrandingIcon(Theme::instance()->applicationIconName()).pixmap(128, 128));
     _ui->label->setText(statusMessage);
 
     QPushButton *skipButton = _ui->buttonBox->addButton(tr("Skip this version"), QDialogButtonBox::ResetRole);
     QPushButton *getUpdateButton = _ui->buttonBox->addButton(tr("Get update"), QDialogButtonBox::AcceptRole);
-    QPushButton *rejectButton = _ui->buttonBox->addButton(tr("Skip this time"), QDialogButtonBox::AcceptRole);
+    QPushButton *rejectButton = _ui->buttonBox->addButton(tr("Skip this time"), QDialogButtonBox::RejectRole);
 
     connect(skipButton, &QAbstractButton::clicked, this, &NewVersionAvailableWidget::skipVersion);
-    connect(rejectButton, &QAbstractButton::clicked, this, &NewVersionAvailableWidget::notNow);
-    connect(getUpdateButton, &QAbstractButton::clicked, this, &NewVersionAvailableWidget::getUpdate);
+    connect(rejectButton, &QAbstractButton::clicked, this, &QDialog::reject);
+    connect(getUpdateButton, &QAbstractButton::clicked, this, &QDialog::accept);
 }
 
 NewVersionAvailableWidget::~NewVersionAvailableWidget()
@@ -47,19 +48,7 @@ NewVersionAvailableWidget::~NewVersionAvailableWidget()
 void NewVersionAvailableWidget::skipVersion()
 {
     Q_EMIT versionSkipped();
-    Q_EMIT finished();
-}
-
-void NewVersionAvailableWidget::notNow()
-{
-    Q_EMIT noUpdateNow();
-    Q_EMIT finished();
-}
-
-void NewVersionAvailableWidget::getUpdate()
-{
-    Q_EMIT updateNow();
-    Q_EMIT finished();
+    Q_EMIT finished(QDialog::Rejected);
 }
 
 } // OCC namespace

@@ -3,9 +3,10 @@
 
 #include "appconfig.h"
 
-#include "../theme.h"
+#include "common/asserts.h"
 #include "common/utility.h"
 #include "openidconfig.h"
+#include "theme.h"
 
 #include <QFile>
 #include <QOperatingSystemVersion>
@@ -19,9 +20,9 @@ namespace chrono = std::chrono;
 
 AppConfig::AppConfig()
 {
-    _serverUrl = Theme::instance()->overrideServerUrlV2();
+    _serverUrl = Theme::instance()->overrideServerUrl();
     // If a theme provides a hardcoded URL, do not allow for URL change.
-    _allowServerURLChange = Theme::instance()->overrideServerUrlV2().isEmpty();
+    _allowServerURLChange = Theme::instance()->overrideServerUrl().isEmpty();
     _skipUpdateCheck = false;
     _openIdConfig = loadOpenIdConfigFromTheme();
 
@@ -68,14 +69,21 @@ OpenIdConfig AppConfig::loadOpenIdConfigFromSystemConfig(const QSettings &system
     QString clientId = system.value(OidcClientIdKey, QString()).toString();
     QString clientSecret = system.value(OidcClientSecretKey, QString()).toString();
     QString scopes = system.value(OidcScopesKey, QString()).toString();
-    QString prompt = system.value(OidcPortsKey, QString()).toString();
+    QString prompt = system.value(OidcPromptKey, QString()).toString();
 
     QVector<quint16> ports;
-    QVariant portsVar = system.value(OidcPortsKey, QString()).toString();
-    const auto parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
-    for (const QString &p : parts) {
+    QVariant portsVar = system.value(OidcPortsKey);
+    QStringList parts;
+    if (portsVar.typeId() == QMetaType::QString) {
+        // Windows registry: "8080,8888" is a QString
+        parts = portsVar.toString().split(QLatin1Char(','), Qt::SkipEmptyParts);
+    } else {
+        // .ini files (Linux, macOS): "8080,8888" is a QStringlist
+        parts = portsVar.toStringList();
+    }
+    for (const QString &p : std::as_const(parts)) {
         bool ok = false;
-        const quint16 val = static_cast<quint16>(p.trimmed().toUInt(&ok));
+        quint16 val = p.trimmed().toUShort(&ok);
         if (ok) {
             ports.append(val);
         }
