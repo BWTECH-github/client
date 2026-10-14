@@ -98,7 +98,7 @@ Vfs::AvailabilityResult VfsMac::availability(const QString &folderPath)
     return availabilityInDb(folderPath);
 }
 
-void VfsMac::fileStatusChanged(const QString &, SyncFileStatus)
+void VfsMac::onFileStatusChanged(const QString &, SyncFileStatus)
 {
 }
 
