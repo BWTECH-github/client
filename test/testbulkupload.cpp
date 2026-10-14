@@ -172,8 +172,11 @@ private Q_SLOTS:
         fakeFolder.localModifier().insert(QStringLiteral("top"), 32_B);
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
-        // Batches are formed per directory: three bulk requests, no single PUT
-        QCOMPARE(bulk.nPOST, 3);
+        // Unveränderte Ordner (A, B) bekommen keinen eigenen Verzeichnis-Job, ihre
+        // neuen Dateien landen im Wurzel-Job: ein Bulk-Request für alle vier
+        // Dateien über Ordnergrenzen hinweg (X-File-Path trägt den vollen Pfad),
+        // kein einzelner PUT
+        QCOMPARE(bulk.nPOST, 1);
         QCOMPARE(bulk.nPUT, 0);
         // exactly one Depth-0 lookup per uploaded file
         bulk.lookups.sort();
@@ -255,7 +258,8 @@ private Q_SLOTS:
         fakeFolder.localModifier().insert(QStringLiteral("A/a3"), 8_B);
         fakeFolder.localModifier().insert(QStringLiteral("B/b3"), 8_B);
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
-        QCOMPARE(bulk.nPOST, 2);
+        // beide Dateien in einem gemeinsamen Bulk-Request (siehe oben)
+        QCOMPARE(bulk.nPOST, 1);
         QCOMPARE(bulk.lookups.size(), 2);
 
         for (const auto &path : {QStringLiteral("A/a3"), QStringLiteral("B/b3")}) {
