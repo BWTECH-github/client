@@ -9,15 +9,20 @@ bei DigiCert KeyLocker (Cloud-HSM) und verlässt ihn nie; `signtool` erreicht ih
 
 | Datei | Wer signiert |
 | --- | --- |
-| eigene Binärdateien (`owncloud.online.exe`, `*.dll` des Clients, VFS-Plugin) | craft beim Paketieren (`CodeSigning/SignCache = True`: Qt-DLLs aus dem Cache werden **nicht** signiert) |
-| craft-Installer `owncloud.online-client-<version>-win64.exe` | craft nach `makensis` |
-| `owncloud.online-uninstall.exe` (Helfer im Setup) | `main.yml`, vor dem Einbetten |
-| `…-Setup.exe` (Wrapper mit Neustart) | `main.yml`, nach `makensis` |
-| `.7z` (portabel) | enthält die signierten Binärdateien |
+| eigene Binärdateien (`owncloud.online.exe`, `*.dll` des Clients, VFS-Plugin) | Schritt „Sign Windows binaries“: alle exe/dll im craft-Image des Clients, vor dem Paketieren (Qt-DLLs liegen nicht im Image und bleiben unsigniert) |
+| craft-Installer `owncloud.online-client-<version>-win64.exe` | Wrapper-Schritt, vor dem Einbetten als `client-setup.exe` |
+| `owncloud.online-uninstall.exe` (Helfer im Setup) | Wrapper-Schritt, vor dem Einbetten |
+| `…-Setup.exe` (Wrapper mit Neustart) | Wrapper-Schritt, nach `makensis` |
+| `.7z` (portabel) | enthält die vorher signierten Binärdateien |
+
+craft selbst signiert nicht (`SIGN_PACKAGE` bleibt aus): sein Signier-Haken hat
+im Probelauf vom 14.10.2026 den Installer nicht erfasst. `codesign.ps1`
+überspringt Dateien, die schon mit unserem Zertifikat signiert sind.
 
 Jede Signatur trägt einen Zeitstempel (`http://timestamp.digicert.com`, SHA-256).
 Der Schritt „Check Windows signatures“ prüft danach jede `.exe` in `binaries/`
-mit `signtool verify /pa` und lässt den Lauf bei fehlender Signatur scheitern.
+und die eigenen Binärdateien im entpackten `.7z` mit `signtool verify /pa` und
+lässt den Lauf bei fehlender Signatur scheitern.
 
 Kontingent: 1000 Signaturen im Jahr. Pro Lauf sind es etwa 15 bis 20
 (eigene Binärdateien, Installer, Helfer, Setup, eine 7za-Kopie von craft).

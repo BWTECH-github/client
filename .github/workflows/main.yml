@@ -183,9 +183,11 @@ jobs:
 
     # Windows-Code-Signierung mit DigiCert KeyLocker: der private Schluessel bleibt
     # im Cloud-HSM von DigiCert, signtool spricht ueber den DigiCert-KSP. Nach
-    # `smctl windows certsync` liegt das Zertifikat im Benutzerspeicher, craft
-    # signiert dann beim Paketieren die eigenen Binaerdateien und den Installer
-    # (SIGN_PACKAGE, siehe .craft.ini), der Wrapper-Schritt Helfer und Setup.
+    # `smctl windows certsync` liegt das Zertifikat im Benutzerspeicher. Signiert
+    # wird ausdruecklich in eigenen Schritten (admin/win/codesign.ps1): die eigenen
+    # Binaerdateien im craft-Image vor dem Paketieren, danach craft-Installer,
+    # Helfer und Setup-Wrapper. craft selbst signiert nicht (SIGN_PACKAGE bleibt
+    # aus; sein Signier-Haken griff im Probelauf nicht).
     # Signiert wird NUR in einem von Hand gestarteten Lauf mit dem Eingabefeld
     # "sign" (Release-Bau): das Repository ist oeffentlich, die Zugangsdaten
     # sollen so selten wie moeglich in einem Lauf liegen, und das Kontingent
@@ -223,14 +225,30 @@ jobs:
         & $smctl @sync
         if ($LASTEXITCODE -ne 0) { throw 'smctl windows certsync fehlgeschlagen' }
 
-        # fuer die folgenden Schritte: craft-Packaging, Wrapper-Bau, Pruefung
+        # fuer die folgenden Schritte: Binaerdateien, Wrapper-Bau, Pruefung
         $tools >> $env:GITHUB_PATH
         "SM_HOST=$env:SM_HOST" >> $env:GITHUB_ENV
         "SM_API_KEY=$env:SM_API_KEY" >> $env:GITHUB_ENV
         "SM_CLIENT_CERT_FILE=$p12" >> $env:GITHUB_ENV
         "SM_CLIENT_CERT_PASSWORD=$env:SM_CLIENT_CERT_PASSWORD" >> $env:GITHUB_ENV
-        "SIGN_PACKAGE=True" >> $env:GITHUB_ENV
+        "CODESIGN_ACTIVE=true" >> $env:GITHUB_ENV
         "CRAFT_CODESIGN_COMMONNAME=$env:SM_CERT_COMMONNAME" >> $env:GITHUB_ENV
+
+    # Eigene Binaerdateien (exe/dll im craft-Image des Clients, nicht die Qt-DLLs)
+    # signieren, bevor craft Installer und 7z daraus baut.
+    - name: Sign Windows binaries
+      if: runner.os == 'Windows' && env.CODESIGN_ACTIVE == 'true'
+      run: |
+        $image = (& "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --get imageDir -q owncloud/owncloud-client | Select-Object -Last 1)
+        if ($image) { $image = "$image".Trim() }
+        if (-not $image -or -not (Test-Path $image)) {
+          $image = (Get-ChildItem "$env:HOME/craft/*/build/owncloud/owncloud-client/image-*" -Directory -ErrorAction SilentlyContinue | Select-Object -First 1).FullName
+        }
+        if (-not $image -or -not (Test-Path $image)) { throw 'Image-Verzeichnis des Clients nicht gefunden' }
+        $files = @(Get-ChildItem $image -Recurse -Include *.exe, *.dll | ForEach-Object { $_.FullName })
+        Write-Host "Image: $image - $($files.Count) Binaerdateien"
+        if (-not $files) { throw 'Keine Binaerdateien im Image' }
+        & "${env:GITHUB_WORKSPACE}/admin/win/codesign.ps1" -Sign $files
 
     - name: Package
       run: |
@@ -277,13 +295,15 @@ jobs:
         Set-Location "${env:GITHUB_WORKSPACE}/admin/win"
         $helper = "${env:RUNNER_TEMP}\owncloud.online-uninstall.exe"
         $codesign = "${env:GITHUB_WORKSPACE}/admin/win/codesign.ps1"
+        # craft-Installer signieren, bevor er als client-setup.exe eingebettet wird
+        if ($env:CODESIGN_ACTIVE -eq 'true') { & $codesign -Sign $exe.FullName }
         & $makensis "/DOUTFILE=$helper" "/DVERSION=$version" uninstall-helper.nsi
         if ($LASTEXITCODE -ne 0) { exit 1 }
         # Helfer signieren, bevor er in das Setup eingebettet wird
-        if ($env:SIGN_PACKAGE -eq 'True') { & $codesign -Sign $helper }
+        if ($env:CODESIGN_ACTIVE -eq 'true') { & $codesign -Sign $helper }
         & $makensis "/DSOURCE_EXE=$($exe.FullName)" "/DOUTFILE=$out" "/DVERSION=$version" "/DUNINSTALL_HELPER_EXE=$helper" restart-wrapper.nsi
         if ($LASTEXITCODE -ne 0) { exit 1 }
-        if ($env:SIGN_PACKAGE -eq 'True') { & $codesign -Sign $out }
+        if ($env:CODESIGN_ACTIVE -eq 'true') { & $codesign -Sign $out }
         Get-ChildItem "${env:GITHUB_WORKSPACE}/binaries"
 
     # Pflichtschritt nach dem Signieren: jedes ausgelieferte Windows-Programm muss
@@ -292,12 +312,26 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         $exes = @(Get-ChildItem "${env:GITHUB_WORKSPACE}/binaries" -Filter "*.exe")
-        if ($env:SIGN_PACKAGE -ne 'True') {
-          Write-Host "::notice::Windows-Pakete sind unsigniert - keine DigiCert-Zugangsdaten in diesem Lauf (siehe admin/win/CODESIGNING.md)."
+        if ($env:CODESIGN_ACTIVE -ne 'true') {
+          Write-Host "::notice::Windows-Pakete sind unsigniert - kein Signier-Lauf (siehe admin/win/CODESIGNING.md)."
           exit 0
         }
         if (-not $exes) { throw 'Keine exe in binaries/ gefunden' }
-        & "${env:GITHUB_WORKSPACE}/admin/win/codesign.ps1" -Verify ($exes | ForEach-Object { $_.FullName })
+        $codesign = "${env:GITHUB_WORKSPACE}/admin/win/codesign.ps1"
+        & $codesign -Verify ($exes | ForEach-Object { $_.FullName })
+        # Auch der Inhalt des portablen 7z: eigene Binaerdateien muessen signiert sein
+        $sevenZip = Get-ChildItem "${env:GITHUB_WORKSPACE}/binaries" -Filter "*.7z" | Select-Object -First 1
+        if ($sevenZip) {
+          $dir = Join-Path $env:RUNNER_TEMP 'portable-check'
+          Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+          & 7z x -y "-o$dir" $sevenZip.FullName | Out-Null
+          if ($LASTEXITCODE -ne 0) { throw "7z konnte $($sevenZip.Name) nicht entpacken" }
+          $own = @(Get-ChildItem $dir -Recurse -Include owncloud*.exe, owncloud*.dll, ownCloud*.dll | ForEach-Object { $_.FullName })
+          Write-Host "Portabel: $($own.Count) eigene Binaerdateien werden geprueft"
+          if (-not $own) { throw 'Keine eigenen Binaerdateien im 7z gefunden' }
+          & $codesign -Verify $own
+          Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+        }
 
     - name: Code signing cleanup
       if: always() && runner.os == 'Windows'

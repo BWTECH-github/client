@@ -41,6 +41,12 @@ if (-not $subject) { $subject = 'BW-TECH GmbH' }
 
 foreach ($file in $Sign) {
     if (-not (Test-Path $file)) { throw "Datei fehlt: $file" }
+    # Schon mit unserem Zertifikat signiert: nicht noch einmal (jede Signatur zählt im Kontingent)
+    $vorhanden = Get-AuthenticodeSignature $file
+    if ($vorhanden.Status -eq 'Valid' -and $vorhanden.SignerCertificate.Subject -like "*$subject*") {
+        Write-Host "bereits signiert, übersprungen: $file"
+        continue
+    }
     & $signtool sign /tr $timestamp /td SHA256 /fd SHA256 /a /n $subject /v $file
     if ($LASTEXITCODE -ne 0) { throw "Signieren fehlgeschlagen: $file" }
 }
