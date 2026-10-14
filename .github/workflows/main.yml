@@ -97,7 +97,7 @@ jobs:
         key: ${{ runner.os }}-${{ matrix.target }}
 
     - name: Clone CraftMaster
-      run: git clone --depth=1 https://invent.kde.org/kde/craftmaster.git "$env:HOME/craft/CraftMaster/CraftMaster"
+      run: git clone --depth=1 https://github.com/KDE/craftmaster.git "$env:HOME/craft/CraftMaster/CraftMaster"
 
     - name: Craft setup
       run: |
