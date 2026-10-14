@@ -50,10 +50,23 @@ case_begin() {
 fail() { [ "$STATUS" = ERROR ] || STATUS=FAIL; NOTES+=("$*"); echo "  FAIL: $*"; }
 note() { NOTES+=("$*"); echo "  info: $*"; }
 case_error() { STATUS=ERROR; NOTES+=("Suite: $*"); echo "  ERROR: $*"; }
+# annotate <titel> <text>: Fehlerhinweis an der Lauf-Übersicht (nur unter GitHub Actions);
+# Werte nach den Regeln der Workflow-Befehle kodiert, damit % : , den Befehl nicht zerlegen
+annotate() {
+	[ -n "${GITHUB_ACTIONS:-}" ] || return 0
+	local t=${1//'%'/%25} m=${2//'%'/%25}
+	t=${t//:/%3A} t=${t//,/%2C}
+	echo "::error title=$t::$m"
+}
 case_end() {
 	local text='' n
 	for n in "${NOTES[@]}"; do text+="${text:+; }$n"; done
-	ROWS+=("$ID"$'\t'"$TITLE"$'\t'"$STATUS"$'\t'"$((SECONDS - STARTED))"$'\t'"${text//$'\n'/ }")
+	text=${text//$'\n'/ }
+	ROWS+=("$ID"$'\t'"$TITLE"$'\t'"$STATUS"$'\t'"$((SECONDS - STARTED))"$'\t'"$text")
+	case $STATUS in
+	FAIL) annotate "Fall $ID – $TITLE" "$text" ;;
+	ERROR) annotate "Fall $ID – $TITLE (nicht bewertbar)" "$text" ;;
+	esac
 	echo "  => $STATUS"
 	echo "::endgroup::"
 }
@@ -360,7 +373,7 @@ t12() {
 	RC=$?
 	[ "$RC" -eq 137 ] || { case_error "lauf1 endete vor dem Abbruch (exit $RC)"; return; }
 	done1=$(chunks_done "$LOG")
-	note "lauf1 nach $done1/$total Chunks hart beendet (kill -9)"
+	note "lauf1 nach $done1/$total bestätigten Chunks hart beendet (kill -9)"
 	RC=0
 	check_run lauf1 # nur ASSERTs vor dem Abbruch
 	[ "$(sha "$f")" = "$before" ] || fail "lokale Datei durch den Abbruch verändert"
@@ -370,7 +383,8 @@ t12() {
 	again=$(chunks_done "$LOG")
 	[ "$(dav sha "$R/abbruch-200MiB.bin")" = "$before" ] || fail "nach erneutem Lauf falscher oder fehlender Serverinhalt"
 	if [ "$again" -lt "$total" ]; then
-		note "fortgesetzt: lauf2 lud $again/$total Chunks"
+		# Parallele Chunks können noch angekommen sein, ohne dass lauf1 die Antwort protokolliert hat
+		note "fortgesetzt: lauf2 lud $again/$total Chunks, $((total - again)) vom Server übernommen"
 	else
 		fail "nicht fortgesetzt: lauf2 lud alle $again/$total Chunks neu"
 	fi
@@ -389,7 +403,7 @@ t13() {
 }
 
 t14() {
-	local f=$L/aenderung.bin v1 v2 s k runs=0
+	local f=$L/aenderung.bin v1 v2 s k runs=0 total late=''
 	rnd_mib "$f" 150
 	v1=$(sha "$f")
 	start_bg lauf1 "${SMALL_CHUNKS[@]}"
@@ -401,6 +415,10 @@ t14() {
 	fi
 	# Während des Uploads an Ort und Stelle neu schreiben: anderer Inhalt, andere Größe
 	dd if=/dev/urandom of="$f" bs=1M count=100 status=none
+	# Stand nach der Änderung: Waren schon alle Chunks bestätigt, lag die Änderung nicht mehr
+	# im Upload – dann ist eine übernommene alte Fassung kein Client-Fehler.
+	total=$(((150 * 1048576 + SMALL_CHUNK_BYTES - 1) / SMALL_CHUNK_BYTES))
+	alive "$BG_PID" && [ "$(chunks_done "$LOG")" -lt "$total" ] || late=1
 	v2=$(sha "$f")
 	wait_bg
 	check_run lauf1 allow-fail
@@ -408,7 +426,18 @@ t14() {
 	case $s in
 	MISSING) note "lauf1: Änderung erkannt, nichts übernommen" ;;
 	"$v2") note "lauf1: neue Fassung übernommen" ;;
-	"$v1") fail "lauf1: alte Fassung trotz Änderung als fertig übernommen" ;;
+	"$v1")
+		if [ -n "$late" ]; then
+			# Fenster verpasst: nicht bewertbar; ein schon gemeldeter Client-Fehler bleibt FAIL
+			if [ "$STATUS" = FAIL ]; then
+				note "Änderung erst nach dem letzten Chunk fertig – Änderungsfall nicht bewertbar"
+			else
+				case_error "Änderung erst nach dem letzten Chunk fertig – kein Änderungsfenster"
+			fi
+			return
+		fi
+		fail "lauf1: alte Fassung trotz Änderung als fertig übernommen"
+		;;
 	*) fail "lauf1: Mischinhalt auf dem Server (weder alte noch neue Fassung)" ;;
 	esac
 	for k in 2 3 4; do
@@ -462,6 +491,8 @@ pass=0 failed=0 errors=0
 	done
 	echo
 	echo "PASS $pass, FAIL $failed, ERROR $errors"
+	echo
+	echo "_FAIL: Fehlverhalten des Clients, Grund in der Spalte Befund. ERROR: Suite oder Umgebung, Fall nicht bewertbar._"
 } >"$OUT/results.md"
 printf '%s\n' "${ROWS[@]}" >"$OUT/results.tsv"
 cat "$OUT/results.md"
