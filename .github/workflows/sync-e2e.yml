@@ -16,6 +16,12 @@ on:
         description: "Release-Tag von BWTECH-github/owncloud.online für den Testserver"
         required: false
         default: "v11.0.22"
+  # GitHub nimmt workflow_dispatch für einen Workflow, der nicht auf dem Standardzweig
+  # liegt, erst nach einem ersten Lauf an. Dieser Auslöser registriert ihn nur; der Job
+  # läuft ausschließlich auf Anforderung (siehe if am Job).
+  push:
+    branches: [sync-e2e]
+    paths: [.github/workflows/sync-e2e.yml]
 
 permissions:
   actions: read
@@ -24,6 +30,7 @@ permissions:
 jobs:
   sync-e2e:
     name: owncloudcmd gegen owncloud.online
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     defaults:
