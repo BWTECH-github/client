@@ -21,7 +21,36 @@ mit `signtool verify /pa` und lässt den Lauf bei fehlender Signatur scheitern.
 
 Kontingent: 1000 Signaturen im Jahr. Pro Lauf sind es etwa 15 bis 20
 (eigene Binärdateien, Installer, Helfer, Setup, eine 7za-Kopie von craft).
-Signiert wird nur bei Läufen, die die Zugangsdaten sehen – nie bei Pull Requests.
+
+## Wann signiert wird
+
+Nur in einem von Hand gestarteten Lauf: Actions → „ownCloud CI“ → „Run
+workflow“ → Haken bei **sign**. Das ist der Release-Bau; seine Run-ID bekommt
+anschließend `publish-release.yml`. Pushes auf `master` und Pull Requests bauen
+weiter unsigniert. Gründe: das Repository ist öffentlich, die Zugangsdaten
+sollen in so wenigen Läufen wie möglich liegen, und jeder Push würde das
+Kontingent aufbrauchen.
+
+## Öffentliches Repository – was liegt wo
+
+- Im Repository: nur Workflow, Skript und diese Anleitung. Kein Zertifikat, kein
+  Schlüssel, kein Kennwort. Das öffentliche Zertifikat wäre ohnehin unkritisch –
+  es steckt in jeder signierten Datei.
+- In den Repository-Secrets (verschlüsselt, in Protokollen maskiert): API-Schlüssel,
+  Client-Zertifikat, dessen Kennwort. Pull Requests aus Forks bekommen Secrets nie.
+- Bei DigiCert: der private Schlüssel. Er lässt sich nicht exportieren; jede
+  Signatur steht im Signaturprotokoll von DigiCert ONE.
+
+Verbleibendes Risiko: Wer Schreibrecht auf das Repository hat, kann den Workflow
+ändern und die Secrets in einem Lauf auslesen; ebenso ein kompromittiertes
+Werkzeug, das während des Signier-Laufs mitläuft (craft, Blueprints). Mit den
+Zugangsdaten ließe sich bis zum Widerruf als BW-TECH signieren. Deshalb:
+Schreibrecht eng halten, Dienstbenutzer in DigiCert ONE nur mit Signierrecht auf
+dieses Schlüsselpaar, Signaturprotokoll gelegentlich ansehen, API-Schlüssel bei
+Verdacht sofort in DigiCert ONE widerrufen (dann sind alle Secrets wertlos).
+Optional strenger: Secrets in ein GitHub-Environment „codesign“ mit Pflicht-
+Freigabe legen und die Signierung in einen eigenen Job mit `environment:
+codesign` auslagern.
 
 ## Einrichtung (einmalig, im Repository unter Settings → Secrets and variables → Actions)
 
@@ -36,8 +65,9 @@ Aus DigiCert ONE (Software Trust Manager / KeyLocker):
 | `SM_KEYPAIR_ALIAS` | Variable, optional | Alias des Schlüsselpaars, wenn im Konto mehrere liegen |
 | `SM_CERT_COMMONNAME` | Variable, optional | Antragstellername zur Auswahl im Zertifikatsspeicher, Vorgabe `BW-TECH GmbH` |
 
-Fehlt eines der drei Secrets oder `SM_HOST`, läuft die CI wie bisher und meldet
-„Windows-Pakete sind unsigniert“ als Hinweis.
+Fehlt eines der drei Secrets oder `SM_HOST` – oder ist der Lauf kein
+Signier-Lauf –, läuft die CI wie bisher und meldet „Windows-Pakete sind
+unsigniert“ als Hinweis.
 
 ## Ablauf in der CI
 

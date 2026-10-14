@@ -7,8 +7,13 @@ on:
       - '[0-9]+'
   pull_request:
   workflow_dispatch:
+    inputs:
+      sign:
+        description: 'Windows-Pakete mit dem DigiCert-Zertifikat signieren (nur fuer Release-Baeume)'
+        type: boolean
+        default: false
 
-concurrency: 
+concurrency:
   group: ${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
 
@@ -181,10 +186,13 @@ jobs:
     # `smctl windows certsync` liegt das Zertifikat im Benutzerspeicher, craft
     # signiert dann beim Paketieren die eigenen Binaerdateien und den Installer
     # (SIGN_PACKAGE, siehe .craft.ini), der Wrapper-Schritt Helfer und Setup.
-    # Ohne Zugangsdaten (Pull Requests bekommen sie nie) bleibt alles unsigniert,
-    # der Schritt "Check Windows signatures" meldet das als Hinweis.
+    # Signiert wird NUR in einem von Hand gestarteten Lauf mit dem Eingabefeld
+    # "sign" (Release-Bau): das Repository ist oeffentlich, die Zugangsdaten
+    # sollen so selten wie moeglich in einem Lauf liegen, und das Kontingent
+    # (1000 Signaturen im Jahr) reicht nicht fuer jeden Push. Pushes und Pull
+    # Requests bleiben unsigniert; "Check Windows signatures" meldet das.
     - name: Code signing setup (DigiCert KeyLocker)
-      if: runner.os == 'Windows' && github.event_name != 'pull_request' && env.HAS_SIGNING == 'true'
+      if: runner.os == 'Windows' && github.event_name == 'workflow_dispatch' && inputs.sign == true && env.HAS_SIGNING == 'true'
       env:
         SM_HOST: ${{ vars.SM_HOST }}
         SM_API_KEY: ${{ secrets.SM_API_KEY }}
