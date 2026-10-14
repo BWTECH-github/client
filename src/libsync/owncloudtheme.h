@@ -34,6 +34,7 @@ public:
     QColor errorColor(bool darkScheme) const override;
     QColor selectionColor() const override;
     QString wizardHeaderLogoName() const override;
+    QString applicationIconName() const override;
     QString aboutIconName() const override;
     bool moveToTrashDefaultValue() const override;
     bool allowSystemConfigOverrides() const override;

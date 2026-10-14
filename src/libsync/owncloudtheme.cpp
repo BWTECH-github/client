@@ -14,6 +14,7 @@
 
 #include "owncloudtheme.h"
 
+#include "config.h"
 #include "iconresources.h"
 
 #include <QCoreApplication>
@@ -67,6 +68,15 @@ QColor ownCloudTheme::selectionColor() const
 QString ownCloudTheme::wizardHeaderLogoName() const
 {
     return "wizard_logo";
+}
+
+QString ownCloudTheme::applicationIconName() const
+{
+    // Upstream leitet den Namen aus APPLICATION_SHORTNAME ab ("owncloud.online-icon"),
+    // die Branding-Ressource heißt aber nach APPLICATION_ICON_NAME (owncloud-online-icon.svg).
+    // Ohne diese Überschreibung findet getBrandingIcon() nichts, und Fenster-, Tray- und
+    // Update-Symbole fallen auf ein Platzhaltersymbol zurück.
+    return QStringLiteral(APPLICATION_ICON_NAME "-icon");
 }
 
 QString ownCloudTheme::aboutIconName() const
