@@ -42,12 +42,20 @@ jobs:
           for f in *; do
             case "$f" in
               *-Setup.exe) mv "$f" "owncloud.online-client-${VER}-win-x64-Setup.exe" ;;
-              *.exe)      mv "$f" "owncloud.online-client-${VER}-win-x64.exe" ;;
+              # the raw craft installer is only the payload of the Setup: it
+              # carries the upstream identity ("ownCloud" / "ownCloud GmbH" in
+              # Apps & Features, a Start menu entry pointing at bin\owncloud.exe,
+              # no Explorer integration) and is not published
+              *.exe)      rm -f -- "$f" ;;
               *.7z)       mv "$f" "owncloud.online-client-${VER}-win-x64.7z" ;;
               *.AppImage) mv "$f" "owncloud.online-client-${VER}-linux-x86_64.AppImage" ;;
               *.dmg)      mv "$f" "owncloud.online-client-${VER}-macos-arm64.dmg" ;;
             esac
           done
+          # the Setup is the only Windows installer offered - without it there
+          # is nothing to release
+          test -f "owncloud.online-client-${VER}-win-x64-Setup.exe" \
+            || { echo "::error::Windows Setup (*-Setup.exe) fehlt in den CI-Artefakten"; exit 1; }
           sha256sum * > SHA256SUMS.txt
           ls -la
 
@@ -60,8 +68,7 @@ jobs:
           Release ${VER} des owncloud.online Desktop-Clients.
 
           **Pakete**
-          - \`owncloud.online-client-${VER}-win-x64-Setup.exe\` — **empfohlener Windows-Installer**: beendet einen laufenden Client, installiert und führt den für die Explorer-Integration nötigen Windows-Neustart aus. Silent: \`/S\` (startet automatisch neu), Neustart unterdrücken: \`/S /norestart\` (z. B. für baramundi-Jobs mit eigener Reboot-Steuerung).
-          - \`owncloud.online-client-${VER}-win-x64.exe\` — Basis-Installer ohne Neustart-Logik
+          - \`owncloud.online-client-${VER}-win-x64-Setup.exe\` — **Windows-Installer**: beendet einen laufenden owncloud.online-Client, installiert, richtet die Explorer-Integration ein und bietet den dafür nötigen Windows-Neustart an. Still (\`/S\`, z. B. baramundi/Intune): startet Windows **nicht** mehr selbst neu – Exit-Code 3010 bedeutet „installiert, Neustart ausstehend“, 0 „nichts ausstehend“; \`/S /forcerestart\` (neu, optional) startet sofort neu; \`/S /norestart\` wird weiterhin angenommen und verhält sich wie \`/S\`. Ein in \`C:\\Program Files\\ownCloud\` installierter offizieller ownCloud-Client wird nicht mehr angefasst.
           - \`owncloud.online-client-${VER}-win-x64.7z\` — Windows portabel
           - \`owncloud.online-client-${VER}-linux-x86_64.AppImage\` — Linux
           - \`owncloud.online-client-${VER}-macos-arm64.dmg\` — macOS (Apple Silicon). Nicht mit einem Apple-Developer-Zertifikat signiert/notarisiert: beim ersten Start meldet macOS „Apple konnte nicht überprüfen …". Öffnen über Systemeinstellungen → Datenschutz & Sicherheit → „Dennoch öffnen" (macOS 15+; unter macOS 14 genügt Rechtsklick → Öffnen), alternativ \`xattr -dr com.apple.quarantine /Applications/owncloud.online.app\`.

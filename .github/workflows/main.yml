@@ -274,6 +274,77 @@ jobs:
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --shelve "${env:GITHUB_WORKSPACE}/.craft.shelf"
         Copy-Item "${env:GITHUB_WORKSPACE}/.craft.shelf" "${env:GITHUB_WORKSPACE}/binaries/"
 
+    # Nur lesen (Audit H9): OpenSSL-Stand des Windows-Pakets ins Protokoll schreiben.
+    # Fragt die craft-Umgebung nach "openssl version", liest die Dateiversion von
+    # libcrypto/libssl aus dem craft-Wurzelverzeichnis und aus dem portablen 7z
+    # (falls vorhanden) und vergleicht mit dem Pin libs/openssl.version in
+    # .craft.ini. Der Schritt ändert nichts und bricht den Lauf nie ab.
+    - name: Report OpenSSL version in Windows artifact
+      if: runner.os == 'Windows'
+      continue-on-error: true
+      run: |
+        $ErrorActionPreference = 'Continue'
+        $PSNativeCommandUseErrorActionPreference = $false
+        $pinned = ''
+        $m = [regex]::Match((Get-Content "${env:GITHUB_WORKSPACE}/.craft.ini" -Raw), '(?m)^\s*libs/openssl\.version\s*=\s*(\S+)')
+        if ($m.Success) { $pinned = $m.Groups[1].Value }
+        Write-Host "OpenSSL-Pin in .craft.ini: $pinned"
+
+        # 1) craft-Umgebung: das openssl-Werkzeug, gegen das Qt und libcurl gebaut sind
+        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run openssl version
+
+        # 2) craft-Wurzelverzeichnis: die DLLs, die der Installer einsammelt
+        $shipped = ''
+        # CraftMaster legt das Wurzelverzeichnis je Ziel unter Variables:Root an; ohne
+        # eigenen Wert ist das der Ordner über CraftMaster.py, also $HOME/craft/CraftMaster/<Ziel>.
+        # Rückfall: tiefenbegrenzte Suche nach der DLL in einem bin-Ordner unter $HOME/craft.
+        $rootBin = "$env:HOME/craft/CraftMaster/$env:CRAFT_TARGET/bin"
+        if (-not (Test-Path (Join-Path $rootBin 'libcrypto-3-x64.dll'))) {
+          $rootBin = (Get-ChildItem "$env:HOME/craft" -Recurse -Depth 3 -Filter libcrypto-3-x64.dll -ErrorAction SilentlyContinue |
+            Where-Object { $_.DirectoryName -like '*bin' -and $_.FullName -notlike '*craft-clone*' } | Select-Object -First 1).DirectoryName
+        }
+        foreach ($name in 'libcrypto-3-x64.dll', 'libssl-3-x64.dll') {
+          $f = if ($rootBin) { Get-Item (Join-Path $rootBin $name) -ErrorAction SilentlyContinue }
+          if ($f) {
+            Write-Host ("craft-Wurzel {0}: FileVersion={1} ProductVersion={2}" -f $f.Name, $f.VersionInfo.FileVersion, $f.VersionInfo.ProductVersion)
+            if ($f.Name -eq 'libcrypto-3-x64.dll') { $shipped = "$($f.VersionInfo.FileVersion)".Trim() }
+          } else {
+            Write-Host "craft-Wurzel: $name nicht gefunden ($rootBin)"
+          }
+        }
+
+        # 3) portables 7z (falls gebaut): nur die OpenSSL-Dateien flach entpacken, Archiv bleibt unverändert
+        $archive = Get-ChildItem "${env:GITHUB_WORKSPACE}/binaries" -Filter "*.7z" -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike "*-dbg*" } | Select-Object -First 1
+        if ($archive) {
+          $dir = Join-Path $env:RUNNER_TEMP 'openssl-version-check'
+          Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+          & 7z e -y "-o$dir" $archive.FullName -r libcrypto-3-x64.dll libssl-3-x64.dll openssl.exe | Out-Null
+          $files = @(Get-ChildItem $dir -File -ErrorAction SilentlyContinue)
+          if ($files) {
+            foreach ($f in $files) {
+              Write-Host ("{0} in {1}: FileVersion={2} ProductVersion={3} ({4} Bytes)" -f $f.Name, $archive.Name, $f.VersionInfo.FileVersion, $f.VersionInfo.ProductVersion, $f.Length)
+            }
+            $crypto = $files | Where-Object { $_.Name -eq 'libcrypto-3-x64.dll' } | Select-Object -First 1
+            if ($crypto) { $shipped = "$($crypto.VersionInfo.FileVersion)".Trim() }
+            $exe = $files | Where-Object { $_.Name -eq 'openssl.exe' } | Select-Object -First 1
+            if ($exe) { & $exe.FullName version }
+          } else {
+            Write-Host "::warning::Keine OpenSSL-Dateien (libcrypto-3-x64.dll) in $($archive.Name) gefunden."
+          }
+          Remove-Item $dir -Recurse -Force -ErrorAction SilentlyContinue
+        } else {
+          Write-Host "Kein portables 7z in binaries/ - nur craft-Wurzel geprüft."
+        }
+
+        if (-not $shipped) {
+          Write-Host "::warning::OpenSSL-Version des Windows-Pakets nicht ermittelbar (libcrypto-3-x64.dll fehlt)."
+        } elseif ($pinned -and -not $shipped.StartsWith($pinned)) {
+          Write-Host "::warning::OpenSSL im Windows-Paket ($shipped) weicht vom Pin in .craft.ini ($pinned) ab."
+        } else {
+          Write-Host "::notice::OpenSSL im Windows-Paket: $shipped (Pin in .craft.ini: $pinned)"
+        }
+        exit 0
+
     # Wraps the craft installer into a setup exe that stops a running client,
     # installs silently and requires + performs the Windows restart needed for
     # the Explorer integration (see admin/win/restart-wrapper.nsi).

@@ -16,12 +16,14 @@
 
 #include "owncloudpropagator.h"
 
+#include <QPointer>
 #include <QVector>
 
 namespace OCC {
 
 Q_DECLARE_LOGGING_CATEGORY(lcBulkPropagatorJob)
 
+class PropfindJob;
 class SimpleNetworkJob;
 
 /**
@@ -34,6 +36,11 @@ class SimpleNetworkJob;
  * server (etag/fileid on success, or a soft error so the file retries individually
  * on the next sync). It mirrors PropagateItemJob::done() per item so the sync
  * journal is updated exactly as for normal uploads.
+ *
+ * Das Ergebnis enthält keine Rechte; eine bestätigte Datei wird daher erst nach
+ * einem Depth-0-PROPFIND auf sie abgeschlossen (wie im Einzel-PUT-Pfad). Schlägt
+ * die Abfrage fehl, endet die Datei mit einem weichen Fehler und die nächste
+ * Discovery trägt sie ein, ohne sie erneut zu übertragen.
  * @ingroup libsync
  */
 class BulkPropagatorJob : public PropagatorJob
@@ -65,6 +72,28 @@ private Q_SLOTS:
     void slotUploadFinished();
 
 private:
+    /** Eine vom Server im Bulk-Ergebnis bestätigte Datei. Ihr Journal-Eintrag
+     *  kann erst geschrieben werden, wenn ihre Rechte auf dem Server bekannt sind. */
+    struct ConfirmedItem
+    {
+        SyncFileItemPtr item;
+        QString etag;
+        QByteArray fileId;
+    };
+
+    /** Die Bulk-Antwort enthält keine Rechte, das Journal verlangt sie aber
+     *  (SyncJournalDb::setFileRecord prüft _remotePerm per OC_ASSERT). Holt sie wie
+     *  PropagateUploadCommon::finalize() mit einem Depth-0-PROPFIND je Datei nach,
+     *  höchstens maximumActiveTransferJob() gleichzeitig, und schließt jede
+     *  bestätigte Datei mit ihrer Antwort ab. */
+    void fetchPermissions(QVector<ConfirmedItem> &&confirmed);
+    void startPermissionLookups();
+    void permissionLookupFinished(const ConfirmedItem &confirmed, bool ok);
+
+    /** Schreibt die Journal-Einträge des Batches fest und beendet den Job mit dem
+     *  schlechtesten Status seiner Dateien; ein FatalError stoppt den ganzen Lauf. */
+    void finishBatch();
+
     /** Complete a single item exactly once: set status/etag/fileid, update the
      *  blacklist, and notify the engine via itemCompleted so the journal is written. */
     void completeItem(const SyncFileItemPtr &item, SyncFileItem::Status status,
@@ -75,6 +104,9 @@ private:
     QVector<SyncFileItemPtr> _items; //!< the whole batch handed to this job
     QVector<SyncFileItemPtr> _sentItems; //!< items actually included in the request body
     QPointer<SimpleNetworkJob> _job;
+    QVector<ConfirmedItem> _awaitingPermissions; //!< bestätigte Dateien, deren Rechte-Abfrage noch nicht läuft
+    QVector<QPointer<PropfindJob>> _permissionJobs; //!< gestartete Rechte-Abfragen, werden mit dem Job abgebrochen
+    int _runningPermissionLookups = 0;
     bool _started = false;
 };
 

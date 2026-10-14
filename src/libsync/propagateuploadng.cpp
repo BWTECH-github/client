@@ -312,6 +312,16 @@ void PropagateUploadFileNG::slotPropfindFinishedWithError()
     _item->_requestId = job->requestId();
 
     QNetworkReply::NetworkError err = job->reply()->error();
+    if (err == QNetworkReply::NoError) {
+        // Die Anfrage ging durch, aber die Antwort war kein brauchbares 207 (etwa
+        // die "200 OK"-Seite eines Proxys oder ein Nicht-XML-Rumpf). classifyError()
+        // prüft NoError per Assert, daher hier behandeln: der Zustand der Sitzung
+        // ist unbekannt, der Journal-Eintrag bleibt, der nächste Lauf versucht die
+        // Wiederaufnahme erneut.
+        propagator()->_activeJobList.removeOne(this);
+        abortWithError(SyncFileItem::NormalError, tr("Unexpected return code from server (%1)").arg(_item->_httpErrorCode));
+        return;
+    }
     auto status = classifyError(err, _item->_httpErrorCode, &propagator()->_anotherSyncNeeded);
     if (status == SyncFileItem::FatalError) {
         propagator()->_activeJobList.removeOne(this);
@@ -366,7 +376,10 @@ void PropagateUploadFileNG::slotDeleteJobFinished()
     if (!runningDeleteJobs) {
         propagator()->_activeJobList.removeOne(this);
         if (_removeJobError) {
-            // There was an error removing some files, just start over
+            // There was an error removing some files, just start over.
+            // startNewUpload() erwartet diesen Job genau einmal auf der Aktivliste
+            // (wie im Retry-Pfad von slotMkColFinished).
+            propagator()->_activeJobList.append(this);
             startNewUpload();
         } else {
             scheduleChunks();
@@ -423,6 +436,14 @@ void PropagateUploadFileNG::slotMkColFinished()
                     startNewUpload();
                 }
             });
+            return;
+        }
+        if (err == QNetworkReply::NoError) {
+            // Ein 2xx ungleich 201 Created: kein Netzwerkfehler, darf also nicht
+            // durch classifyError() (prüft NoError per Assert). Ob das Upload-
+            // Verzeichnis existiert, ist unbekannt – die Übertragung endet mit
+            // einem normalen Fehler, der nächste Lauf beginnt von vorn.
+            abortWithError(SyncFileItem::NormalError, tr("Unexpected return code from server (%1)").arg(_item->_httpErrorCode));
             return;
         }
         _item->_requestId = job->requestId();

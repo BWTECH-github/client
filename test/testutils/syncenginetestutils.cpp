@@ -571,6 +571,102 @@ void FakeMoveReply::respond()
     checkedFinished();
 }
 
+FakeChunkMoveReply::FakeChunkMoveReply(FileInfo &uploadsFileInfo, FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
+    : FakeReply { parent }
+{
+    setRequest(request);
+    setUrl(request.url());
+    setOperation(op);
+    open(QIODevice::ReadOnly);
+    fileInfo = perform(uploadsFileInfo, remoteRootFileInfo, request);
+    if (!fileInfo) {
+        QMetaObject::invokeMethod(this, &FakeChunkMoveReply::respondPreconditionFailed, Qt::QueuedConnection);
+    } else {
+        QMetaObject::invokeMethod(this, &FakeChunkMoveReply::respond, Qt::QueuedConnection);
+    }
+}
+
+FileInfo *FakeChunkMoveReply::perform(FileInfo &uploadsFileInfo, FileInfo &remoteRootFileInfo, const QNetworkRequest &request)
+{
+    QString source = getFilePathFromUrl(request.url());
+    Q_ASSERT(!source.isEmpty());
+    Q_ASSERT(source.endsWith(QLatin1String("/.file")));
+    source.chop(QLatin1String("/.file").size());
+
+    auto sourceFolder = uploadsFileInfo.find(source);
+    Q_ASSERT(sourceFolder);
+    Q_ASSERT(sourceFolder->isDir);
+    int count = 0;
+    qlonglong size = 0;
+    qlonglong prev = 0;
+    char payload = '\0';
+
+    const QString fileName = getFilePathFromUrl(QUrl::fromEncoded(request.rawHeader("Destination")));
+    Q_ASSERT(!fileName.isEmpty());
+
+    const auto &sourceFolderChildren = sourceFolder->children;
+    // Größe und Inhalt aus den Chunks bestimmen: die Chunk-Namen sind die mit Nullen
+    // aufgefüllten Byte-Offsets, die sortierten Kinder müssen also lückenlos anschließen.
+    for (auto it = sourceFolderChildren.cbegin(); it != sourceFolderChildren.cend(); ++it) {
+        const auto chunkOffset = it.key().toLongLong();
+        const auto &chunk = it.value();
+        if (chunkOffset != prev)
+            break;
+        Q_ASSERT(!chunk.isDir);
+        Q_ASSERT(chunk.contentSize > 0); // There should not be empty chunks
+        size += chunk.contentSize;
+        Q_ASSERT(!payload || payload == chunk.contentChar);
+        payload = chunk.contentChar;
+        ++count;
+        prev = chunkOffset + chunk.contentSize;
+    }
+    Q_ASSERT(sourceFolderChildren.count() == count); // There should not be holes or extra files
+
+    // NOTE: This does not actually assemble the file data from the chunks!
+    FileInfo *fileInfo = remoteRootFileInfo.find(fileName);
+    if (fileInfo) {
+        // The client should put this header
+        Q_ASSERT(request.hasRawHeader("If"));
+
+        // And it should condition on the destination file
+        const QByteArray start = "<" + request.rawHeader("Destination") + ">";
+        Q_ASSERT(request.rawHeader("If").startsWith(start));
+
+        if (request.rawHeader("If") != start + " ([\"" + fileInfo->etag + "\"])") {
+            return nullptr;
+        }
+        fileInfo->contentSize = size;
+        fileInfo->contentChar = payload;
+        fileInfo->fileSize = fileInfo->contentSize; // it's hydrated on the server, so these are the same
+    } else {
+        Q_ASSERT(!request.hasRawHeader("If"));
+        // Assume that the file is filled with the same character
+        fileInfo = remoteRootFileInfo.create(fileName, size, payload);
+    }
+    fileInfo->setLastModifiedFromSecondsUTC(request.rawHeader("X-OC-Mtime").toLongLong());
+    remoteRootFileInfo.find(fileName, /*invalidateEtags=*/true);
+
+    return fileInfo;
+}
+
+void FakeChunkMoveReply::respond()
+{
+    setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 201);
+    setRawHeader("OC-ETag", fileInfo->etag);
+    setRawHeader("ETag", fileInfo->etag);
+    setRawHeader("OC-FileId", fileInfo->fileId);
+    Q_EMIT metaDataChanged();
+    checkedFinished();
+}
+
+void FakeChunkMoveReply::respondPreconditionFailed()
+{
+    setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 412);
+    setError(InternalServerError, QStringLiteral("Precondition Failed"));
+    Q_EMIT metaDataChanged();
+    checkedFinished();
+}
+
 FakeGetReply::FakeGetReply(FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent)
     : FakeReply { parent }
     , _range(parseRange(request))
@@ -838,7 +934,9 @@ QNetworkReply *FakeAM::createRequest(QNetworkAccessManager::Operation op, const 
         }
     }
     if (!reply) {
-        FileInfo &info = _remoteRootFileInfo;
+        // NG-Chunk-Uploads (remote.php/dav/uploads/<user>/...) leben in einem eigenen Baum
+        const bool isUpload = newRequest.url().path().startsWith(chunkingNgUploadPath());
+        FileInfo &info = isUpload ? _uploadFileInfo : _remoteRootFileInfo;
 
         const auto verb = newRequest.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray();
         if (verb == QByteArrayLiteral("PROPFIND"))
@@ -852,8 +950,11 @@ QNetworkReply *FakeAM::createRequest(QNetworkAccessManager::Operation op, const 
             reply = new FakeMkcolReply { info, op, newRequest, this };
         else if (verb == QByteArrayLiteral("DELETE") || op == QNetworkAccessManager::DeleteOperation)
             reply = new FakeDeleteReply { info, op, newRequest, this };
-        else if (verb == QByteArrayLiteral("MOVE"))
+        else if (verb == QByteArrayLiteral("MOVE") && !isUpload)
             reply = new FakeMoveReply { info, op, newRequest, this };
+        else if (verb == QByteArrayLiteral("MOVE") && isUpload)
+            // das zusammensetzende MOVE eines Chunk-Uploads zielt in den Dateibaum
+            reply = new FakeChunkMoveReply { info, _remoteRootFileInfo, op, newRequest, this };
         else {
             qDebug() << verb << outgoingData;
             Q_UNREACHABLE();
@@ -1214,5 +1315,15 @@ QString getFilePathFromUrl(const QUrl &url)
     if (path.startsWith(sRootUrl2)) {
         return path.mid(sRootUrl2.length());
     }
+    // Upload-Namensraum des NG-Chunkings, bedient aus FakeAM::uploadState()
+    const QString sUploadUrl = chunkingNgUploadPath();
+    if (path.startsWith(sUploadUrl)) {
+        return path.mid(sUploadUrl.length());
+    }
     return {};
+}
+
+QString chunkingNgUploadPath()
+{
+    return QStringLiteral("/owncloud/remote.php/dav/uploads/admin/");
 }

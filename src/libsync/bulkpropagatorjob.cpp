@@ -150,6 +150,7 @@ void BulkPropagatorJob::slotUploadFinished()
     }
 
     const QJsonObject results = QJsonDocument::fromJson(reply->readAll()).object();
+    QVector<ConfirmedItem> confirmed;
     for (const auto &item : std::as_const(_sentItems)) {
         const QString key = QString::fromUtf8(remoteFilePath(propagator(), item));
         const QJsonObject entry = results.value(key).toObject();
@@ -167,11 +168,86 @@ void BulkPropagatorJob::slotUploadFinished()
                 propagator()->_anotherSyncNeeded = true;
                 completeItem(item, SyncFileItem::SoftError, {}, {}, tr("Server confirmed the upload without an etag"));
             } else {
-                completeItem(item, SyncFileItem::Success, etag, fileId, {});
+                // Bestätigt, aber noch nicht abgeschlossen: der Journal-Eintrag braucht
+                // die Rechte auf dem Server, die die Bulk-Antwort nicht liefert.
+                confirmed.append({item, etag, fileId});
             }
         }
     }
 
+    if (confirmed.isEmpty()) {
+        finishBatch();
+        return;
+    }
+    fetchPermissions(std::move(confirmed));
+}
+
+void BulkPropagatorJob::fetchPermissions(QVector<ConfirmedItem> &&confirmed)
+{
+    // Bewusst keine Depth-1-Auflistung des Elternverzeichnisses: deren Antwort
+    // wächst mit dem Verzeichnis, und jeder Batch eines großen Verzeichnisses
+    // müsste es erneut auflisten - der Aufwand stiege quadratisch mit der Zahl
+    // der Dateien. Ein Depth-0-PROPFIND je Datei bleibt linear und klein.
+    _awaitingPermissions = std::move(confirmed);
+    qCInfo(lcBulkPropagatorJob) << "Looking up the permissions of" << _awaitingPermissions.size() << "bulk uploaded files";
+    startPermissionLookups();
+}
+
+void BulkPropagatorJob::startPermissionLookups()
+{
+    // Nicht den ganzen Batch (bis zu maxBulkBatchCount Dateien) auf einmal: mit
+    // HTTP/2 ginge das als ein Schwall an den Server. So viele gleichzeitig, wie
+    // der Propagator Transfers zulässt.
+    const int maxRunning = std::max(1, propagator()->maximumActiveTransferJob());
+    while (_runningPermissionLookups < maxRunning && !_awaitingPermissions.isEmpty()) {
+        const ConfirmedItem entry = _awaitingPermissions.takeFirst();
+        auto *job = new PropfindJob(propagator()->account(), propagator()->webDavUrl(),
+            propagator()->fullRemotePath(entry.item->_file), PropfindJob::Depth::Zero, this);
+        job->setProperties({ QByteArrayLiteral("http://owncloud.org/ns:permissions") });
+        connect(job, &PropfindJob::directoryListingIterated, this, [item = entry.item](const QString &, const QMap<QString, QString> &properties) {
+            const auto permissions = properties.constFind(QStringLiteral("permissions"));
+            if (permissions != properties.cend()) {
+                item->_remotePerm = RemotePermissions::fromServerString(permissions.value());
+            }
+        });
+        connect(job, &PropfindJob::finishedWithoutError, this, [this, entry] { permissionLookupFinished(entry, true); });
+        connect(job, &PropfindJob::finishedWithError, this, [this, entry] { permissionLookupFinished(entry, false); });
+        _permissionJobs.append(job);
+        ++_runningPermissionLookups;
+        job->start();
+    }
+}
+
+void BulkPropagatorJob::permissionLookupFinished(const ConfirmedItem &confirmed, bool ok)
+{
+    if (state() == Finished) {
+        // inzwischen abgebrochen; die bestätigten Dateien gleicht die nächste Discovery ab
+        return;
+    }
+    --_runningPermissionLookups;
+
+    if (ok && !confirmed.item->_remotePerm.isNull()) {
+        completeItem(confirmed.item, SyncFileItem::Success, confirmed.etag, confirmed.fileId, {});
+    } else {
+        // Die Datei liegt auf dem Server, aber ohne ihre Rechte kann der Journal-
+        // Eintrag nicht geschrieben werden. Weicher Fehler: die nächste Discovery
+        // sieht beidseitig dieselbe Datei (Größe und Mtime gleich) und trägt sie
+        // nur noch ein.
+        qCWarning(lcBulkPropagatorJob) << "No permissions for the bulk uploaded file" << confirmed.item->_file
+                                       << "- retrying on the next sync";
+        propagator()->_anotherSyncNeeded = true;
+        completeItem(confirmed.item, SyncFileItem::SoftError, {}, {}, tr("The server did not provide the file permissions"));
+    }
+
+    if (_runningPermissionLookups == 0 && _awaitingPermissions.isEmpty()) {
+        finishBatch();
+    } else {
+        startPermissionLookups();
+    }
+}
+
+void BulkPropagatorJob::finishBatch()
+{
     // Persist the journal records written by completeItem()->updateMetadata() now,
     // mirroring PropagateUploadCommon::finalize()'s per-file commit. Otherwise the
     // whole batch's records stay in the engine's long-running transaction and are
@@ -179,13 +255,24 @@ void BulkPropagatorJob::slotUploadFinished()
     // just-uploaded files would then be re-discovered as new on the next sync.
     propagator()->_journal->commit(QStringLiteral("bulk upload"));
 
+    // Der Batch endet mit dem schlechtesten Status seiner Dateien, so wie ein einzelner
+    // PropagateItemJob seinen eigenen meldet: der übergeordnete Composite-Job weiß dann,
+    // dass das Verzeichnis nicht sauber ist.
     // If completeItem() hit a FatalError (a journal write failure in updateMetadata),
     // mirror PropagateItemJob::done(): a failing journal must hard-stop the whole sync,
     // because items already marked done in memory are not persisted and could later be
     // seen as deletions. A SoftError on the other hand only schedules another sync.
-    const bool anyFatal = std::any_of(_sentItems.cbegin(), _sentItems.cend(),
-        [](const SyncFileItemPtr &i) { return i->_status == SyncFileItem::FatalError; });
-    if (anyFatal) {
+    SyncFileItem::Status status = SyncFileItem::Success;
+    for (const auto &item : std::as_const(_items)) {
+        if (item->_status == SyncFileItem::FatalError) {
+            status = SyncFileItem::FatalError;
+            break;
+        }
+        if (item->_status == SyncFileItem::SoftError) {
+            status = SyncFileItem::SoftError;
+        }
+    }
+    if (status == SyncFileItem::FatalError) {
         // Emit finished BEFORE aborting (like PropagateItemJob::done): propagator()->abort()
         // cascades into this job's abort(), which sets the state to Finished and would make
         // a subsequent finishJob() a no-op, swallowing the finished signal and hanging the
@@ -194,7 +281,7 @@ void BulkPropagatorJob::slotUploadFinished()
         propagator()->abort();
         return;
     }
-    finishJob(SyncFileItem::Success);
+    finishJob(status);
 }
 
 void BulkPropagatorJob::completeItem(const SyncFileItemPtr &item, SyncFileItem::Status status,
@@ -216,9 +303,10 @@ void BulkPropagatorJob::completeItem(const SyncFileItemPtr &item, SyncFileItem::
 
         // Persist the sync journal record, exactly like PropagateUploadCommon::finalize()
         // does via updateMetadata(). Without this the file is re-discovered as new on the
-        // next sync, which breaks no-op detection and delete propagation. The bulk response
-        // carries no permissions, so _remotePerm stays null and the next remote PROPFIND
-        // fills it in via a cheap metadata-only update.
+        // next sync, which breaks no-op detection and delete propagation.
+        // Der Eintrag verlangt die Rechte auf dem Server (setFileRecord prüft _remotePerm
+        // per OC_ASSERT, mit QT_FORCE_ASSERTS fatal); die Bulk-Antwort liefert keine,
+        // erfolgreiche Dateien kommen daher erst nach fetchPermissions() hierher.
         const auto result = propagator()->updateMetadata(*item);
         if (!result) {
             item->_status = SyncFileItem::FatalError;
@@ -269,6 +357,14 @@ void BulkPropagatorJob::abort(PropagatorJob::AbortType abortType)
     if (_job && _job->reply()) {
         _job->reply()->abort();
     }
+    // Laufende Rechte-Abfragen: ihre Antworten enden mit OperationCanceledError, und
+    // permissionLookupFinished() übergeht sie, weil der Zustand schon Finished ist.
+    for (const auto &job : std::as_const(_permissionJobs)) {
+        if (job) {
+            job->abort();
+        }
+    }
+    _permissionJobs.clear();
     if (abortType == AbortType::Asynchronous) {
         Q_EMIT abortFinished();
     }

@@ -419,7 +419,11 @@ SimpleNetworkJob::SimpleNetworkJob(
         if (verb == QByteArrayLiteral("POST") || verb == QByteArrayLiteral("PUT") || verb == QByteArrayLiteral("PATCH")) {
             _request.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded; charset=UTF-8"));
             _body = args.query(QUrl::FullyEncoded).toUtf8();
-            _device = new QBuffer(&_body);
+            auto *buffer = new QBuffer(&_body);
+            // QNetworkAccessManager verlangt ein lesbar geöffnetes Gerät; ein
+            // geschlossener Puffer lässt außerdem jeden Neuversuch abbrechen
+            buffer->open(QIODevice::ReadOnly);
+            _device = buffer;
         } else {
             setQuery(args);
         }
@@ -445,6 +449,10 @@ SimpleNetworkJob::SimpleNetworkJob(
     : SimpleNetworkJob(account, rootUrl, path, verb, new QBuffer(&_body), req, parent)
 {
     _body = std::move(requestBody);
+    // Erst nach dem Befüllen öffnen: QNetworkAccessManager verlangt ein lesbar
+    // geöffnetes Gerät, und AbstractNetworkJob::retry() bricht bei einem
+    // geschlossenen Körper ab (z.B. Bulk-Upload, JSON-POST)
+    _device->open(QIODevice::ReadOnly);
 }
 
 SimpleNetworkJob::~SimpleNetworkJob()

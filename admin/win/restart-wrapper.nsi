@@ -4,16 +4,28 @@
 ;  1. stops a running client first, so the installer can actually replace the
 ;     binaries (a running instance otherwise keeps the old version alive),
 ;  2. runs the embedded installer silently,
-;  3. requires the Windows restart that loads the Explorer integration
-;     (overlay icons, context menu, virtual files sync root) - and performs it.
+;  3. registers the Explorer integration (overlay icons, context menu) and
+;     repairs the shortcuts and the Apps & Features entry,
+;  4. reports whether a Windows restart is pending - without ever forcing it.
 ;
-; Interactive: the finish page offers "Reboot now" (default) / "reboot later".
-; Silent (/S, e.g. baramundi): reboots automatically after the installation
-; unless /norestart is passed.
+; Interactive: the finish page offers "Reboot now" (default) / "reboot later"
+; for the restart that loads the Explorer integration.
+; Silent (/S, e.g. baramundi): never restarts Windows on its own. Exit code
+; 3010 means "installed, restart pending" (msiexec convention), 0 means
+; nothing is pending. /S /forcerestart restarts right away; /S /norestart is
+; still accepted and behaves like plain /S.
+;
+; The old default directory $PROGRAMFILES64\ownCloud is also the home of the
+; official ownCloud client. It is only touched when it demonstrably holds an
+; old installation of THIS client (bin\owncloud.online.exe, versions
+; 7.4 - 7.7). Nothing that belongs to the official client - the process
+; owncloud.exe, "ownCloud" shortcuts, the autostart entry "ownCloud" - is
+; stopped, deleted or changed by this setup.
 ;
 ; Build (see .github/workflows/main.yml):
 ;   makensis /DSOURCE_EXE=<craft-installer.exe> /DOUTFILE=<out.exe> \
-;            /DVERSION=<x.y.z> admin/win/restart-wrapper.nsi
+;            /DVERSION=<x.y.z> /DUNINSTALL_HELPER_EXE=<helper.exe> \
+;            admin/win/restart-wrapper.nsi
 
 Unicode true
 
@@ -42,19 +54,28 @@ BrandingText "BW-Tech GmbH - owncloud.online"
 
 ; Branded default install directory. A different path can be chosen on the
 ; directory page, or passed as /D=... (must be the last parameter, unquoted) -
-; it is forwarded to the embedded installer. An existing installation in the
-; old default directory ($PROGRAMFILES64\ownCloud) is uninstalled first, so
-; upgrades move over cleanly (accounts and sync folders live in the user
-; profile and are not touched by that).
+; it is forwarded to the embedded installer. An old installation of THIS
+; client in the previous default directory ($PROGRAMFILES64\ownCloud, used by
+; 7.4 - 7.7) is removed after the new install has been verified, so upgrades
+; move over cleanly (accounts and sync folders live in the user profile and
+; are not touched by that).
 InstallDir "$PROGRAMFILES64\owncloud.online"
 !define OLD_INSTDIR "$PROGRAMFILES64\ownCloud"
+; That directory is also the default of the official ownCloud client (MSI
+; 6.x: owncloud.exe in the root, craft 7.x: bin\owncloud.exe). Only this
+; marker proves that it holds an old installation of THIS client: our builds
+; ship bin\owncloud.online.exe since 7.4.0, no other product does. Without
+; the marker the directory is left exactly as it is.
+!define OLD_INSTDIR_MARKER "${OLD_INSTDIR}\bin\owncloud.online.exe"
 
 !define CLIENT_PROCESS "owncloud.online.exe"
 
 !define MUI_ICON "..\..\src\resources\theme\universal\owncloud-online.ico"
 
-; The finish page shows the reboot-now/-later choice because the install
-; section sets the reboot flag.
+; The finish page shows the reboot-now/-later choice whenever the reboot flag
+; is set: in interactive mode the install section sets it (the Explorer
+; integration loads reliably only after a restart); in silent mode only NSIS
+; itself sets it, when a locked file had to be scheduled via /REBOOTOK.
 !define MUI_FINISHPAGE_TEXT_REBOOT "Um die Installation abzuschliessen, muss Windows neu gestartet werden, damit die Explorer-Integration korrekt funktioniert.$\r$\n$\r$\nTo complete the installation, Windows must be restarted so that the Explorer integration works correctly."
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
@@ -65,18 +86,60 @@ InstallDir "$PROGRAMFILES64\owncloud.online"
 
 Var ClientExe
 
+; Snapshot of the upstream-named Start menu shortcuts taken BEFORE the
+; embedded installer runs ("1" = existed already). That installer creates
+; "$SMPROGRAMS\ownCloud\ownCloud.lnk" pointing at the non-existent
+; bin\owncloud.exe. Only shortcuts that APPEAR during this run are removed
+; afterwards: an "ownCloud" shortcut that already existed belongs to the
+; official ownCloud client and is left alone.
+Var PreLnkAllRoot   ; all users:    $SMPROGRAMS\ownCloud.lnk
+Var PreLnkAllDir    ; all users:    $SMPROGRAMS\ownCloud\ownCloud.lnk
+Var PreDirAll       ; all users:    $SMPROGRAMS\ownCloud (folder)
+Var PreLnkCurRoot   ; current user: $SMPROGRAMS\ownCloud.lnk
+Var PreLnkCurDir    ; current user: $SMPROGRAMS\ownCloud\ownCloud.lnk
+Var PreDirCur       ; current user: $SMPROGRAMS\ownCloud (folder)
+
+; ${ExistsFlag} path var -> var = "1" if path exists right now, else "0"
+!macro ExistsFlag _path _var
+  ${If} ${FileExists} "${_path}"
+    StrCpy ${_var} "1"
+  ${Else}
+    StrCpy ${_var} "0"
+  ${EndIf}
+!macroend
+!define ExistsFlag "!insertmacro ExistsFlag"
+
+; ${DeleteIfNew} path flag -> delete the shortcut only if it did NOT exist
+; before the embedded installer ran (flag "0"); a pre-existing one is never
+; touched
+!macro DeleteIfNew _path _flag
+  ${If} ${_flag} == "0"
+  ${AndIf} ${FileExists} "${_path}"
+    DetailPrint "Entferne vom Basis-Installer angelegte Verknuepfung / removing shortcut created by the embedded installer: ${_path}"
+    Delete "${_path}"
+  ${EndIf}
+!macroend
+!define DeleteIfNew "!insertmacro DeleteIfNew"
+
+; ${RMDirIfNew} path flag -> remove the folder only if the embedded installer
+; created it (flag "0"); non-recursive, so only an empty folder goes
+!macro RMDirIfNew _path _flag
+  ${If} ${_flag} == "0"
+    RMDir "${_path}"
+  ${EndIf}
+!macroend
+!define RMDirIfNew "!insertmacro RMDirIfNew"
+
 ; in: $2 = candidate install dir. out: $ClientExe = full path of the client
-; binary, or "" if none found. Newest layout first (7.5.x installs
-; bin\owncloud.online.exe), older/upstream layouts as fallback.
+; binary, or "" if none found. Only this client's own binary name counts:
+; bin\owncloud.online.exe (since 7.4.0) or owncloud.online.exe (flat
+; layout). The upstream name owncloud.exe is the official ownCloud client
+; and is never adopted, registered or linked to.
 Function FindClientExe
   ${If} ${FileExists} "$2\bin\owncloud.online.exe"
     StrCpy $ClientExe "$2\bin\owncloud.online.exe"
   ${ElseIf} ${FileExists} "$2\owncloud.online.exe"
     StrCpy $ClientExe "$2\owncloud.online.exe"
-  ${ElseIf} ${FileExists} "$2\bin\owncloud.exe"
-    StrCpy $ClientExe "$2\bin\owncloud.exe"
-  ${ElseIf} ${FileExists} "$2\owncloud.exe"
-    StrCpy $ClientExe "$2\owncloud.exe"
   ${Else}
     StrCpy $ClientExe ""
   ${EndIf}
@@ -86,11 +149,11 @@ Section "Install"
   SetDetailsPrint both
 
   ; Stop a running client; ignore errors (it may simply not be running).
+  ; Only our own process name: owncloud.exe is the official ownCloud client
+  ; and is never stopped by this setup (our builds have been named
+  ; owncloud.online.exe since 7.4.0).
   DetailPrint "Beende laufenden owncloud.online Client / stopping running client ..."
   nsExec::ExecToLog 'taskkill /F /IM "${CLIENT_PROCESS}"'
-  Pop $0
-  ; older generations shipped the binary as owncloud.exe - stop that one too
-  nsExec::ExecToLog 'taskkill /F /IM "owncloud.exe"'
   Pop $0
   Sleep 1500
 
@@ -110,6 +173,18 @@ Section "Install"
   InitPluginsDir
   SetOutPath "$PLUGINSDIR"
   File "/oname=client-setup.exe" "${SOURCE_EXE}"
+  ; remember which upstream-named shortcuts exist BEFORE the embedded
+  ; installer runs - only the ones it creates now are removed later (see the
+  ; Var block above); the embedded installer runs per-machine, the current
+  ; user context is covered for completeness only
+  SetShellVarContext all
+  ${ExistsFlag} "$SMPROGRAMS\ownCloud.lnk" $PreLnkAllRoot
+  ${ExistsFlag} "$SMPROGRAMS\ownCloud\ownCloud.lnk" $PreLnkAllDir
+  ${ExistsFlag} "$SMPROGRAMS\ownCloud" $PreDirAll
+  SetShellVarContext current
+  ${ExistsFlag} "$SMPROGRAMS\ownCloud.lnk" $PreLnkCurRoot
+  ${ExistsFlag} "$SMPROGRAMS\ownCloud\ownCloud.lnk" $PreLnkCurDir
+  ${ExistsFlag} "$SMPROGRAMS\ownCloud" $PreDirCur
   DetailPrint "Installiere owncloud.online Client ${VERSION} nach $INSTDIR / installing ..."
   ; /D= is kept as belt and braces although the registry value above decides
   ExecWait '"$PLUGINSDIR\client-setup.exe" /S /D=$INSTDIR' $0
@@ -153,19 +228,21 @@ Section "Install"
   Delete "$INSTDIR\${HELPER_EXE}"
 
   ; ---- Migrate away from the old default directory --------------------------
-  ; Earlier versions installed to "$PROGRAMFILES64\ownCloud". Remove such an
-  ; installation only now, after the new install has been VERIFIED in its new
-  ; location. The old uninstaller deletes the shared Uninstall\ownCloud and
+  ; 7.4 - 7.7 installed to "$PROGRAMFILES64\ownCloud". That directory is also
+  ; the home of the official ownCloud client, so it is touched ONLY when
+  ; ${OLD_INSTDIR_MARKER} proves an old installation of THIS client - and
+  ; only now, after the new install has been VERIFIED in its new location.
+  ; The old uninstaller deletes the shared Uninstall\ownCloud and
   ; "ownCloud GmbH" registry keys, so the entries for the NEW install are
   ; rewritten right afterwards.
   ; prefix check instead of plain equality: a target nested INSIDE the old
   ; directory must not trigger the removal of its own parent either
   StrLen $7 "${OLD_INSTDIR}"
   StrCpy $3 "$INSTDIR" $7
-  ${If} $9 != ""
+  ${If} ${FileExists} "${OLD_INSTDIR_MARKER}"
+  ${AndIf} $9 != ""
   ${AndIf} "$3" != "${OLD_INSTDIR}"
-  ${AndIf} ${FileExists} "${OLD_INSTDIR}\*.*"
-    DetailPrint "Entferne alte Installation in ${OLD_INSTDIR} / removing old installation ..."
+    DetailPrint "Entferne alte owncloud.online-Installation in ${OLD_INSTDIR} / removing old owncloud.online installation ..."
     ; unregister the old shell extensions first - Explorer holds those DLLs
     StrCpy $6 "$WINDIR\SysNative\regsvr32.exe"
     ${IfNot} ${FileExists} "$6"
@@ -184,10 +261,19 @@ Section "Install"
     ; the NEW installation - and overrides _?= with it, so it would delete
     ; the client we just installed. Everything it would clean up is covered
     ; here directly: the files below, the shared registry entries right after.
-    ; Files still locked (e.g. shell DLLs loaded by Explorer) are removed at
-    ; the reboot this installer mandates anyway.
+    ; Files still locked (e.g. shell DLLs loaded by Explorer) are scheduled
+    ; for the next restart - which NSIS then flags as pending (finish page /
+    ; exit code 3010).
     Delete /REBOOTOK "${OLD_INSTDIR}\uninstall.exe"
     RMDir /r /REBOOTOK "${OLD_INSTDIR}"
+    ; the old installation's Start menu entry: its embedded installer created
+    ; "$SMPROGRAMS\ownCloud\ownCloud.lnk" (all users) and the embedded
+    ; installer of THIS run has just overwritten it - with the directory
+    ; proven to be ours, no other product owns that entry; the folder only
+    ; goes when it is empty afterwards (non-recursive)
+    SetShellVarContext all
+    Delete "$SMPROGRAMS\ownCloud\ownCloud.lnk"
+    RMDir "$SMPROGRAMS\ownCloud"
     ; make sure the registry entries describe the NEW installation (the
     ; embedded installer generation writes in the default 32-bit view)
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "DisplayName" "owncloud.online Client ${VERSION}"
@@ -195,6 +281,11 @@ Section "Install"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "QuietUninstallString" '"$R7\${HELPER_EXE}" /S'
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "DisplayVersion" "${VERSION}"
     WriteRegStr HKLM "Software\ownCloud GmbH\ownCloud" "Install_Dir" "$INSTDIR"
+  ${ElseIf} ${FileExists} "${OLD_INSTDIR}\*.*"
+  ${AndIfNot} ${FileExists} "${OLD_INSTDIR_MARKER}"
+    ; files, but not our marker: another product (the official ownCloud
+    ; client) lives there - nothing in it is touched
+    DetailPrint "${OLD_INSTDIR} gehoert nicht zu owncloud.online - bleibt unangetastet / does not belong to owncloud.online - left untouched."
   ${EndIf}
 
   ; ---- Rebrand the Apps & Features entry ------------------------------------
@@ -228,14 +319,16 @@ Section "Install"
   ; ---- Repair the shortcuts -----------------------------------------------
   ; The embedded installer hardcodes its Start menu shortcut to
   ; "$INSTDIR\bin\owncloud.exe" (the upstream binary name) and creates no
-  ; desktop shortcut. Depending on the client generation the real binary is
-  ; bin\owncloud.online.exe (current), owncloud.online.exe or owncloud.exe:
-  ; find it and create correctly branded, working shortcuts.
+  ; desktop shortcut. The real binary is bin\owncloud.online.exe (or
+  ; owncloud.online.exe in a flat layout): find it and create correctly
+  ; branded, working shortcuts.
 
   StrCpy $2 "$INSTDIR" ; the dir the embedded installer was steered to
   StrCpy $ClientExe "$9" ; verified above
   ${If} $ClientExe == ""
-    ; fallback: resolve the install dir from the uninstall entry
+    ; fallback: resolve the install dir from the uninstall entry (only a
+    ; directory holding OUR binary name is accepted, see FindClientExe - the
+    ; entry is shared with the official craft-built ownCloud client)
     ReadRegStr $1 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ownCloud" "UninstallString"
     ${If} $1 == ""
       SetRegView 64
@@ -254,22 +347,18 @@ Section "Install"
 
   ${If} $ClientExe != ""
     DetailPrint "Client-Programmdatei / client binary: $ClientExe"
-    ; remove the broken upstream-named shortcuts, in both shell contexts and
-    ; the possible locations (top level and start menu folder)
+    ; remove the broken upstream-named Start menu shortcut the embedded
+    ; installer created during THIS run - and only that one: whatever
+    ; existed before (snapshot taken before ExecWait) belongs to the official
+    ; ownCloud client and stays, as does any "ownCloud" desktop shortcut
     SetShellVarContext all
-    Delete "$SMPROGRAMS\ownCloud.lnk"
-    Delete "$SMPROGRAMS\ownCloud\ownCloud.lnk"
-    RMDir "$SMPROGRAMS\ownCloud"
-    Delete "$SMPROGRAMS\ownCloud Desktop Client\ownCloud.lnk"
-    RMDir "$SMPROGRAMS\ownCloud Desktop Client"
-    Delete "$DESKTOP\ownCloud.lnk"
+    ${DeleteIfNew} "$SMPROGRAMS\ownCloud.lnk" $PreLnkAllRoot
+    ${DeleteIfNew} "$SMPROGRAMS\ownCloud\ownCloud.lnk" $PreLnkAllDir
+    ${RMDirIfNew} "$SMPROGRAMS\ownCloud" $PreDirAll
     SetShellVarContext current
-    Delete "$SMPROGRAMS\ownCloud.lnk"
-    Delete "$SMPROGRAMS\ownCloud\ownCloud.lnk"
-    RMDir "$SMPROGRAMS\ownCloud"
-    Delete "$SMPROGRAMS\ownCloud Desktop Client\ownCloud.lnk"
-    RMDir "$SMPROGRAMS\ownCloud Desktop Client"
-    Delete "$DESKTOP\ownCloud.lnk"
+    ${DeleteIfNew} "$SMPROGRAMS\ownCloud.lnk" $PreLnkCurRoot
+    ${DeleteIfNew} "$SMPROGRAMS\ownCloud\ownCloud.lnk" $PreLnkCurDir
+    ${RMDirIfNew} "$SMPROGRAMS\ownCloud" $PreDirCur
     ; branded icon if the installer shipped it, else the binary's own icon
     ${If} ${FileExists} "$2\owncloud.ico"
       StrCpy $5 "$2\owncloud.ico"
@@ -332,19 +421,40 @@ Section "Install"
   ${EndIf}
   ; --------------------------------------------------------------------------
 
-  ; The Explorer integration only loads reliably after a restart.
-  SetRebootFlag true
+  ; Interactive: keep offering the Windows restart on the finish page (the
+  ; Explorer integration loads reliably only after one). Silent: leave the
+  ; flag to NSIS - it is set only when a locked file had to be scheduled for
+  ; the next restart via /REBOOTOK (e.g. old shell DLLs held by Explorer
+  ; during a migration) - so the exit code below reports a pending restart
+  ; only when there really is one.
+  ${IfNot} ${Silent}
+    SetRebootFlag true
+  ${EndIf}
 SectionEnd
 
 Function .onInstSuccess
-  ; In silent mode there is no finish page: reboot directly, unless the
-  ; caller (e.g. a baramundi job that manages reboots itself) passed /norestart.
-  IfSilent 0 interactiveDone
-    ${GetParameters} $R0
-    ClearErrors
-    ${GetOptions} $R0 "/norestart" $R1
-    IfErrors 0 interactiveDone ; option found -> caller handles the reboot
-    DetailPrint "Starte Windows neu / rebooting ..."
+  ; Silent mode has no finish page. The setup never restarts Windows on its
+  ; own: deployment tools (baramundi, Intune, SCCM) manage reboots themselves
+  ; and expect the msiexec convention - exit code 3010 = "installed, restart
+  ; pending", 0 = nothing pending.
+  ;   /S                -> no restart; 3010 if a restart is pending, else 0
+  ;   /S /norestart     -> same (kept for existing deployment jobs)
+  ;   /S /forcerestart  -> restarts Windows right away (optional)
+  ${IfNot} ${Silent}
+    Return
+  ${EndIf}
+  ${GetParameters} $R0
+  ClearErrors
+  ${GetOptions} $R0 "/forcerestart" $R1
+  ${IfNot} ${Errors}
+    DetailPrint "Starte Windows neu (/forcerestart) / restarting Windows ..."
     Reboot
-  interactiveDone:
+    ; only reached when the restart could not be initiated
+    SetErrorLevel 3010
+    Return
+  ${EndIf}
+  ${If} ${RebootFlag}
+    DetailPrint "Neustart ausstehend, Exit-Code 3010 / restart pending, exit code 3010."
+    SetErrorLevel 3010
+  ${EndIf}
 FunctionEnd
