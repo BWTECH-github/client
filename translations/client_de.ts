@@ -551,7 +551,9 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
         <source>You don't have any connected accounts yet.
 
 Please create an account by selecting the &quot;Add account...&quot; option on the More button menu.</source>
-        <translation type="unfinished"/>
+        <translation>Sie haben noch keine verbundenen Konten.
+
+Bitte legen Sie ein Konto an, indem Sie im Menü der Schaltfläche „Mehr“ die Option „Konto hinzufügen…“ wählen.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountplaceholderwidget.cpp" line="48"/>
@@ -569,12 +571,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountstate.cpp" line="253"/>
         <source>Retrieving user settings and server capabilities timed out.</source>
-        <translation type="unfinished"/>
+        <translation>Beim Abrufen der Benutzereinstellungen und Serverfunktionen ist eine Zeitüberschreitung aufgetreten.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountstate.cpp" line="260"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
-        <translation type="unfinished"/>
+        <translation>Benutzereinstellungen und Serverfunktionen konnten nicht abgerufen werden.</translation>
     </message>
 </context>
 <context>
@@ -634,7 +636,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="119"/>
         <source>Change alias...</source>
-        <translation type="unfinished"/>
+        <translation>Alias ändern…</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="141"/>
@@ -664,12 +666,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="212"/>
         <source>Change alias</source>
-        <translation type="unfinished"/>
+        <translation>Alias ändern</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="214"/>
         <source>Account alias:</source>
-        <translation type="unfinished"/>
+        <translation>Alias des Kontos:</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="260"/>
@@ -684,12 +686,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="266"/>
         <source>Server is temporarily unavailable.</source>
-        <translation type="unfinished"/>
+        <translation>Der Server ist vorübergehend nicht verfügbar.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="269"/>
         <source>Server is currently in maintenance mode.</source>
-        <translation type="unfinished"/>
+        <translation>Der Server befindet sich gerade im Wartungsmodus.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="272"/>
@@ -709,7 +711,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="281"/>
         <source>Sync is paused due to metered internet connection.</source>
-        <translation type="unfinished"/>
+        <translation>Die Synchronisierung ist pausiert, weil die Internetverbindung getaktet ist.</translation>
     </message>
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="283"/>
@@ -734,7 +736,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="298"/>
         <source>Invalid connection status</source>
-        <translation type="unfinished"/>
+        <translation>Ungültiger Verbindungsstatus</translation>
     </message>
 </context>
 <context>
@@ -1333,7 +1335,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location filename="../src/gui/folderman.cpp" line="178"/>
         <source>Application shutting down</source>
-        <translation type="unfinished"/>
+        <translation>Anwendung wird beendet</translation>
     </message>
     <message>
         <location filename="../src/gui/folderman.cpp" line="532"/>
@@ -1633,12 +1635,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/mainwindow/mainwindow.cpp" line="102"/>
         <source>Main toolbar for the application</source>
-        <translation type="unfinished"/>
+        <translation>Hauptsymbolleiste der Anwendung</translation>
     </message>
     <message>
         <location filename="../src/gui/mainwindow/mainwindow.cpp" line="103"/>
         <source>Main toolbar</source>
-        <translation type="unfinished"/>
+        <translation>Hauptsymbolleiste</translation>
     </message>
 </context>
 <context>
@@ -1646,7 +1648,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="86"/>
         <source>Add account...</source>
-        <translation type="unfinished"/>
+        <translation>Konto hinzufügen…</translation>
     </message>
     <message>
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="91"/>
@@ -1677,7 +1679,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="143"/>
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="151"/>
         <source>Errors: %1</source>
-        <translation type="unfinished"/>
+        <translation>Fehler: %1</translation>
     </message>
     <message>
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="159"/>
@@ -1848,7 +1850,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="51"/>
         <source>Unable to connect to server during account creation: %1.</source>
-        <translation>Unable to connect to server during account creation: %1.Verbindung zum Server konnte während der Kontoerstellung nicht hergestellt werden: %1.</translation>
+        <translation>Verbindung zum Server konnte während der Kontoerstellung nicht hergestellt werden: %1.</translation>
     </message>
 </context>
 <context>
@@ -2016,7 +2018,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="236"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
-        <translation type="unfinished"/>
+        <translation>Keine Verbindung zum Anmeldedienst möglich. Wenn das Problem weiterhin besteht, wenden Sie sich bitte an den Support.</translation>
     </message>
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="252"/>
@@ -2653,12 +2655,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="91"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
-        <translation type="unfinished"/>
+        <translation>Der Autorisierungslink konnte nicht abgerufen werden. Bitte wenden Sie sich an Ihren Systemadministrator.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="105"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
-        <translation>IdP is unreachable. Contact your system administrator or try again later.Der Identitätsanbieter (IdP) ist nicht erreichbar. Wenden Sie sich an Ihren Systemadministrator oder versuchen Sie es später erneut.</translation>
+        <translation>Der Identitätsanbieter (IdP) ist nicht erreichbar. Wenden Sie sich an Ihren Systemadministrator oder versuchen Sie es später erneut.</translation>
     </message>
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="116"/>
