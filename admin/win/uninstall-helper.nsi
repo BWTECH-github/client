@@ -217,7 +217,7 @@ Section "-remove"
       Abort "Deinstallation unvollstaendig / uninstallation incomplete."
     ${EndIf}
   ${ElseIf} $8 == "1"
-    DetailPrint "$INSTDIR gehoert nicht zu owncloud.online (offizieller ownCloud-Client) - bleibt unangetastet, nur eigene Eintraege werden entfernt / belongs to the official ownCloud client - left untouched, removing own entries only."
+    DetailPrint "$INSTDIR gehoert nicht zu owncloud.online (anderer Client) - bleibt unangetastet, nur eigene Eintraege werden entfernt / belongs to another client - left untouched, removing own entries only."
   ${Else}
     DetailPrint "Keine owncloud.online-Installation in $INSTDIR gefunden - fahre mit Bereinigung der eigenen Eintraege fort / no owncloud.online installation found - continuing with cleanup of own entries."
   ${EndIf}
@@ -305,7 +305,7 @@ Section "-remove"
   ; keys describe the official craft-built ownCloud client ($8): they are
   ; its Apps & Features entry and install location, not ours.
   ${If} $8 == "1"
-    DetailPrint "Registrierungseintraege beschreiben den offiziellen ownCloud-Client - bleiben erhalten / registry entries describe the official ownCloud client - kept."
+    DetailPrint "Registrierungseintraege gehoeren zu einem anderen Client - bleiben erhalten / registry entries belong to another client - kept."
   ${Else}
     DeleteRegKey HKLM "${UNINSTKEY}"
     DeleteRegKey HKLM "${REGKEY}"
