@@ -1,0 +1,144 @@
+name: Install-Probe
+
+# Install-/Deinstall-Probe (Audit T-I) für das Windows-Setup eines CI-Laufs: frischer
+# Runner je Szenario, Schnappschüsse vorher/nachher, nachgebildete Client-Spuren,
+# stille Deinstallation, Vergleich. Ablauf und Prüfungen: admin/win/test/probe.ps1.
+# Die Probe startet Windows nie neu (Setups mit /S /norestart, msiexec mit /norestart).
+#
+#   gh workflow run install-probe.yml --ref install-probe -f run_id=<CI-Lauf> [-f szenario=alle]
+#
+# Szenarien: frisch | koexistenz (offizieller Client 6.0.3 als MSI vorher installiert,
+# muss unverändert bleiben) | upgrade (Release v7.11.0 vorher) | alle.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "ID des CI-Laufs (ownCloud CI), dessen Artefakt windows-cl-x86_64 geprüft wird"
+        required: true
+      szenario:
+        description: "frisch, koexistenz, upgrade oder alle (je Szenario ein eigener Runner)"
+        type: choice
+        options: [alle, frisch, koexistenz, upgrade]
+        default: alle
+  # GitHub nimmt workflow_dispatch für einen Workflow, der nicht auf dem Standardzweig
+  # liegt, erst nach einem ersten Lauf an. Dieser Auslöser registriert ihn nur; der Job
+  # läuft ausschließlich auf Anforderung (siehe if am Job).
+  push:
+    branches: [install-probe]
+    paths: [.github/workflows/install-probe.yml]
+
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('Install-Probe {0} gegen Lauf {1}', inputs.szenario, inputs.run_id) || 'Install-Probe (Registrierung)' }}
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  probe:
+    name: ${{ matrix.szenario }}
+    if: github.event_name == 'workflow_dispatch'
+    # Server 2025 entspricht dem Windows-11-24H2-Kern
+    runs-on: windows-2025
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        szenario: ${{ fromJSON(inputs.szenario == 'alle' && '["frisch","koexistenz","upgrade"]' || format('["{0}"]', inputs.szenario)) }}
+    defaults:
+      run:
+        # Windows PowerShell 5.1 - darauf sind die Skripte lokal geprüft
+        shell: powershell
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ inputs.run_id }}
+      SZENARIO: ${{ matrix.szenario }}
+      VORVERSION_TAG: v7.11.0
+      OFFIZIELL_URL: https://github.com/owncloud/client/releases/download/v6.0.3/ownCloud-6.0.3.18040.x64.msi
+      OFFIZIELL_SHA256: 474d390f144ca91aab550a9d3e83291690401310432bbde28f1d1c4f1480ff45
+    steps:
+      - name: Check out probe scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          sparse-checkout: admin/win/test
+          persist-credentials: false
+
+      - name: Fetch setup from run ${{ inputs.run_id }}
+        run: |
+          if ($env:RUN_ID -notmatch '^\d+$') { throw 'run_id muss eine Zahl sein' }
+          # Ergebnis- und Downloadordner liegen unter RUNNER_TEMP, also außerhalb der
+          # Orte, die snapshot.ps1 erfasst (Programme, Benutzerprofil, %TEMP%)
+          $out = Join-Path $env:RUNNER_TEMP 'probe'
+          $dir = Join-Path $env:RUNNER_TEMP 'pruefling'
+          New-Item -ItemType Directory -Force -Path $out, $dir | Out-Null
+          "PROBE_OUT=$out" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          gh run view $env:RUN_ID -R $env:GITHUB_REPOSITORY --json databaseId,workflowName,headBranch,headSha,conclusion,url | Out-File -FilePath (Join-Path $out 'client-lauf.json') -Encoding utf8
+          if ($LASTEXITCODE -ne 0) { throw "Lauf $env:RUN_ID nicht lesbar" }
+          Get-Content -LiteralPath (Join-Path $out 'client-lauf.json')
+          gh run download $env:RUN_ID -R $env:GITHUB_REPOSITORY -n windows-cl-x86_64 -D $dir
+          if ($LASTEXITCODE -ne 0) { throw "Artefakt windows-cl-x86_64 aus Lauf $env:RUN_ID nicht ladbar" }
+          $setup = @(Get-ChildItem -LiteralPath $dir -Filter '*-Setup.exe' -File)
+          if ($setup.Count -ne 1) { throw "erwartet genau ein *-Setup.exe im Artefakt, gefunden: $($setup.Count)" }
+          $version = ''
+          if ($setup[0].Name -match '(\d+\.\d+\.\d+)') { $version = $Matches[1] }
+          "PROBE_SETUP=$($setup[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "PROBE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host "Prüfling: $($setup[0].Name), Version $version"
+
+      - name: Fetch official client 6.0.3
+        if: matrix.szenario == 'koexistenz'
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'offiziell'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          $msi = Join-Path $dir ([IO.Path]::GetFileName($env:OFFIZIELL_URL))
+          curl.exe -fsSL --retry 3 -o $msi $env:OFFIZIELL_URL
+          if ($LASTEXITCODE -ne 0) { throw "Download fehlgeschlagen: $env:OFFIZIELL_URL" }
+          $hash = (Get-FileHash -LiteralPath $msi -Algorithm SHA256).Hash
+          if ($hash -ne $env:OFFIZIELL_SHA256) { throw "SHA256 des MSI stimmt nicht: $hash" }
+          "PROBE_OFFIZIELL=$msi" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Fetch previous release
+        if: matrix.szenario == 'upgrade'
+        run: |
+          $dir = Join-Path $env:RUNNER_TEMP 'vorversion'
+          New-Item -ItemType Directory -Force -Path $dir | Out-Null
+          gh release download $env:VORVERSION_TAG -R $env:GITHUB_REPOSITORY -p '*-win-x64-Setup.exe' -p 'SHA256SUMS.txt' -D $dir
+          if ($LASTEXITCODE -ne 0) { throw "Release $env:VORVERSION_TAG nicht ladbar" }
+          $setup = @(Get-ChildItem -LiteralPath $dir -Filter '*-Setup.exe' -File)
+          if ($setup.Count -ne 1) { throw "erwartet genau ein Setup in $env:VORVERSION_TAG, gefunden: $($setup.Count)" }
+          $expected = $null
+          foreach ($line in Get-Content -LiteralPath (Join-Path $dir 'SHA256SUMS.txt')) {
+            $fields = $line.Trim() -split '\s+', 2
+            if ($fields.Count -eq 2 -and $fields[1].TrimStart('*') -eq $setup[0].Name) { $expected = $fields[0] }
+          }
+          if (-not $expected) { throw "$($setup[0].Name) fehlt in SHA256SUMS.txt" }
+          $hash = (Get-FileHash -LiteralPath $setup[0].FullName -Algorithm SHA256).Hash
+          if ($hash -ne $expected) { throw "SHA256 der Vorversion stimmt nicht: $hash statt $expected" }
+          "PROBE_VORVERSION=$($setup[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Run probe (${{ matrix.szenario }})
+        run: |
+          $parameters = @{ Scenario = $env:SZENARIO; Setup = $env:PROBE_SETUP; OutDir = $env:PROBE_OUT }
+          if ($env:PROBE_VERSION) { $parameters.ExpectedVersion = $env:PROBE_VERSION }
+          if ($env:SZENARIO -eq 'koexistenz') { $parameters.OfficialMsi = $env:PROBE_OFFIZIELL }
+          if ($env:SZENARIO -eq 'upgrade') { $parameters.PreviousSetup = $env:PROBE_VORVERSION }
+          & .\admin\win\test\probe.ps1 @parameters
+          exit $LASTEXITCODE
+
+      - name: Summary
+        if: always() && env.PROBE_OUT != ''
+        run: |
+          $summary = Join-Path $env:PROBE_OUT 'zusammenfassung.md'
+          if (Test-Path -LiteralPath $summary) {
+            Get-Content -LiteralPath $summary -Raw -Encoding UTF8 | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          } else {
+            "## Install-Probe: $env:SZENARIO`n`nKein Bericht - die Probe ist vor dem Start gescheitert, siehe Log." | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          }
+
+      - name: Upload results
+        if: always() && env.PROBE_OUT != ''
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: install-probe-${{ matrix.szenario }}-${{ inputs.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PROBE_OUT }}
+          if-no-files-found: warn
