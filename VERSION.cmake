@@ -1,13 +1,15 @@
-set( MIRALL_VERSION_MAJOR 7 )
-set( MIRALL_VERSION_MINOR 11 )
-set( MIRALL_VERSION_PATCH 1 )
+set( MIRALL_VERSION_MAJOR 11 )
+set( MIRALL_VERSION_MINOR 0 )
+set( MIRALL_VERSION_PATCH 0 )
 set( MIRALL_VERSION_YEAR  2026 )
 set( MIRALL_SOVERSION 0 )
 
 if ( NOT DEFINED MIRALL_VERSION_SUFFIX )
-    # Release builds ship a clean version (e.g. 7.2.0). For nightly/dev builds
-    # pass -DMIRALL_VERSION_SUFFIX=git (or beta1, rc1, ...) on the CMake line.
-    set( MIRALL_VERSION_SUFFIX "")
+    # Vorabversionen tragen ihren Suffix hier (beta1, rc1, ...); er bestimmt auch
+    # den Update-Kanal (updater.cpp: Vorabversion -> "beta", sonst "stable").
+    # Für das Release wird er leer gesetzt. Nightly/Dev-Bauten überschreiben ihn
+    # per -DMIRALL_VERSION_SUFFIX=git auf der CMake-Zeile.
+    set( MIRALL_VERSION_SUFFIX "beta1")
 endif( NOT DEFINED MIRALL_VERSION_SUFFIX )
 
 if( NOT DEFINED MIRALL_VERSION_BUILD )
