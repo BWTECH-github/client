@@ -38,7 +38,7 @@ rnd_mib() { mkdir -p "$(dirname "$1")" && dd if=/dev/urandom of="$1" bs=1M count
 
 # ---------------------------------------------------------------- Fallrahmen
 ROWS=()
-ID='' TITLE='' STATUS='' NOTES=() L='' R='' LOG='' RC=0 BG_PID='' STARTED=0
+ID='' TITLE='' STATUS='' NOTES=() L='' R='' LOG='' RC=0 BG_PID='' STARTED=0 LAST_RUN=
 
 case_begin() {
 	ID=$1 TITLE=$2 STATUS=PASS NOTES=() STARTED=$SECONDS
@@ -67,7 +67,7 @@ run_case() { # run_case <nr> <titel> <funktion>
 ocmd() {
 	local run=$1
 	shift
-	LOG=$LOGS/$ID-$run.log
+	LOG=$LOGS/$ID-$run.log LAST_RUN=$run
 	"$@" timeout -s KILL "$RUN_TIMEOUT" "$OCMD" "$L" "$OC_URL" -u "$OC_USER" -p "$OC_PASS" --path "/$R" >"$LOG" 2>&1
 	RC=$?
 	echo "  $run: exit $RC"
@@ -76,7 +76,7 @@ ocmd() {
 start_bg() {
 	local run=$1
 	shift
-	LOG=$LOGS/$ID-$run.log
+	LOG=$LOGS/$ID-$run.log LAST_RUN=$run
 	"$@" "$OCMD" "$L" "$OC_URL" -u "$OC_USER" -p "$OC_PASS" --path "/$R" >"$LOG" 2>&1 &
 	BG_PID=$!
 }
@@ -93,7 +93,7 @@ wait_bg() {
 # check_run <lauf> [allow-fail]: Absturz, ASSERT, Zeitüberschreitung, Exit-Code
 check_run() {
 	local run=$1 allow_fail=${2:-} assert err
-	assert=$(grep -m1 -aoE '(ASSERT|ENFORCE|ENSURE)(:| failure in) .*' "$LOG" | sed -E 's#in file [^ ]*/#in file #' | cut -c1-220)
+	assert=$(grep -m1 -aoE '(ASSERT|ENFORCE|ENSURE)(:| failure in) .*' "$LOG" | sed -E 's#in file [^ ]*/#in file #; s#(line [0-9]+).*#\1#' | cut -c1-200)
 	err=$(grep -m1 -aoE '(Sync error|Could not reach the server|Failed to fetch capabilities|Usage|A user).*' "$LOG" | cut -c1-200)
 	if [ "$RC" -gt 128 ] && [ "$RC" -ne 137 ]; then
 		fail "$run: Absturz (Signal $((RC - 128)))${assert:+ – $assert}"
@@ -139,7 +139,7 @@ compare() {
 	[ "$lm" = "$rm" ] && return 0
 	d=$(diff <(printf '%s\n' "$lm") <(printf '%s\n' "$rm") | grep -E '^[<>]')
 	n=$(grep -c . <<<"$d")
-	fail "lokal ≠ Server ($n Abweichungen; <lokal >Server: $(head -4 <<<"$d" | cut -f1 | tr '\n' ' '))"
+	fail "nach $LAST_RUN: lokal ≠ Server ($n Abweichungen; <lokal >Server: $(head -4 <<<"$d" | cut -f1 | tr '\n' ' '))"
 	return 1
 }
 # seed <rel> …: kleine Zufallsdateien direkt auf dem Server anlegen (am Client vorbei)
@@ -284,34 +284,47 @@ t08() {
 	compare "$L" "$R" --skip-conflicts
 }
 
+# Fälle 9 und 10 prüfen zuerst die Wege ohne Bulk (Download, Ordner, NG-Chunking) und
+# erst danach kleine neue Dateien (Bulk), damit ein Bulk-Fehler den Rest nicht verdeckt.
 t09() {
 	local n t
-	for n in 'Größe äöü ÄÖÜ ß.txt' 'mit  zwei Leerzeichen.txt' 'Emoji 🚀😀.txt' 'Sonder #%&+;=@[]{}!$(),~.txt' 'Ordner äöü 🌍/Datei ß €.txt'; do
-		rnd "$L/$n"
-	done
-	rnd_mib "$L/Groß 🎉 Chunk.bin" 2 # > 1 MiB: NG-Chunking mit Sonderzeichen im Ziel
-	seed 'Server Ä Ö Ü ß.txt' 'Server 🎉 Emoji.txt' 'Server Ordner ä/Inhalt ö #1.txt' || { case_error "Vorlage nicht anlegbar"; return; }
+	seed 'Server Ä Ö Ü ß.txt' 'Server 🎉 Emoji.txt' 'Server Ordner ä/Inhalt ö #1.txt' 'Server Sonder #%&+;=@[]{}!$(),~.txt' ||
+		{ case_error "Vorlage nicht anlegbar"; return; }
+	rnd_mib "$L/Groß 🎉 Chunk #%.bin" 2 # > 1 MiB: NG-Chunking, Sonderzeichen im MOVE-Ziel
+	mkdir -p "$L/Leerer Ordner äöü 🌍 #%"
 	ocmd lauf1
 	check_run lauf1
 	compare "$L" "$R" || return
-	# Zweiter Lauf: Namen im Journal und auf dem Server müssen übereinstimmen
-	ocmd lauf2
-	check_run lauf2
+	for n in 'Größe äöü ÄÖÜ ß.txt' 'mit  zwei Leerzeichen.txt' 'Emoji 🚀😀.txt' 'Sonder #%&+;=@[]{}!$(),~.txt' 'Ordner äöü 🌍/Datei ß €.txt'; do
+		rnd "$L/$n"
+	done
+	ocmd lauf2-bulk
+	check_run lauf2-bulk
+	compare "$L" "$R" || return
+	# Namen im Journal und auf dem Server müssen übereinstimmen, sonst überträgt der nächste Lauf erneut
+	ocmd lauf3
+	check_run lauf3
 	t=$(transfers "$LOG")
-	[ -z "$t" ] || fail "lauf2 überträgt erneut: $(summarize <<<"$t")"
+	[ -z "$t" ] || fail "lauf3 überträgt ohne Änderung: $(summarize <<<"$t")"
 }
 
 t10() {
 	local d=$L i
+	seed "$(printf 's%d/' $(seq 1 12))server-tief.txt" || { case_error "Vorlage nicht anlegbar"; return; }
+	for i in $(seq 1 15); do d=$d/ebene$i; done
+	mkdir -p "$d/leer"
+	rnd_mib "$d/tief-chunk.bin" 2
+	ocmd lauf1
+	check_run lauf1
+	compare "$L" "$R" || return
+	d=$L
 	for i in $(seq 1 15); do
 		d=$d/ebene$i
 		[ $((i % 5)) -eq 0 ] && rnd "$d/datei-ebene$i.txt"
 	done
 	rnd "$d/tief.txt"
-	mkdir -p "$d/leer"
-	seed "$(printf 's%d/' $(seq 1 12))server-tief.txt" || { case_error "Vorlage nicht anlegbar"; return; }
-	ocmd lauf1
-	check_run lauf1
+	ocmd lauf2-bulk
+	check_run lauf2-bulk
 	compare "$L" "$R"
 }
 
