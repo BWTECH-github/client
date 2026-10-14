@@ -37,6 +37,10 @@ using namespace OCC::FileSystem::SizeLiterals;
 
 QString getFilePathFromUrl(const QUrl &url);
 
+/// URL-Pfadpräfix des Upload-Namensraums des NG-Chunkings (remote.php/dav/uploads/<user>/)
+/// im Fake-Server. Anfragen darunter werden aus FakeAM::uploadState() bedient.
+QString chunkingNgUploadPath();
+
 class FileInfo;
 
 OCC::TestUtils::TestUtilsPrivate::AccountStateRaii createDummyAccount();
@@ -389,6 +393,31 @@ public:
     FakeMoveReply(FileInfo &remoteRootFileInfo, QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent);
 
     Q_INVOKABLE void respond();
+
+    qint64 readData(char *, qint64) override { return 0; }
+};
+
+/**
+ * Das zusammensetzende MOVE eines NG-Chunk-Uploads: Quelle ist die ".file" eines
+ * Upload-Verzeichnisses im Uploads-Baum, Ziel ein Pfad im Dateibaum. Prüft, dass
+ * die Chunks lückenlos sind, und legt die Zieldatei im Remote-Baum an (bzw.
+ * überschreibt sie unter Beachtung der "If"-Vorbedingung).
+ */
+class FakeChunkMoveReply : public FakeReply
+{
+    Q_OBJECT
+    FileInfo *fileInfo;
+
+public:
+    FakeChunkMoveReply(FileInfo &uploadsFileInfo, FileInfo &remoteRootFileInfo,
+        QNetworkAccessManager::Operation op, const QNetworkRequest &request,
+        QObject *parent);
+
+    static FileInfo *perform(FileInfo &uploadsFileInfo, FileInfo &remoteRootFileInfo, const QNetworkRequest &request);
+
+    Q_INVOKABLE virtual void respond();
+
+    Q_INVOKABLE void respondPreconditionFailed();
 
     qint64 readData(char *, qint64) override { return 0; }
 };
