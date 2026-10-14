@@ -79,8 +79,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Artefakt windows-cl-x86_64 aus Lauf $env:RUN_ID nicht ladbar" }
           $setup = @(Get-ChildItem -LiteralPath $dir -Filter '*-Setup.exe' -File)
           if ($setup.Count -ne 1) { throw "erwartet genau ein *-Setup.exe im Artefakt, gefunden: $($setup.Count)" }
-          $version = ''
-          if ($setup[0].Name -match '(\d+\.\d+\.\d+)') { $version = $Matches[1] }
+          # Version wie in main.yml aus VERSION.cmake - am Commit des CI-Laufs, denn der
+          # Artefaktname enthält sie nicht
+          $sha = (Get-Content -LiteralPath (Join-Path $out 'client-lauf.json') -Raw | ConvertFrom-Json).headSha
+          $cmake = (gh api "repos/$env:GITHUB_REPOSITORY/contents/VERSION.cmake?ref=$sha" -H 'Accept: application/vnd.github.raw') -join "`n"
+          if ($LASTEXITCODE -ne 0) { throw "VERSION.cmake an $sha nicht lesbar" }
+          $version = (@('MAJOR', 'MINOR', 'PATCH') | ForEach-Object { [regex]::Match($cmake, "MIRALL_VERSION_$_ (\d+)").Groups[1].Value }) -join '.'
+          if ($version -notmatch '^\d+\.\d+\.\d+$') { throw "Version aus VERSION.cmake nicht lesbar: '$version'" }
           "PROBE_SETUP=$($setup[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           "PROBE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
           Write-Host "Prüfling: $($setup[0].Name), Version $version"

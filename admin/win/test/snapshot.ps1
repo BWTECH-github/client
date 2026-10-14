@@ -294,8 +294,10 @@ Add-Category 'reboot' 'Ausstehende Neustart-Aktionen' {
             $operations = @($session.GetValue($valueName))
             # Paare (Quelle, Ziel); leeres Ziel = beim Neustart löschen
             for ($i = 0; $i + 1 -lt $operations.Count; $i += 2) {
-                $source = ([string]$operations[$i]) -replace '^\\\?\?\\', ''
-                $target = ([string]$operations[$i + 1]) -replace '^!?\\\?\?\\', ''
+                # NT-Pfade "\??\C:\..."; Windows Server 2025/Windows 11 stellen
+                # "*<Zahl>" voran, "!" vor dem Ziel heißt "vorhandene Datei ersetzen"
+                $source = ([string]$operations[$i]) -replace '^(\*\d+)?\\\?\?\\', ''
+                $target = ([string]$operations[$i + 1]) -replace '^(\*\d+)?!?\\\?\?\\', ''
                 if (-not $source) { continue }
                 if ($target) {
                     $items["Umbenennen beim Neustart: $source"] = "-> $target"

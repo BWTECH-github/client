@@ -88,7 +88,7 @@ param(
     [string] $ExpectedVersion,
 
     [ValidateRange(1, 120)]
-    [int] $TimeoutMinutes = 15,
+    [int] $TimeoutMinutes = 8,
 
     [switch] $AllowLocal
 )
@@ -142,11 +142,21 @@ $traceErrors = @{}
 # Werkzeuge
 # ---------------------------------------------------------------------------
 
+# GitHub-Annotation: der Runner meldet sie laufend an den Server, sie bleiben
+# also auch sichtbar, wenn der Runner unterwegs verloren geht
+function Write-Annotation {
+    param([string] $Level, [string] $Message)
+    if ($env:GITHUB_ACTIONS -ne 'true') { return }
+    $text = (($Message -replace '%', '%25') -replace "`r", '%0D') -replace "`n", '%0A'
+    Write-Host "::$Level title=Install-Probe $Scenario::$text"
+}
+
 function Add-Check {
     param([string] $Id, [string] $Title, [string] $Status, [string] $Detail = '', [string] $Audit = '')
     $checks.Add([pscustomobject]@{ id = $Id; pruefung = $Title; ergebnis = $Status; audit = $Audit; detail = $Detail })
     $suffix = if ($Detail) { ': ' + $Detail } else { '' }
     Write-Host ('[{0}] {1} {2}{3}' -f $Status, $Id, $Title, $suffix)
+    if ($Status -eq 'FEHLER') { Write-Annotation 'error' "$Id $Title$suffix" }
 }
 
 # lange Listen für bericht.md (nicht für die Job-Zusammenfassung)
@@ -236,7 +246,10 @@ function New-Snapshot {
     $file = Join-Path $OutDir ('{0:D2}-{1}.json' -f $script:snapshotCount, $Name)
     Write-Host "== Schnappschuss $Label"
     & $snapshotScript -OutFile $file -Label $Label | Out-Null
-    return Read-Snapshot $file
+    $snapshot = Read-Snapshot $file
+    # Zwischenstand sichern: auch ein abgebrochener Job liefert dann Ergebnisse
+    Write-Report $null
+    return $snapshot
 }
 
 function Get-Diff {
@@ -284,14 +297,23 @@ function Invoke-Step {
     param([string] $Label, [string] $File, [string] $Arguments)
     Write-Host "== $Label"
     Write-Host "   $File $Arguments"
+    Write-Annotation 'notice' "Start: $Label"
     $start = Get-Date
     $process = Start-Process -FilePath $File -ArgumentList $Arguments -PassThru
     # ohne diesen Zugriff liefert ExitCode nach dem Ende $null
     $null = $process.Handle
     $timedOut = -not $process.WaitForExit($TimeoutMinutes * 60 * 1000)
     $exitCode = $null
+    $hang = ''
     if ($timedOut) {
-        try { $process.Kill() } catch { Write-Host "   Beenden fehlgeschlagen: $($_.Exception.Message)" }
+        # festhalten, worauf der Schritt wartet
+        $children = @(Get-CimInstance -ClassName Win32_Process -Filter "ParentProcessId=$($process.Id)" -ErrorAction SilentlyContinue | ForEach-Object { $_.Name })
+        $windows = @(Get-Process -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle } | ForEach-Object { '{0}: "{1}"' -f $_.ProcessName, $_.MainWindowTitle })
+        $hang = 'Kindprozesse: {0}; Fenster: {1}' -f $(if ($children.Count) { $children -join ', ' } else { '-' }), $(if ($windows.Count) { $windows -join '; ' } else { '-' })
+        Write-Host "   hängt - $hang"
+        # ganzen Prozessbaum beenden, damit nichts in spätere Schritte hineinläuft
+        $null = & taskkill.exe /PID $process.Id /T /F
+        try { if (-not $process.HasExited) { $process.Kill() } } catch { Write-Host "   Beenden fehlgeschlagen: $($_.Exception.Message)" }
     } else {
         $exitCode = $process.ExitCode
     }
@@ -308,6 +330,7 @@ function Invoke-Step {
         exitcode            = $exitCode
         sekunden            = [int]((Get-Date) - $start).TotalSeconds
         zeitueberschreitung = $timedOut
+        haengt              = $hang
         neustartereignisse  = $restarts
     }
     $runs.Add($run)
@@ -319,7 +342,7 @@ function Invoke-Step {
 function Test-Run {
     param($Run, [string] $Id, [string] $Title, [string] $Audit = 'H7')
     if ($Run.zeitueberschreitung) {
-        Add-Check $Id $Title 'FEHLER' "nach $TimeoutMinutes min abgebrochen (wartet vermutlich auf eine Eingabe)" $Audit
+        Add-Check $Id $Title 'FEHLER' "nach $TimeoutMinutes min abgebrochen, wartet vermutlich auf eine Eingabe ($($Run.haengt))" $Audit
         return
     }
     $problems = @()
@@ -495,13 +518,14 @@ function Get-TraceState {
 
 # Schlüssel der Client-Spuren - die prüfen eigene Checks, nicht die Rückstandsliste
 function Get-TracePattern {
+    # Klammern nötig: das Komma bindet in PowerShell stärker als +
     $parts = @(
-        [regex]::Escape($trace.Credential) + '$',
-        '^' + [regex]::Escape($trace.ConfigDir) + '(\\|$)',
-        '^' + [regex]::Escape($trace.CacheDir) + '(\\|$)',
-        '^' + [regex]::Escape($trace.SyncDir) + '(\\| ::|$)',
+        ([regex]::Escape($trace.Credential) + '$'),
+        ('^' + [regex]::Escape($trace.ConfigDir) + '(\\|$)'),
+        ('^' + [regex]::Escape($trace.CacheDir) + '(\\|$)'),
+        ('^' + [regex]::Escape($trace.SyncDir) + '(\\| ::|$)'),
         [regex]::Escape($trace.NavClsid),
-        '^HKCU\\' + [regex]::Escape($runKeyPath) + ' :: ' + [regex]::Escape($appName) + '$'
+        ('^HKCU\\' + [regex]::Escape($runKeyPath) + ' :: ' + [regex]::Escape($appName) + '$')
     )
     return ($parts -join '|')
 }
@@ -705,11 +729,12 @@ function Test-Residue {
         if ($Ignore.ContainsKey("$($diff.Category)|$($diff.Key)")) { continue }
         $line = Format-Diff $diff
         $text = '{0} {1} {2}' -f $diff.Key, $diff.Before, $diff.After
+        # Neben dem offiziellen Client lässt sich "ownCloud" oder eine gemeinsame
+        # COM-Kennung nicht eindeutig zuordnen (dessen Laufzeitspuren entstehen
+        # auch nach dem Fußabdruck). Dort zählt nur owncloud.online; Rückstände
+        # der gemeinsamen Kennungen deckt das Szenario frisch ab.
         $own = $text -match $ownPattern
-        if (-not $own -and $text -match $clientPattern) {
-            # neben dem offiziellen Client gehören dessen Laufzeitspuren ihm
-            $own = -not ($Scenario -eq 'koexistenz' -and $footprintSkip -contains $diff.Category)
-        }
+        if (-not $own -and $Scenario -ne 'koexistenz' -and $text -match $clientPattern) { $own = $true }
         if (-not $own) { $foreign.Add($line); continue }
         if ($diff.Category -eq 'reboot') { $warnings.Add("$line   [Neustart-Aktion]"); continue }
         if ($diff.Change -ne 'entfernt') {
@@ -762,6 +787,10 @@ function Get-Footprint {
 
 function Test-Footprint {
     param([hashtable] $Footprint, $Snapshot, [string] $Id, [string] $Title, [string] $Audit)
+    if ($Footprint.Count -eq 0) {
+        Add-Check $Id $Title 'NICHT GEPRÜFT' 'kein Fußabdruck erfasst' $Audit
+        return
+    }
     $problems = New-Object 'System.Collections.Generic.List[string]'
     $files = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
     foreach ($entry in $Footprint.GetEnumerator()) {
@@ -805,6 +834,7 @@ function Start-OfficialClient {
         return $false
     }
     Write-Host "== Offiziellen Client starten: $($exe.FullName)"
+    Write-Annotation 'notice' 'Start: offizieller Client'
     Start-Process -FilePath $exe.FullName | Out-Null
     for ($i = 0; $i -lt 20 -and -not (Get-OfficialProcess); $i++) { Start-Sleep -Seconds 1 }
     # dem Erststart Zeit geben, Einstellungen und Autostart zu schreiben,
@@ -873,7 +903,9 @@ function Invoke-Coexistence {
     $base = New-Snapshot 'ausgang' 'Ausgangszustand'
     Assert-Fresh $base
     $log = Join-Path $OutDir 'offiziell-installation.log'
-    $run = Invoke-Step 'Offizieller Client 6.0.3 (MSI)' 'msiexec.exe' ('/i "{0}" /qn /norestart DO_NOT_SCHEDULE_REBOOT=1 LAUNCH_AT_SYSTEM_START=1 /l*v "{1}"' -f $OfficialMsi, $log)
+    # SKIPAUTOUPDATE: der gestartete Client soll kein Update nachladen - dessen
+    # Installation liefe ohne /norestart und könnte den Runner neu starten
+    $run = Invoke-Step 'Offizieller Client 6.0.3 (MSI)' 'msiexec.exe' ('/i "{0}" /qn /norestart DO_NOT_SCHEDULE_REBOOT=1 LAUNCH_AT_SYSTEM_START=1 SKIPAUTOUPDATE=1 /l*v "{1}"' -f $OfficialMsi, $log)
     if ($run.zeitueberschreitung -or ($run.exitcode -ne 0 -and $run.exitcode -ne 3010)) {
         throw "offizieller Client ließ sich nicht installieren (msiexec $($run.exitcode), Protokoll offiziell-installation.log)"
     }
@@ -942,7 +974,7 @@ function Write-Report {
     param([string] $Abort)
     $failed = @($checks | Where-Object { $_.ergebnis -eq 'FEHLER' }).Count
     $warned = @($checks | Where-Object { $_.ergebnis -eq 'WARNUNG' }).Count
-    $verdict = if ($Abort) { 'Probe abgebrochen' } elseif ($failed -gt 0) { "$failed Fehler" } else { 'keine Fehler' }
+    $verdict = if ($Abort) { 'Probe abgebrochen' } elseif (-not $finished) { "unvollständig, bisher $failed Fehler" } elseif ($failed -gt 0) { "$failed Fehler" } else { 'keine Fehler' }
     $os = [Environment]::OSVersion.VersionString
     try { $os = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption } catch { $os = [Environment]::OSVersion.VersionString }
 
@@ -1000,6 +1032,8 @@ function Write-Report {
 
 $setupHash = '-'
 $abort = $null
+# bis zum Ende tragen Zwischenberichte den Vermerk "unvollständig"
+$finished = $false
 try {
     $principal = New-Object Security.Principal.WindowsPrincipal ([Security.Principal.WindowsIdentity]::GetCurrent())
     if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'nicht erhöht gestartet' }
@@ -1020,6 +1054,7 @@ try {
     $abort = '{0} (Zeile {1})' -f $_.Exception.Message, $_.InvocationInfo.ScriptLineNumber
     Write-Host "Probe abgebrochen: $abort"
 } finally {
+    $finished = $true
     Write-Report $abort
 }
 
