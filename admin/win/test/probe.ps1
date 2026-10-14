@@ -19,7 +19,10 @@
                   Installation und nach unserer Deinstallation unverändert
                   sein, sein Prozess muss weiterlaufen. Gegenrichtung: unseren
                   Client erneut installieren, den offiziellen deinstallieren -
-                  unserer muss unverändert bleiben.
+                  unserer muss unverändert bleiben. Zeigt ein AppSearch-Ort des
+                  MSI (Altinstallation) auf unseren Client, ist das ein Fehler
+                  und die Deinstallation unterbleibt: msiexec würde unseren
+                  Deinstaller still ohne /norestart starten.
       upgrade     Vorversion (-PreviousSetup) mit Client-Spuren -> Setup ->
                   genau eine Installation, Spuren erhalten ->
                   Deinstallation -> Rückstände gegen den Ausgang
@@ -843,6 +846,37 @@ function Start-OfficialClient {
     return (Get-OfficialProcess)
 }
 
+# Registry-Orte, an denen das MSI per AppSearch/RegLocator sucht und deren Wert
+# auf unseren Client zeigt ("Eigenschaft <- Ort = Wert"). Liest nur die
+# MSI-Datenbank, installiert nichts.
+function Get-MsiLegacyHits {
+    param([string] $MsiPath)
+    $installer = New-Object -ComObject WindowsInstaller.Installer
+    $database = $installer.GetType().InvokeMember('OpenDatabase', 'InvokeMethod', $null, $installer, @([string]$MsiPath, [int]0))
+    $query = 'SELECT `AppSearch`.`Property`, `RegLocator`.`Root`, `RegLocator`.`Key`, `RegLocator`.`Name` FROM `AppSearch`, `RegLocator` WHERE `AppSearch`.`Signature_` = `RegLocator`.`Signature_`'
+    $view = $database.GetType().InvokeMember('OpenView', 'InvokeMethod', $null, $database, @([string]$query))
+    [void]$view.GetType().InvokeMember('Execute', 'InvokeMethod', $null, $view, $null)
+    $hives = @([Microsoft.Win32.RegistryHive]::ClassesRoot, [Microsoft.Win32.RegistryHive]::CurrentUser,
+        [Microsoft.Win32.RegistryHive]::LocalMachine, [Microsoft.Win32.RegistryHive]::Users)
+    $names = @('HKCR', 'HKCU', 'HKLM', 'HKU')
+    while ($record = $view.GetType().InvokeMember('Fetch', 'InvokeMethod', $null, $view, $null)) {
+        $fields = @(foreach ($index in 1..4) { [string]$record.GetType().InvokeMember('StringData', 'GetProperty', $null, $record, $index) })
+        $root = [int]$fields[1]
+        if ($root -lt 0 -or $root -gt 3) { continue }
+        # je nach Locator-Typ liest msiexec die 32- oder 64-Bit-Sicht - beide prüfen
+        foreach ($registryView in [Microsoft.Win32.RegistryView]::Registry64, [Microsoft.Win32.RegistryView]::Registry32) {
+            $key = [Microsoft.Win32.RegistryKey]::OpenBaseKey($hives[$root], $registryView).OpenSubKey($fields[2], $false)
+            if ($null -eq $key) { continue }
+            try { $value = [string]$key.GetValue($fields[3]) } finally { $key.Close() }
+            if ($value -match $ownPattern) {
+                $shownName = if ($fields[3]) { $fields[3] } else { '(Standard)' }
+                '{0} <- {1}\{2} :: {3} = {4}' -f $fields[0], $names[$root], $fields[2], $shownName, $value
+                break
+            }
+        }
+    }
+}
+
 function Test-OfficialProcess {
     param([bool] $WasRunning, [string] $Id, [string] $Title)
     if (-not $WasRunning) {
@@ -939,12 +973,24 @@ function Invoke-Coexistence {
     Install-Candidate 'K5' 'Setup (Prüfling, erneut)'
     $again = New-Snapshot 'erneut-installiert' 'Prüfling erneut installiert'
     $ownFootprint = Get-Footprint $removed $again 'deinstalliert-erneut'
+
+    # Das offizielle MSI sucht seine NSIS-Altinstallation per AppSearch und
+    # startet deren UninstallString bei jeder Ausführung still mit /S (ohne
+    # /norestart). Zeigt einer dieser Orte auf unseren Client, entfernt jede
+    # Installation, Reparatur, Aktualisierung oder Deinstallation des
+    # offiziellen Clients unseren - und ein Deinstaller, der still neu startet,
+    # würde den Runner mitnehmen. Dann nur melden, nicht ausführen.
+    $legacy = @(Get-MsiLegacyHits $OfficialMsi)
+    if ($legacy.Count -gt 0) {
+        Add-Check 'K6' 'Offizieller Installer hält unseren Client nicht für seine Altinstallation' 'FEHLER' ('msiexec liest {0}; bei Installation, Reparatur, Update und Deinstallation des offiziellen Clients startet es diesen Befehl still mit /S, unser Client wird entfernt (eigener Uninstall-Schlüssel nötig)' -f ($legacy -join '; ')) 'H3, AP 3.3'
+        Add-Check 'K7' 'Unser Client nach Entfernen des offiziellen unverändert' 'NICHT GEPRÜFT' 'Deinstallation des offiziellen Clients übersprungen: sie würde unseren Deinstaller ohne /norestart starten' 'H3'
+        return
+    }
+    Add-Check 'K6' 'Offizieller Installer hält unseren Client nicht für seine Altinstallation' 'OK' 'keiner seiner AppSearch-Orte zeigt auf owncloud.online' 'H3, AP 3.3'
     $log = Join-Path $OutDir 'offiziell-deinstallation.log'
     $run = Invoke-Step 'Offizieller Client entfernen (MSI)' 'msiexec.exe' ('/x "{0}" /qn /norestart /l*v "{1}"' -f $OfficialMsi, $log)
     if ($run.zeitueberschreitung -or ($run.exitcode -ne 0 -and $run.exitcode -ne 3010)) {
-        Add-Check 'K6' 'Offizieller Client lässt sich entfernen' 'WARNUNG' ('msiexec {0}, Protokoll offiziell-deinstallation.log' -f $run.exitcode) ''
-    } else {
-        Add-Check 'K6' 'Offizieller Client lässt sich entfernen' 'OK' ('Exit-Code {0}' -f $run.exitcode) ''
+        Add-Check 'K6b' 'Offizieller Client lässt sich entfernen' 'WARNUNG' ('msiexec {0}, Protokoll offiziell-deinstallation.log' -f $run.exitcode) ''
     }
     $final = New-Snapshot 'offiziell-entfernt' 'Offizieller Client entfernt, Prüfling bleibt'
     Test-Footprint $ownFootprint $final 'K7' 'Unser Client nach Entfernen des offiziellen unverändert' 'H3'
