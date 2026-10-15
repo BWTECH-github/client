@@ -25,6 +25,45 @@ defaults:
 
 jobs:
 # ------------------------------------------------------------------------------------------------------------------------------------------
+  # Übersetzungs-Gate: keine neuen unübersetzten Quelltexte, deutsche Dateien (Sie/Du) vollständig, alle .ts kompilierbar.
+  translations:
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: install-deps
+        run: sudo apt-get update -q && sudo apt-get install -y -q qt6-l10n-tools
+      - name: lupdate-check
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          for lang in de de-informal; do
+            cp "translations/client_${lang}.ts" "$tmp/"
+            out="$(/usr/lib/qt6/bin/lupdate src -no-obsolete -locations none -ts "$tmp/client_${lang}.ts" 2>&1)"
+            echo "$out"
+            # neue Quelltexte = im Code, aber noch nicht in der .ts-Datei
+            if ! echo "$out" | grep -Eq '\(0 new and'; then
+              echo "::error::client_${lang}.ts ist nicht aktuell: lupdate src -no-obsolete -locations relative -ts translations/client_en.ts translations/client_de.ts translations/client_de-informal.ts ausführen und übersetzen"
+              exit 1
+            fi
+            if grep -q 'type="unfinished"' "$tmp/client_${lang}.ts"; then
+              grep -n -B3 'type="unfinished"' "$tmp/client_${lang}.ts" | grep '<source>' | head -40
+              echo "::error::client_${lang}.ts enthält unübersetzte Einträge"
+              exit 1
+            fi
+          done
+      - name: lrelease-check
+        run: |
+          set -euo pipefail
+          for ts in translations/client_*.ts; do
+            /usr/lib/qt6/bin/lrelease "$ts" -qm "$(mktemp --suffix=.qm)"
+          done
   build:
     permissions:
       # actions/upload-artifact doesn't need contents: write
