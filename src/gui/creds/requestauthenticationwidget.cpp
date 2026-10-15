@@ -15,6 +15,7 @@
 
 #include "iconresources.h"
 #include "template.h"
+#include "mainwindow/colormanager.h"
 #include "theme.h"
 
 #include <QBuffer>
@@ -76,10 +77,7 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     connect(_copyButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::onCopyUrl);
 
     _errorField = new QLabel(QString(), this);
-    QPalette errorPalette = _errorField->palette();
-    errorPalette.setColor(QPalette::Text, Qt::red);
-    errorPalette.setColor(QPalette::WindowText, Qt::red);
-    _errorField->setPalette(errorPalette);
+    ColorManager::applyErrorColor(_errorField);
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);

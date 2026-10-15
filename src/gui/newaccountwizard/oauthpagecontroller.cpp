@@ -23,6 +23,7 @@
 #include "networkadapters/userinfoadapter.h"
 #include "networkadapters/webfingerlookupadapter.h"
 #include "template.h"
+#include "mainwindow/colormanager.h"
 #include "theme.h"
 
 #include <QBuffer>
@@ -89,9 +90,8 @@ void OAuthPageController::buildPage()
     connect(_copyButton, &QPushButton::clicked, this, &OAuthPageController::copyUrlClicked);
 
     _errorField = new QLabel(QString(), _page);
-    QPalette errorPalette = _errorField->palette();
-    errorPalette.setColor(QPalette::Text, Qt::red);
-    _errorField->setPalette(errorPalette);
+    // Fehlerrot aus dem Theme (WCAG 4,5:1); Qt::red erreichte auf Weiß nur 4:1 und wirkte auf QLabel gar nicht
+    ColorManager::applyErrorColor(_errorField);
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);

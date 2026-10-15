@@ -25,6 +25,18 @@
 
 namespace OCC {
 
+namespace {
+    // Einzige Quelle der Markenfarben; alle Kontraste prüft test/testtheme.cpp.
+    // Mint #00E4BD: Markenfarbe, nur auf dunklem Grund für Text geeignet (1,64:1 auf Weiß).
+    constexpr QRgb brandMint = 0x00E4BD;
+    // dunkles Mint #007A66 für Akzente im hellen Schema (5,3:1 auf Weiß)
+    constexpr QRgb brandMintDark = 0x007A66;
+    // Navy #041E42 als Schrift auf Mint (10,1:1)
+    constexpr QRgb brandNavy = 0x041E42;
+    constexpr QRgb errorLight = 0xB00020; // 7,3:1 auf Weiß
+    constexpr QRgb errorDark = 0xFF6B6B; // 5,9:1 auf #202020
+}
+
 ownCloudTheme::ownCloudTheme()
     : Theme()
 {
@@ -32,37 +44,37 @@ ownCloudTheme::ownCloudTheme()
 
 QColor ownCloudTheme::wizardHeaderBackgroundColor() const
 {
-    return QColor(QStringLiteral("#00E4BD"));
+    return QColor(brandMint);
 }
 
 QColor ownCloudTheme::wizardHeaderTitleColor() const
 {
-    return QColor(QStringLiteral("#262B45"));
+    return QColor(brandNavy);
 }
 
-// owncloud.online-Mint: #00E4BD ist auf hellem Grund zu schwach (1,64:1 auf Weiß), deshalb im hellen
-// Schema das dunkle Mint #007A66 (5,3:1 auf Weiß, weiße Schrift darauf 5,3:1). Im dunklen Schema
-// #00E4BD (10:1 auf #202020) mit Navy-Schrift #041E42 (10,1:1). Geprüft in test/testtheme.cpp.
+// Im hellen Schema das dunkle Mint (weiße Schrift darauf 5,3:1), im dunklen Schema Mint (10:1 auf #202020)
+// mit Navy-Schrift.
 QColor ownCloudTheme::accentColor(bool darkScheme) const
 {
-    return darkScheme ? QColor(0x00, 0xE4, 0xBD) : QColor(0x00, 0x7A, 0x66);
+    return QColor(darkScheme ? brandMint : brandMintDark);
 }
 
 QColor ownCloudTheme::accentTextColor(bool darkScheme) const
 {
-    return darkScheme ? QColor(0x04, 0x1E, 0x42) : QColor(0xFF, 0xFF, 0xFF);
+    return darkScheme ? QColor(brandNavy) : QColor(Qt::white);
 }
 
 QColor ownCloudTheme::errorColor(bool darkScheme) const
 {
-    // hell 7,3:1 auf Weiß, dunkel 5,9:1 auf #202020
-    return darkScheme ? QColor(0xFF, 0x6B, 0x6B) : QColor(0xB0, 0x00, 0x20);
+    return QColor(darkScheme ? errorDark : errorLight);
 }
 
 QColor ownCloudTheme::selectionColor() const
 {
     // 25 % Mint über dem Zeilenhintergrund; die Zeilenschrift bleibt in der normalen Textfarbe
-    return QColor(0x00, 0xE4, 0xBD, 64);
+    QColor selection(brandMint);
+    selection.setAlpha(64);
+    return selection;
 }
 
 QString ownCloudTheme::wizardHeaderLogoName() const
