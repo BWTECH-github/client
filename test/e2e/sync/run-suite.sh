@@ -17,6 +17,7 @@
 #   E2E_OAUTH2_VERSION   Version der oauth2-App, wenn bekannt (Erwartung für 127.0.0.1)
 #   E2E_OAUTH_REVOKE=1   A6: Freigabe in den persönlichen Einstellungen widerrufen
 #                        (trifft alle Desktop-Anmeldungen des Kontos – nur auf Testservern)
+#   E2E_MASK_ACCOUNT=1   Kennung des Kontos im Protokoll maskieren (fremde Server)
 # E2E_REMOTE_BASE: alle Serverordner unter diesem Ordner (für fremde Server; aufräumen
 # muss der Aufrufer). E2E_SECRETS: Datei, in der die Suite alle gesehenen Tokens sammelt,
 # damit der Aufrufer sie aus den Protokollen schwärzen kann.
@@ -511,6 +512,12 @@ oauth_login() {
 	LOG=$LOGS/$ID-anmeldung.log LAST_RUN=anmeldung
 	"${LOGIN[@]}" --redirect-host "$1" --out "$2" >"$LOG" 2>&1
 	RC=$?
+	# Kennung eines fremden Kontos nicht offen in das Protokoll eines öffentlichen Laufs
+	if [ "${E2E_MASK_ACCOUNT:-}" = 1 ] && [ -n "${GITHUB_ACTIONS:-}" ] && [ -f "$2" ]; then
+		local uid
+		uid=$(jq -r '.user_id // empty' "$2" 2>/dev/null)
+		[ -z "$uid" ] || echo "::add-mask::$uid"
+	fi
 	sed 's/^/    /' "$LOG"
 	echo "  anmeldung: exit $RC"
 }
@@ -541,7 +548,7 @@ a1() {
 	# WebDAV-Pfade von davtool über die Kennung, falls der Anmeldename abweicht (E-Mail-Login)
 	OC_DAV_USER=$(jq -r '.user_id // empty' "$tf")
 	export OC_DAV_USER
-	note "$(grep -m1 '^Token:' "$LOG")"
+	note "$(grep -m1 '^Token:' "$LOG" | sed 's/, Benutzer .*//')"
 }
 
 a2() {

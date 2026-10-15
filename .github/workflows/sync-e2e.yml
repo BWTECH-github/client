@@ -293,6 +293,7 @@ jobs:
           E2E_RUN_TIMEOUT: "300"
           # Widerruf in den Einstellungen trifft alle Desktop-Anmeldungen des Kontos: nur auf dem Testserver im Runner
           E2E_OAUTH_REVOKE: ${{ matrix.target == 'local' && '1' || '' }}
+          E2E_MASK_ACCOUNT: ${{ matrix.target == 'online' && '1' || '' }}
           ONLINE_LARGE: ${{ inputs.online_large }}
         run: |
           cases=()
@@ -342,16 +343,19 @@ jobs:
         run: |
           mkdir -p "$E2E_OUT/server"
           cp "${OC_SRV:-/nonexistent}/php-server.log" "${OC_SRV:-/nonexistent}/data/owncloud.log" "$E2E_OUT/server/" 2> /dev/null || true
-          # Testdaten und Token-Dateien nicht hochladen
-          rm -rf "$E2E_OUT/work"
-          # Kennwort und alle Tokens schwärzen, bei Online-Servern auch Adresse und Konto
+          # Kennwort (auch als Basic-Header) und alle Tokens schwärzen, bei Online-Servern auch Adresse und Konto
           secrets="$RUNNER_TEMP/redact.lst"
           : > "$secrets"
-          [ -z "${OC_PASS:-}" ] || printf '%s\n' "$OC_PASS" >> "$secrets"
+          if [ -n "${OC_PASS:-}" ]; then
+            printf '%s\n' "$OC_PASS" "$(printf '%s' "$OC_USER:$OC_PASS" | base64 -w0)" >> "$secrets"
+          fi
           [ ! -s "${E2E_SECRETS:-}" ] || sort -u "$E2E_SECRETS" >> "$secrets"
           if [ "$TARGET" = online ]; then
             printf '%s\n' "$OC_URL" "${OC_URL#https://}" "$OC_USER" >> "$secrets"
+            jq -r '.user_id // empty' "$E2E_OUT/work/oauth/token.json" 2> /dev/null >> "$secrets" || true
           fi
+          # Testdaten und Token-Dateien nicht hochladen
+          rm -rf "$E2E_OUT/work"
           python3 -I - "$secrets" "$E2E_OUT" <<'EOF'
           import os, sys
           words = sorted({w for w in open(sys.argv[1], encoding='utf-8').read().splitlines() if w}, key=len, reverse=True)
