@@ -20,7 +20,8 @@ Aufruf (Zugang nur über die Umgebung, nie auf der Befehlszeile):
       Freigabe des Desktop Clients in den persönlichen Einstellungen widerrufen, wie ein
       Nutzer es tut (die oauth2-App löscht dabei alle Tokens dieses Clients für das Konto)
 
-Exit: 0 angemeldet, 4 der Server lehnt die Anfrage ab (z. B. redirect_uri), 1 sonstiger Fehler.
+Exit: 0 angemeldet, 4 der Server lehnt die Anfrage ab (z. B. redirect_uri), 5 auf dem Server
+antwortet keine oauth2-App (dort kann sich der Desktop-Client nicht anmelden), 1 sonstiger Fehler.
 Code und Tokens gibt das Skript nie aus; maskieren muss der Aufrufer (run-suite.sh).
 """
 
@@ -54,6 +55,7 @@ USER_AGENT = 'Mozilla/5.0 (owncloud.online E2E OAuth2 login)'
 
 EXIT_FAILED = 1
 EXIT_REFUSED = 4
+EXIT_NO_OAUTH2 = 5
 
 
 class Refused(Exception):
@@ -62,6 +64,10 @@ class Refused(Exception):
 
 class Failed(Exception):
     pass
+
+
+class NoOAuth2(Exception):
+    """Unter den Pfaden der oauth2-App antwortet nichts (App fehlt oder ist abgeschaltet)."""
 
 
 def b64url(data, padding=True):
@@ -110,6 +116,11 @@ class Browser:
 
     def __init__(self):
         self.opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()), NoRedirect())
+        self.hops = []
+
+    def trail(self):
+        """Die Anfragen des letzten follow() als Pfade mit Status, ohne Server und Parameter."""
+        return ' → '.join(self.hops)
 
     def request(self, url, data=None, headers=None):
         body = urllib.parse.urlencode(data).encode() if isinstance(data, dict) else data
@@ -125,8 +136,10 @@ class Browser:
 
     def follow(self, url, data=None, stop=None, hops=10):
         """Folgt Weiterleitungen des Servers; hält vor einer an, für die stop(ziel) wahr ist."""
+        self.hops = []
         for _ in range(hops):
             status, headers, body = self.request(url, data)
+            self.hops.append(f'{"POST" if data is not None else "GET"} {urllib.parse.urlsplit(url).path} {status}')
             if status not in (301, 302, 303, 307, 308):
                 return status, url, body, None
             target = urllib.parse.urljoin(url, headers.get('Location', ''))
@@ -150,6 +163,16 @@ def discover(browser, server):
     if not (isinstance(auth, str) and isinstance(token, str) and auth.startswith('http') and token.startswith('http')):
         return fallback
     return auth, token, '.well-known/openid-configuration'
+
+
+def oauth2_answers(browser, token_endpoint):
+    """Ob am Token-Endpunkt die oauth2-App antwortet: sie meldet einen Fehler als JSON, ein Server
+    ohne die App leitet weiter oder liefert HTML."""
+    _, _, body = browser.request(token_endpoint, {'grant_type': 'probe'}, headers={'Accept': 'application/json'})
+    try:
+        return 'error' in json.loads(body)
+    except (ValueError, TypeError):
+        return False
 
 
 def free_port(host):
@@ -210,7 +233,10 @@ def login(server, user, password, redirect_host):
         if form is None:
             if b'class="error"' in body:
                 raise Refused(f'Fehlerseite der oauth2-App (HTTP {status}) – Anfrage abgelehnt, z. B. redirect_uri {redirect_uri}')
-            raise Failed(f'keine Zustimmungsseite unter {page_url} (HTTP {status})')
+            trail = browser.trail()
+            if not oauth2_answers(browser, token_endpoint):
+                raise NoOAuth2(f'keine oauth2-App auf dem Server ({trail}; der Token-Endpunkt antwortet nicht mit JSON)')
+            raise Failed(f'keine Zustimmungsseite ({trail})')
         # Zustimmung: das Formular schickt sich an dieselbe URL samt Parametern
         status, page_url, body, target = browser.follow(
             urllib.parse.urljoin(page_url, form['action']) if form['action'] else page_url,
@@ -219,7 +245,7 @@ def login(server, user, password, redirect_host):
     else:
         print('Zustimmung: nicht nötig (vertrauenswürdiger Client)')
     if target is None:
-        raise Failed(f'keine Weiterleitung zum Client nach der Zustimmung (HTTP {status} unter {page_url})')
+        raise Failed(f'keine Weiterleitung zum Client nach der Zustimmung ({browser.trail()})')
 
     params = urllib.parse.parse_qs(urllib.parse.urlsplit(target).query)
     if 'error' in params:
@@ -281,7 +307,7 @@ def revoke(server, user, password):
     browser = Browser()
     status, page_url, body, _ = browser.follow(server + '/index.php/login')
     if not submit_login(browser, page_url, body, user, password):
-        raise Failed(f'keine Anmeldeseite unter {page_url} (HTTP {status})')
+        raise Failed(f'keine Anmeldeseite ({browser.trail()})')
     settings = server + '/index.php/settings/personal?sectionid=security'
     status, page_url, body, _ = browser.follow(settings)
     match = DESKTOP_REVOKE.search(body.decode('utf-8', 'replace'))
@@ -309,6 +335,9 @@ def main():
     parser.add_argument('--redirect-host', default='localhost', choices=('localhost', '127.0.0.1'),
                         help='Host der redirect_uri (der Client nutzt localhost)')
     args = parser.parse_args()
+    # zeilenweise, damit Fortschritt und Fehler in der Datei des Aufrufers in der richtigen Reihenfolge stehen
+    sys.stdout.reconfigure(encoding='utf-8', line_buffering=True)
+    sys.stderr.reconfigure(encoding='utf-8')
     if not args.revoke and not args.out:
         parser.error('--out fehlt')
     user, password = os.environ.get('OC_USER'), os.environ.get('OC_PASS')
@@ -324,6 +353,9 @@ def main():
     except Refused as e:
         print(f'abgelehnt: {e}', file=sys.stderr)
         return EXIT_REFUSED
+    except NoOAuth2 as e:
+        print(f'ohne oauth2: {e}', file=sys.stderr)
+        return EXIT_NO_OAUTH2
     except (Failed, OSError) as e:
         print(f'Fehler: {e}', file=sys.stderr)
         return EXIT_FAILED

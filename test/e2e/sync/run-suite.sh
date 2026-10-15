@@ -522,6 +522,9 @@ oauth_login() {
 	echo "  anmeldung: exit $RC"
 }
 
+# login_error: Fehlerzeile von login.py (Fehler, Ablehnung oder fehlende oauth2-App)
+login_error() { grep -m1 -E '^(Fehler|abgelehnt|ohne oauth2):' "$LOG" | cut -c1-220; }
+
 # expect_signin_failure <lauf> <token-datei> <sha vorher>: sauberer Abbruch mit Exit 2
 expect_signin_failure() {
 	if [ "$RC" -gt 128 ]; then
@@ -540,7 +543,18 @@ a1() {
 	local tf=$WORK/oauth/token.json
 	mkdir -p "$WORK/oauth"
 	oauth_login localhost "$tf"
-	[ "$RC" -eq 0 ] || { fail "Anmeldung über http://localhost:<port> gescheitert (Exit $RC): $(tail -1 "$LOG")"; return; }
+	case $RC in
+	0) ;;
+	5)
+		# keine Schwäche des Clients: auch der Desktop-Client kann sich auf diesem Server nicht anmelden
+		case_error "Server ohne oauth2-App – Anmeldung des Desktop-Clients dort unmöglich: $(login_error)"
+		return
+		;;
+	*)
+		fail "Anmeldung über http://localhost:<port> gescheitert (Exit $RC): $(login_error)"
+		return
+		;;
+	esac
 	remember_tokens "$tf"
 	jq -e '.server_url and .access_token and .refresh_token and .expires_at' "$tf" >/dev/null || fail "Token-Datei unvollständig"
 	[ "$(stat -c %a "$tf")" = 600 ] || fail "Token-Datei nicht nur für den Eigentümer lesbar"
@@ -570,7 +584,8 @@ a2() {
 			fail "oauth2 $v lehnt redirect_uri http://127.0.0.1:<port> ab – ab 0.9.0 erwartet angenommen (RFC 8252)"
 		fi
 		;;
-	*) fail "Anmeldung über 127.0.0.1: Exit $RC – $(tail -1 "$LOG")" ;;
+	5) case_error "Server ohne oauth2-App: $(login_error)" ;;
+	*) fail "Anmeldung über 127.0.0.1: Exit $RC – $(login_error)" ;;
 	esac
 }
 
@@ -633,7 +648,7 @@ a6() {
 	token_copy "$TOKEN_FILE" "$tf" || { case_error "Token-Datei nicht kopierbar"; return; }
 	LOG=$LOGS/$ID-widerruf.log
 	if ! "${LOGIN[@]}" --revoke >"$LOG" 2>&1; then
-		case_error "Widerruf in den persönlichen Einstellungen gescheitert: $(tail -1 "$LOG")"
+		case_error "Widerruf in den persönlichen Einstellungen gescheitert: $(login_error)"
 		return
 	fi
 	sed 's/^/    /' "$LOG"
