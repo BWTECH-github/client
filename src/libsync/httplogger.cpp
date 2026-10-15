@@ -23,6 +23,7 @@
 #include <QLoggingCategory>
 #include <QPointer>
 #include <QRegularExpression>
+#include <QStringList>
 
 #include <memory>
 
@@ -82,10 +83,18 @@ void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIO
     const auto reply = qobject_cast<QNetworkReply *>(device);
 
     if (redact) {
-        const QString authKey = QStringLiteral("Authorization");
-        const QString auth = header.value(authKey).toString();
-        if (!auth.isEmpty()) {
-            header.insert(authKey, auth.startsWith(QStringLiteral("Bearer ")) ? QStringLiteral("Bearer [redacted]") : QStringLiteral("Basic [redacted]"));
+        // Qt liefert die Namen seit 6.7 klein geschrieben ("authorization"): ohne Vergleich ohne
+        // Groß-/Kleinschreibung standen Basic-Zugangsdaten und Bearer-Tokens im Protokoll.
+        // Sitzungs-Cookies melden ebenso an und bleiben deshalb auch draußen.
+        const QStringList keys = header.keys();
+        for (const QString &key : keys) {
+            if (key.compare(QLatin1String("Authorization"), Qt::CaseInsensitive) == 0) {
+                const QString scheme = header.value(key).toString().section(QLatin1Char(' '), 0, 0);
+                header.insert(key, QStringLiteral("%1 [redacted]").arg(scheme));
+            } else if (key.compare(QLatin1String("Cookie"), Qt::CaseInsensitive) == 0
+                || key.compare(QLatin1String("Set-Cookie"), Qt::CaseInsensitive) == 0) {
+                header.insert(key, QStringLiteral("[redacted]"));
+            }
         }
     }
 
