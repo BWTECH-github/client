@@ -33,8 +33,10 @@
     (ConfigFile::configPath), Cache in %LOCALAPPDATA%\<app>, Autostart in HKCU
     Run (Utility::setLaunchOnStartup), Eintrag im Explorer-Navigationsbereich
     (NavigationPaneHelper) und eine Nutzerdatei im Sync-Ordner. Nach der
-    Deinstallation müssen Anmeldedaten, Einstellungen, Cache, Autostart und
-    Explorer-Eintrag weg sein, die Nutzerdatei muss bleiben (Entscheidung E4).
+    Deinstallation müssen Autostart und Explorer-Eintrag weg sein, die
+    Nutzerdatei muss bleiben. Anmeldedaten, Einstellungen und Cache
+    (Entscheidung E4): frisch und koexistenz deinstallieren mit /S /purge -
+    sie müssen weg sein; upgrade deinstalliert mit /S - sie müssen bleiben.
     CfApi-Sync-Root, Windows-Search-Regeln und Schnellzugriff lassen sich ohne
     laufenden Client mit Konto nicht nachbilden und werden als "nicht geprüft"
     gemeldet.
@@ -108,8 +110,9 @@ $appName = 'owncloud.online'
 # gehört eindeutig zu unserem Client
 $ownPattern = 'owncloud\.online'
 # gehört zu einem der beiden Clients: Namen, Pfade sowie die mit dem
-# offiziellen Client geteilten COM-Klassen und Overlay-Namen (Audit H3)
-$clientPattern = 'owncloud|OCOverlays|OCContextMenu|\bOC(Error|OK|Sync|Warning)(Shared)?\b|0960F09[0-7]-F328-48A3-B746-276B1E3C3722|841A0AAD-AA11-4B50-84D9-7F8E727D77D7'
+# offiziellen Client geteilten COM-Klassen und Overlay-Namen (Audit H3) und
+# die eigenen seit 11.0 ("  OCOError" usw., {CCD18E2x-...}, {27041A83-...})
+$clientPattern = 'owncloud|OCOverlays|OCContextMenu|\bOCO?(Error|OK|Sync|Warning)(Shared)?\b|0960F09[0-7]-F328-48A3-B746-276B1E3C3722|841A0AAD-AA11-4B50-84D9-7F8E727D77D7|CCD18E2[0-7]-5D74-4A54-AFCF-65346B89869F|27041A83-BC80-4E2F-AB7C-D6A0F13870CC'
 # Laufzeitspuren ändern sich durch den Betrieb des offiziellen Clients - sie
 # zählen nicht zu seinem Fußabdruck, der unverändert bleiben muss
 $footprintSkip = @('processes', 'files.user', 'syncfolders')
@@ -393,9 +396,12 @@ function Get-OwnUninstallCommand {
     return $null
 }
 
+# $Purge: /purge anhängen - entfernt nach E4 auch Einstellungen, Konten und
+# Anmeldedaten; ohne behält die stille Deinstallation sie
 function Uninstall-Candidate {
-    param([string] $Id)
-    $title = 'Deinstallation still, ohne Neustart'
+    param([string] $Id, [switch] $Purge)
+    $extra = if ($Purge) { '/purge ' } else { '' }
+    $title = 'Deinstallation still {0}ohne Neustart' -f $(if ($Purge) { 'mit /purge, ' } else { '(Daten behalten), ' })
     $command = Get-OwnUninstallCommand
     if (-not $command) {
         Add-Check $Id $title 'FEHLER' 'kein Eintrag mit owncloud.online in Programme und Features' 'H19'
@@ -405,7 +411,7 @@ function Uninstall-Candidate {
     $arguments = $parts[1]
     # NSIS wertet nur das große /S aus
     if ($arguments -cnotmatch '(^|\s)/S(\s|$)') { $arguments = "/S $arguments" }
-    $run = Invoke-Step 'Deinstallation (Prüfling)' $parts[0] ("$arguments /norestart".Trim())
+    $run = Invoke-Step 'Deinstallation (Prüfling)' $parts[0] ("$arguments $extra/norestart".Trim())
     Test-Run $run $Id $title
 }
 
@@ -533,14 +539,17 @@ function Get-TracePattern {
     return ($parts -join '|')
 }
 
+# E4: still ohne /purge bleiben Anmeldedaten, Einstellungen und Cache (z. B.
+# für eine Neuinstallation per Softwareverteilung), mit /purge gehen sie
 function Test-TracesAfterUninstall {
-    param($Snapshot)
+    param($Snapshot, [bool] $Purge)
     $state = Get-TraceState $Snapshot
+    $keep = -not $Purge
     # Spur, soll vorhanden sein, Audit
     $expectations = @(
-        @('Anmeldedaten', $false, 'E4, H6'),
-        @('Einstellungen', $false, 'E4, H6'),
-        @('Cache', $false, 'H6'),
+        @('Anmeldedaten', $keep, 'E4, H6'),
+        @('Einstellungen', $keep, 'E4, H6'),
+        @('Cache', $keep, 'E4, H6'),
         @('Autostart', $false, 'H6'),
         @('Navigationsbereich', $false, 'H4'),
         @('Nutzerdatei', $true, 'E4, H5')
@@ -550,7 +559,10 @@ function Test-TracesAfterUninstall {
         $number++
         $name = $expectation[0]
         $shouldExist = $expectation[1]
-        $title = if ($shouldExist) { 'Nutzerdatei im Sync-Ordner bleibt erhalten' } else { "$name entfernt" }
+        $title = if ($name -eq 'Nutzerdatei') { 'Nutzerdatei im Sync-Ordner bleibt erhalten' }
+            elseif ($shouldExist) { "$name bleiben erhalten (ohne /purge)" }
+            elseif ($Purge -and $expectation[2] -like 'E4*') { "$name entfernt (/purge)" }
+            else { "$name entfernt" }
         if ($null -eq $state[$name]) {
             $why = if ($traceErrors.ContainsKey($name)) { 'Spur nicht angelegt: ' + $traceErrors[$name] } else { 'nicht lesbar' }
             Add-Check "D$number" $title 'NICHT GEPRÜFT' $why $expectation[2]
@@ -764,14 +776,14 @@ function Test-Residue {
 }
 
 function Test-Removal {
-    param($Base, $Final, [string] $DiffName, [hashtable] $Ignore)
+    param($Base, $Final, [string] $DiffName, [hashtable] $Ignore, [bool] $Purge)
     $entries = @(Get-UninstallEntries $Final $ownPattern)
     if ($entries.Count -gt 0) {
         Add-Check 'D2' 'Eintrag in Programme und Features entfernt' 'FEHLER' (($entries | ForEach-Object { $_.Key }) -join '; ') ''
     } else {
         Add-Check 'D2' 'Eintrag in Programme und Features entfernt' 'OK' '' ''
     }
-    Test-TracesAfterUninstall $Final
+    Test-TracesAfterUninstall $Final $Purge
     Test-Residue $Base $Final $DiffName $Ignore
 }
 
@@ -908,9 +920,9 @@ function Invoke-Fresh {
     Add-ClientTraces $exe
     $installed = New-Snapshot 'installiert' 'Prüfling installiert, Client-Spuren angelegt'
     Test-Installation $base $installed $exe 'ausgang-installiert'
-    Uninstall-Candidate 'D1'
+    Uninstall-Candidate 'D1' -Purge
     $removed = New-Snapshot 'deinstalliert' 'Prüfling deinstalliert'
-    Test-Removal $base $removed 'ausgang-deinstalliert' @{}
+    Test-Removal $base $removed 'ausgang-deinstalliert' @{} $true
 }
 
 function Invoke-Upgrade {
@@ -930,7 +942,7 @@ function Invoke-Upgrade {
     Test-TracesAfterUpgrade $installed
     Uninstall-Candidate 'D1'
     $removed = New-Snapshot 'deinstalliert' 'Prüfling deinstalliert'
-    Test-Removal $base $removed 'ausgang-deinstalliert' @{}
+    Test-Removal $base $removed 'ausgang-deinstalliert' @{} $false
 }
 
 function Invoke-Coexistence {
@@ -963,11 +975,11 @@ function Invoke-Coexistence {
     Test-Installation $official $installed $exe 'offiziell-installiert'
 
     $running = Get-OfficialProcess
-    Uninstall-Candidate 'D1'
+    Uninstall-Candidate 'D1' -Purge
     $removed = New-Snapshot 'deinstalliert' 'Prüfling deinstalliert, offizieller Client bleibt'
     Test-Footprint $footprint $removed 'K3' 'Offizieller Client nach unserer Deinstallation unverändert' 'H2, H3'
     Test-OfficialProcess $running 'K4' 'Offizieller Client läuft nach unserer Deinstallation weiter'
-    Test-Removal $official $removed 'offiziell-deinstalliert' $footprint
+    Test-Removal $official $removed 'offiziell-deinstalliert' $footprint $true
 
     # Gegenrichtung: der offizielle Deinstaller darf unseren Client nicht beschädigen
     Install-Candidate 'K5' 'Setup (Prüfling, erneut)'
