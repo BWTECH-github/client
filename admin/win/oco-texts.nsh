@@ -1,0 +1,53 @@
+; owncloud.online: Oberflächentexte für restart-wrapper.nsi und uninstall-helper.nsi.
+; Einbinden NACH den MUI_LANGUAGE-Makros mit !include /CHARSET=UTF8 (echte Umlaute).
+; Das einbindende Programm setzt vorher OCO_WRAPPER oder OCO_HELPER.
+
+!ifdef OCO_WRAPPER
+LangString TXT_REBOOT ${LANG_GERMAN} "Um die Installation abzuschließen, muss Windows neu gestartet werden, damit die Explorer-Integration (Überlagerungssymbole, Kontextmenü) geladen wird."
+LangString TXT_REBOOT ${LANG_ENGLISH} "To complete the installation, Windows must be restarted so that the Explorer integration (overlay icons, context menu) is loaded."
+LangString TXT_FAILED ${LANG_GERMAN} "Die Installation ist fehlgeschlagen (Code $0)."
+LangString TXT_FAILED ${LANG_ENGLISH} "The installation failed (exit code $0)."
+LangString TXT_INCOMPLETE ${LANG_GERMAN} "Die Installation scheint unvollständig zu sein: Die Programmdatei des Clients wurde nicht gefunden. Bitte führen Sie das Setup erneut aus und wenden Sie sich andernfalls an den Support."
+LangString TXT_INCOMPLETE ${LANG_ENGLISH} "The installation appears to be incomplete: the client program file was not found. Please run the setup again and contact support if the problem persists."
+!endif
+
+!ifdef OCO_HELPER
+LangString TXT_CAPTION ${LANG_GERMAN} "owncloud.online deinstallieren"
+LangString TXT_CAPTION ${LANG_ENGLISH} "Uninstall owncloud.online"
+LangString TXT_OPTIONS_TITLE ${LANG_GERMAN} "owncloud.online deinstallieren"
+LangString TXT_OPTIONS_TITLE ${LANG_ENGLISH} "Uninstall owncloud.online"
+LangString TXT_OPTIONS_SUBTITLE ${LANG_GERMAN} "Wählen Sie, was außer dem Programm entfernt werden soll."
+LangString TXT_OPTIONS_SUBTITLE ${LANG_ENGLISH} "Choose what to remove besides the program."
+LangString TXT_OPTIONS_INTRO ${LANG_GERMAN} "owncloud.online wird von diesem Computer entfernt ($INSTDIR).$\r$\n$\r$\nDie Dateien in Ihren Sync-Ordnern bleiben erhalten. Nur online verfügbare Dateien werden aus den Sync-Ordnern entfernt – sie bleiben auf dem Server."
+LangString TXT_OPTIONS_INTRO ${LANG_ENGLISH} "owncloud.online will be removed from this computer ($INSTDIR).$\r$\n$\r$\nThe files in your sync folders are kept. Online-only files are removed from the sync folders – they remain on the server."
+LangString TXT_OPT_SETTINGS ${LANG_GERMAN} "Einstellungen, Konten und Anmeldedaten entfernen"
+LangString TXT_OPT_SETTINGS ${LANG_ENGLISH} "Remove settings, accounts and credentials"
+LangString TXT_OPT_SETTINGS_HINT ${LANG_GERMAN} "Nach einer erneuten Installation melden Sie sich neu an und wählen die Sync-Ordner neu."
+LangString TXT_OPT_SETTINGS_HINT ${LANG_ENGLISH} "After reinstalling, you sign in again and choose your sync folders again."
+LangString TXT_OPT_SYNCDB ${LANG_GERMAN} "Sync-Datenbanken und Protokolle in den Sync-Ordnern löschen"
+LangString TXT_OPT_SYNCDB ${LANG_ENGLISH} "Delete sync databases and logs in the sync folders"
+LangString TXT_OPT_SYNCDB_HINT ${LANG_GERMAN} "Nur nötig, wenn die Ordner nicht wieder mit owncloud.online verbunden werden."
+LangString TXT_OPT_SYNCDB_HINT ${LANG_ENGLISH} "Only needed if the folders will not be connected to owncloud.online again."
+LangString TXT_UNINSTALL_BUTTON ${LANG_GERMAN} "&Deinstallieren"
+LangString TXT_UNINSTALL_BUTTON ${LANG_ENGLISH} "&Uninstall"
+LangString TXT_PROGRESS_TITLE ${LANG_GERMAN} "Deinstallation"
+LangString TXT_PROGRESS_TITLE ${LANG_ENGLISH} "Uninstalling"
+LangString TXT_PROGRESS_SUBTITLE ${LANG_GERMAN} "owncloud.online wird entfernt …"
+LangString TXT_PROGRESS_SUBTITLE ${LANG_ENGLISH} "Removing owncloud.online …"
+LangString TXT_DONE_TITLE ${LANG_GERMAN} "Deinstallation abgeschlossen"
+LangString TXT_DONE_TITLE ${LANG_ENGLISH} "Uninstallation complete"
+LangString TXT_DONE_SUBTITLE ${LANG_GERMAN} "owncloud.online wurde entfernt."
+LangString TXT_DONE_SUBTITLE ${LANG_ENGLISH} "owncloud.online has been removed."
+LangString TXT_ABORT_TITLE ${LANG_GERMAN} "Deinstallation abgebrochen"
+LangString TXT_ABORT_TITLE ${LANG_ENGLISH} "Uninstallation aborted"
+LangString TXT_ABORT_SUBTITLE ${LANG_GERMAN} "owncloud.online wurde nicht vollständig entfernt."
+LangString TXT_ABORT_SUBTITLE ${LANG_ENGLISH} "owncloud.online was not removed completely."
+LangString TXT_FINISH_TEXT ${LANG_GERMAN} "owncloud.online wurde von diesem Computer entfernt. Die Dateien in Ihren Sync-Ordnern sind erhalten geblieben."
+LangString TXT_FINISH_TEXT ${LANG_ENGLISH} "owncloud.online has been removed from this computer. The files in your sync folders have been kept."
+LangString TXT_UN_REBOOT ${LANG_GERMAN} "Um die Deinstallation abzuschließen, muss Windows neu gestartet werden, damit die Explorer-Integration vollständig entfernt wird."
+LangString TXT_UN_REBOOT ${LANG_ENGLISH} "To complete the uninstallation, Windows must be restarted so that the Explorer integration is removed completely."
+LangString TXT_UN_FAILED ${LANG_GERMAN} "Die Deinstallation ist fehlgeschlagen (Code $0). Bitte versuchen Sie es erneut."
+LangString TXT_UN_FAILED ${LANG_ENGLISH} "The uninstallation failed (exit code $0). Please try again."
+LangString TXT_UN_INCOMPLETE ${LANG_GERMAN} "Die Deinstallation ist unvollständig: Der Client ist noch vorhanden. Bitte versuchen Sie es erneut."
+LangString TXT_UN_INCOMPLETE ${LANG_ENGLISH} "The uninstallation is incomplete: the client is still present. Please try again."
+!endif

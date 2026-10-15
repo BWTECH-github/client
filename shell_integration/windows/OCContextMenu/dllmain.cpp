@@ -19,8 +19,12 @@
 
 #include <algorithm>
 
-// {841A0AAD-AA11-4B50-84D9-7F8E727D77D7}
-static const GUID CLSID_FileContextMenuExt = { 0x841a0aad, 0xaa11, 0x4b50, { 0x84, 0xd9, 0x7f, 0x8e, 0x72, 0x7d, 0x77, 0xd7 } };
+// {27041A83-BC80-4E2F-AB7C-D6A0F13870CC}
+// Eigene Kennung und eigener Handler-Name (Audit H3): {841A0AAD-...} und
+// "OCContextMenuHandler" gehören dem offiziellen ownCloud-Client.
+static const GUID CLSID_FileContextMenuExt = { 0x27041a83, 0xbc80, 0x4e2f, { 0xab, 0x7c, 0xd6, 0xa0, 0xf1, 0x38, 0x70, 0xcc } };
+// Schlüsselname unter AllFileSystemObjects\shellex\ContextMenuHandlers
+#define CONTEXT_MENU_HANDLER_NAME L"owncloud.online"
 
 HINSTANCE g_hInst = nullptr;
 long        g_cDllRef = 0;
@@ -76,11 +80,11 @@ STDAPI DllRegisterServer(void)
 
 	// Register the component.
 	hr = OCContextMenuRegHandler::RegisterInprocServer(szModule, CLSID_FileContextMenuExt,
-		L"OCContextMenuHandler Class",	L"Apartment");
+		L"owncloud.online context menu handler",	L"Apartment");
 	if (SUCCEEDED(hr))	{
 		// Register the context menu handler. The context menu handler is 
 		// associated with the .cpp file class.
-		hr = OCContextMenuRegHandler::RegisterShellExtContextMenuHandler(L"AllFileSystemObjects", CLSID_FileContextMenuExt, L"OCContextMenuHandler");
+		hr = OCContextMenuRegHandler::RegisterShellExtContextMenuHandler(L"AllFileSystemObjects", CLSID_FileContextMenuExt, CONTEXT_MENU_HANDLER_NAME);
 	}
 
 	return hr;
@@ -100,7 +104,7 @@ STDAPI DllUnregisterServer(void)
 	hr = OCContextMenuRegHandler::UnregisterInprocServer(CLSID_FileContextMenuExt);
 	if (SUCCEEDED(hr))	{
 		// Unregister the context menu handler.
-		hr = OCContextMenuRegHandler::UnregisterShellExtContextMenuHandler(L"AllFileSystemObjects", L"OCContextMenuHandler");
+		hr = OCContextMenuRegHandler::UnregisterShellExtContextMenuHandler(L"AllFileSystemObjects", CONTEXT_MENU_HANDLER_NAME);
 	}
 
 	return hr;
