@@ -126,7 +126,7 @@ public:
     {
     }
 
-    AccessManager *createAccessManager() const override
+    OCC::AccessManager *createAccessManager() const override
     {
         auto *accessManager = new BearerAccessManager<FakeAM>(this, const_cast<TestOAuthCredentials *>(this));
         accessManager->setOverride(_override);

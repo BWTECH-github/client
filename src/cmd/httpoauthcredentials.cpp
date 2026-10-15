@@ -51,6 +51,18 @@ namespace {
             && effectivePort(a) == effectivePort(b);
     }
 
+    // Fehlertexte des Servers landen im Terminal: ohne Steuerzeichen und in begrenzter Länge
+    QString printable(const QString &text)
+    {
+        QString result;
+        for (const QChar c : text) {
+            if (c.isPrint()) {
+                result.append(c);
+            }
+        }
+        return result.left(300);
+    }
+
     // application/x-www-form-urlencoded: alles außer den nicht reservierten Zeichen
     // kodieren; QUrlQuery ließe "+" stehen, das der Server als Leerzeichen liest
     QByteArray formEncode(const QList<std::pair<QByteArray, QString>> &fields)
@@ -220,9 +232,9 @@ void HttpOAuthCredentials::handleRefreshReply(QNetworkReply *reply)
     QJsonParseError parseError;
     const QJsonObject json = QJsonDocument::fromJson(reply->readAll(), &parseError).object();
 
-    const QString error = json.value(QStringLiteral("error")).toString();
+    const QString error = printable(json.value(QStringLiteral("error")).toString());
     if (!error.isEmpty()) {
-        const QString description = json.value(QStringLiteral("error_description")).toString();
+        const QString description = printable(json.value(QStringLiteral("error_description")).toString());
         const QString detail = description.isEmpty() ? error : QStringLiteral("%1: %2").arg(error, description);
         // wie AccountBasedOAuth::refreshAuthentication: dann gilt das Refresh-Token nicht mehr
         if (error == QLatin1String("invalid_grant") || error == QLatin1String("invalid_request")) {

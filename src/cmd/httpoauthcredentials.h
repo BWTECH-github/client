@@ -25,7 +25,6 @@
 #include <QPointer>
 
 #include <memory>
-#include <utility>
 
 class QLockFile;
 
@@ -100,9 +99,8 @@ template <typename Base>
 class BearerAccessManager : public Base
 {
 public:
-    template <typename... Args>
-    explicit BearerAccessManager(const HttpOAuthCredentials *credentials, Args &&...args)
-        : Base(std::forward<Args>(args)...)
+    BearerAccessManager(const HttpOAuthCredentials *credentials, QObject *parent)
+        : Base(parent)
         , _credentials(credentials)
     {
     }

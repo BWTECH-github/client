@@ -30,6 +30,7 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDir>
+#include <QHostAddress>
 #include <QTimer>
 
 using namespace OCC;
@@ -93,6 +94,10 @@ int main(int argc, char **argv)
         if (!tokens->belongsTo(serverUrl)) {
             qCritical().noquote() << "The OAuth2 token file belongs to" << tokens->serverUrl().toString() << "and not to" << serverUrl.toString();
             return EXIT_FAILURE;
+        }
+        // im Klartext nur zum eigenen Rechner unbedenklich
+        if (serverUrl.scheme() != QLatin1String("https") && serverUrl.host() != QLatin1String("localhost") && !QHostAddress(serverUrl.host()).isLoopback()) {
+            qWarning().noquote() << "The OAuth2 tokens are sent unencrypted to" << serverUrl.toString() << "- use https";
         }
         if (user.isEmpty()) {
             user = tokens->userId();
