@@ -163,13 +163,23 @@ private Q_SLOTS:
     void testSignerMatches()
     {
         const QString required = CodeSignature::requiredSigner();
-        QCOMPARE(required, QStringLiteral("BW-TECH GmbH"));
-        QVERIFY(CodeSignature::signerMatches(QStringLiteral("BW-TECH GmbH"), required));
-        QVERIFY(CodeSignature::signerMatches(QStringLiteral("BW-Tech GmbH"), required));
-        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("Microsoft Corporation"), required));
-        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("BW-TECH"), required));
-        QVERIFY(!CodeSignature::signerMatches(QString(), required));
-        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("BW-TECH GmbH"), QString()));
+        QCOMPARE(required, QString::fromUtf8("BW-TECH GmbH, IT Service für Systemintegration & Datensicherheit"));
+        const QString digiCert = QStringLiteral("DigiCert Trusted G4 Code Signing RSA4096 SHA384 2021 CA1");
+        QVERIFY(CodeSignature::signerMatches(required, digiCert));
+        // dasselbe "ü" zerlegt (u + U+0308)
+        QVERIFY(required.normalized(QString::NormalizationForm_D) != required);
+        QVERIFY(CodeSignature::signerMatches(required.normalized(QString::NormalizationForm_D), digiCert));
+        // fremde CNs, die unseren Namen nur enthalten oder anders schreiben
+        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("XYZ BW-TECH GmbH Holding"), digiCert));
+        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("BW-TECH GmbH"), digiCert));
+        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("XYZ ") + required, digiCert));
+        QVERIFY(!CodeSignature::signerMatches(required + QStringLiteral(" Holding"), digiCert));
+        QVERIFY(!CodeSignature::signerMatches(required.toUpper(), digiCert));
+        QVERIFY(!CodeSignature::signerMatches(QString(required).replace(QChar(0xfc), QLatin1Char('u')), digiCert));
+        // richtiger CN, aber nicht von DigiCert ausgestellt
+        QVERIFY(!CodeSignature::signerMatches(required, QStringLiteral("Sectigo Public Code Signing CA R36")));
+        QVERIFY(!CodeSignature::signerMatches(required, QString()));
+        QVERIFY(!CodeSignature::signerMatches(QString(), digiCert));
     }
 
     void testSignatureRejection()
@@ -206,8 +216,9 @@ private Q_SLOTS:
             if (!r.valid) {
                 continue;
             }
-            qInfo() << "foreign signed file" << candidate << r.signer;
-            QVERIFY(!CodeSignature::signerMatches(r.signer, CodeSignature::requiredSigner()));
+            qInfo() << "foreign signed file" << candidate << r.signer << r.issuer;
+            QVERIFY(!r.issuer.isEmpty());
+            QVERIFY(!CodeSignature::signerMatches(r.signer, r.issuer));
             QString error;
             QVERIFY(!CodeSignature::verifyUpdatePackage(candidate, &error));
             QVERIFY(error.contains(QLatin1String("unexpected signer")));

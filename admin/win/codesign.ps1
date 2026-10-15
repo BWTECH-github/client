@@ -15,6 +15,12 @@
   Jede Signatur trägt einen RFC-3161-Zeitstempel von DigiCert, damit sie nach
   Ablauf des Zertifikats gültig bleibt.
 
+  -Verify verlangt dieselbe Signatur wie der Updater des Clients
+  (src/gui/updater/codesignature.cpp): Antragsteller-CN genau
+  „BW-TECH GmbH, IT Service für Systemintegration & Datensicherheit“, Aussteller
+  mit „DigiCert“. Weicht das Zertifikat ab, scheitert der Signier-Lauf hier statt
+  später jedes Update beim Kunden.
+
 .EXAMPLE
   .\codesign.ps1 -Sign .\setup.exe
   .\codesign.ps1 -Verify .\setup.exe, .\client.exe
@@ -51,8 +57,18 @@ foreach ($file in $Sign) {
     if ($LASTEXITCODE -ne 0) { throw "Signieren fehlgeschlagen: $file" }
 }
 
+# [char]0xFC statt "ü": Windows PowerShell 5.1 liest UTF-8 ohne BOM als ANSI
+$requiredSigner = "BW-TECH GmbH, IT Service f$([char]0xFC)r Systemintegration & Datensicherheit"
+$simpleName = [System.Security.Cryptography.X509Certificates.X509NameType]::SimpleName
+
 foreach ($file in $Verify) {
     if (-not (Test-Path $file)) { throw "Datei fehlt: $file" }
     & $signtool verify /pa /v $file
     if ($LASTEXITCODE -ne 0) { throw "Signatur fehlt oder ist ungültig: $file" }
+    $cert = (Get-AuthenticodeSignature $file).SignerCertificate
+    $signer = $cert.GetNameInfo($simpleName, $false)
+    $issuer = $cert.GetNameInfo($simpleName, $true)
+    if ($signer -cne $requiredSigner -or $issuer -cnotlike '*DigiCert*') {
+        throw "Signierer '$signer' (Aussteller '$issuer') ist nicht der, den der Updater verlangt: $file"
+    }
 }

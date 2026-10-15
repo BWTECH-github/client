@@ -24,20 +24,24 @@ namespace OCC::CodeSignature {
 struct Result
 {
     bool valid = false; // Signatur und Zertifikatskette gültig
-    QString signer; // Anzeigename (CN) des Signaturzertifikats
+    QString signer; // CN des Antragstellers im Signaturzertifikat
+    QString issuer; // CN des Ausstellers des Signaturzertifikats
     QString error; // Grund bei Fehlschlag
 };
 
-// Name, der im Signaturzertifikat eines Updates stehen muss
+// CN, den das Signaturzertifikat eines Updates genau tragen muss
 OWNCLOUDGUI_EXPORT QString requiredSigner();
+
+// Text, den der CN des Ausstellers enthalten muss
+OWNCLOUDGUI_EXPORT QString requiredIssuer();
 
 // Prüft die eingebettete Authenticode-Signatur (nur Windows, sonst immer ungültig)
 OWNCLOUDGUI_EXPORT Result verifyFile(const QString &path);
 
-// true, wenn der Signierer den geforderten Namen enthält
-OWNCLOUDGUI_EXPORT bool signerMatches(const QString &signer, const QString &required);
+// true, wenn signer genau requiredSigner() ist und issuer requiredIssuer() enthält
+OWNCLOUDGUI_EXPORT bool signerMatches(const QString &signer, const QString &issuer);
 
-// Gültige Signatur UND Signierer = requiredSigner(); sonst false mit Grund in error
+// Gültige Signatur UND signerMatches(); sonst false mit Grund in error
 OWNCLOUDGUI_EXPORT bool verifyUpdatePackage(const QString &path, QString *error = nullptr);
 
 } // namespace OCC::CodeSignature

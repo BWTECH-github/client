@@ -23,21 +23,46 @@
 #include <softpub.h>
 #include <wincrypt.h>
 #include <wintrust.h>
+
+#include <string>
 #endif
 
 namespace OCC::CodeSignature {
 
+#ifdef Q_OS_WIN
+namespace {
+// CN des Antragstellers (flags 0) oder des Ausstellers (CERT_NAME_ISSUER_FLAG), so wie er im Zertifikat steht
+QString commonName(PCCERT_CONTEXT cert, DWORD flags)
+{
+    void *oid = const_cast<char *>(szOID_COMMON_NAME);
+    const DWORD size = CertGetNameStringW(cert, CERT_NAME_ATTR_TYPE, flags, oid, nullptr, 0);
+    if (size <= 1) {
+        return {};
+    }
+    std::wstring name(size, L'\0');
+    CertGetNameStringW(cert, CERT_NAME_ATTR_TYPE, flags, oid, name.data(), size);
+    name.resize(size - 1);
+    return QString::fromStdWString(name);
+}
+}
+#endif
+
 QString requiredSigner()
 {
-    // Antragsteller unseres Code-Signing-Zertifikats (vgl. admin/win/codesign.ps1)
-    return QStringLiteral("BW-TECH GmbH");
+    // Antragsteller-CN unseres DigiCert-Code-Signing-Zertifikats (vgl. admin/win/codesign.ps1)
+    return QStringLiteral("BW-TECH GmbH, IT Service f\u00fcr Systemintegration & Datensicherheit");
 }
 
-bool signerMatches(const QString &signer, const QString &required)
+QString requiredIssuer()
 {
-    // signtool /n und Get-AuthenticodeSignature -like vergleichen ohne
-    // Groß-/Kleinschreibung; leere Angaben passen nie
-    return !required.trimmed().isEmpty() && signer.contains(required.trimmed(), Qt::CaseInsensitive);
+    return QStringLiteral("DigiCert");
+}
+
+bool signerMatches(const QString &signer, const QString &issuer)
+{
+    // Genau unser CN: ein Teilstück wie in "XYZ BW-TECH GmbH Holding" reicht nicht. NFC, damit ein
+    // zerlegt kodiertes "ü" (u + Trema) im Zertifikat als dasselbe Zeichen gilt.
+    return signer.normalized(QString::NormalizationForm_C) == requiredSigner() && issuer.contains(requiredIssuer());
 }
 
 Result verifyFile(const QString &path)
@@ -71,10 +96,8 @@ Result verifyFile(const QString &path)
         if (CRYPT_PROVIDER_DATA *provData = WTHelperProvDataFromStateData(data.hWVTStateData)) {
             if (CRYPT_PROVIDER_SGNR *signer = WTHelperGetProvSignerFromChain(provData, 0, FALSE, 0)) {
                 if (CRYPT_PROVIDER_CERT *cert = WTHelperGetProvCertFromChain(signer, 0)) {
-                    wchar_t name[512] = {};
-                    if (CertGetNameStringW(cert->pCert, CERT_NAME_SIMPLE_DISPLAY_TYPE, 0, nullptr, name, 512) > 1) {
-                        result.signer = QString::fromWCharArray(name);
-                    }
+                    result.signer = commonName(cert->pCert, 0);
+                    result.issuer = commonName(cert->pCert, CERT_NAME_ISSUER_FLAG);
                 }
             }
         }
@@ -99,8 +122,8 @@ bool verifyUpdatePackage(const QString &path, QString *error)
     QString reason;
     if (!r.valid) {
         reason = r.error;
-    } else if (!signerMatches(r.signer, requiredSigner())) {
-        reason = QStringLiteral("unexpected signer: %1").arg(r.signer);
+    } else if (!signerMatches(r.signer, r.issuer)) {
+        reason = QStringLiteral("unexpected signer: %1 (issuer: %2)").arg(r.signer, r.issuer);
     }
     if (error) {
         *error = reason;
