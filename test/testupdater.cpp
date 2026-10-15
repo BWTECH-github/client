@@ -6,6 +6,7 @@
 
 #include <QtTest>
 
+#include "common/version.h"
 #include "theme.h"
 #include "updater/codesignature.h"
 #include "updater/ocupdater.h"
@@ -101,6 +102,20 @@ private Q_SLOTS:
         QTest::newRow("newer than skipped") << "11.0.2" << "11.0.0" << "11.0.1" << true;
         QTest::newRow("empty") << "" << "11.0.0" << "" << false;
         QTest::newRow("garbage") << "garbage" << "1.0.0" << "" << false;
+        // installiert wie OCUpdater::installedVersion(): Baunummer 0, Suffix aus VERSION.cmake
+        QTest::newRow("beta1 to final") << "11.0.0" << "11.0.0.0-beta1" << "" << true;
+        QTest::newRow("final to final+1") << "11.0.1" << "11.0.0.0" << "" << true;
+        QTest::newRow("same version") << "11.0.0" << "11.0.0.0" << "" << false;
+        QTest::newRow("same pre-release") << "11.0.0-beta1" << "11.0.0.0-beta1" << "" << false;
+        QTest::newRow("next pre-release") << "11.0.0-beta2" << "11.0.0.0-beta1" << "" << true;
+        QTest::newRow("pre-release numbers compare as numbers") << "11.0.0-beta10" << "11.0.0.0-beta2" << "" << true;
+        QTest::newRow("rc after beta") << "11.0.0-rc1" << "11.0.0.0-beta2" << "" << true;
+        QTest::newRow("older pre-release") << "11.0.0-beta2" << "11.0.0.0-rc1" << "" << false;
+        QTest::newRow("pre-release of the installed final") << "11.0.0-rc1" << "11.0.0.0" << "" << false;
+        QTest::newRow("pre-release of the next version") << "11.0.1-beta1" << "11.0.0.0" << "" << true;
+        QTest::newRow("final skipped") << "11.0.0" << "11.0.0.0-beta1" << "11.0.0" << false;
+        QTest::newRow("final after a skipped pre-release") << "11.0.0" << "11.0.0.0-beta1" << "11.0.0-beta2" << true;
+        QTest::newRow("unreadable skipped version") << "11.0.1" << "11.0.0" << "garbage" << true;
     }
 
     void testVersionCompare()
@@ -109,7 +124,18 @@ private Q_SLOTS:
         QFETCH(QString, installed);
         QFETCH(QString, skipped);
         QFETCH(bool, newer);
-        QCOMPARE(OCUpdater::isNewerVersion(available, QVersionNumber::fromString(installed), QVersionNumber::fromString(skipped)), newer);
+        QCOMPARE(OCUpdater::isNewerVersion(available, installed, skipped), newer);
+    }
+
+    void testInstalledVersion()
+    {
+        const QString installed = OCUpdater::installedVersion();
+        QVERIFY(installed.startsWith(Version::versionWithBuildNumber().toString()));
+        QCOMPARE(installed.endsWith(QLatin1Char('-') + Version::suffix()), !Version::suffix().isEmpty());
+        // der Feed des eigenen Releases (make-update-feed.py: Version aus dem Tag) bietet nichts an
+        QVERIFY(!OCUpdater::isNewerVersion(Version::displayString(), installed, {}));
+        QVERIFY(OCUpdater::compareVersions(QStringLiteral("11.0.0-beta1"), QStringLiteral("11.0.0")) < 0);
+        QCOMPARE(OCUpdater::compareVersions(QStringLiteral("11.0.0-RC1"), QStringLiteral("11.0.0-rc01")), 0);
     }
 
     void testTrustedDownloadUrl_data()

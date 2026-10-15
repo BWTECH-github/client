@@ -134,13 +134,92 @@ void OCUpdater::backgroundCheckForUpdate()
     }
 }
 
-bool OCUpdater::isNewerVersion(const QString &available, const QVersionNumber &installed, const QVersionNumber &skipped)
+namespace {
+struct ParsedVersion
 {
-    const auto availableVersion = QVersionNumber::fromString(available);
-    if (available.isEmpty() || availableVersion.isNull()) {
+    QVersionNumber number;
+    QString suffix; // "beta1", "rc2", leer beim Release
+};
+
+ParsedVersion parseVersion(const QString &text)
+{
+    const QString trimmed = text.trimmed();
+    qsizetype suffixIndex = 0;
+    ParsedVersion parsed{QVersionNumber::fromString(trimmed, &suffixIndex), trimmed.mid(suffixIndex)};
+    if (parsed.suffix.startsWith(QLatin1Char('-'))) {
+        parsed.suffix.remove(0, 1);
+    }
+    return parsed;
+}
+
+// Ziffernfolgen ohne führende Nullen: erst die Länge, dann der Text, so läuft nichts über
+int compareDigits(QStringView a, QStringView b)
+{
+    while (a.size() > 1 && a.front() == u'0') {
+        a = a.mid(1);
+    }
+    while (b.size() > 1 && b.front() == u'0') {
+        b = b.mid(1);
+    }
+    if (a.size() != b.size()) {
+        return a.size() < b.size() ? -1 : 1;
+    }
+    return a.compare(b);
+}
+
+// "beta2" < "beta10" < "rc1": Ziffernfolgen zählen als Zahl, der Rest alphabetisch
+int compareSuffixes(const QString &a, const QString &b)
+{
+    static const QRegularExpression tokenPattern(QStringLiteral("\\d+|\\D+"));
+    auto tokensA = tokenPattern.globalMatch(a);
+    auto tokensB = tokenPattern.globalMatch(b);
+    while (tokensA.hasNext() && tokensB.hasNext()) {
+        const QString tokenA = tokensA.next().captured();
+        const QString tokenB = tokensB.next().captured();
+        const int result = tokenA.front().isDigit() && tokenB.front().isDigit() ? compareDigits(tokenA, tokenB)
+                                                                                : tokenA.compare(tokenB, Qt::CaseInsensitive);
+        if (result != 0) {
+            return result;
+        }
+    }
+    return tokensA.hasNext() ? 1 : (tokensB.hasNext() ? -1 : 0);
+}
+}
+
+QString OCUpdater::installedVersion()
+{
+    const QString number = Version::versionWithBuildNumber().toString();
+    const QString suffix = Version::suffix();
+    return suffix.isEmpty() ? number : QStringLiteral("%1-%2").arg(number, suffix);
+}
+
+int OCUpdater::compareVersions(const QString &a, const QString &b)
+{
+    const ParsedVersion versionA = parseVersion(a);
+    const ParsedVersion versionB = parseVersion(b);
+    for (int i = 0; i < 3; ++i) {
+        if (const int diff = versionA.number.segmentAt(i) - versionB.number.segmentAt(i)) {
+            return diff;
+        }
+    }
+    // Die Baunummer ist bei unseren Bauten immer 0: ohne diese Regel bekäme eine Beta-Installation
+    // (11.0.0.0-beta1) das finale 11.0.0 nie angeboten.
+    if (versionA.suffix.isEmpty() != versionB.suffix.isEmpty()) {
+        return versionA.suffix.isEmpty() ? 1 : -1;
+    }
+    if (const int diff = compareSuffixes(versionA.suffix, versionB.suffix)) {
+        return diff;
+    }
+    return QVersionNumber::compare(versionA.number, versionB.number);
+}
+
+bool OCUpdater::isNewerVersion(const QString &available, const QString &installed, const QString &skipped)
+{
+    if (parseVersion(available).number.isNull() || compareVersions(available, installed) <= 0) {
         return false;
     }
-    return availableVersion > installed && availableVersion > skipped;
+    // leere oder unlesbare Angabe: nichts übersprungen
+    return parseVersion(skipped).number.isNull() || compareVersions(available, skipped) > 0;
 }
 
 bool OCUpdater::isTrustedDownloadUrl(const QUrl &url)
@@ -235,8 +314,8 @@ bool OCUpdater::updateSucceeded() const
 {
     auto settings = ConfigFile::makeQSettings();
 
-    const auto targetVersionInt = QVersionNumber::fromString(settings.value(updateTargetVersionC).toString());
-    return Version::versionWithBuildNumber() >= targetVersionInt;
+    // geklappt, wenn das Ziel nicht mehr neuer ist als das, was jetzt läuft (auch Beta -> Release)
+    return !isNewerVersion(settings.value(updateTargetVersionC).toString(), installedVersion(), {});
 }
 
 void OCUpdater::slotVersionInfoArrived()
@@ -269,21 +348,16 @@ void OCUpdater::slotTimedOut()
     setDownloadState(DownloadTimedOut);
 }
 
-QVersionNumber OCUpdater::previouslySkippedVersion()
+QString OCUpdater::previouslySkippedVersion()
 {
     auto settings = ConfigFile::makeQSettings();
-    return QVersionNumber::fromString(settings.value(previouslySkippedVersionC).toString());
+    return settings.value(previouslySkippedVersionC).toString();
 }
 
-void OCUpdater::setPreviouslySkippedVersion(const QVersionNumber &previouslySkippedVersion)
-{
-    setPreviouslySkippedVersion(previouslySkippedVersion.toString());
-}
-
-void OCUpdater::setPreviouslySkippedVersion(const QString &previouslySkippedVersionString)
+void OCUpdater::setPreviouslySkippedVersion(const QString &previouslySkippedVersion)
 {
     auto settings = ConfigFile::makeQSettings();
-    settings.setValue(previouslySkippedVersionC, previouslySkippedVersionString);
+    settings.setValue(previouslySkippedVersionC, previouslySkippedVersion);
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -365,12 +439,12 @@ bool WindowsUpdater::verifyDownloadedSetup(const QString &fileName)
 void WindowsUpdater::versionInfoArrived(const UpdateInfo &info)
 {
     auto settings = ConfigFile::makeQSettings();
-    const auto infoVersion = QVersionNumber::fromString(info.version());
-    const auto previouslySkippedVersion = this->previouslySkippedVersion();
+    const QString installed = installedVersion();
+    const QString previouslySkippedVersion = this->previouslySkippedVersion();
     qCInfo(lcUpdater) << "Version info arrived:"
-                      << "Your version:" << Version::versionWithBuildNumber()
+                      << "Your version:" << installed
                       << "Skipped version:" << previouslySkippedVersion
-                      << "Available version:" << infoVersion << info.version()
+                      << "Available version:" << info.version()
                       << "Available version string:" << info.versionString()
                       << "Web url:" << info.web()
                       << "Download url:" << info.downloadUrl();
@@ -378,7 +452,7 @@ void WindowsUpdater::versionInfoArrived(const UpdateInfo &info)
     {
         qCInfo(lcUpdater) << "No version information available at the moment";
         setDownloadState(UpToDate);
-    } else if (!isNewerVersion(info.version(), Version::versionWithBuildNumber(), previouslySkippedVersion)) {
+    } else if (!isNewerVersion(info.version(), installed, previouslySkippedVersion)) {
         qCInfo(lcUpdater) << "Client is on latest version!";
         setDownloadState(UpToDate);
     } else {
@@ -414,7 +488,7 @@ void WindowsUpdater::showNewVersionAvailableWidget(const UpdateInfo &info)
     QString txt = tr("<p>A new version of the %1 Client is available.</p>"
                      "<p><b>%2</b> is available for download. The installed version is %3.</p>")
                       .arg(Utility::escape(Theme::instance()->appNameGUI()),
-                          Utility::escape(info.versionString()), Utility::escape(Version::versionWithBuildNumber().toString()));
+                          Utility::escape(info.versionString()), Utility::escape(Version::displayString()));
     auto *widget = new NewVersionAvailableWidget(ocApp()->mainWindow(), txt);
 
     connect(widget, &NewVersionAvailableWidget::versionSkipped, this, &WindowsUpdater::slotSetPreviouslySkippedVersion);
@@ -447,7 +521,7 @@ void WindowsUpdater::showUpdateErrorDialog(const QString &targetVersion)
     QString txt = tr("<p>A new version of the %1 Client is available but the updating process failed.</p>"
                      "<p><b>%2</b> has been downloaded. The installed version is %3.</p>")
                       .arg(Utility::escape(Theme::instance()->appNameGUI()),
-                          Utility::escape(targetVersion), Utility::escape(Version::versionWithBuildNumber().toString()));
+                          Utility::escape(targetVersion), Utility::escape(Version::displayString()));
 
     lbl->setText(txt);
     lbl->setTextFormat(Qt::RichText);
@@ -497,7 +571,7 @@ void WindowsUpdater::validateUpdate()
             if (updateSucceeded()) {
                 // success: clean up
                 qCInfo(lcUpdater) << "The requested update attempt has succeeded"
-                                  << Version::versionWithBuildNumber();
+                                  << installedVersion();
                 wipeUpdateData();
             } else {
                 // auto update failed. Ask user what to do
@@ -583,7 +657,7 @@ void PassiveUpdateNotifier::backgroundCheckForUpdate()
 
 void PassiveUpdateNotifier::versionInfoArrived(const UpdateInfo &info)
 {
-    if (!isNewerVersion(info.version(), Version::versionWithBuildNumber(), {})) {
+    if (!isNewerVersion(info.version(), installedVersion(), {})) {
         qCInfo(lcUpdater) << "Client is on latest version!";
         setDownloadState(UpToDate);
     } else {

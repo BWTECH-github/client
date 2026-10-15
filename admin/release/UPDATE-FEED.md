@@ -44,21 +44,26 @@ Felder `version`, `versionstring`, `web`, `downloadurl`):
 </owncloudclient>
 ```
 
-`<version>` wird mit `QVersionNumber` gegen `Version::versionWithBuildNumber()`
-verglichen. Folge: Ein Client `11.0.0.1234` (mit Baunummer) gilt gegenüber
-einem Feed `11.0.0` als aktuell; ein Release-Kandidat `11.0.0-rc1` mit
-Baunummer sieht das finale `11.0.0` nur, wenn der Feed eine höhere Baunummer
-nennt (`--version 11.0.0.<build>`). Der Selbsttest deckt diese Fälle ab.
+`<version>` trägt bei Vorabversionen den Suffix des Tags (`v11.0.0-rc1` →
+`11.0.0-rc1`). Der Client vergleicht sie mit `OCUpdater::compareVersions` gegen
+`OCUpdater::installedVersion()` (Baunummer und Suffix, z. B. `11.0.0.0-beta1`):
+erst Major.Minor.Patch, dann gilt eine Vorabversion als älter als das Release
+gleicher Nummer, dann zählt der Suffix (`beta2` < `beta10` < `rc1`), zuletzt alle
+Zahlen wie bei `QVersionNumber`. Folge: Die Beta `11.0.0-beta1` bekommt das finale
+`11.0.0` angeboten, obwohl unsere Bauten immer die Baunummer 0 tragen; ein Client
+`11.0.0.0` gilt gegenüber einem Feed `11.0.0` als aktuell; eine Vorabversion bietet
+sich über ihren eigenen Feed nicht noch einmal an. Der Selbsttest deckt diese
+Fälle ab.
 
 ## Erzeugung
 
 - `admin/release/make-update-feed.py` – Generator (nur Standardbibliothek).
   Prüft https, Dateiendung je Plattform, Version im Dateinamen, Tag-Format,
   Kanalregel und Zeichen, die aus dem Rich-Text des Clients ausbrechen würden.
-- `admin/release/test_make_update_feed.py` – Selbsttest (39 Fälle); parst die
-  Ausgabe wie der Client und liest dafür `updateinfo.cpp`, `updater.cpp` und
-  `publish-release.yml`, damit Format, Kanalregel und Paketnamen nicht
-  auseinanderlaufen.
+- `admin/release/test_make_update_feed.py` – Selbsttest (43 Fälle); parst die
+  Ausgabe wie der Client und liest dafür `updateinfo.cpp`, `updater.cpp`,
+  `ocupdater.cpp` und `publish-release.yml`, damit Format, Kanalregel,
+  Versionsvergleich und Paketnamen nicht auseinanderlaufen.
 - `.github/workflows/update-feed.yml` – erzeugt die Dateien und hängt sie mit
   `--clobber` an das Release; prüft anschließend, ob die feste Adresse die neue
   Datei ausliefert.
@@ -87,8 +92,9 @@ Basisadresse in `OWNCLOUD.cmake` (`APPLICATION_UPDATE_URL`), der Client hängt
 `WITH_AUTO_UPDATER` standardmäßig an; Windows startet das NSIS-Setup mit `/S`
 (UAC) und danach den Client neu; das Setup wird nach dem Download, bei
 vorhandener Datei und direkt vor dem Start per `WinVerifyTrust` geprüft, der
-Signierer muss „BW-TECH GmbH“ enthalten (`src/gui/updater/codesignature.cpp`),
-sonst wird es gelöscht; automatisch geladen wird nur
+Antragsteller-CN muss genau „BW-TECH GmbH, IT Service für Systemintegration &
+Datensicherheit“ lauten und der Aussteller „DigiCert“ enthalten
+(`src/gui/updater/codesignature.cpp`), sonst wird es gelöscht; automatisch geladen wird nur
 `https://github.com/BWTECH-github/client/releases/download/…-Setup.exe`, andere
 Adressen führen nur zum Hinweis mit Link; `<web>` wird HTML-geschützt.
 Tests: `test/testupdater.cpp`. Offen bleiben 5 (im fertigen Bau prüfen), 7, 8.

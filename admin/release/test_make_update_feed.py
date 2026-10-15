@@ -78,44 +78,88 @@ def parse_like_client(data):
     return info
 
 
-def qversion(text):
-    """QVersionNumber::fromString: Zahlen durch Punkte getrennt, der Rest (Suffix) zählt nicht."""
+def split_qversion(text):
+    """QVersionNumber::fromString(text, &suffixIndex): Zahlen durch Punkte getrennt und wo der Suffix beginnt."""
     segments = []
-    pos = 0
+    pos = end = 0
     while True:
         match = re.match(r"[0-9]+", text[pos:])
         if not match or int(match.group()) > 2**31 - 1:
             break
         segments.append(int(match.group()))
         pos += match.end()
+        end = pos
         if text[pos:pos + 1] != ".":
             break
         pos += 1
     # Tupelvergleich == QVersionNumber::compare, auch "1.2" < "1.2.0"
-    return tuple(segments)
+    return tuple(segments), end
+
+
+def qversion(text):
+    """QVersionNumber::fromString: der Suffix zählt nicht."""
+    return split_qversion(text)[0]
+
+
+def parse_version(text):
+    """parseVersion() in ocupdater.cpp: Zahlen und Vorab-Suffix ohne führendes '-'."""
+    text = text.strip()
+    segments, end = split_qversion(text)
+    suffix = text[end:]
+    return segments, suffix[1:] if suffix.startswith("-") else suffix
+
+
+def compare_suffixes(a, b):
+    """compareSuffixes() in ocupdater.cpp: Ziffernfolgen als Zahl, der Rest ohne Groß-/Kleinschreibung."""
+    tokens_a = re.findall(r"\d+|\D+", a)
+    tokens_b = re.findall(r"\d+|\D+", b)
+    for token_a, token_b in zip(tokens_a, tokens_b):
+        if token_a[0].isdigit() and token_b[0].isdigit():
+            key_a, key_b = int(token_a), int(token_b)
+        else:
+            key_a, key_b = token_a.lower(), token_b.lower()
+        if key_a != key_b:
+            return -1 if key_a < key_b else 1
+    return (len(tokens_a) > len(tokens_b)) - (len(tokens_a) < len(tokens_b))
+
+
+def compare_versions(a, b):
+    """OCUpdater::compareVersions(): Major.Minor.Patch, dann Release vor Vorabversion, dann Suffix, dann alle Zahlen."""
+    (numbers_a, suffix_a), (numbers_b, suffix_b) = parse_version(a), parse_version(b)
+    core_a = tuple(numbers_a[i] if i < len(numbers_a) else 0 for i in range(3))
+    core_b = tuple(numbers_b[i] if i < len(numbers_b) else 0 for i in range(3))
+    if core_a != core_b:
+        return -1 if core_a < core_b else 1
+    if bool(suffix_a) != bool(suffix_b):
+        return -1 if suffix_a else 1
+    return compare_suffixes(suffix_a, suffix_b) or (numbers_a > numbers_b) - (numbers_a < numbers_b)
+
+
+def is_newer_version(available, installed, skipped=""):
+    """OCUpdater::isNewerVersion(); installiert wie OCUpdater::installedVersion(), z. B. 11.0.0.0-beta1."""
+    if not parse_version(available)[0] or compare_versions(available, installed) <= 0:
+        return False
+    return not parse_version(skipped)[0] or compare_versions(available, skipped) > 0
 
 
 def windows_updater(info, installed, skipped=""):
-    """WindowsUpdater::versionInfoArrived (ocupdater.cpp:329-370)."""
-    if not info["version"]:
-        return "up-to-date"
-    available = qversion(info["version"])
-    if available <= qversion(installed) or available <= qversion(skipped):
+    """WindowsUpdater::versionInfoArrived (ocupdater.cpp)."""
+    if not info["version"] or not is_newer_version(info["version"], installed, skipped):
         return "up-to-date"
     # ohne downloadurl nur der Hinweis mit Link auf <web> (showNewVersionAvailableWidget)
     return "download" if info["downloadurl"] else "show-web"
 
 
 def passive_notifier(info, installed):
-    """PassiveUpdateNotifier::versionInfoArrived (ocupdater.cpp:542-551): Linux ohne AppImage-Updater, macOS ohne Sparkle."""
-    if not info["version"] or qversion(installed) >= qversion(info["version"]):
+    """PassiveUpdateNotifier::versionInfoArrived (ocupdater.cpp): Linux ohne AppImage-Updater, macOS ohne Sparkle."""
+    if not info["version"] or not is_newer_version(info["version"], installed):
         return "up-to-date"
     return "through-system"
 
 
 def update_succeeded(installed, target):
-    """OCUpdater::updateSucceeded (ocupdater.cpp:214-220), beim ersten Start nach dem Update."""
-    return qversion(installed) >= qversion(target)
+    """OCUpdater::updateSucceeded (ocupdater.cpp), beim ersten Start nach dem Update."""
+    return not is_newer_version(target, installed)
 
 
 def client_download_file_name(url):
@@ -155,6 +199,13 @@ class ClientContract(unittest.TestCase):
         self.assertEqual(sorted(prefixes), sorted(feed.BETA_SUFFIX_PREFIXES))
         self.assertIn('QStringLiteral("beta")', body)
         self.assertIn('QStringLiteral("stable")', body)
+
+    def test_client_compares_with_the_prerelease_suffix(self):
+        source = self.read_source("src/gui/updater/ocupdater.cpp")
+        body = source[source.index("QString OCUpdater::installedVersion()"):]
+        body = body[:body.index("\n}\n")]
+        self.assertIn("Version::suffix()", body)
+        self.assertIn("Version::versionWithBuildNumber()", body)
 
     def test_package_names_match_publish_release(self):
         publish = self.read_source(".github/workflows/publish-release.yml")
@@ -231,6 +282,11 @@ class FeedFiles(unittest.TestCase):
         info = parse_like_client(build(version="7.11.1.4711")["owncloud.online-update-win-x64-stable.xml"])
         self.assertEqual(info["version"], "7.11.1.4711")
 
+    def test_prerelease_version_keeps_the_suffix_of_the_tag(self):
+        feeds = build(tag="v11.0.0-rc1", web=RC_WEB, platforms={"win-x64": RC_SETUP}, version="11.0.0.5")
+        info = parse_like_client(feeds["owncloud.online-update-win-x64-beta.xml"])
+        self.assertEqual(info["version"], "11.0.0.5-rc1")
+
 
 class ClientVersionCheck(unittest.TestCase):
     """Was der Client mit dem Feed anfängt (installiert = Version::versionWithBuildNumber(), immer vierstellig)."""
@@ -273,13 +329,30 @@ class ClientVersionCheck(unittest.TestCase):
         self.assertEqual(passive_notifier(info, installed="7.11.0.0"), "through-system")
         self.assertEqual(passive_notifier(info, installed="7.11.1.0"), "up-to-date")
 
-    def test_release_candidate_sees_the_final_release_only_with_build_numbers(self):
-        # Suffix zählt nicht, die Build-Nummer ist heute immer 0: 11.0.0-rc1 == 11.0.0.0
+    def test_prerelease_sees_the_final_release(self):
+        # Die Baunummer ist heute immer 0, der Suffix der Installation entscheidet
         final = self.windows_info(tag="v11.0.0", web=RELEASES + "/tag/v11.0.0", platforms={
             "win-x64": RELEASES + "/download/v11.0.0/owncloud.online-client-11.0.0-win-x64-Setup.exe"})
+        self.assertEqual(windows_updater(final, installed="11.0.0.0-beta1"), "download")
+        self.assertEqual(windows_updater(final, installed="11.0.0.0-rc1"), "download")
         self.assertEqual(windows_updater(final, installed="11.0.0.0"), "up-to-date")
-        with_build = dict(final, version="11.0.0.130")
-        self.assertEqual(windows_updater(with_build, installed="11.0.0.120"), "download")
+        self.assertFalse(update_succeeded(installed="11.0.0.0-beta1", target=final["version"]))
+        self.assertTrue(update_succeeded(installed="11.0.0.0", target=final["version"]))
+
+    def test_prerelease_feed_never_offers_itself(self):
+        info = parse_like_client(build(tag="v11.0.0-rc1", web=RC_WEB, platforms={"win-x64": RC_SETUP})[
+            "owncloud.online-update-win-x64-beta.xml"])
+        self.assertEqual(info["version"], "11.0.0-rc1")
+        self.assertEqual(windows_updater(info, installed="11.0.0.0-rc1"), "up-to-date")
+        self.assertEqual(windows_updater(info, installed="11.0.0.0-beta1"), "download")
+        self.assertEqual(windows_updater(info, installed="11.0.0.0"), "up-to-date")
+
+    def test_prerelease_order(self):
+        for older, newer in (("11.0.0-beta2", "11.0.0-beta10"), ("11.0.0-beta2", "11.0.0-rc1"),
+                             ("11.0.0-rc1", "11.0.0"), ("11.0.0", "11.0.1-beta1")):
+            self.assertLess(compare_versions(older, newer), 0, (older, newer))
+            self.assertGreater(compare_versions(newer, older), 0, (older, newer))
+        self.assertEqual(compare_versions("11.0.0-RC1", "11.0.0-rc01"), 0)
 
 
 class InputValidation(unittest.TestCase):

@@ -106,16 +106,24 @@ def resolve_channels(channels, suffix):
     return [channel for channel in CHANNELS if channel in channels]
 
 
-def resolve_version(version, numbers, tag):
+def resolve_version(version, numbers, suffix, tag):
+    """Zahlen aus dem Tag (oder --version) plus dessen Vorab-Suffix: v11.0.0-rc1 -> 11.0.0-rc1.
+
+    Der Client hält eine Vorabversion für älter als das Release gleicher Nummer
+    (OCUpdater::compareVersions); ohne Suffix sähe eine Vorabversion ihren eigenen
+    Feed als finales Release und böte sich immer wieder selbst an.
+    """
     if version is None:
-        return ".".join(str(number) for number in numbers)
-    if not VERSION_RE.fullmatch(version):
-        raise FeedError(f"Version {version!r}: drei oder vier Zahlen mit Punkten erwartet")
-    segments = tuple(int(part) for part in version.split("."))
-    _check_segments(segments, version)
-    if segments[:3] != numbers:
-        raise FeedError(f"Version {version} passt nicht zum Tag {tag}")
-    return ".".join(str(segment) for segment in segments)
+        segments = numbers
+    else:
+        if not VERSION_RE.fullmatch(version):
+            raise FeedError(f"Version {version!r}: drei oder vier Zahlen mit Punkten erwartet")
+        segments = tuple(int(part) for part in version.split("."))
+        _check_segments(segments, version)
+        if segments[:3] != numbers:
+            raise FeedError(f"Version {version} passt nicht zum Tag {tag}")
+    text = ".".join(str(segment) for segment in segments)
+    return f"{text}-{suffix}" if suffix else text
 
 
 def check_url(url, what):
@@ -168,7 +176,7 @@ def build_feeds(tag, web, platforms, channels=None, version=None, version_string
         if url is not None:
             check_download(platform, url, display_version)
     channels = resolve_channels(channels, suffix)
-    version = resolve_version(version, numbers, tag)
+    version = resolve_version(version, numbers, suffix, tag)
     if version_string is None:
         version_string = f"owncloud.online {display_version}"
     if not version_string or UNSAFE_TEXT_RE.search(version_string):
@@ -204,7 +212,7 @@ def main(argv=None):
         description="Erzeugt die Update-Feeds (eine XML-Datei je Plattform und Kanal).",
         epilog="Details: admin/release/UPDATE-FEED.md")
     parser.add_argument("--tag", required=True, help="Release-Tag, z. B. v7.11.1 oder v11.0.0-rc1")
-    parser.add_argument("--version", help="Inhalt von <version>, drei oder vier Zahlen; Vorgabe: aus dem Tag")
+    parser.add_argument("--version", help="Zahlen für <version> (drei oder vier, der Suffix des Tags kommt dazu); Vorgabe: aus dem Tag")
     parser.add_argument("--channel", action="append", choices=CHANNELS,
                         help="Kanal, mehrfach möglich; Vorgabe: ohne Suffix stable und beta, mit Vorab-Suffix beta")
     parser.add_argument("--web", required=True, help="Webseite des Releases (https)")

@@ -16,7 +16,7 @@
 
 #include <QDialog>
 #include <QScopedPointer>
-#include <QVersionNumber>
+#include <QString>
 
 namespace Ui {
 class AppImageUpdateAvailableWidgetUi;
@@ -32,7 +32,7 @@ class AppImageUpdateAvailableWidget : public QDialog
 {
     Q_OBJECT
 public:
-    explicit AppImageUpdateAvailableWidget(const QVersionNumber &currentVersion, const QVersionNumber &newVersion, QWidget *parent = nullptr);
+    explicit AppImageUpdateAvailableWidget(const QString &currentVersion, const QString &newVersion, QWidget *parent = nullptr);
 
     ~AppImageUpdateAvailableWidget() override;
 
