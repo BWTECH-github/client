@@ -1,0 +1,124 @@
+# Update-Feed des Desktop-Clients: erzeugt je Plattform und Kanal eine
+# XML-Datei (Format von src/gui/updater/updateinfo.cpp) und hängt sie an das
+# Release. Über die feste Adresse
+#   https://github.com/BWTECH-github/client/releases/latest/download/owncloud.online-update-<plattform>-<kanal>.xml
+# liefert GitHub immer den Feed des neuesten stabilen Releases aus.
+# Format, Adressen, Kanäle und was der Client dafür braucht: admin/release/UPDATE-FEED.md
+#
+# Auslöser:
+# - release: published – nur, wenn ein Mensch (oder ein persönliches Token) das
+#   Release veröffentlicht. Releases, die publish-release.yml mit dem
+#   GITHUB_TOKEN anlegt, starten KEINEN Workflow (Regel von GitHub); dafür
+#   diesen Workflow per workflow_call aus publish-release.yml aufrufen (siehe
+#   UPDATE-FEED.md) oder von Hand starten. GitHub nimmt bei diesem Auslöser die
+#   Workflow-Datei aus dem getaggten Commit.
+# - workflow_dispatch / workflow_call mit dem Tag: Feed (neu) erzeugen, z. B. für
+#   ein Release, dessen Tag älter als dieser Workflow ist.
+name: Update feed
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release-Tag, z. B. v7.11.1'
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Release-Tag, z. B. v7.11.1'
+        required: true
+        type: string
+
+permissions:
+  contents: write # Feed-Dateien an das Release hängen
+
+jobs:
+  feed:
+    runs-on: ubuntu-latest
+    # zwei Läufe für dasselbe Release nacheinander, nicht ineinander (--clobber)
+    concurrency:
+      group: update-feed-${{ inputs.tag || github.event.release.tag_name }}
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ inputs.tag || github.event.release.tag_name }}
+    steps:
+      - name: Check out the generator
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Self-test the generator
+        run: python3 -B admin/release/test_make_update_feed.py -v
+
+      - name: Generate the feed files
+        run: |
+          set -euo pipefail
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z][0-9A-Za-z.-]*)?$ ]]; then
+            echo "::error::Unerwarteter Tag '$TAG' (erwartet z. B. v7.11.1 oder v11.0.0-rc1)"
+            exit 1
+          fi
+          VER="${TAG#v}"
+          gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json url,assets > release.json
+          asset_url() { jq -r --arg name "$1" '.assets[] | select(.name == $name) | .url' release.json; }
+
+          # Paketnamen wie in publish-release.yml ("Prepare release assets")
+          platforms=()
+          setup=$(asset_url "owncloud.online-client-${VER}-win-x64-Setup.exe")
+          if [ -n "$setup" ]; then
+            platforms+=(--platform "win-x64=$setup")
+          else
+            echo "::warning::Kein Windows-Setup im Release $TAG, daher kein Feed für win-x64"
+          fi
+          if [ -n "$(asset_url "owncloud.online-client-${VER}-linux-x86_64.AppImage")" ]; then
+            # mit zsync-Datei aktualisiert sich das AppImage selbst, sonst nur Hinweis mit Link
+            zsync=$(asset_url "owncloud.online-client-${VER}-linux-x86_64.AppImage.zsync")
+            platforms+=(--platform "linux-x86_64${zsync:+=$zsync}")
+          else
+            echo "::warning::Kein AppImage im Release $TAG, daher kein Feed für linux-x86_64"
+          fi
+          if [ -n "$(asset_url "owncloud.online-client-${VER}-macos-arm64.dmg")" ]; then
+            platforms+=(--platform macos-arm64)
+          else
+            echo "::warning::Kein dmg im Release $TAG, daher kein Feed für macos-arm64"
+          fi
+          if [ ${#platforms[@]} -eq 0 ]; then
+            echo "::error::Release $TAG enthält keines der Pakete aus publish-release.yml"
+            exit 1
+          fi
+
+          python3 -B admin/release/make-update-feed.py --tag "$TAG" --web "$(jq -r .url release.json)" --out feed "${platforms[@]}"
+          for file in feed/*.xml; do
+            echo "::group::$file"
+            cat "$file"
+            echo "::endgroup::"
+          done
+
+      - name: Attach the feed files to the release
+        run: gh release upload "$TAG" feed/*.xml --clobber -R "$GITHUB_REPOSITORY"
+
+      - name: Check what the fixed address serves
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          latest=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name 2>/dev/null || true)
+          if [ "$latest" != "$TAG" ]; then
+            echo "::notice::Die feste Adresse .../releases/latest/download/ liefert den Feed von '${latest:-keinem Release}', nicht von $TAG (Vorabversion, älteres Release oder nicht als Latest markiert)."
+            exit 0
+          fi
+          for file in feed/*-stable.xml; do
+            url="https://github.com/$GITHUB_REPOSITORY/releases/latest/download/$(basename "$file")"
+            for attempt in 1 2 3; do
+              if curl -fsSL --proto '=https' "$url" -o served.xml && cmp -s served.xml "$file"; then
+                echo "ok: $url"
+                continue 2
+              fi
+              echo "Versuch $attempt: $url liefert (noch) nicht die neue Datei"
+              sleep 10
+            done
+            echo "::error::$url liefert nicht die eben angehängte Datei"
+            exit 1
+          done

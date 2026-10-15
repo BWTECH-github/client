@@ -81,3 +81,13 @@ jobs:
             --title "owncloud.online Client ${VER}" \
             --notes-file notes.md \
             assets/*
+
+  # Ein mit dem GITHUB_TOKEN angelegtes Release startet keinen
+  # "release: published"-Lauf, daher den Update-Feed hier direkt erzeugen.
+  update-feed:
+    needs: publish
+    permissions:
+      contents: write # Feed-Dateien an das Release hängen
+    uses: ./.github/workflows/update-feed.yml
+    with:
+      tag: ${{ inputs.tag }}

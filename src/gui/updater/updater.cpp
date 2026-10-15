@@ -14,6 +14,7 @@
 
 #include <QUrl>
 #include <QUrlQuery>
+#include <QSysInfo>
 #include <QProcess>
 
 #include "updater/updater.h"
@@ -62,10 +63,12 @@ Updater *Updater::instance()
 
 QUrl Updater::updateUrl()
 {
+    // OCC_UPDATE_URL bleibt Testschalter (volle Adresse oder Basis mit '/')
     QUrl updateBaseUrl(QString::fromLocal8Bit(qgetenv("OCC_UPDATE_URL")));
     if (updateBaseUrl.isEmpty()) {
         updateBaseUrl = Theme::instance()->updateCheckUrl();
     }
+    updateBaseUrl = feedUrl(updateBaseUrl, feedPlatform(), updateChannel());
     if (!updateBaseUrl.isValid() || updateBaseUrl.host() == QLatin1String(".")) {
         return QUrl();
     }
@@ -76,13 +79,35 @@ QUrl Updater::updateUrl()
     urlQuery.addQueryItem(QLatin1String("sparkle"), QLatin1String("true"));
 #endif
 
-#if defined(Q_OS_WIN)
-    urlQuery.addQueryItem(QLatin1String("msi"), QLatin1String("true"));
-#endif
-
     updateBaseUrl.setQuery(urlQuery);
 
     return updateBaseUrl;
+}
+
+QString Updater::feedPlatform()
+{
+    const QString arch = QSysInfo::buildCpuArchitecture();
+    if (Utility::isWindows()) {
+        return arch == QLatin1String("x86_64") ? QStringLiteral("win-x64") : QStringLiteral("win-%1").arg(arch);
+    } else if (Utility::isMac()) {
+        return QStringLiteral("macos-%1").arg(arch);
+    }
+    return QStringLiteral("linux-%1").arg(arch);
+}
+
+QString Updater::feedFileName(const QString &platform, const QString &channel)
+{
+    return QStringLiteral("owncloud.online-update-%1-%2.xml").arg(platform, channel);
+}
+
+QUrl Updater::feedUrl(const QUrl &base, const QString &platform, const QString &channel)
+{
+    if (!base.isValid() || base.isEmpty() || !base.path().endsWith(QLatin1Char('/'))) {
+        return base;
+    }
+    QUrl url(base);
+    url.setPath(base.path() + feedFileName(platform, channel));
+    return url;
 }
 
 void Updater::validateUpdate() { }
