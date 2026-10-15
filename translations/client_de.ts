@@ -1190,6 +1190,10 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
+        <source>Share…</source>
+        <translation>Teilen…</translation>
+    </message>
+    <message>
         <source>Loading …</source>
         <translation>Wird geladen …</translation>
     </message>
@@ -1526,6 +1530,10 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
 </context>
 <context>
     <name>OCC::LocalActivityWidget</name>
+    <message>
+        <source>Share…</source>
+        <translation>Teilen…</translation>
+    </message>
     <message>
         <location filename="../src/gui/localactivitywidget.ui" line="32"/>
         <source>Filter</source>
@@ -2916,84 +2924,301 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::ShareDialog</name>
     <message>
-        <source>Share %1</source>
-        <translation>%1 teilen</translation>
+        <source>%1 (%2)</source>
+        <comment>sharee (additional info, e.g. the email address)</comment>
+        <translation>%1 (%2)</translation>
     </message>
     <message>
-        <source>Public links for &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation>Öffentliche Links für &lt;b&gt;%1&lt;/b&gt;</translation>
+        <source>%1 (federated)</source>
+        <translation>%1 (föderiert)</translation>
     </message>
     <message>
-        <source>Loading shares …</source>
-        <translation>Freigaben werden geladen …</translation>
+        <source>%1 (group)</source>
+        <translation>%1 (Gruppe)</translation>
     </message>
     <message>
-        <source>Protect with a password</source>
-        <translation>Mit Passwort schützen</translation>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
     </message>
     <message>
-        <source>Set an expiration date</source>
-        <translation>Ablaufdatum setzen</translation>
-    </message>
-    <message>
-        <source>Create public link</source>
-        <translation>Öffentlichen Link erstellen</translation>
+        <source>Changing the permissions failed.</source>
+        <translation>Die Rechte konnten nicht geändert werden.</translation>
     </message>
     <message>
         <source>Close</source>
         <translation>Schließen</translation>
     </message>
     <message>
-        <source>Could not load the existing shares.</source>
-        <translation>Die vorhandenen Freigaben konnten nicht geladen werden.</translation>
-    </message>
-    <message>
-        <source>No public links yet.</source>
-        <translation>Noch keine öffentlichen Links.</translation>
-    </message>
-    <message>
-        <source>password protected</source>
-        <translation>passwortgeschützt</translation>
-    </message>
-    <message>
-        <source>expires %1</source>
-        <translation>läuft ab am %1</translation>
-    </message>
-    <message>
         <source>Copy link</source>
         <translation>Link kopieren</translation>
     </message>
     <message>
-        <source>Delete</source>
-        <translation>Löschen</translation>
+        <source>Could not load the existing shares.</source>
+        <translation>Die vorhandenen Freigaben konnten nicht geladen werden.</translation>
     </message>
     <message>
-        <source>Please enter a password, or uncheck the password option.</source>
-        <translation>Bitte ein Passwort eingeben oder die Passwort-Option abwählen.</translation>
+        <source>Create public link</source>
+        <translation>Öffentlichen Link erstellen</translation>
     </message>
     <message>
         <source>Creating the public link failed.</source>
         <translation>Der öffentliche Link konnte nicht erstellt werden.</translation>
     </message>
     <message>
-        <source>Creating the public link failed: %1</source>
-        <translation>Der öffentliche Link konnte nicht erstellt werden: %1</translation>
+        <source>Delete the public link &quot;%1&quot;? Everyone who has the link loses access.</source>
+        <translation>Den öffentlichen Link „%1“ löschen? Alle, die den Link haben, verlieren den Zugriff.</translation>
+    </message>
+    <message>
+        <source>Delete</source>
+        <translation>Löschen</translation>
     </message>
     <message>
         <source>Deleting the public link failed.</source>
         <translation>Der öffentliche Link konnte nicht gelöscht werden.</translation>
     </message>
     <message>
-        <source>Public link deleted.</source>
-        <translation>Öffentlicher Link gelöscht.</translation>
+        <source>Download / View / Edit</source>
+        <translation>Herunterladen / Ansehen / Bearbeiten</translation>
+    </message>
+    <message>
+        <source>Download / View / Upload</source>
+        <translation>Herunterladen / Ansehen / Hochladen</translation>
+    </message>
+    <message>
+        <source>Download / View</source>
+        <translation>Herunterladen / Ansehen</translation>
+    </message>
+    <message>
+        <source>Edit public link</source>
+        <translation>Öffentlichen Link bearbeiten</translation>
+    </message>
+    <message>
+        <source>Edit</source>
+        <translation>Bearbeiten</translation>
+    </message>
+    <message>
+        <source>Enter at least %1 characters to search.</source>
+        <translation>Für die Suche mindestens %1 Zeichen eingeben.</translation>
+    </message>
+    <message>
+        <source>Expiration date</source>
+        <translation>Ablaufdatum</translation>
+    </message>
+    <message>
+        <source>Leave empty to keep the current password</source>
+        <translation>Leer lassen, um das bisherige Passwort zu behalten</translation>
+    </message>
+    <message>
+        <source>Link address of %1</source>
+        <translation>Linkadresse von %1</translation>
     </message>
     <message>
         <source>Link copied to the clipboard: %1</source>
         <translation>Link in die Zwischenablage kopiert: %1</translation>
     </message>
     <message>
+        <source>Loading shares …</source>
+        <translation>Freigaben werden geladen …</translation>
+    </message>
+    <message>
+        <source>Matching users and groups</source>
+        <translation>Passende Nutzer und Gruppen</translation>
+    </message>
+    <message>
+        <source>Name of a user or group …</source>
+        <translation>Name eines Nutzers oder einer Gruppe …</translation>
+    </message>
+    <message>
+        <source>Name:</source>
+        <translation>Name:</translation>
+    </message>
+    <message>
+        <source>New public link</source>
+        <translation>Neuer öffentlicher Link</translation>
+    </message>
+    <message>
+        <source>No public links yet.</source>
+        <translation>Noch keine öffentlichen Links.</translation>
+    </message>
+    <message>
+        <source>No users or groups found.</source>
+        <translation>Keine Nutzer oder Gruppen gefunden.</translation>
+    </message>
+    <message>
         <source>Not connected to the server. Please check the connection and reopen the dialog.</source>
         <translation>Keine Verbindung zum Server. Bitte prüfen Sie die Verbindung und öffnen Sie den Dialog erneut.</translation>
+    </message>
+    <message>
+        <source>Not shared with any user or group yet.</source>
+        <translation>Noch mit keinem Nutzer und keiner Gruppe geteilt.</translation>
+    </message>
+    <message>
+        <source>Password</source>
+        <translation>Passwort</translation>
+    </message>
+    <message>
+        <source>Please enter a password, or uncheck the password option.</source>
+        <translation>Bitte ein Passwort eingeben oder die Passwort-Option abwählen.</translation>
+    </message>
+    <message>
+        <source>Protect with a password</source>
+        <translation>Mit Passwort schützen</translation>
+    </message>
+    <message>
+        <source>Public link created.</source>
+        <translation>Öffentlicher Link erstellt.</translation>
+    </message>
+    <message>
+        <source>Public link deleted.</source>
+        <translation>Öffentlicher Link gelöscht.</translation>
+    </message>
+    <message>
+        <source>Public link saved.</source>
+        <translation>Öffentlicher Link gespeichert.</translation>
+    </message>
+    <message>
+        <source>Public link</source>
+        <translation>Öffentlicher Link</translation>
+    </message>
+    <message>
+        <source>Public links</source>
+        <translation>Öffentliche Links</translation>
+    </message>
+    <message>
+        <source>Recipients can:</source>
+        <translation>Empfänger können:</translation>
+    </message>
+    <message>
+        <source>Remove</source>
+        <translation>Entfernen</translation>
+    </message>
+    <message>
+        <source>Removing the share failed.</source>
+        <translation>Die Freigabe konnte nicht entfernt werden.</translation>
+    </message>
+    <message>
+        <source>Save</source>
+        <translation>Speichern</translation>
+    </message>
+    <message>
+        <source>Saving the public link failed.</source>
+        <translation>Der öffentliche Link konnte nicht gespeichert werden.</translation>
+    </message>
+    <message>
+        <source>Searching for users and groups failed.</source>
+        <translation>Die Suche nach Nutzern und Gruppen ist fehlgeschlagen.</translation>
+    </message>
+    <message>
+        <source>Searching …</source>
+        <translation>Suche läuft …</translation>
+    </message>
+    <message>
+        <source>Select a user or group to share with.</source>
+        <translation>Nutzer oder Gruppe zum Teilen auswählen.</translation>
+    </message>
+    <message>
+        <source>Server message: %1</source>
+        <translation>Meldung des Servers: %1</translation>
+    </message>
+    <message>
+        <source>Set an expiration date</source>
+        <translation>Ablaufdatum setzen</translation>
+    </message>
+    <message>
+        <source>Share %1</source>
+        <translation>%1 teilen</translation>
+    </message>
+    <message>
+        <source>Share &lt;b&gt;%1&lt;/b&gt;</source>
+        <translation>&lt;b&gt;%1&lt;/b&gt; teilen</translation>
+    </message>
+    <message>
+        <source>Share removed.</source>
+        <translation>Freigabe entfernt.</translation>
+    </message>
+    <message>
+        <source>Share with users or groups:</source>
+        <translation>Mit Nutzern oder Gruppen teilen:</translation>
+    </message>
+    <message>
+        <source>Shared with %1.</source>
+        <translation>Mit %1 geteilt.</translation>
+    </message>
+    <message>
+        <source>Shared with:</source>
+        <translation>Geteilt mit:</translation>
+    </message>
+    <message>
+        <source>Sharing with %1 failed.</source>
+        <translation>Teilen mit %1 ist fehlgeschlagen.</translation>
+    </message>
+    <message>
+        <source>Sharing with %1 …</source>
+        <translation>Wird mit %1 geteilt …</translation>
+    </message>
+    <message>
+        <source>Stop sharing with %1</source>
+        <translation>Teilen mit %1 beenden</translation>
+    </message>
+    <message>
+        <source>Stop sharing with %1?</source>
+        <translation>Teilen mit %1 beenden?</translation>
+    </message>
+    <message>
+        <source>The server allows only one public link per item.</source>
+        <translation>Der Server erlaubt nur einen öffentlichen Link pro Element.</translation>
+    </message>
+    <message>
+        <source>The server requires a password for this kind of link.</source>
+        <translation>Der Server verlangt für diese Art von Link ein Passwort.</translation>
+    </message>
+    <message>
+        <source>The server requires an expiration date at most %1 days ahead.</source>
+        <translation>Der Server verlangt ein Ablaufdatum in höchstens %1 Tagen.</translation>
+    </message>
+    <message>
+        <source>The server requires an expiration date.</source>
+        <translation>Der Server verlangt ein Ablaufdatum.</translation>
+    </message>
+    <message>
+        <source>Upload only (File Drop)</source>
+        <translation>Nur hochladen (Dateiablage)</translation>
+    </message>
+    <message>
+        <source>Users and groups</source>
+        <translation>Nutzer und Gruppen</translation>
+    </message>
+    <message>
+        <source>You are not allowed to share this item.</source>
+        <translation>Dieses Element darf nicht weitergeteilt werden.</translation>
+    </message>
+    <message>
+        <source>can create</source>
+        <translation>kann anlegen</translation>
+    </message>
+    <message>
+        <source>can delete</source>
+        <translation>kann löschen</translation>
+    </message>
+    <message>
+        <source>can edit</source>
+        <translation>kann bearbeiten</translation>
+    </message>
+    <message>
+        <source>can share</source>
+        <translation>kann teilen</translation>
+    </message>
+    <message>
+        <source>can view</source>
+        <translation>kann ansehen</translation>
+    </message>
+    <message>
+        <source>expires %1</source>
+        <translation>läuft ab am %1</translation>
+    </message>
+    <message>
+        <source>password protected</source>
+        <translation>passwortgeschützt</translation>
     </message>
 </context>
 <context>

@@ -14,6 +14,7 @@
 
 #include "accountmanager.h"
 #include "accountstate.h"
+#include "application.h"
 #include "commonstrings.h"
 #include "folder.h"
 #include "folderman.h"
@@ -21,6 +22,7 @@
 #include "openfilemanager.h"
 #include "localactivitywidget.h"
 #include "syncfileitem.h"
+#include "traymenucontroller.h"
 
 #include "models/expandingheaderview.h"
 
@@ -155,6 +157,18 @@ void LocalActivityWidget::showContextMenu(QWidget *parent, QTableView *table, Mo
                     showInWebBrowserAction->setEnabled(true);
                 }
             });
+
+        // owncloud.online: Teilen auch aus dem Client, nicht nur über das Explorer-Kontextmenü
+        if (data.folder()->accountState()->account()->capabilities().shareAPI()) {
+            SyncJournalFileRecord record;
+            const bool isOnTheServer = data.folder()->journalDb()->getFileRecord(data.path(), &record) && record.isValid();
+            auto *shareAction = menu->addAction(tr("Share…"), parent,
+                [remotePath = data.folder()->remotePathTrailingSlash() + data.path(), localPath] {
+                    if (auto *app = ocAppOrNull())
+                        app->tray()->slotShowShareDialog(remotePath, localPath);
+                });
+            shareAction->setEnabled(isOnTheServer && data.folder()->isConnected());
+        }
 
         menu->addSeparator();
 

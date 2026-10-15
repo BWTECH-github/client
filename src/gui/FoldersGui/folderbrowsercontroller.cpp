@@ -17,11 +17,14 @@
 #include "common/pinstate.h"
 #include "common/utility.h"
 #include "common/vfs.h"
+#include "accountstate.h"
+#include "application.h"
 #include "configfile.h"
 #include "folder.h"
 #include "folderitem.h"
 #include "folderman.h"
 #include "networkjobs.h"
+#include "traymenucontroller.h"
 
 #include "resources/iconresources.h"
 
@@ -817,7 +820,10 @@ void FolderBrowserController::popAvailabilityMenu(const QModelIndex &index, cons
     FolderItem *rootItem = rootItemForIndex(index);
     if (!rootItem || !rootItem->folder())
         return;
-    if (!rootItem->folder()->virtualFilesEnabled())
+    const bool vfs = rootItem->folder()->virtualFilesEnabled();
+    // owncloud.online: Teilen geht auch ohne virtuelle Dateien
+    const bool canShare = rootItem->folder()->accountState()->account()->capabilities().shareAPI();
+    if (!vfs && !canShare)
         return;
 
     QStandardItem *item = _model->itemFromIndex(index.siblingAtColumn(0));
@@ -834,13 +840,36 @@ void FolderBrowserController::popAvailabilityMenu(const QModelIndex &index, cons
     QPointer<Folder> folder(rootItem->folder());
     const QPersistentModelIndex persistentIndex(index.siblingAtColumn(0));
 
+    const QString relPathAtOpen = item->data(FolderItemRoles::RemotePathRole).toString();
+
     QMenu menu(menuParent);
-    QAction *keepLocal = menu.addAction(tr("Always keep on this device"));
-    QAction *freeUp = menu.addAction(tr("Free up space (online only)"));
-    menu.addSeparator();
-    QAction *reset = menu.addAction(tr("Reset to default"));
+    QAction *keepLocal = nullptr;
+    QAction *freeUp = nullptr;
+    QAction *reset = nullptr;
+    if (vfs) {
+        keepLocal = menu.addAction(tr("Always keep on this device"));
+        freeUp = menu.addAction(tr("Free up space (online only)"));
+        menu.addSeparator();
+        reset = menu.addAction(tr("Reset to default"));
+    }
+    QAction *share = nullptr;
+    if (canShare) {
+        if (vfs)
+            menu.addSeparator();
+        share = menu.addAction(tr("Share…"));
+        share->setEnabled(rootItem->folder()->isConnected());
+    }
 
     QAction *chosen = menu.exec(globalPos);
+    if (!chosen)
+        return;
+    if (chosen == share) {
+        if (folder) {
+            if (auto *app = ocAppOrNull())
+                app->tray()->slotShowShareDialog(folder->remotePathTrailingSlash() + relPathAtOpen, folder->path() + relPathAtOpen);
+        }
+        return;
+    }
     PinState state;
     if (chosen == keepLocal)
         state = PinState::AlwaysLocal;

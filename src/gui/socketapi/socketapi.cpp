@@ -433,8 +433,8 @@ void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener
         const QString message = QLatin1String("SHARE:NOTCONNECTED:") + QDir::toNativeSeparators(localFile);
         // if the folder isn't connected, don't open the share dialog
         listener->sendMessage(message);
-    } else if (!shareFolder->accountState()->account()->capabilities().shareAPI()
-        || !shareFolder->accountState()->account()->capabilities().sharePublicLink()) {
+    } else if (!shareFolder->accountState()->account()->capabilities().shareAPI()) {
+        // owncloud.online: auch ohne öffentliche Links lässt sich mit Nutzern und Gruppen teilen
         const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
         listener->sendMessage(message);
     } else {
@@ -725,7 +725,8 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
     auto flagString = isOnTheServer ? QStringLiteral("::") : QStringLiteral(":d:");
 
     auto capabilities = fileData.folder->accountState()->account()->capabilities();
-    if (!capabilities.shareAPI() || !capabilities.sharePublicLink())
+    // owncloud.online: der Teilen-Dialog kann auch ohne öffentliche Links mit Nutzern und Gruppen teilen
+    if (!capabilities.shareAPI())
         return;
 
     // If sharing is globally disabled, do not show any sharing entries.

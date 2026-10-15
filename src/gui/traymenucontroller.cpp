@@ -356,7 +356,7 @@ void TrayMenuController::slotShowShareDialog(const QString &sharePath, const QSt
     if (_shareDialog) {
         _shareDialog->close();
     }
-    _shareDialog = new ShareDialog(folder->accountState(), sharePath, localPath, nullptr);
+    _shareDialog = new ShareDialog(folder->accountState(), folder->webDavUrl(), sharePath, localPath, nullptr);
     // eigenständiges Fenster: erbt die Palette des Hauptfensters nicht, den Akzent deshalb selbst setzen
     ColorManager::applyAccent(_shareDialog);
     _shareDialog->show();
