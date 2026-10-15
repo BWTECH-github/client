@@ -560,7 +560,7 @@ function Test-TracesAfterUninstall {
         $name = $expectation[0]
         $shouldExist = $expectation[1]
         $title = if ($name -eq 'Nutzerdatei') { 'Nutzerdatei im Sync-Ordner bleibt erhalten' }
-            elseif ($shouldExist) { "$name bleiben erhalten (ohne /purge)" }
+            elseif ($shouldExist) { "$name {0} erhalten (ohne /purge)" -f $(if ($name -eq 'Cache') { 'bleibt' } else { 'bleiben' }) }
             elseif ($Purge -and $expectation[2] -like 'E4*') { "$name entfernt (/purge)" }
             else { "$name entfernt" }
         if ($null -eq $state[$name]) {
