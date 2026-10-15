@@ -163,7 +163,7 @@ void LocalActivityWidget::showContextMenu(QWidget *parent, QTableView *table, Mo
             SyncJournalFileRecord record;
             const bool isOnTheServer = data.folder()->journalDb()->getFileRecord(data.path(), &record) && record.isValid();
             auto *shareAction = menu->addAction(tr("Share…"), parent,
-                [remotePath = data.folder()->remotePathTrailingSlash() + data.path(), localPath] {
+                [remotePath = QString(data.folder()->remotePathTrailingSlash() + data.path()), localPath] {
                     if (auto *app = ocAppOrNull())
                         app->tray()->slotShowShareDialog(remotePath, localPath);
                 });
