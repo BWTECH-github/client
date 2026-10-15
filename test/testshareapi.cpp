@@ -500,7 +500,8 @@ private Q_SLOTS:
         FakeFolder fakeFolder({});
         QByteArray requestBody;
         fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *outgoingData) -> QNetworkReply * {
-            if (HttpLogger::requestVerb(op, request) != "PROPFIND")
+            // nur die eigene Abfrage beantworten, nicht etwa eine Verbindungsprüfung des Kontos
+            if (HttpLogger::requestVerb(op, request) != "PROPFIND" || !request.url().path().endsWith(QLatin1String("/Docs/item")))
                 return nullptr;
             requestBody = outgoingData ? outgoingData->readAll() : QByteArray();
             const QString permissionsProp =
