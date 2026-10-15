@@ -46,6 +46,25 @@ bool ColorManager::isDarkPalette()
     return QGuiApplication::palette().color(QPalette::Window).lightness() < 128;
 }
 
+QColor ColorManager::errorTextColor()
+{
+    const bool dark = isDarkPalette();
+    const QColor themed = Theme::instance()->errorColor(dark);
+    if (themed.isValid()) {
+        return themed;
+    }
+    return dark ? QColor(0xFF, 0x6B, 0x6B) : QColor(0xB0, 0x00, 0x20);
+}
+
+void ColorManager::applyErrorColor(QWidget *widget)
+{
+    QPalette palette = widget->palette();
+    const QColor color = errorTextColor();
+    palette.setColor(QPalette::Text, color);
+    palette.setColor(QPalette::WindowText, color);
+    widget->setPalette(palette);
+}
+
 void ColorManager::applyAccent(QWidget *window)
 {
     if (!window)

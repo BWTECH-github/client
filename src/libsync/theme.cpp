@@ -180,7 +180,6 @@ QString Theme::about() const
               " Jan-Christoph Borchardt, Thomas Müller,<br>"
               "Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.</small></p>"
               "<p>owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.</p>"
-              "<p>Based on the ownCloud Desktop Client.</p>"
               "<p><small>%5</small></p>")
         .arg(Utility::escape(Version::displayString()), Utility::escape(QStringLiteral("https://" APPLICATION_DOMAIN)),
             Utility::escape(QStringLiteral(APPLICATION_DOMAIN)), Utility::escape(vendor),
