@@ -119,6 +119,11 @@ void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIO
             {
                 data += QStringLiteral("...(%1 bytes elided)").arg(QString::number(contentLength - PeekSize));
             }
+            // Link-Passwörter des Teilen-Dialogs gehen als Formularfeld raus und gehören nicht ins Protokoll
+            if (redact && !reply && contentType.startsWith(QLatin1String("application/x-www-form-urlencoded"))) {
+                static const QRegularExpression passwordField(QStringLiteral("(^|&)password=[^&]*"));
+                data.replace(passwordField, QStringLiteral("\\1password=[redacted]"));
+            }
             body[QStringLiteral("data")] = data;
         } else {
             body[QStringLiteral("data")] = QStringLiteral("%1 bytes of %2 data").arg(QString::number(contentLength), contentType);

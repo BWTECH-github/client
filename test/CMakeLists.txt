@@ -13,6 +13,7 @@ owncloud_add_test(XmlParse)
 owncloud_add_test(OAuthHtmlPage ../src/gui/creds/oauthhtmlpage.cpp)
 owncloud_add_test(ChecksumValidator)
 owncloud_add_test(ConnectionValidator)
+owncloud_add_test(ShareApi)
 
 # TODO: we need keychain access for this test
 if (NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})

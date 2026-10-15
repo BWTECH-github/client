@@ -155,6 +155,20 @@ public:
     bool shareAPI() const;
     bool sharePublicLink() const;
 
+    // Teilen-Richtlinien des Servers (files_sharing, oC10-Format) für den Teilen-Dialog
+    bool sharePublicLinkAllowUpload() const;
+    bool sharePublicLinkSupportsUploadOnly() const;
+    bool sharePublicLinkEnforcePasswordForReadOnly() const;
+    bool sharePublicLinkEnforcePasswordForReadWrite() const;
+    bool sharePublicLinkEnforcePasswordForReadWriteDelete() const;
+    bool sharePublicLinkEnforcePasswordForUploadOnly() const;
+    bool sharePublicLinkDefaultExpire() const;
+    int sharePublicLinkDefaultExpireDateDays() const;
+    bool sharePublicLinkEnforceExpireDate() const;
+    bool sharePublicLinkMultiple() const;
+    bool shareResharing() const;
+    int shareSearchMinLength() const;
+
     /** Remote Poll interval.
      *
      *  returns the requested poll interval in seconds to be used by the client.
