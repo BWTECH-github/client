@@ -24,6 +24,7 @@
 #include <QTest>
 #include <QUrlQuery>
 
+#include <algorithm>
 #include <memory>
 
 using namespace OCC;
@@ -195,9 +196,13 @@ private Q_SLOTS:
         QNetworkRequest otherPort(QUrl(QStringLiteral("http://localhost:8080/owncloud/")));
         QNetworkRequest withoutCredentials(own);
         withoutCredentials.setAttribute(DontAddCredentialsAttribute, true);
+        QList<QNetworkReply *> replies;
         for (const auto &request : {own, otherHost, otherPort, withoutCredentials}) {
-            account->accessManager()->get(request);
+            replies.append(account->accessManager()->get(request));
         }
+        // Die Antworten gehören dem Test, der Access-Manager aber dem Konto: erst nach ihrem Abschluss
+        // aufräumen, sonst ruft Qt beim späten finished() den schon gelöschten Access-Manager auf
+        QTRY_VERIFY(std::all_of(replies.cbegin(), replies.cend(), [](const QNetworkReply *reply) { return reply->isFinished(); }));
 
         QCOMPARE(seen.size(), 4);
         QCOMPARE(seen.at(0).rawHeader(QByteArrayLiteral("Authorization")), QByteArrayLiteral("Bearer access-1"));
