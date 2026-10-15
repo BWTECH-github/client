@@ -14,6 +14,7 @@
 
 #include "updater/codesignature.h"
 
+#include <QDir>
 #include <QFileInfo>
 
 #ifdef Q_OS_WIN
@@ -47,7 +48,7 @@ Result verifyFile(const QString &path)
         return result;
     }
 #ifdef Q_OS_WIN
-    const std::wstring nativePath = QFileInfo(path).absoluteFilePath().replace(QLatin1Char('/'), QLatin1Char('\')).toStdWString();
+    const std::wstring nativePath = QDir::toNativeSeparators(QFileInfo(path).absoluteFilePath()).toStdWString();
 
     WINTRUST_FILE_INFO fileInfo = {};
     fileInfo.cbStruct = sizeof(fileInfo);
