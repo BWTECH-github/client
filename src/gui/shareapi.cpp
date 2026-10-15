@@ -103,9 +103,13 @@ void ShareApi::fetchItemInfo(const QUrl &davUrl, const QString &path)
 
 void ShareApi::fetchShares(const QString &path)
 {
+    // nur die jüngste Antwort zählt: ein verspätetes älteres Ergebnis darf die Liste nicht zurückdrehen
+    const quint64 generation = ++_fetchGeneration;
     startJob(Operation::Fetch, sharesEndpoint, QByteArrayLiteral("GET"),
-        {{QStringLiteral("path"), path}, {QStringLiteral("reshares"), QStringLiteral("false")}}, QString(),
-        [this](JsonApiJob *job) { Q_EMIT sharesFetched(parseShares(job->data())); });
+        {{QStringLiteral("path"), path}, {QStringLiteral("reshares"), QStringLiteral("false")}}, QString(), [this, generation](JsonApiJob *job) {
+            if (generation == _fetchGeneration)
+                Q_EMIT sharesFetched(parseShares(job->data()));
+        });
 }
 
 void ShareApi::createLinkShare(const QString &path, const LinkSettings &settings)

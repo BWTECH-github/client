@@ -147,6 +147,7 @@ private:
         const QString &shareId, std::function<void(JsonApiJob *)> onSuccess);
 
     QPointer<Account> _account;
+    quint64 _fetchGeneration = 0;
 };
 
 } // namespace OCC

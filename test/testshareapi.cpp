@@ -321,6 +321,31 @@ private Q_SLOTS:
         QCOMPARE(fetched.at(1).shareWith, QStringLiteral("alice"));
     }
 
+    void testLateFetchIsDropped()
+    {
+        // die erste Antwort kommt nach der zweiten an: die Liste muss beim jüngeren Stand bleiben
+        FakeFolder fakeFolder({});
+        int requests = 0;
+        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            if (!request.url().path().endsWith(QLatin1String("/apps/files_sharing/api/v1/shares")))
+                return nullptr;
+            if (++requests == 1)
+                return new DelayedReply<FakePayloadReply>(300ms, op, request, ocsReply(QJsonArray{linkShareJson()}), this);
+            return new FakePayloadReply(op, request, ocsReply(QJsonArray{userShareJson()}), this);
+        });
+
+        ShareApi api(fakeFolder.account());
+        QList<QList<Share>> emitted;
+        connect(&api, &ShareApi::sharesFetched, this, [&emitted](const QList<Share> &shares) { emitted.append(shares); });
+        api.fetchShares(QStringLiteral("/Team"));
+        api.fetchShares(QStringLiteral("/Team"));
+        QTRY_COMPARE(emitted.size(), 1);
+        QTest::qWait(500);
+        QCOMPARE(requests, 2);
+        QCOMPARE(emitted.size(), 1);
+        QCOMPARE(emitted.first().first().shareWith, QStringLiteral("alice"));
+    }
+
     void testCreateLinkShare()
     {
         FakeFolder fakeFolder({});
