@@ -118,12 +118,14 @@ private Q_SLOTS:
     void testParseServerActivities()
     {
         const QUuid account = QUuid::createUuid();
-        const auto activities = RecentActivityModel::parseServerActivities(jsonArray(R"([
-            {"id": 12, "subject": "You changed a.txt", "message": "", "file": "/a.txt",
-             "link": "https://cloud.example.com/index.php/apps/files/?dir=/", "date": "2026-10-15T10:00:00+02:00"},
-            {"id": "13", "subject": "", "message": "", "file": "/b.txt", "link": "", "date": "garbage"},
-            {"id": 14, "subject": "", "file": ""}
-        ])"),
+        // gewöhnliche Literale statt Raw-Strings: moc kennt keine Raw-Strings und verliert mit den Anführungszeichen
+        // darin die Testklasse ("No relevant classes found")
+        const auto activities = RecentActivityModel::parseServerActivities(jsonArray("["
+                                                                                     "{\"id\": 12, \"subject\": \"You changed a.txt\", \"message\": \"\", \"file\": \"/a.txt\","
+                                                                                     " \"link\": \"https://cloud.example.com/index.php/apps/files/?dir=/\", \"date\": \"2026-10-15T10:00:00+02:00\"},"
+                                                                                     "{\"id\": \"13\", \"subject\": \"\", \"message\": \"\", \"file\": \"/b.txt\", \"link\": \"\", \"date\": \"garbage\"},"
+                                                                                     "{\"id\": 14, \"subject\": \"\", \"file\": \"\"}"
+                                                                                     "]"),
             account);
         QCOMPARE(activities.size(), 2);
         QCOMPARE(activities[0].id, QStringLiteral("12"));
@@ -144,16 +146,17 @@ private Q_SLOTS:
         const QUuid first = QUuid::createUuid();
         const QUuid second = QUuid::createUuid();
 
-        const auto parsed = ServerNotificationModel::parseNotifications(jsonArray(R"([
-            {"notification_id": 5, "app": "files_sharing", "subject": "Bob shared a folder", "message": "Accept it?",
-             "link": "https://cloud.example.com/index.php/apps/files", "datetime": "2026-10-15T09:00:00+00:00",
-             "actions": [
-                {"label": "Accept%20share", "link": "https://cloud.example.com/ocs/v1.php/apps/files_sharing/api/v1/remote_shares/pending/3", "type": "post", "primary": true},
-                {"label": "", "link": "https://cloud.example.com/", "type": "DELETE", "primary": false}
-             ]},
-            {"notification_id": "6", "subject": "", "message": "Only a message", "datetime": "2026-10-15T11:00:00+00:00", "actions": []},
-            {"subject": "no id"}
-        ])"),
+        const auto parsed = ServerNotificationModel::parseNotifications(jsonArray("["
+                                                                                 "{\"notification_id\": 5, \"app\": \"files_sharing\", \"subject\": \"Bob shared a folder\","
+                                                                                 " \"message\": \"Accept it?\", \"link\": \"https://cloud.example.com/index.php/apps/files\","
+                                                                                 " \"datetime\": \"2026-10-15T09:00:00+00:00\", \"actions\": ["
+                                                                                 "{\"label\": \"Accept%20share\", \"link\": \"https://cloud.example.com/ocs/v1.php/apps/files_sharing/api/v1/remote_shares/pending/3\","
+                                                                                 " \"type\": \"post\", \"primary\": true},"
+                                                                                 "{\"label\": \"\", \"link\": \"https://cloud.example.com/\", \"type\": \"DELETE\", \"primary\": false}"
+                                                                                 "]},"
+                                                                                 "{\"notification_id\": \"6\", \"subject\": \"\", \"message\": \"Only a message\", \"datetime\": \"2026-10-15T11:00:00+00:00\", \"actions\": []},"
+                                                                                 "{\"subject\": \"no id\"}"
+                                                                                 "]"),
             first);
         QCOMPARE(parsed.size(), 2);
         QCOMPARE(parsed[0].id, QStringLiteral("5"));
