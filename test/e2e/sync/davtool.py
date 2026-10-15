@@ -3,7 +3,8 @@
 
 Die Suite prüft damit den Serverzustand unabhängig vom Client.
 
-Zugang über die Umgebung: OC_URL (z. B. http://127.0.0.1:8080), OC_USER, OC_PASS.
+Zugang über die Umgebung: OC_URL (z. B. http://127.0.0.1:8080), OC_USER, OC_PASS; OC_DAV_USER
+nennt die Kennung für die WebDAV-Pfade, wenn sie vom Anmeldenamen abweicht.
 Serverpfade sind relativ zur Wurzel des Benutzers (remote.php/dav/files/<user>/),
 im Klartext (UTF-8); kodiert wird hier.
 
@@ -56,7 +57,9 @@ class Server:
         user = os.environ['OC_USER']
         token = base64.b64encode(f'{user}:{os.environ["OC_PASS"]}'.encode()).decode()
         self.auth = 'Basic ' + token
-        self.root = f'{self.base.path}/remote.php/dav/files/{urllib.parse.quote(user)}'
+        # Anmeldename und Kennung können sich unterscheiden (E-Mail-Login); WebDAV braucht die Kennung
+        dav_user = os.environ.get('OC_DAV_USER') or user
+        self.root = f'{self.base.path}/remote.php/dav/files/{urllib.parse.quote(dav_user)}'
 
     def href(self, rel):
         rel = rel.strip('/')

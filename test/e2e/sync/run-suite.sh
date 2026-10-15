@@ -10,6 +10,17 @@
 # Jeder Fall arbeitet in einem eigenen lokalen Ordner und einem eigenen Serverordner
 # /e2e-<nr>; ein Absturz in einem Fall beeinflusst die anderen nicht.
 #
+# OAuth2 (E2E_AUTH=oauth): Fälle A1–A7 statt 01–14. A1 meldet sich wie der Desktop-Client
+# im Browser an (test/e2e/oauth/login.py) und legt die Token-Datei an; damit laufen die
+# Sync-Fälle 01–05, 07 und 08 über owncloudcmd --oauth-token-file, danach Erneuern und
+# Widerruf. OC_USER/OC_PASS dienen dann nur noch der Browser-Anmeldung und davtool.
+#   E2E_OAUTH2_VERSION   Version der oauth2-App, wenn bekannt (Erwartung für 127.0.0.1)
+#   E2E_OAUTH_REVOKE=1   A6: Freigabe in den persönlichen Einstellungen widerrufen
+#                        (trifft alle Desktop-Anmeldungen des Kontos – nur auf Testservern)
+# E2E_REMOTE_BASE: alle Serverordner unter diesem Ordner (für fremde Server; aufräumen
+# muss der Aufrufer). E2E_SECRETS: Datei, in der die Suite alle gesehenen Tokens sammelt,
+# damit der Aufrufer sie aus den Protokollen schwärzen kann.
+#
 # Ergebnis: $E2E_OUT/results.md (Tabelle), $E2E_OUT/results.tsv,
 #           $E2E_OUT/logs/<nr>-<lauf>.log (owncloudcmd-Protokolle mit HTTP-Logger).
 # Exit: 0 alle PASS, 1 mindestens ein FAIL, 2 Suite-/Umgebungsfehler (ERROR).
@@ -22,6 +33,12 @@ OUT=${E2E_OUT:-$PWD/e2e-out}
 WORK=$OUT/work
 LOGS=$OUT/logs
 RUN_TIMEOUT=${E2E_RUN_TIMEOUT:-600}
+AUTH=${E2E_AUTH:-basic}
+case $AUTH in basic | oauth) ;; *) echo "E2E_AUTH muss basic oder oauth sein" >&2 && exit 2 ;; esac
+BASE=${E2E_REMOTE_BASE:+${E2E_REMOTE_BASE%/}/}
+SECRETS=${E2E_SECRETS:-$WORK/secrets.lst}
+# Token-Datei der laufenden OAuth2-Fälle (A1 legt sie an, A3/A4 erneuern sie)
+TOKEN_FILE=
 export QT_FORCE_STDERR_LOGGING=1
 # REQUEST-/RESPONSE-Zeilen des HTTP-Loggers sind die Grundlage für Bulk-, Chunk- und
 # Übertragungsprüfungen; ohne diese Regel loggt die Kategorie nur Warnungen.
@@ -42,7 +59,7 @@ ID='' TITLE='' STATUS='' NOTES=() L='' R='' LOG='' RC=0 BG_PID='' STARTED=0 LAST
 
 case_begin() {
 	ID=$1 TITLE=$2 STATUS=PASS NOTES=() STARTED=$SECONDS
-	L=$WORK/$ID R=e2e-$ID
+	L=$WORK/$ID R=${BASE}e2e-$ID
 	echo "::group::Fall $ID – $TITLE"
 	rm -rf "$L" "$WORK/seed-$ID" && mkdir -p "$L" "$WORK/seed-$ID" || { case_error "lokaler Ordner $L"; return 1; }
 	dav delete "$R" && dav mkdirs "$R" || { case_error "Serverordner /$R nicht anlegbar"; return 1; }
@@ -76,13 +93,23 @@ run_case() { # run_case <nr> <titel> <funktion>
 }
 
 # ---------------------------------------------------------------- owncloudcmd-Läufe
+# Anmeldung der Läufe: Benutzer und Kennwort oder die aktuelle Token-Datei
+auth_args() {
+	if [ "$AUTH" = oauth ]; then
+		AUTH_ARGS=(--oauth-token-file "$TOKEN_FILE")
+	else
+		AUTH_ARGS=(-u "$OC_USER" -p "$OC_PASS")
+	fi
+}
 # ocmd <lauf> [env-präfix …]: ein Sync-Lauf für den aktuellen Fall; setzt RC und LOG
 ocmd() {
 	local run=$1
 	shift
 	LOG=$LOGS/$ID-$run.log LAST_RUN=$run
-	"$@" timeout -s KILL "$RUN_TIMEOUT" "$OCMD" "$L" "$OC_URL" -u "$OC_USER" -p "$OC_PASS" --path "/$R" >"$LOG" 2>&1
+	auth_args
+	"$@" timeout -s KILL "$RUN_TIMEOUT" "$OCMD" "$L" "$OC_URL" "${AUTH_ARGS[@]}" --path "/$R" >"$LOG" 2>&1
 	RC=$?
+	[ "$AUTH" != oauth ] || remember_tokens "$TOKEN_FILE"
 	echo "  $run: exit $RC"
 }
 # start_bg <lauf> [env-präfix …]: Lauf im Hintergrund; setzt BG_PID und LOG
@@ -90,7 +117,8 @@ start_bg() {
 	local run=$1
 	shift
 	LOG=$LOGS/$ID-$run.log LAST_RUN=$run
-	"$@" "$OCMD" "$L" "$OC_URL" -u "$OC_USER" -p "$OC_PASS" --path "/$R" >"$LOG" 2>&1 &
+	auth_args
+	"$@" "$OCMD" "$L" "$OC_URL" "${AUTH_ARGS[@]}" --path "/$R" >"$LOG" 2>&1 &
 	BG_PID=$!
 }
 alive() { local s; s=$(ps -o stat= -p "$1" 2>/dev/null) && [[ $s != Z* ]]; }
@@ -101,13 +129,14 @@ wait_bg() {
 	alive "$BG_PID" && kill -9 "$BG_PID" 2>/dev/null
 	wait "$BG_PID"
 	RC=$?
+	[ "$AUTH" != oauth ] || remember_tokens "$TOKEN_FILE"
 	echo "  Hintergrundlauf: exit $RC"
 }
 # check_run <lauf> [allow-fail]: Absturz, ASSERT, Zeitüberschreitung, Exit-Code
 check_run() {
 	local run=$1 allow_fail=${2:-} assert err
 	assert=$(grep -m1 -aoE '(ASSERT|ENFORCE|ENSURE)(:| failure in) .*' "$LOG" | sed -E 's#in file [^ ]*/#in file #; s#(line [0-9]+).*#\1#' | cut -c1-200)
-	err=$(grep -m1 -aoE '(Sync error|Could not reach the server|Failed to fetch capabilities|Usage|A user).*' "$LOG" | cut -c1-200)
+	err=$(grep -m1 -aoE '(Sync error|Could not reach the server|Failed to fetch capabilities|Authentication failed|Cannot use the OAuth2|The OAuth2 token file|Usage|A user).*' "$LOG" | cut -c1-200)
 	if [ "$RC" -gt 128 ] && [ "$RC" -ne 137 ]; then
 		fail "$run: Absturz (Signal $((RC - 128)))${assert:+ – $assert}"
 		return
@@ -451,6 +480,171 @@ t14() {
 	compare "$L" "$R" && note "neue Fassung nach $runs weiteren Läufen auf dem Server"
 }
 
+# ---------------------------------------------------------------- OAuth2-Fälle
+TOKEN_PATH_RE='/([^ ]*/)?index\.php/apps/oauth2/api/v1/token$'
+LOGIN=(python3 -I "$HERE/../oauth/login.py" --server "$OC_URL")
+
+# remember_tokens <token-datei>: Tokens maskieren (GitHub Actions) und für das Schwärzen merken;
+# kurze Platzhalter der Fälle ("abgelaufen", "unbekannt") sind keine Tokens
+remember_tokens() {
+	local value
+	[ -f "${1:-}" ] || return 0
+	while IFS= read -r value; do
+		[ ${#value} -ge 20 ] || continue
+		[ -z "${GITHUB_ACTIONS:-}" ] || echo "::add-mask::$value"
+		printf '%s\n' "$value" >>"$SECRETS"
+	done < <(jq -r '.access_token // empty, .refresh_token // empty' "$1" 2>/dev/null)
+}
+# token_edit <datei> <jq-filter>: Token-Datei verändern; die Rechte (0600) bleiben
+token_edit() {
+	local content
+	content=$(jq "$2" "$1") && printf '%s\n' "$content" >"$1"
+}
+# token_copy <quelle> <ziel>: Kopie nur für den Eigentümer lesbar
+token_copy() { cp "$1" "$2" && chmod 600 "$2"; }
+token_posts() { count_req "$LOG" POST "$TOKEN_PATH_RE"; }
+unauthorized() { count_res "$LOG" '[A-Z]+' 401 '.*'; }
+version_lt() { [ "$1" != "$2" ] && [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | head -1)" = "$1" ]; }
+
+# oauth_login <redirect-host> <token-datei>: Browser-Anmeldung wie der Desktop-Client; setzt RC und LOG
+oauth_login() {
+	LOG=$LOGS/$ID-anmeldung.log LAST_RUN=anmeldung
+	"${LOGIN[@]}" --redirect-host "$1" --out "$2" >"$LOG" 2>&1
+	RC=$?
+	sed 's/^/    /' "$LOG"
+	echo "  anmeldung: exit $RC"
+}
+
+# expect_signin_failure <lauf> <token-datei> <sha vorher>: sauberer Abbruch mit Exit 2
+expect_signin_failure() {
+	if [ "$RC" -gt 128 ]; then
+		fail "$1: Absturz (Signal $((RC - 128)))"
+		return
+	fi
+	[ "$RC" -eq 2 ] || fail "$1: Exit $RC statt 2 (neu anmelden)"
+	grep -q 'Authentication failed:.*sign in again' "$LOG" || fail "$1: keine klare Meldung mit „sign in again“"
+	[ "$(sha "$2")" = "$3" ] || fail "$1: Token-Datei verändert"
+	[ -f "$L/bleibt.txt" ] || fail "$1: lokale Datei gelöscht"
+	[ "$(dav stat "$R/bleibt.txt" exists)" = false ] || fail "$1: trotz abgelehnter Anmeldung hochgeladen"
+	note "$1: $(grep -m1 -ao 'Authentication failed:.*' "$LOG" | cut -c1-170)"
+}
+
+a1() {
+	local tf=$WORK/oauth/token.json
+	mkdir -p "$WORK/oauth"
+	oauth_login localhost "$tf"
+	[ "$RC" -eq 0 ] || { fail "Anmeldung über http://localhost:<port> gescheitert (Exit $RC): $(tail -1 "$LOG")"; return; }
+	remember_tokens "$tf"
+	jq -e '.server_url and .access_token and .refresh_token and .expires_at' "$tf" >/dev/null || fail "Token-Datei unvollständig"
+	[ "$(stat -c %a "$tf")" = 600 ] || fail "Token-Datei nicht nur für den Eigentümer lesbar"
+	TOKEN_FILE=$tf
+	# WebDAV-Pfade von davtool über die Kennung, falls der Anmeldename abweicht (E-Mail-Login)
+	OC_DAV_USER=$(jq -r '.user_id // empty' "$tf")
+	export OC_DAV_USER
+	note "$(grep -m1 '^Token:' "$LOG")"
+}
+
+a2() {
+	local tf=$WORK/oauth/token-127.json v=${E2E_OAUTH2_VERSION:-}
+	mkdir -p "$WORK/oauth"
+	oauth_login 127.0.0.1 "$tf"
+	case $RC in
+	0)
+		remember_tokens "$tf"
+		note "angenommen: redirect_uri http://127.0.0.1:<port> (Loopback nach RFC 8252)"
+		if [ -n "$v" ] && version_lt "$v" 0.9.0; then note "unerwartet: oauth2 $v kannte bisher nur http://localhost:*"; fi
+		;;
+	4)
+		if [ -z "$v" ]; then
+			note "Server lehnt 127.0.0.1 ab (oauth2 vor 0.9.0?); der Client meldet sich über localhost an"
+		elif version_lt "$v" 0.9.0; then
+			note "abgelehnt wie erwartet: oauth2 $v kennt nur http://localhost:*"
+		else
+			fail "oauth2 $v lehnt redirect_uri http://127.0.0.1:<port> ab – ab 0.9.0 erwartet angenommen (RFC 8252)"
+		fi
+		;;
+	*) fail "Anmeldung über 127.0.0.1: Exit $RC – $(tail -1 "$LOG")" ;;
+	esac
+}
+
+a3() {
+	local tf=$WORK/oauth/token-a3.json old posts unauth
+	# A5: dieses Refresh-Token verbraucht A3 beim Erneuern
+	token_copy "$TOKEN_FILE" "$WORK/oauth/token-vor-a3.json" && token_copy "$TOKEN_FILE" "$tf" || {
+		case_error "Token-Datei nicht kopierbar"
+		return
+	}
+	token_edit "$tf" '.access_token = "abgelaufen" | .expires_at = (now | floor) - 60'
+	old=$(jq -r .refresh_token "$tf")
+	rnd "$L/nach-ablauf.txt"
+	TOKEN_FILE=$tf
+	ocmd lauf1
+	check_run lauf1
+	compare "$L" "$R"
+	posts=$(token_posts) unauth=$(unauthorized)
+	[ "$posts" -eq 1 ] || fail "$posts Anfragen an den Token-Endpunkt statt einer"
+	[ "$unauth" -eq 0 ] || fail "$unauth Antworten 401 – das abgelaufene Token hätte vor dem Lauf erneuert werden müssen"
+	[ "$(jq -r .refresh_token "$tf")" != "$old" ] || fail "neue Tokens nicht in die Token-Datei geschrieben"
+	[ "$(jq -r '.expires_at // 0' "$tf")" -gt "$(date +%s)" ] || fail "expires_at nicht erneuert"
+	jq -e '.server_url' "$tf" >/dev/null || fail "server_url beim Zurückschreiben verloren"
+	[ "$(stat -c %a "$tf")" = 600 ] || fail "Token-Datei nach dem Zurückschreiben nicht mehr 0600"
+	note "Token-Endpunkt $posts×, 401: $unauth"
+}
+
+a4() {
+	local tf=$WORK/oauth/token-a4.json old posts unauth
+	token_copy "$TOKEN_FILE" "$tf" || { case_error "Token-Datei nicht kopierbar"; return; }
+	# laut Datei gültig, dem Server unbekannt – wie ein Token, das er vorzeitig verworfen hat
+	token_edit "$tf" '.access_token = "unbekannt" | .expires_at = (now | floor) + 3600'
+	old=$(jq -r .refresh_token "$tf")
+	rnd "$L/nach-401.txt"
+	TOKEN_FILE=$tf
+	ocmd lauf1
+	check_run lauf1
+	compare "$L" "$R"
+	posts=$(token_posts) unauth=$(unauthorized)
+	[ "$unauth" -ge 1 ] || fail "keine Antwort 401 – der Server nahm das unbekannte Token an"
+	[ "$posts" -eq 1 ] || fail "$posts Anfragen an den Token-Endpunkt statt einer"
+	[ "$(jq -r .refresh_token "$tf")" != "$old" ] || fail "neue Tokens nicht in die Token-Datei geschrieben"
+	note "401: $unauth, Token-Endpunkt $posts×, danach wiederholt"
+}
+
+a5() {
+	local tf=$WORK/oauth/token-a5.json keep=$TOKEN_FILE before
+	token_copy "$WORK/oauth/token-vor-a3.json" "$tf" || { case_error "Token-Datei von vor A3 fehlt"; return; }
+	token_edit "$tf" '.access_token = "unbekannt" | .expires_at = (now | floor) + 3600'
+	before=$(sha "$tf")
+	rnd "$L/bleibt.txt"
+	TOKEN_FILE=$tf
+	ocmd lauf1
+	TOKEN_FILE=$keep
+	expect_signin_failure lauf1 "$tf" "$before"
+}
+
+a6() {
+	local tf=$WORK/oauth/token-a6.json before
+	token_copy "$TOKEN_FILE" "$tf" || { case_error "Token-Datei nicht kopierbar"; return; }
+	LOG=$LOGS/$ID-widerruf.log
+	if ! "${LOGIN[@]}" --revoke >"$LOG" 2>&1; then
+		case_error "Widerruf in den persönlichen Einstellungen gescheitert: $(tail -1 "$LOG")"
+		return
+	fi
+	sed 's/^/    /' "$LOG"
+	before=$(sha "$tf")
+	rnd "$L/bleibt.txt"
+	TOKEN_FILE=$tf
+	ocmd lauf1
+	expect_signin_failure lauf1 "$tf" "$before"
+}
+
+a7() {
+	local hits
+	[ -s "$SECRETS" ] || { case_error "keine Tokens gesammelt"; return; }
+	hits=$(grep -rlF -f "$SECRETS" "$OUT" --exclude-dir=work 2>/dev/null)
+	[ -z "$hits" ] || fail "Tokens im Klartext in: $(xargs -n1 basename <<<"$hits" | head -4 | tr '\n' ' ')"
+	note "$(sort -u "$SECRETS" | wc -l) Tokens gegen $(find "$OUT" -path "$WORK" -prune -o -type f -print | wc -l) Dateien geprüft"
+}
+
 # ---------------------------------------------------------------- Ablauf
 CASES=(
 	"01|Upload kleine Datei|t01"
@@ -469,14 +663,49 @@ CASES=(
 	"14|Datei während des Syncs geändert|t14"
 )
 
+if [ "$AUTH" = oauth ]; then
+	# Sync-Fälle über OAuth2: Upload klein/Bulk/Chunking, Download, Umbenennen, Löschen, Konflikt
+	SYNC_CASES=("${CASES[@]}")
+	CASES=(
+		"A1|OAuth2-Anmeldung wie der Desktop-Client (redirect_uri localhost)|a1"
+		"A2|OAuth2-Anmeldung über 127.0.0.1 (RFC 8252)|a2"
+	)
+	for entry in "${SYNC_CASES[@]}"; do
+		case ${entry%%|*} in 01 | 02 | 03 | 04 | 05 | 07 | 08) CASES+=("$entry") ;; esac
+	done
+	CASES+=(
+		"A3|Access-Token abgelaufen: vor dem Lauf erneuert|a3"
+		"A4|Access-Token abgelehnt (401): erneuert und wiederholt|a4"
+		"A5|Refresh-Token verbraucht: Abbruch mit Exit 2|a5"
+	)
+	[ "${E2E_OAUTH_REVOKE:-}" != 1 ] || CASES+=("A6|Freigabe in den Einstellungen widerrufen: Abbruch mit Exit 2|a6")
+	CASES+=("A7|Keine Tokens in Protokollen und Ergebnissen|a7")
+fi
+
+# skip_case <nr> <titel> <grund>: Fall ohne Lauf als ERROR verbuchen
+skip_case() {
+	ID=$1 TITLE=$2 STATUS=ERROR NOTES=("Suite: $3") STARTED=$SECONDS
+	echo "::group::Fall $ID – $TITLE"
+	case_end
+}
+
 rm -rf "$WORK" "$LOGS"
 mkdir -p "$WORK" "$LOGS"
 [ -x "$OCMD" ] || { echo "owncloudcmd nicht ausführbar: $OCMD" >&2; exit 2; }
 [ "$(dav stat '' exists)" = true ] || { echo "Server $OC_URL nicht erreichbar oder Anmeldung abgelehnt" >&2; exit 2; }
+if [ "$AUTH" = oauth ] && ! command -v jq >/dev/null; then
+	echo "jq fehlt" >&2
+	exit 2
+fi
 
 for entry in "${CASES[@]}"; do
 	IFS='|' read -r nr title fn <<<"$entry"
-	if [ $# -gt 0 ] && [[ " $* " != *" $nr "* ]]; then continue; fi
+	# ohne Token-Datei läuft über OAuth2 nichts: A1 auch dann, wenn nur andere Fälle gewählt sind
+	if [ $# -gt 0 ] && [[ " $* " != *" $nr "* ]] && ! [[ $AUTH == oauth && $nr == A1 ]]; then continue; fi
+	if [ "$AUTH" = oauth ] && [ -z "$TOKEN_FILE" ] && [[ $nr != A1 && $nr != A2 && $nr != A7 ]]; then
+		skip_case "$nr" "$title" "keine Token-Datei – A1 gescheitert"
+		continue
+	fi
 	run_case "$nr" "$title" "$fn"
 done
 

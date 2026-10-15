@@ -4,7 +4,14 @@ name: Sync E2E
 # echten owncloud.online-Server, der hier im Runner aufgesetzt wird (Release-Tarball,
 # SQLite, php -S). Fälle und Prüfungen: test/e2e/sync/run-suite.sh.
 #
-#   gh workflow run sync-e2e.yml --ref <zweig> -f run_id=<CI-Lauf> [-f server_tag=v11.0.22]
+#   gh workflow run sync-e2e.yml --ref <zweig> -f run_id=<CI-Lauf> [-f server_tag=v11.0.22] [-f auth=basic|oauth|beide]
+#
+# auth=oauth: Anmeldung wie der Desktop-Client im Browser (test/e2e/oauth/login.py), dann
+# Sync, Erneuern und Widerruf über owncloudcmd --oauth-token-file – je einmal mit der
+# oauth2-App 0.8.0 und 0.9.0. Sind die Secrets E2E_ONLINE_URL_n, E2E_ONLINE_USER_n und
+# E2E_ONLINE_PASS_n (n = 1, 2) gesetzt, laufen dieselben Fälle zusätzlich gegen diese
+# Server, nur im Ordner e2e-<Lauf-ID> des Testkontos, der am Ende gelöscht wird.
+# auth=beide: Basic und OAuth2.
 
 on:
   workflow_dispatch:
@@ -16,9 +23,18 @@ on:
         description: "Release-Tag von BWTECH-github/owncloud.online für den Testserver"
         required: false
         default: "v11.0.22"
+      auth:
+        description: "Anmeldung: basic (Kennwort), oauth (OAuth2 mit oauth2 0.8.0 und 0.9.0, dazu Online-Server aus den Secrets) oder beide"
+        type: choice
+        options: [basic, oauth, beide]
+        default: basic
+      online_large:
+        description: "Online-Server auch mit den großen Dateien (Fälle 03 und 04, zusammen rund 370 MiB)"
+        type: boolean
+        default: false
   # GitHub nimmt workflow_dispatch für einen Workflow, der nicht auf dem Standardzweig
-  # liegt, erst nach einem ersten Lauf an. Dieser Auslöser registriert ihn nur; der Job
-  # läuft ausschließlich auf Anforderung (siehe if am Job).
+  # liegt, erst nach einem ersten Lauf an. Dieser Auslöser registriert ihn nur; die Jobs
+  # laufen ausschließlich auf Anforderung (siehe if am Job plan).
   push:
     branches: [sync-e2e]
     paths: [.github/workflows/sync-e2e.yml]
@@ -28,11 +44,60 @@ permissions:
   contents: read
 
 jobs:
-  sync-e2e:
-    name: owncloudcmd gegen owncloud.online
+  plan:
+    name: Varianten
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - name: Choose variants
+        id: plan
+        shell: bash
+        env:
+          AUTH: ${{ inputs.auth }}
+          ONLINE_1: ${{ secrets.E2E_ONLINE_URL_1 != '' && secrets.E2E_ONLINE_USER_1 != '' && secrets.E2E_ONLINE_PASS_1 != '' }}
+          ONLINE_2: ${{ secrets.E2E_ONLINE_URL_2 != '' && secrets.E2E_ONLINE_USER_2 != '' && secrets.E2E_ONLINE_PASS_2 != '' }}
+        run: |
+          set -euo pipefail
+          basic='{"variant":"basic","target":"local","auth":"basic"}'
+          # oauth2-App: 0.8.0 kennt nur http://localhost:*, 0.9.0 nimmt auch Loopback-Adressen (RFC 8252)
+          o8='{"variant":"oauth2-0.8.0","target":"local","auth":"oauth","oauth2_ref":"f2c74374d419fe976b905f586f57d885490cf6a5","oauth2_version":"0.8.0"}'
+          o9='{"variant":"oauth2-0.9.0","target":"local","auth":"oauth","oauth2_ref":"3c1d8cff960db23327b4f9943b4e1717c24305b9","oauth2_version":"0.9.0"}'
+          case "$AUTH" in
+            basic) variants=("$basic") ;;
+            oauth) variants=("$o8" "$o9") ;;
+            beide) variants=("$basic" "$o8" "$o9") ;;
+            *) echo "::error::auth muss basic, oauth oder beide sein"; exit 1 ;;
+          esac
+          skipped=()
+          if [ "$AUTH" != basic ]; then
+            for n in 1 2; do
+              var=ONLINE_$n
+              if [ "${!var}" = true ]; then
+                variants+=("{\"variant\":\"online-$n\",\"target\":\"online\",\"auth\":\"oauth\",\"server\":\"$n\"}")
+              else
+                skipped+=("$n")
+              fi
+            done
+          fi
+          echo "matrix=$(printf '%s\n' "${variants[@]}" | jq -sc '{include: .}')" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Sync-E2E: Varianten"
+            printf '%s\n' "${variants[@]}" | jq -r '"- \(.variant)"'
+            for n in "${skipped[@]}"; do
+              echo "- online-$n übersprungen: Secrets E2E_ONLINE_URL_$n, E2E_ONLINE_USER_$n und E2E_ONLINE_PASS_$n sind nicht (alle) gesetzt"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  sync-e2e:
+    name: ${{ matrix.variant }}
+    needs: plan
+    runs-on: ubuntu-latest
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     defaults:
       run:
         shell: bash
@@ -41,8 +106,10 @@ jobs:
       RUN_ID: ${{ inputs.run_id }}
       SERVER_TAG: ${{ inputs.server_tag }}
       SERVER_REPO: BWTECH-github/owncloud.online
-      OC_URL: http://127.0.0.1:8080
-      OC_USER: e2e
+      TARGET: ${{ matrix.target }}
+      VARIANT: ${{ matrix.variant }}
+      E2E_AUTH: ${{ matrix.auth }}
+      E2E_OAUTH2_VERSION: ${{ matrix.oauth2_version }}
     steps:
       - name: Check out test suite
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -55,9 +122,37 @@ jobs:
           [[ "$RUN_ID" =~ ^[0-9]+$ ]] || { echo "::error::run_id muss eine Zahl sein"; exit 1; }
           [[ "$SERVER_TAG" =~ ^v[0-9]+(\.[0-9]+)*$ ]] || { echo "::error::server_tag ungültig"; exit 1; }
           mkdir -p "$RUNNER_TEMP/e2e"
-          echo "E2E_OUT=$RUNNER_TEMP/e2e" >> "$GITHUB_ENV"
+          {
+            echo "E2E_OUT=$RUNNER_TEMP/e2e"
+            # alle Tokens, die die Suite sieht; liegt außerhalb der hochgeladenen Ergebnisse
+            echo "E2E_SECRETS=$RUNNER_TEMP/e2e-secrets.lst"
+          } >> "$GITHUB_ENV"
+
+      - name: Choose server
+        env:
+          ONLINE_URL: ${{ matrix.target == 'online' && secrets[format('E2E_ONLINE_URL_{0}', matrix.server)] || '' }}
+          ONLINE_USER: ${{ matrix.target == 'online' && secrets[format('E2E_ONLINE_USER_{0}', matrix.server)] || '' }}
+          ONLINE_PASS: ${{ matrix.target == 'online' && secrets[format('E2E_ONLINE_PASS_{0}', matrix.server)] || '' }}
+        run: |
+          set -euo pipefail
+          if [ "$TARGET" = online ]; then
+            [ -n "$ONLINE_URL" ] && [ -n "$ONLINE_USER" ] && [ -n "$ONLINE_PASS" ] || { echo "::error::Secrets des Online-Servers fehlen"; exit 1; }
+            # Kennwort und Tokens gehen nie unverschlüsselt an einen fremden Server
+            case $ONLINE_URL in https://*) ;; *) echo "::error::E2E_ONLINE_URL muss mit https:// beginnen"; exit 1 ;; esac
+            echo "::add-mask::$ONLINE_USER"
+            {
+              echo "OC_URL=${ONLINE_URL%/}"
+              echo "OC_USER=$ONLINE_USER"
+              echo "OC_PASS=$ONLINE_PASS"
+              # die Suite arbeitet nur in diesem Ordner des Testkontos
+              echo "E2E_REMOTE_BASE=e2e-$GITHUB_RUN_ID"
+            } >> "$GITHUB_ENV"
+          else
+            { echo "OC_URL=http://127.0.0.1:8080"; echo "OC_USER=e2e"; } >> "$GITHUB_ENV"
+          fi
 
       - name: Set up PHP 8.4
+        if: matrix.target == 'local'
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: "8.4"
@@ -93,9 +188,14 @@ jobs:
           [ -z "$missing" ] || { echo "::error::owncloudcmd: Bibliotheken fehlen: $missing"; exit 1; }
           "$ocmd" --help > "$E2E_OUT/owncloudcmd-help.txt"
           head -3 "$E2E_OUT/owncloudcmd-help.txt"
+          if [ "$E2E_AUTH" = oauth ] && ! grep -q -- '--oauth-token-file' "$E2E_OUT/owncloudcmd-help.txt"; then
+            echo "::error::dieser owncloudcmd kennt --oauth-token-file nicht (Client ohne OAuth2-Unterstützung)"
+            exit 1
+          fi
           echo "OCMD=$ocmd" >> "$GITHUB_ENV"
 
       - name: Set up owncloud.online ${{ inputs.server_tag }}
+        if: matrix.target == 'local'
         run: |
           set -euo pipefail
           srv="$RUNNER_TEMP/server"
@@ -119,39 +219,108 @@ jobs:
           php occ config:system:set memcache.local --value='\OC\Memcache\APCu'
           OC_PASS="$OC_PASS" php occ user:add --password-from-env --display-name "Sync E2E" "$OC_USER"
           php occ config:system:get version
-          nohup php -S 127.0.0.1:8080 -t "$root" > "$srv/php-server.log" 2>&1 &
+          {
+            echo "OC_PASS=$OC_PASS"
+            echo "OC_SRV=$srv"
+            echo "OC_ROOT=$root"
+          } >> "$GITHUB_ENV"
+
+      - name: Install oauth2 ${{ matrix.oauth2_version }} from BWTECH-github/oauth2
+        if: matrix.target == 'local' && matrix.auth == 'oauth'
+        env:
+          OAUTH2_REF: ${{ matrix.oauth2_ref }}
+          # Desktop Client der oauth2-App; öffentliche Werte aus src/libsync/theme.cpp des Clients
+          DESKTOP_CLIENT_ID: xdXOt13JKxym1B1QcEncf2XDkLAexMBFwiT9j6EfhhHFJhs2KM9jbjTmf8JBXE69
+          DESKTOP_CLIENT_SECRET: UBntmLjC2yYCeHwsyj73Uwo9TAaecAetRwMw0xYcvNL9yRdLSUi0hUAHfvCHFeFh
+        run: |
+          set -euo pipefail
+          # nicht im Kern-Tarball: Quelle auf dem festen Stand, Abhängigkeiten ohne Entwicklerpakete
+          app="$OC_ROOT/apps/oauth2"
+          git clone --quiet --no-checkout https://github.com/BWTECH-github/oauth2.git "$app"
+          git -C "$app" checkout --quiet --detach "$OAUTH2_REF"
+          rm -rf "$app/.git"
+          composer install --working-dir="$app" --no-dev --no-interaction --no-progress --quiet --classmap-authoritative
+          cd "$OC_ROOT"
+          php occ app:enable oauth2
+          php occ app:list --output=json | jq -r '"oauth2 \(.enabled.oauth2 // "nicht aktiv")"'
+          # Die Migration der App legt den Desktop Client an; fehlt er, wie im Betrieb von Hand
+          clients=$(php occ oauth2:list-clients --output=json)
+          if jq -e --arg id "$DESKTOP_CLIENT_ID" '[.[] | select(."client-id" == $id)] | length == 1' <<<"$clients" > /dev/null; then
+            echo "DESKTOP_CLIENT=Migration der App" >> "$GITHUB_ENV"
+          else
+            echo "::warning::Desktop Client nach app:enable nicht registriert – lege ihn mit occ oauth2:add-client an"
+            php occ oauth2:add-client "Desktop Client" "$DESKTOP_CLIENT_ID" "$DESKTOP_CLIENT_SECRET" "http://localhost:*" false false
+            clients=$(php occ oauth2:list-clients --output=json)
+            echo "DESKTOP_CLIENT=occ oauth2:add-client" >> "$GITHUB_ENV"
+          fi
+          jq -r --arg id "$DESKTOP_CLIENT_ID" \
+            '.[] | select(."client-id" == $id) | "Desktop Client: redirect \(."redirect-url"), trusted \(.trusted)"' <<<"$clients"
+
+      - name: Start owncloud.online
+        if: matrix.target == 'local'
+        run: |
+          set -euo pipefail
+          # erst nach der Einrichtung starten, damit der Server keinen alten App-Stand im APCu hält
+          nohup php -S 127.0.0.1:8080 -t "$OC_ROOT" > "$OC_SRV/php-server.log" 2>&1 &
           for _ in $(seq 1 30); do
             curl -sf "$OC_URL/status.php" | grep -q '"installed":true' && break
             sleep 1
           done
           curl -sf "$OC_URL/status.php"
           echo
-          {
-            echo "OC_PASS=$OC_PASS"
-            echo "OC_SRV=$srv"
-          } >> "$GITHUB_ENV"
 
       - name: Check server capabilities (bulk upload, NG chunking)
         run: |
           set -euo pipefail
-          curl -sf -u "$OC_USER:$OC_PASS" -H 'OCS-APIRequest: true' \
-            "$OC_URL/ocs/v1.php/cloud/capabilities?format=json" > "$E2E_OUT/capabilities.json"
+          # fremde Server werden nur beschrieben, nicht abgelehnt
+          if ! curl -sf -u "$OC_USER:$OC_PASS" -H 'OCS-APIRequest: true' \
+            "$OC_URL/ocs/v1.php/cloud/capabilities?format=json" > "$E2E_OUT/capabilities.json"; then
+            [ "$TARGET" = online ] || { echo "::error::Capabilities nicht abrufbar"; exit 1; }
+            echo "::warning::Capabilities des Online-Servers nicht abrufbar (Basic-Anmeldung abgelehnt?)"
+            rm -f "$E2E_OUT/capabilities.json"
+            exit 0
+          fi
           jq '{version: .ocs.data.version.string, dav: .ocs.data.capabilities.dav,
                bigfilechunking: .ocs.data.capabilities.files.bigfilechunking}' "$E2E_OUT/capabilities.json"
-          jq -e '.ocs.data.capabilities.dav | (.chunking == "1.0") and ((.bulkupload // "") != "")' \
-            "$E2E_OUT/capabilities.json" > /dev/null \
-            || { echo "::error::Server bewirbt NG-Chunking oder Bulk-Upload nicht"; exit 1; }
+          if ! jq -e '.ocs.data.capabilities.dav | (.chunking == "1.0") and ((.bulkupload // "") != "")' \
+            "$E2E_OUT/capabilities.json" > /dev/null; then
+            [ "$TARGET" = online ] || { echo "::error::Server bewirbt NG-Chunking oder Bulk-Upload nicht"; exit 1; }
+            echo "::warning::Online-Server bewirbt NG-Chunking oder Bulk-Upload nicht"
+          fi
 
       - name: Run sync suite
         env:
           E2E_RUN_TIMEOUT: "300"
-        run: bash test/e2e/sync/run-suite.sh
+          # Widerruf in den Einstellungen trifft alle Desktop-Anmeldungen des Kontos: nur auf dem Testserver im Runner
+          E2E_OAUTH_REVOKE: ${{ matrix.target == 'local' && '1' || '' }}
+          ONLINE_LARGE: ${{ inputs.online_large }}
+        run: |
+          cases=()
+          if [ "$TARGET" = online ] && [ "$ONLINE_LARGE" != true ]; then
+            cases=(A1 A2 01 02 05 07 08 A3 A4 A5 A7)
+          fi
+          bash test/e2e/sync/run-suite.sh "${cases[@]}"
+
+      - name: Remove the test folder on the online server
+        if: always() && matrix.target == 'online' && env.E2E_REMOTE_BASE != ''
+        run: |
+          OC_DAV_USER=$(jq -r '.user_id // empty' "$E2E_OUT/work/oauth/token.json" 2> /dev/null || true)
+          export OC_DAV_USER
+          if python3 -I test/e2e/sync/davtool.py delete "$E2E_REMOTE_BASE"; then
+            echo "Ordner $E2E_REMOTE_BASE des Testkontos gelöscht"
+          else
+            echo "::warning::Ordner $E2E_REMOTE_BASE auf dem Online-Server nicht gelöscht"
+          fi
 
       - name: Summary
         if: always() && env.E2E_OUT != ''
         run: |
           {
-            echo "## Sync-E2E: owncloudcmd gegen owncloud.online $SERVER_TAG"
+            if [ "$TARGET" = online ]; then
+              echo "## Sync-E2E $VARIANT: owncloudcmd über OAuth2 gegen den Online-Server aus den Secrets"
+            else
+              echo "## Sync-E2E $VARIANT: owncloudcmd gegen owncloud.online $SERVER_TAG"
+            fi
             echo
             if [ -f "$E2E_OUT/client-run.json" ]; then
               jq -r '"Client: [\(.workflowName) #\(.databaseId)](\(.url)) – \(.headBranch) @ `\(.headSha[0:9])`"' "$E2E_OUT/client-run.json"
@@ -159,6 +328,10 @@ jobs:
             if [ -f "$E2E_OUT/capabilities.json" ]; then
               echo
               jq -r '"Server: \(.ocs.data.version.string), dav: `\(.ocs.data.capabilities.dav | tojson)`"' "$E2E_OUT/capabilities.json"
+            fi
+            if [ "$E2E_AUTH" = oauth ] && [ "$TARGET" = local ]; then
+              echo
+              echo "oauth2 $E2E_OAUTH2_VERSION, Desktop Client angelegt durch: ${DESKTOP_CLIENT:-unbekannt}"
             fi
             echo
             cat "$E2E_OUT/results.md" 2> /dev/null || echo "_Keine Ergebnisse – die Suite lief nicht bis zum Ende._"
@@ -169,16 +342,36 @@ jobs:
         run: |
           mkdir -p "$E2E_OUT/server"
           cp "${OC_SRV:-/nonexistent}/php-server.log" "${OC_SRV:-/nonexistent}/data/owncloud.log" "$E2E_OUT/server/" 2> /dev/null || true
-          # Testdaten nicht hochladen, das Kennwort nicht in den Protokollen lassen
+          # Testdaten und Token-Dateien nicht hochladen
           rm -rf "$E2E_OUT/work"
-          if [ -n "${OC_PASS:-}" ]; then
-            { grep -rlF -- "$OC_PASS" "$E2E_OUT" || true; } | xargs -r sed -i "s/$OC_PASS/[redacted]/g"
+          # Kennwort und alle Tokens schwärzen, bei Online-Servern auch Adresse und Konto
+          secrets="$RUNNER_TEMP/redact.lst"
+          : > "$secrets"
+          [ -z "${OC_PASS:-}" ] || printf '%s\n' "$OC_PASS" >> "$secrets"
+          [ ! -s "${E2E_SECRETS:-}" ] || sort -u "$E2E_SECRETS" >> "$secrets"
+          if [ "$TARGET" = online ]; then
+            printf '%s\n' "$OC_URL" "${OC_URL#https://}" "$OC_USER" >> "$secrets"
           fi
+          python3 -I - "$secrets" "$E2E_OUT" <<'EOF'
+          import os, sys
+          words = sorted({w for w in open(sys.argv[1], encoding='utf-8').read().splitlines() if w}, key=len, reverse=True)
+          for base, _, files in os.walk(sys.argv[2]):
+              for name in files:
+                  path = os.path.join(base, name)
+                  with open(path, 'rb') as f:
+                      data = f.read()
+                  new = data
+                  for w in words:
+                      new = new.replace(w.encode(), b'[redacted]')
+                  if new != data:
+                      with open(path, 'wb') as f:
+                          f.write(new)
+          EOF
 
       - name: Upload results
         if: always() && env.E2E_OUT != ''
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: sync-e2e-${{ inputs.run_id }}-${{ github.run_attempt }}
+          name: sync-e2e-${{ inputs.run_id }}-${{ matrix.variant }}-${{ github.run_attempt }}
           path: ${{ env.E2E_OUT }}
           if-no-files-found: warn
