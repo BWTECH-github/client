@@ -217,17 +217,6 @@ jobs:
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --install --qmerge owncloud/owncloud-client
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.sonar.ps1" --analyze
 
-    # Vorübergehend (Zweig beta1-vfs-test): WinVfsTest je Testfunktion mit
-    # Zeitlimit, bei Hängern Thread-Stacks. Das Urteil fällt in "Run tests".
-    - name: WinVfsTest diagnostics
-      if: runner.os == 'Windows'
-      continue-on-error: true
-      timeout-minutes: 30
-      run: |
-        $buildDir = (& "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --get buildDir -q owncloud-client | Select-Object -Last 1).Trim()
-        Write-Host "buildDir: $buildDir"
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --run pwsh "${env:GITHUB_WORKSPACE}/.github/workflows/.winvfs-diag.ps1" "$buildDir"
-
     - name: Run tests
       run: |
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache --test ${{ matrix.testOptions }} owncloud/owncloud-client
