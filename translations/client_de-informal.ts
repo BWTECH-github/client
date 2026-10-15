@@ -479,7 +479,7 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
     <message>
         <location line="+1"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Möchten Sie das Verzeichnis &lt;i&gt;%1&lt;/i&gt; wirklich nicht mehr synchronisieren?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Hinweis:&lt;/b&gt; Dies wird &lt;b&gt;keine&lt;/b&gt; Daten löschen.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Möchtest du das Verzeichnis &lt;i&gt;%1&lt;/i&gt; wirklich nicht mehr synchronisieren?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Hinweis:&lt;/b&gt; Dies wird &lt;b&gt;keine&lt;/b&gt; Daten löschen.&lt;/p&gt;</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -509,7 +509,7 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
     <message>
         <location line="+9"/>
         <source>Manage your synced %1.</source>
-        <translation>Verwalten Sie Ihre synchronisierten %1.</translation>
+        <translation>Verwalte deine synchronisierten %1.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -525,7 +525,7 @@ Das Feature &quot;selective sync&quot; wird wieder verfügbar. Diese Aktion bric
     <message>
         <location line="+1"/>
         <source>Navigate the %1 list using the up and down arrows</source>
-        <translation>Navigieren Sie mit den Auf- und Ab-Pfeilen durch die Liste %1</translation>
+        <translation>Navigiere mit den Auf- und Ab-Pfeilen durch die Liste %1</translation>
     </message>
     <message>
         <location line="+49"/>
@@ -667,7 +667,7 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
     <message>
         <location line="+1"/>
         <source>&lt;p&gt;Do you really want to remove the connection to the account &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Möchtest Du den Zugang zum Benutzerkonto &lt;i&gt;%1&lt;/i&gt; wirklich entfernen?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Hinweis:&lt;/b&gt;Es werden &lt;b&gt;keine&lt;/b&gt; lokalen Daten gelöscht.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Möchtest du den Zugang zum Benutzerkonto &lt;i&gt;%1&lt;/i&gt; wirklich entfernen?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Hinweis:&lt;/b&gt; Es werden &lt;b&gt;keine&lt;/b&gt; lokalen Daten gelöscht.&lt;/p&gt;</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -766,7 +766,7 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
     <message>
         <location line="-61"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
-        <translation>Die für die Erstellung eines neuen Kontos erforderlichen Informationen sind unvollständig. Bitte führen Sie den Assistenten erneut aus.</translation>
+        <translation>Die für die Erstellung eines neuen Kontos erforderlichen Informationen sind unvollständig. Bitte führe den Assistenten erneut aus.</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -780,7 +780,7 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
 Please check the server&apos;s availability then run the wizard again.</source>
         <translation>Das Konto konnte aufgrund eines Fehlers nicht erstellt werden:
 %1
-Bitte prüfen Sie die Serververfügbarkeit und führen Sie den Assistenten erneut aus.</translation>
+Bitte prüfe die Serververfügbarkeit und führe den Assistenten erneut aus.</translation>
     </message>
 </context>
 <context>
@@ -828,7 +828,7 @@ Bitte prüfen Sie die Serververfügbarkeit und führen Sie den Assistenten erneu
     <message>
         <location line="+3"/>
         <source>Browse for a download location</source>
-        <translation>Suchen Sie nach einem Download-Speicherort</translation>
+        <translation>Suche nach einem Download-Speicherort</translation>
     </message>
     <message>
         <location line="+99"/>
@@ -838,7 +838,7 @@ Bitte prüfen Sie die Serververfügbarkeit und führen Sie den Assistenten erneu
     <message>
         <location line="+3"/>
         <source>your user directory may not be chosen as the sync root.</source>
-        <translation>Ihr Benutzerverzeichnis kann nicht als Synchronisierungsstammverzeichnis ausgewählt werden.</translation>
+        <translation>Dein Benutzerverzeichnis kann nicht als Synchronisierungsstammverzeichnis ausgewählt werden.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -858,7 +858,7 @@ Bitte prüfen Sie die Serververfügbarkeit und führen Sie den Assistenten erneu
     <message>
         <location line="+16"/>
         <source>Select sync root</source>
-        <translation>Wählen Sie das Synchronisierungsstammverzeichnis aus</translation>
+        <translation>Wähle das Synchronisierungsstammverzeichnis aus</translation>
     </message>
 </context>
 <context>
@@ -906,7 +906,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location line="-17"/>
         <source>You are almost set! The synchronization options are under Advanced. By default the client enables the Virtual File System (VFS) and only downloads files when you open them.</source>
-        <translation>Du bist fast fertig! Unter den „Erweitert&quot;-Einstellungen findest du die Synchronisationsoptionen. Der Client aktiviert standardmäßig VFS (Virtual File System) und lädt Dateien erst dann herunter, wenn du diese nutzt.</translation>
+        <translation>Du bist fast fertig! Unter den „Erweitert“-Einstellungen findest du die Synchronisationsoptionen. Der Client aktiviert standardmäßig VFS (Virtual File System) und lädt Dateien erst dann herunter, wenn du diese nutzt.</translation>
     </message>
 </context>
 <context>
@@ -1190,7 +1190,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location line="+2"/>
         <source>%1 could not be synced due to an error. See the log for details.</source>
-        <translation>%1 konnte aufgrund eines Fehlers nicht synchronisiert werden. Lesen Sie das Protokoll für weitere Details.</translation>
+        <translation>%1 konnte aufgrund eines Fehlers nicht synchronisiert werden. Lies das Protokoll für weitere Details.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -1419,7 +1419,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location line="+6"/>
         <source>You have no permission to write to the selected folder.</source>
-        <translation>Sie haben keine Schreibberechtigung für den ausgewählten Ordner.</translation>
+        <translation>Du hast keine Schreibberechtigung für den ausgewählten Ordner.</translation>
     </message>
     <message>
         <location line="-79"/>
@@ -1784,7 +1784,7 @@ Da diese Protokolldateien sehr groß werden können, erstellt der Client für je
         <source>These settings persist across client restarts.
 Note that using any logging command line options will override the settings.</source>
         <translation>Diese Einstellungen bleiben nach einem Neustart des Clients erhalten.
-Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschreiben.</translation>
+Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschreiben.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -1861,7 +1861,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+1"/>
         <source>Are you sure you want to quit %1?</source>
-        <translation>Sind Sie sicher, dass sie %1 beenden möchten?</translation>
+        <translation>Möchtest du %1 wirklich beenden?</translation>
     </message>
 </context>
 <context>
@@ -2063,7 +2063,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+3"/>
         <source>Open sign in again</source>
-        <translation>Öffnen Sie die Anmeldung erneut</translation>
+        <translation>Öffne die Anmeldung erneut</translation>
     </message>
 </context>
 <context>
@@ -2094,7 +2094,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+1"/>
         <source>Now, explore %1 on desktop.</source>
-        <translation>Erkunden Sie nun %1 auf Ihrem Desktop.</translation>
+        <translation>Erkunde nun %1 auf deinem Desktop.</translation>
     </message>
     <message>
         <location line="+111"/>
@@ -2136,7 +2136,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+6"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
-        <translation>Sie haben sich mit Benutzer &lt;em&gt;%1&lt;/em&gt; angemeldet, müssen sich aber mit Benutzer &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Bitte kehren Sie zum %3-Client zurück und starten Sie die Authentifizierung neu.</translation>
+        <translation>Du hast dich als Benutzer &lt;em&gt;%1&lt;/em&gt; angemeldet, musst dich aber als Benutzer &lt;em&gt;%2&lt;/em&gt; anmelden.&lt;br&gt;Bitte kehre zum %3-Client zurück und starte die Authentifizierung neu.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2154,7 +2154,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+3"/>
         <source>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</source>
-        <translation>Lassen Sie dieses Fenster geöffnet. In Ihrem Webbrowser erscheint eine Anmeldeaufforderung, die Sie mit der folgenden Adresse verbindet.</translation>
+        <translation>Lass dieses Fenster geöffnet. In deinem Webbrowser erscheint eine Anmeldeaufforderung, die dich mit der folgenden Adresse verbindet.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -2164,7 +2164,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+1"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
-        <translation>Um die Anmelde-URL in die Zwischenablage zu kopieren, verwenden Sie die Schaltfläche „Kopieren“.</translation>
+        <translation>Um die Anmelde-URL in die Zwischenablage zu kopieren, verwende die Schaltfläche „Kopieren“.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2199,7 +2199,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+16"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
-        <translation>Bitte kopieren Sie die Authentifizierungs-URL mithilfe der Schaltfläche oben und geben Sie diese Informationen an den Support weiter.</translation>
+        <translation>Bitte kopiere die Authentifizierungs-URL mithilfe der Schaltfläche oben und gib diese Informationen an den Support weiter.</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -2209,7 +2209,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+17"/>
         <source>You are already connected to an account with these credentials.</source>
-        <translation>Sie sind bereits mit einem Konto mit diesen Anmeldedaten verbunden.</translation>
+        <translation>Du bist bereits mit einem Konto mit diesen Anmeldedaten verbunden.</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2272,12 +2272,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+11"/>
         <source>New %1 available. Please click &lt;a href=&apos;%2&apos;&gt;here&lt;/a&gt; to download the new AppImage manually.</source>
-        <translation>Neue %1 verfügbar. Bitte clicken Sie &lt;a href=&apos;%2&apos;&gt;hier&lt;/a&gt; um das neue AppImage manuell downzuloaden.</translation>
+        <translation>Neue %1 verfügbar. Bitte klicke &lt;a href=&apos;%2&apos;&gt;hier&lt;/a&gt;, um das neue AppImage manuell herunterzuladen.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>New %1 available. Please use the system&apos;s update tool to install it.</source>
-        <translation>Aktualisierung von %1 verfügbar. Bitte nutzen Sie zur Installation das Systemaktualisierungstool.</translation>
+        <translation>Aktualisierung von %1 verfügbar. Bitte nutze zur Installation das Systemaktualisierungstool.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2292,7 +2292,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+4"/>
         <source>No updates available. Your installation is at the latest version.</source>
-        <translation>Keine Aktualisierungen verfügbar. Ihre Installation ist die aktuelle Version.</translation>
+        <translation>Keine Aktualisierungen verfügbar. Deine Installation ist die aktuelle Version.</translation>
     </message>
 </context>
 <context>
@@ -2873,7 +2873,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+14"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
-        <translation>Der Identitätsanbieter (IdP) ist nicht erreichbar. Wenden Sie sich an Ihren Systemadministrator oder versuchen Sie es später erneut.</translation>
+        <translation>Der Identitätsanbieter (IdP) ist nicht erreichbar. Wende dich an deinen Systemadministrator oder versuche es später erneut.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -2896,7 +2896,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+8"/>
         <source>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</source>
-        <translation>Möglicherweise wurden Sie aufgrund eines Serverproblems oder einer Zeitüberschreitung automatisch getrennt. Bitte melden Sie sich erneut an.</translation>
+        <translation>Möglicherweise wurdest du aufgrund eines Serverproblems oder einer Zeitüberschreitung automatisch getrennt. Bitte melde dich erneut an.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -2906,7 +2906,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+1"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
-        <translation>Um die Anmelde-URL in die Zwischenablage zu kopieren, verwenden Sie die Schaltfläche „Kopieren“.</translation>
+        <translation>Um die Anmelde-URL in die Zwischenablage zu kopieren, verwende die Schaltfläche „Kopieren“.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -3069,7 +3069,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+9"/>
         <source>Use Monochrome Icons in the system tray</source>
-        <translation>Verwenden Sie monochrome Symbole in der Taskleiste</translation>
+        <translation>Monochrome Symbole in der Taskleiste verwenden</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -3694,12 +3694,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="+31"/>
         <source>Select a folder to sync it to your computer.</source>
-        <translation>Wähle einen Ordner aus, um diesen mit Deinem Computer zu synchronisieren.</translation>
+        <translation>Wähle einen Ordner aus, um diesen mit deinem Computer zu synchronisieren.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Select a Space to sync it to your computer.</source>
-        <translation>Wähle einen Space aus, um diesen mit Deinem Computer zu synchronisieren.</translation>
+        <translation>Wähle einen Space aus, um diesen mit deinem Computer zu synchronisieren.</translation>
     </message>
 </context>
 <context>
@@ -3826,7 +3826,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/libsync/theme.cpp" line="+178"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Version %1. Weitere Informationen findest du unter &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Der owncloud.online Desktop-Client wird von %4 vertrieben und steht unter der GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;Version %1. Weitere Informationen findest du unter &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Von Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller und anderen.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Der owncloud.online Desktop-Client wird von %4 vertrieben und steht unter der GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -3839,7 +3839,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+28"/>
         <source>Do you want to trust this certificate anyway?</source>
-        <translation>Möchtest Du diesem Zertifikat trotzdem vertrauen?</translation>
+        <translation>Möchtest du diesem Zertifikat trotzdem vertrauen?</translation>
     </message>
     <message>
         <location filename="../src/gui/tlserrordialog.cpp" line="+28"/>
@@ -4197,7 +4197,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+57"/>
         <source>Your web browser will be opened to complete sign in.</source>
-        <translation>Ihr Webbrowser wird geöffnet, um die Anmeldung abzuschließen.</translation>
+        <translation>Dein Webbrowser wird geöffnet, um die Anmeldung abzuschließen.</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -4212,7 +4212,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+8"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
-        <translation>Geben Sie Ihre Serveradresse ein, um zu beginnen. Ihr Webbrowser wird geöffnet, um die Anmeldung abzuschließen.</translation>
+        <translation>Gib deine Serveradresse ein, um zu beginnen. Dein Webbrowser wird geöffnet, um die Anmeldung abzuschließen.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -4222,7 +4222,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+1"/>
         <source>Enter your server address here</source>
-        <translation>Geben Sie hier Ihre Serveradresse ein.</translation>
+        <translation>Gib hier deine Serveradresse ein.</translation>
     </message>
     <message>
         <location line="+20"/>
