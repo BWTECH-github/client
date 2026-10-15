@@ -31,6 +31,7 @@ set(client_SRCS
     networksettings.cpp
     openfilemanager.cpp
     traymenucontroller.cpp
+    serveractivityfetcher.cpp
     localactivitywidget.cpp
     protocolitem.cpp
     syncerrorwidget.cpp
@@ -52,6 +53,7 @@ set(client_SRCS
     models/expandingheaderview.cpp
     models/models.cpp
     models/protocolitemmodel.cpp
+    models/trayactivitymodels.cpp
 
     scheduling/syncscheduler.cpp
     scheduling/etagwatcher.cpp

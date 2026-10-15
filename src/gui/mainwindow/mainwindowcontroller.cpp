@@ -166,6 +166,7 @@ void MainWindowController::createActivityAction()
     auto localActivityWidget = new LocalActivityWidget(_window);
     activityAction->setData(QVariant::fromValue(localActivityWidget));
     _window->addViewAction(activityAction);
+    _activityAction = activityAction;
 }
 
 void MainWindowController::onSettings()
@@ -176,6 +177,25 @@ void MainWindowController::onSettings()
     connect(settings, &SettingsView::moveToTrashChanged, FolderMan::instance(), &FolderMan::updateMoveToTrash);
     ModalWrapperWidget *wrapper = new ModalWrapperWidget(settings, _window);
     _window->showModalWidget(wrapper);
+}
+
+void MainWindowController::showSettings()
+{
+    _window->ensureVisible();
+    // liegt schon ein modales Fenster oben (auch die Einstellungen selbst), nicht ein zweites darüberlegen
+    if (!_window->isModalActive()) {
+        onSettings();
+    }
+}
+
+void MainWindowController::showActivity()
+{
+    _window->ensureVisible();
+    // die Ansicht folgt dem Umschalten der Aktion (toggled); solange ein modales Fenster offen ist, würde das
+    // Umschalten es verdecken und die gesperrte Werkzeugleiste ließe sich nicht mehr freigeben
+    if (_activityAction && !_window->isModalActive()) {
+        _activityAction->setChecked(true);
+    }
 }
 
 void MainWindowController::onAbout()

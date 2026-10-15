@@ -150,6 +150,12 @@ void MainWindow::stopModal()
     _toolbar->setEnabled(true);
 }
 
+bool MainWindow::isModalActive() const
+{
+    // startModal()/stopModal() sperren bzw. entsperren die Werkzeugleiste
+    return !_toolbar->isEnabled();
+}
+
 void MainWindow::showModalWidget(ModalWrapperWidget *w)
 {
     // ownCloudGui::raise();

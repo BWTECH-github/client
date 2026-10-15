@@ -36,6 +36,8 @@ public:
     QSize minimumSizeHint() const override;
 
     void ensureVisible();
+    /** owncloud.online: ein modales Fenster (Einstellungen, Über, Assistent) liegt über der Ansicht */
+    bool isModalActive() const;
 
     void setVisible(bool visible) override;
 

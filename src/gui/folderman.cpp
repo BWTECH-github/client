@@ -68,7 +68,9 @@ void TrayOverallStatusResult::addResult(Folder *f)
     }
 
     // use status of the folder
-    auto status = f->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal() || NetworkInformation::instance()->isMetered()
+    // owncloud.online: getaktete Verbindungen pausieren nur, wenn die Einstellung es verlangt (wie FolderItem)
+    auto status = f->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal()
+            || (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())
         ? SyncResult::Paused
         : f->syncResult().status();
     // in case the linked account is not connected -> we are offline
@@ -686,15 +688,40 @@ void FolderMan::slotIsConnectedChanged()
 // this is not the same as Pause and Resume of folders.
 void FolderMan::setSyncEnabled(bool enabled)
 {
-    if (enabled) {
+    // eine Nutzerpause aus dem Tray-Menü überstimmt interne Freigaben, sonst endete sie vorzeitig
+    if (enabled && !_userSyncPaused) {
         // We have things in our queue that were waiting for the connection to come back on.
         scheduler()->start();
     } else {
         scheduler()->stop();
     }
-    qCInfo(lcFolderMan) << Q_FUNC_INFO << enabled;
+    qCInfo(lcFolderMan) << Q_FUNC_INFO << enabled << "user paused:" << _userSyncPaused;
     // force a redraw in case the network connect status changed
     Q_EMIT folderSyncStateChange(nullptr);
+}
+
+void FolderMan::setUserSyncPaused(bool paused)
+{
+    if (paused == _userSyncPaused) {
+        return;
+    }
+    _userSyncPaused = paused;
+    if (paused) {
+        // erst den Scheduler anhalten: sonst startet das Ende eines abgebrochenen Laufs gleich den nächsten
+        scheduler()->stop();
+        for (auto *folder : folders()) {
+            if (folder->isSyncRunning()) {
+                // lokale Änderungen des abgebrochenen Laufs nicht vergessen, wie beim Pausieren eines Ordners
+                folder->slotNextSyncFullLocalDiscovery();
+                folder->slotTerminateSync(tr("Sync paused by user"));
+            }
+        }
+        setSyncEnabled(false);
+    } else {
+        // abgebrochene und während der Pause angefallene Läufe nachholen
+        scheduleAllFolders();
+        setSyncEnabled(true);
+    }
 }
 
 void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
@@ -977,8 +1004,11 @@ void FolderMan::forceFolderSync(Folder *f)
     // caller deps on the scheduler
     _scheduler->enqueueFolder(f, SyncScheduler::Priority::High);
 
-    // Restart scheduler
-    _scheduler->start();
+    // Restart scheduler – außer während einer Nutzerpause aus dem Tray-Menü: dann läuft der Ordner als Erster,
+    // sobald die Pause endet
+    if (!_userSyncPaused) {
+        _scheduler->start();
+    }
 }
 
 void FolderMan::deleteFolderSync(Folder *f)
