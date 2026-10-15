@@ -39,6 +39,19 @@ bool isTextBody(const QString &s)
     return regexp.match(s).hasMatch();
 }
 
+// Der OAuth2-Token-Endpunkt bekommt Code, Code-Verifier und Refresh-Token im Formular und
+// antwortet mit Access- und Refresh-Token als JSON: deren Werte nie ins Protokoll schreiben
+QString redactCredentials(QString body)
+{
+    static const QRegularExpression formField(
+        QStringLiteral("((?:^|&)(?:access_token|refresh_token|id_token|code|code_verifier|client_secret|password)=)[^&]*"));
+    static const QRegularExpression jsonField(
+        QStringLiteral("(\"(?:access_token|refresh_token|id_token|code|code_verifier|client_secret|password)\"\\s*:\\s*\")(?:[^\"\\\\]|\\\\.)*\""));
+    body.replace(formField, QStringLiteral("\\1[redacted]"));
+    body.replace(jsonField, QStringLiteral("\\1[redacted]\""));
+    return body;
+}
+
 struct HttpContext
 {
     HttpContext(const QNetworkRequest &request)
@@ -119,7 +132,7 @@ void logHttp(const QByteArray &verb, HttpContext *ctx, QJsonObject &&header, QIO
             {
                 data += QStringLiteral("...(%1 bytes elided)").arg(QString::number(contentLength - PeekSize));
             }
-            body[QStringLiteral("data")] = data;
+            body[QStringLiteral("data")] = redact ? redactCredentials(data) : data;
         } else {
             body[QStringLiteral("data")] = QStringLiteral("%1 bytes of %2 data").arg(QString::number(contentLength), contentType);
         }
