@@ -121,6 +121,11 @@ public:
     void checkForUpdate() override;
 
     QString statusString() const;
+
+    // true, wenn available neuer ist als installed und nicht übersprungen wurde
+    static bool isNewerVersion(const QString &available, const QVersionNumber &installed, const QVersionNumber &skipped);
+    // Nur Release-Downloads aus unserem Repository werden automatisch geladen
+    static bool isTrustedDownloadUrl(const QUrl &url);
     DownloadState downloadState() const;
     void setDownloadState(DownloadState state);
 
@@ -185,6 +190,8 @@ private Q_SLOTS:
 
 private:
     void wipeUpdateData();
+    // Prüft die Signatur des Setups; bei Fehlschlag wird die Datei gelöscht
+    static bool verifyDownloadedSetup(const QString &fileName);
     void showNewVersionAvailableWidget(const UpdateInfo &info);
     void showUpdateErrorDialog(const QString &targetVersion);
     void versionInfoArrived(const UpdateInfo &info) override;

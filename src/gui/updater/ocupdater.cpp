@@ -24,6 +24,7 @@
 
 #include "updatedownloadedwidget.h"
 #include "updater/newversionavailablewidget.h"
+#include "updater/codesignature.h"
 #include "updater/ocupdater.h"
 #include "updater/updater_private.h"
 
@@ -133,6 +134,24 @@ void OCUpdater::backgroundCheckForUpdate()
     }
 }
 
+bool OCUpdater::isNewerVersion(const QString &available, const QVersionNumber &installed, const QVersionNumber &skipped)
+{
+    const auto availableVersion = QVersionNumber::fromString(available);
+    if (available.isEmpty() || availableVersion.isNull()) {
+        return false;
+    }
+    return availableVersion > installed && availableVersion > skipped;
+}
+
+bool OCUpdater::isTrustedDownloadUrl(const QUrl &url)
+{
+    // Weiterleitungen (objects.githubusercontent.com) folgt Qt nur https -> https
+    return url.isValid() && url.scheme() == QLatin1String("https") && url.host() == QLatin1String("github.com")
+        && url.userInfo().isEmpty() && url.port(443) == 443
+        && url.path().startsWith(QLatin1String("/BWTECH-github/client/releases/download/"))
+        && !url.path().contains(QLatin1String("/../")) && url.fileName().endsWith(QLatin1String("-Setup.exe"));
+}
+
 QString OCUpdater::statusString() const
 {
     QString updateVersion = _updateInfo.versionString();
@@ -147,7 +166,7 @@ QString OCUpdater::statusString() const
             return tr("%1 available. Restart application to start the update.").arg(updateVersion);
         }
     case DownloadFailed:
-        return tr("Could not download update. Please click <a href='%1'>here</a> to download the update manually.").arg(_updateInfo.web());
+        return tr("Could not download update. Please click <a href='%1'>here</a> to download the update manually.").arg(_updateInfo.web().toHtmlEscaped());
     case DownloadTimedOut:
         return tr("Could not check for new updates.");
     case UpdateOnlyAvailableThroughSystem:
@@ -155,7 +174,7 @@ QString OCUpdater::statusString() const
         // https://docs.appimage.org/packaging-guide/environment-variables.html
         // TODO: update once AppImageUpdate has been implemented
         if (qEnvironmentVariableIsSet("APPIMAGE")) {
-            return tr("New %1 available. Please click <a href='%2'>here</a> to download the new AppImage manually.").arg(updateVersion, _updateInfo.web());
+            return tr("New %1 available. Please click <a href='%2'>here</a> to download the new AppImage manually.").arg(updateVersion, _updateInfo.web().toHtmlEscaped());
         }
 #endif
         return tr("New %1 available. Please use the system's update tool to install it.").arg(updateVersion);
@@ -319,12 +338,28 @@ void WindowsUpdater::slotDownloadFinished()
         oldTargetFile.remove();
     }
 
-    QFile::copy(_file->fileName(), _targetFile);
+    QFile::remove(_targetFile);
+    if (!QFile::copy(_file->fileName(), _targetFile) || !verifyDownloadedSetup(_targetFile)) {
+        setDownloadState(DownloadFailed);
+        return;
+    }
     setDownloadState(DownloadComplete);
     qCInfo(lcUpdater) << "Downloaded" << url.toString() << "to" << _targetFile;
     settings.setValue(updateTargetVersionC, updateInfo().version());
     settings.setValue(updateTargetVersionStringC, updateInfo().versionString());
     settings.setValue(updateAvailableC, _targetFile);
+}
+
+bool WindowsUpdater::verifyDownloadedSetup(const QString &fileName)
+{
+    QString error;
+    if (CodeSignature::verifyUpdatePackage(fileName, &error)) {
+        return true;
+    }
+    // nie ein Setup starten, das nicht von uns signiert ist
+    qCWarning(lcUpdater) << "Rejecting update package" << fileName << ":" << error;
+    QFile::remove(fileName);
+    return false;
 }
 
 void WindowsUpdater::versionInfoArrived(const UpdateInfo &info)
@@ -343,17 +378,20 @@ void WindowsUpdater::versionInfoArrived(const UpdateInfo &info)
     {
         qCInfo(lcUpdater) << "No version information available at the moment";
         setDownloadState(UpToDate);
-    } else if (infoVersion <= Version::versionWithBuildNumber()
-        || infoVersion <= previouslySkippedVersion) {
+    } else if (!isNewerVersion(info.version(), Version::versionWithBuildNumber(), previouslySkippedVersion)) {
         qCInfo(lcUpdater) << "Client is on latest version!";
         setDownloadState(UpToDate);
     } else {
         const QString url = info.downloadUrl();
-        if (url.isEmpty()) {
+        if (url.isEmpty() || !isTrustedDownloadUrl(QUrl(url))) {
+            if (!url.isEmpty()) {
+                qCWarning(lcUpdater) << "Untrusted download url, offering manual download only:" << url;
+            }
             showNewVersionAvailableWidget(info);
         } else {
-            _targetFile = ConfigFile::configPath() + url.mid(url.lastIndexOf(QLatin1Char('/')) + 1);
-            if (QFile::exists(_targetFile)) {
+            _targetFile = ConfigFile::configPath() + QUrl(url).fileName();
+            // eine bereits vorhandene Datei wird erneut geprüft, nicht blind übernommen
+            if (QFile::exists(_targetFile) && verifyDownloadedSetup(_targetFile)) {
                 setDownloadState(DownloadComplete);
             } else {
                 auto request = QNetworkRequest(QUrl(url));
@@ -482,28 +520,31 @@ void WindowsUpdater::applyUpdateAndRestart()
 
     auto settings = ConfigFile::makeQSettings();
     QString updateFile = settings.value(updateAvailableC).toString();
+    // unmittelbar vor dem Start erneut prüfen (Datei liegt im Profil und könnte getauscht sein)
+    if (!verifyDownloadedSetup(updateFile)) {
+        wipeUpdateData();
+        setDownloadState(DownloadFailed);
+        return;
+    }
     settings.setValue(autoUpdateAttemptedC, true);
     settings.sync();
     qCInfo(lcUpdater) << "Running updater" << updateFile;
 
-    Q_ASSERT(updateFile.endsWith(QLatin1String(".msi")));
-    // When MSIs are installed without gui they cannot launch applications
-    // as they lack the user context. That is why we need to run the client
-    // manually here. We wrap the msiexec and client invocation in a powershell
-    // script because owncloud.exe will be shut down for installation.
-    // | Out-Null forces powershell to wait for msiexec to finish.
+    // Das NSIS-Setup (admin/win/restart-wrapper.nsi) braucht Adminrechte, beendet
+    // den Client selbst und startet ihn im Silent-Modus nicht neu. Darum startet
+    // PowerShell das Setup mit /S (UAC-Abfrage), wartet und startet danach den Client.
     auto preparePathForPowershell = [](QString path) {
         path.replace(QLatin1String("'"), QLatin1String("''"));
 
         return QDir::toNativeSeparators(path);
     };
 
-    QString msiLogFile = ConfigFile::configPath() + QStringLiteral("msi.log");
     const QString command =
-        QStringLiteral("&{msiexec /norestart /passive /i '%1' /L*V '%2'| Out-Null ; &'%3'}")
-            .arg(preparePathForPowershell(updateFile), preparePathForPowershell(msiLogFile), preparePathForPowershell(QCoreApplication::applicationFilePath()));
+        QStringLiteral("&{ try { Start-Process -FilePath '%1' -ArgumentList '/S' -Verb RunAs -Wait } catch {} ; Start-Process -FilePath '%2' }")
+            .arg(preparePathForPowershell(updateFile), preparePathForPowershell(QCoreApplication::applicationFilePath()));
 
-    QProcess::startDetached(QStringLiteral("powershell.exe"), QStringList{QStringLiteral("-Command"), command});
+    QProcess::startDetached(QStringLiteral("powershell.exe"),
+        QStringList{QStringLiteral("-NoProfile"), QStringLiteral("-WindowStyle"), QStringLiteral("Hidden"), QStringLiteral("-Command"), command});
     QTimer::singleShot(0, QApplication::instance(), &QApplication::quit);
 }
 
@@ -542,8 +583,7 @@ void PassiveUpdateNotifier::backgroundCheckForUpdate()
 
 void PassiveUpdateNotifier::versionInfoArrived(const UpdateInfo &info)
 {
-    const auto remoteVer = QVersionNumber::fromString(info.version());
-    if (info.version().isEmpty() || Version::versionWithBuildNumber() >= remoteVer) {
+    if (!isNewerVersion(info.version(), Version::versionWithBuildNumber(), {})) {
         qCInfo(lcUpdater) << "Client is on latest version!";
         setDownloadState(UpToDate);
     } else {

@@ -4,7 +4,8 @@ set( APPLICATION_SHORTNAME  "owncloud.online" )
 set( APPLICATION_EXECUTABLE "owncloud.online" )
 set( APPLICATION_DOMAIN     "owncloud.online" )
 set( APPLICATION_VENDOR     "BW-Tech GmbH" )
-set( APPLICATION_UPDATE_URL "" CACHE STRING "URL for updater" )
+# Basisadresse des Update-Feeds; der Client hängt owncloud.online-update-<plattform>-<kanal>.xml an
+set( APPLICATION_UPDATE_URL "https://github.com/BWTECH-github/client/releases/latest/download/" CACHE STRING "URL for updater" )
 set( APPLICATION_ICON_NAME  "owncloud-online" )
 set( APPLICATION_VIRTUALFILE_SUFFIX "owncloud.online" CACHE STRING "Virtual file suffix (not including the .)")
 

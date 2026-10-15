@@ -8,6 +8,8 @@ if(APPLE)
 endif()
 
 target_sources(owncloudGui PRIVATE
+    codesignature.cpp
+    codesignature.h
     ocupdater.cpp
     ocupdater.h
     newversionavailablewidget.cpp
@@ -21,6 +23,11 @@ target_sources(owncloudGui PRIVATE
     updatedownloadedwidget.h
     updatedownloadedwidget.ui
 )
+
+if(WIN32)
+    # Authenticode-Prüfung heruntergeladener Updates
+    target_link_libraries(owncloudGui PRIVATE wintrust crypt32)
+endif()
 
 if(SPARKLE_FOUND)
     # Define this, we need to check in updater.cpp

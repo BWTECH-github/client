@@ -81,6 +81,18 @@ neue Dateien dort mit `git add -f` aufnehmen.
 
 ## Was der Client nach dem Merge (Zweig `merge-upstream-7.2`) noch braucht
 
+**Stand Zweig `feature-update`:** Punkte 1, 2, 3, 4 und 6 sind umgesetzt –
+Basisadresse in `OWNCLOUD.cmake` (`APPLICATION_UPDATE_URL`), der Client hängt
+`owncloud.online-update-<plattform>-<kanal>.xml` an (`Updater::feedUrl`);
+`WITH_AUTO_UPDATER` standardmäßig an; Windows startet das NSIS-Setup mit `/S`
+(UAC) und danach den Client neu; das Setup wird nach dem Download, bei
+vorhandener Datei und direkt vor dem Start per `WinVerifyTrust` geprüft, der
+Signierer muss „BW-TECH GmbH“ enthalten (`src/gui/updater/codesignature.cpp`),
+sonst wird es gelöscht; automatisch geladen wird nur
+`https://github.com/BWTECH-github/client/releases/download/…-Setup.exe`, andere
+Adressen führen nur zum Hinweis mit Link; `<web>` wird HTML-geschützt.
+Tests: `test/testupdater.cpp`. Offen bleiben 5 (im fertigen Bau prüfen), 7, 8.
+
 Zeilen beziehen sich auf `origin/merge-upstream-7.2` (Stand 97eaca3db). Ohne
 diese Änderungen bleibt der Feed wirkungslos oder ist auf Windows schädlich.
 

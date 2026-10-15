@@ -92,7 +92,7 @@ option(NO_MSG_HANDLER "Don't redirect QDebug outputs to the log window/file" OFF
 option(BUILD_SHELL_INTEGRATION "BUILD_SHELL_INTEGRATION" ON)
 
 # build the auto updater component
-option(WITH_AUTO_UPDATER "WITH_AUTO_UPDATER" OFF)
+option(WITH_AUTO_UPDATER "WITH_AUTO_UPDATER" ON)
 
 # build with -DQT_FORCE_ASSERTS
 option(FORCE_ASSERTS "FORCE_ASSERTS" OFF)
