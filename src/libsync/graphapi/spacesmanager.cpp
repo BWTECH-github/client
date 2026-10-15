@@ -22,6 +22,8 @@
 
 #include <QTimer>
 
+#include <utility>
+
 #include <chrono>
 
 using namespace std::chrono_literals;
@@ -39,6 +41,11 @@ SpacesManager::SpacesManager(Account *parent)
     , _refreshTimer(new QTimer(this))
 {
     connect(_account, &Account::credentialsFetched, this, &SpacesManager::refresh);
+    connect(_account, &Account::capabilitiesChanged, this, [this] {
+        if (std::exchange(_refreshWhenCapabilitiesKnown, false)) {
+            refresh();
+        }
+    });
 
     _refreshTimer->setInterval(refreshTimeoutC);
     // the timer will be restarted once we received drives data
@@ -55,7 +62,13 @@ void SpacesManager::refresh()
         return;
     }
 
-    if (_account->hasCapabilities() && !_account->capabilities().spacesSupport().enabled) {
+    // Ob der Server Spaces kann, steht erst in den Capabilities. oC10-Server kennen
+    // graph/v1.0/me/drives nicht, also vorher nicht fragen.
+    if (!_account->hasCapabilities()) {
+        _refreshWhenCapabilitiesKnown = true;
+        return;
+    }
+    if (!_account->capabilities().spacesSupport().enabled) {
         if (!_ready) {
             _ready = true;
             Q_EMIT ready();

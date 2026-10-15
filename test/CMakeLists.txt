@@ -74,6 +74,7 @@ target_include_directories(CmdOAuthTest PRIVATE "${CMAKE_SOURCE_DIR}/src/cmd")
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
 
 owncloud_add_test(JobQueue)
+owncloud_add_test(SpacesManager)
 
 add_subdirectory(modeltests)
 

@@ -354,6 +354,7 @@ void Account::setCapabilities(const Capabilities &caps)
     if (versionChanged) {
         Q_EMIT serverVersionChanged(this);
     }
+    Q_EMIT capabilitiesChanged();
 }
 
 Account::ServerSupportLevel Account::supportLevelForCapabilities(const Capabilities &caps)
