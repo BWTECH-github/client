@@ -92,9 +92,15 @@ QJsonObject shareesData()
         {QStringLiteral("remotes"), QJsonArray{shareeJson(QStringLiteral("al@other.example"), 6, QStringLiteral("al@other.example"))}}};
 }
 
+// nur hineinschauen: der HTTP-Logger liest den Körper danach selbst ab Position 0
+QByteArray peekBody(QIODevice *outgoingData)
+{
+    return outgoingData ? outgoingData->peek(outgoingData->size()) : QByteArray();
+}
+
 QUrlQuery bodyQuery(QIODevice *outgoingData)
 {
-    return outgoingData ? QUrlQuery(QString::fromUtf8(outgoingData->readAll())) : QUrlQuery();
+    return QUrlQuery(QString::fromUtf8(peekBody(outgoingData)));
 }
 
 QString queryValue(const QUrlQuery &query, const QString &key)
@@ -528,7 +534,7 @@ private Q_SLOTS:
             // nur die eigene Abfrage beantworten, nicht etwa eine Verbindungsprüfung des Kontos
             if (HttpLogger::requestVerb(op, request) != "PROPFIND" || !request.url().path().endsWith(QLatin1String("/Docs/item")))
                 return nullptr;
-            requestBody = outgoingData ? outgoingData->readAll() : QByteArray();
+            requestBody = peekBody(outgoingData);
             const QString permissionsProp =
                 sharePermissions.isEmpty() ? QString() : QStringLiteral("<ocs:share-permissions>%1</ocs:share-permissions>").arg(sharePermissions);
             const QString xml = QStringLiteral(
