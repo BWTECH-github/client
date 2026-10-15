@@ -24,7 +24,6 @@
 #include <QTest>
 #include <QUrlQuery>
 
-#include <algorithm>
 #include <memory>
 
 using namespace OCC;
@@ -64,6 +63,10 @@ QJsonObject readTokenFile(const QString &path)
     }
     return QJsonDocument::fromJson(file.readAll()).object();
 }
+
+// Antworten für einen Access-Manager, der sie wie bei Qt besitzt: Was beim Abbau des Kontos noch offen ist
+// (etwa die Drives-Anfrage des SpacesManagers), geht mit ihm, statt später finished() an den gelöschten Manager zu melden
+using OverrideFactory = std::function<FakeAM::Override(QObject *replyParent)>;
 
 // Server mit oauth2-App: nimmt nur ein Access-Token an und beantwortet den Token-Endpunkt
 class FakeOAuthServer
@@ -116,27 +119,32 @@ public:
             return new FakeErrorReply(op, request, replyParent, 404);
         };
     }
+
+    OverrideFactory overrides()
+    {
+        return [this](QObject *replyParent) { return override(replyParent); };
+    }
 };
 
 // Credentials, deren Access-Manager der Testserver beantwortet
 class TestOAuthCredentials : public HttpOAuthCredentials
 {
 public:
-    TestOAuthCredentials(Account *account, const std::shared_ptr<OAuthTokenFile> &tokens, const FakeAM::Override &override)
+    TestOAuthCredentials(Account *account, const std::shared_ptr<OAuthTokenFile> &tokens, const OverrideFactory &overrides)
         : HttpOAuthCredentials(account, tokens)
-        , _override(override)
+        , _overrides(overrides)
     {
     }
 
     OCC::AccessManager *createAccessManager() const override
     {
         auto *accessManager = new BearerAccessManager<FakeAM>(this, const_cast<TestOAuthCredentials *>(this));
-        accessManager->setOverride(_override);
+        accessManager->setOverride(_overrides(accessManager));
         return accessManager;
     }
 
 private:
-    FakeAM::Override _override;
+    OverrideFactory _overrides;
 };
 
 } // namespace
@@ -184,9 +192,11 @@ private Q_SLOTS:
         QVERIFY(tokens);
 
         QList<QNetworkRequest> seen;
-        FakeAM::Override record = [&seen, this](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
-            seen.append(request);
-            return new FakePayloadReply(op, request, QByteArrayLiteral("{}"), this);
+        const OverrideFactory record = [&seen](QObject *replyParent) -> FakeAM::Override {
+            return [&seen, replyParent](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+                seen.append(request);
+                return new FakePayloadReply(op, request, QByteArrayLiteral("{}"), replyParent);
+            };
         };
         auto account = std::make_unique<Account>(QUuid::createUuid(), QStringLiteral("admin"), serverUrlC);
         account->setCredentials(new TestOAuthCredentials(account.get(), tokens, record));
@@ -196,13 +206,9 @@ private Q_SLOTS:
         QNetworkRequest otherPort(QUrl(QStringLiteral("http://localhost:8080/owncloud/")));
         QNetworkRequest withoutCredentials(own);
         withoutCredentials.setAttribute(DontAddCredentialsAttribute, true);
-        QList<QNetworkReply *> replies;
         for (const auto &request : {own, otherHost, otherPort, withoutCredentials}) {
-            replies.append(account->accessManager()->get(request));
+            account->accessManager()->get(request);
         }
-        // Die Antworten gehören dem Test, der Access-Manager aber dem Konto: erst nach ihrem Abschluss
-        // aufräumen, sonst ruft Qt beim späten finished() den schon gelöschten Access-Manager auf
-        QTRY_VERIFY(std::all_of(replies.cbegin(), replies.cend(), [](const QNetworkReply *reply) { return reply->isFinished(); }));
 
         QCOMPARE(seen.size(), 4);
         QCOMPARE(seen.at(0).rawHeader(QByteArrayLiteral("Authorization")), QByteArrayLiteral("Bearer access-1"));
@@ -220,7 +226,7 @@ private Q_SLOTS:
 
         FakeOAuthServer server;
         auto account = std::make_unique<Account>(QUuid::createUuid(), QStringLiteral("admin"), serverUrlC);
-        auto *credentials = new TestOAuthCredentials(account.get(), tokens, server.override(this));
+        auto *credentials = new TestOAuthCredentials(account.get(), tokens, server.overrides());
         account->setCredentials(credentials);
         QSignalSpy failedSpy(credentials, &AbstractCredentials::authenticationFailed);
 
@@ -268,7 +274,7 @@ private Q_SLOTS:
 
         FakeOAuthServer server;
         auto account = std::make_unique<Account>(QUuid::createUuid(), QStringLiteral("admin"), serverUrlC);
-        auto *credentials = new TestOAuthCredentials(account.get(), tokens, server.override(this));
+        auto *credentials = new TestOAuthCredentials(account.get(), tokens, server.overrides());
         account->setCredentials(credentials);
         QSignalSpy fetchedSpy(credentials, &AbstractCredentials::fetched);
         QSignalSpy failedSpy(credentials, &AbstractCredentials::authenticationFailed);
@@ -297,8 +303,8 @@ private Q_SLOTS:
 
         HttpOAuthCredentials *credentials = nullptr;
         CmdSession session(serverUrlC, QStringLiteral("admin"), dir.path() + QStringLiteral("/local/"), QStringLiteral("/"),
-            [&credentials, &server, &tokens, this](Account *account) -> AbstractCredentials * {
-                credentials = new TestOAuthCredentials(account, tokens, server.override(this));
+            [&credentials, &server, &tokens](Account *account) -> AbstractCredentials * {
+                credentials = new TestOAuthCredentials(account, tokens, server.overrides());
                 return credentials;
             });
         QSignalSpy finishedSpy(&session, &CmdSession::finished);
@@ -328,8 +334,8 @@ private Q_SLOTS:
 
         HttpOAuthCredentials *credentials = nullptr;
         CmdSession session(serverUrlC, QStringLiteral("admin"), dir.path() + QStringLiteral("/local/"), QStringLiteral("/"),
-            [&credentials, &server, &tokens, this](Account *account) -> AbstractCredentials * {
-                credentials = new TestOAuthCredentials(account, tokens, server.override(this));
+            [&credentials, &server, &tokens](Account *account) -> AbstractCredentials * {
+                credentials = new TestOAuthCredentials(account, tokens, server.overrides());
                 return credentials;
             });
         QSignalSpy finishedSpy(&session, &CmdSession::finished);
