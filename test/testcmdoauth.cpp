@@ -93,7 +93,8 @@ public:
             if (path.endsWith(QLatin1String("/index.php/apps/oauth2/api/v1/token"))) {
                 ++tokenRequests;
                 tokenAuthorization = request.rawHeader(QByteArrayLiteral("Authorization"));
-                tokenForm = QUrlQuery(QString::fromUtf8(device ? device->readAll() : QByteArray()));
+                // nur ansehen: der HTTP-Logger liest den Körper beim Abschluss noch ab Position 0
+                tokenForm = QUrlQuery(QString::fromUtf8(device ? device->peek(device->size()) : QByteArray()));
                 if (tokenStatus == 200) {
                     return new FakePayloadReply(op, request, toJson(tokenAnswer), replyParent);
                 }
