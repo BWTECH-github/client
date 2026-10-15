@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to create (e.g. v7.5.0)'
+        description: 'Release tag to create (e.g. v7.5.0; a tag with a hyphen such as v11.0.0-beta1 becomes a pre-release)'
         required: true
         default: 'v7.5.0'
       run_id:
@@ -64,8 +64,28 @@ jobs:
           set -euo pipefail
           TAG="${{ inputs.tag }}"
           VER="${TAG#v}"
+          # Tag auf genau den Commit setzen, aus dem die Pakete gebaut wurden,
+          # nicht pauschal auf master: eine Beta aus release/* oder ein
+          # inzwischen weitergelaufener master zeigte sonst auf anderen Code
+          TARGET="$(gh run view "${{ inputs.run_id }}" -R "$GITHUB_REPOSITORY" --json headSha -q .headSha)"
+          test -n "$TARGET" || { echo "::error::Commit des CI-Laufs ${{ inputs.run_id }} nicht ermittelbar"; exit 1; }
+          # Tags mit Bindestrich (z. B. v11.0.0-beta1) sind Vorabversionen und
+          # werden als Pre-release angelegt. So bleibt releases/latest beim
+          # letzten stabilen Release; sonst würde die Beta "Latest" und der
+          # stable-Feed der installierten Clients
+          # (releases/latest/download/...-stable.xml) liefert 404.
+          PRERELEASE=()
+          BETA_KOPF=""
+          BETA_FUSS=""
+          case "$VER" in
+            *-*)
+              PRERELEASE=(--prerelease)
+              BETA_KOPF=$'> **Beta – nicht für den Produktivbetrieb.**\n\n'
+              BETA_FUSS=$'\n**Bekannte Einschränkung**\n- Deinstallations-Helfer: ein kleiner Rest (Helfer-Ordner) wird beim nächsten Neustart entfernt; stille Deinstallation meldet 3010.\n'
+              ;;
+          esac
           cat > notes.md <<EOF
-          Release ${VER} des owncloud.online Desktop-Clients.
+          ${BETA_KOPF}Release ${VER} des owncloud.online Desktop-Clients.
 
           **Pakete**
           - \`owncloud.online-client-${VER}-win-x64-Setup.exe\` — **Windows-Installer**: beendet einen laufenden owncloud.online-Client, installiert, richtet die Explorer-Integration ein und bietet den dafür nötigen Windows-Neustart an. Still (\`/S\`, z. B. baramundi/Intune): startet Windows **nicht** mehr selbst neu – Exit-Code 3010 bedeutet „installiert, Neustart ausstehend“, 0 „nichts ausstehend“; \`/S /forcerestart\` (neu, optional) startet sofort neu; \`/S /norestart\` wird weiterhin angenommen und verhält sich wie \`/S\`. Ein in \`C:\\Program Files\\ownCloud\` installierter offizieller ownCloud-Client wird nicht mehr angefasst.
@@ -75,9 +95,11 @@ jobs:
           - \`SHA256SUMS.txt\` — Prüfsummen aller Pakete
 
           Änderungsdetails: siehe \`changelog/\` im Repository. macOS: FileProvider-VFS in Arbeit; der Client synchronisiert dort im klassischen Modus (Selective Sync verfügbar).
+          ${BETA_FUSS}
           EOF
           gh release create "$TAG" -R "$GITHUB_REPOSITORY" \
-            --target master \
+            --target "$TARGET" \
+            "${PRERELEASE[@]}" \
             --title "owncloud.online Client ${VER}" \
             --notes-file notes.md \
             assets/*
