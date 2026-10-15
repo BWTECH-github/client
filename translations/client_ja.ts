@@ -1558,7 +1558,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="96"/>
         <source>About...</source>
-        <translation>ownCloudについて...</translation>
+        <translation>バージョン情報...</translation>
     </message>
     <message>
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="103"/>
