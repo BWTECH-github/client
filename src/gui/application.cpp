@@ -195,6 +195,15 @@ void Application::buildAppGuis()
     connect(_colorManager, &ColorManager::appColorsChanged, _trayController, &TrayMenuController::updateTrayIcon);
     connect(_trayController, &TrayMenuController::requestShowAbout, _mainController, &MainWindowController::onAbout);
     connect(_trayController, &TrayMenuController::requestShowHelp, _mainController, &MainWindowController::onHelp);
+    connect(_trayController, &TrayMenuController::requestShowSettings, _mainController, &MainWindowController::showSettings);
+    connect(_trayController, &TrayMenuController::requestShowActivity, _mainController, &MainWindowController::showActivity);
+    connect(_trayController, &TrayMenuController::requestAddAccount, _accountsGuiController, [this] {
+        ensureVisible();
+        // der Assistent läuft womöglich schon (erster Start): keinen zweiten darüberlegen
+        if (_mainWin && !_mainWin->isModalActive()) {
+            _accountsGuiController->runAccountWizard();
+        }
+    });
 
     // owncloud.online: nativer Teilen-Dialog bzw. Teilen-Ansicht im Browser für oC10-Server
     connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _trayController, &TrayMenuController::slotShowShareDialog);

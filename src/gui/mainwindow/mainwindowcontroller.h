@@ -14,9 +14,9 @@
 
 #pragma once
 
+#include <QAction>
 #include <QObject>
-
-class QAction;
+#include <QPointer>
 
 namespace OCC {
 
@@ -35,6 +35,9 @@ public:
     // called from tray menu, too. make this a signal/slot connection between the tray menu controller and main window controller
     void onAbout();
     void onHelp();
+    // owncloud.online: aus dem Tray-Menü – Hauptfenster zeigen und Einstellungen bzw. Aktivität öffnen
+    void showSettings();
+    void showActivity();
 
 signals:
     void requestAccountWizard();
@@ -54,5 +57,6 @@ private:
 
     MainWindow *_window = nullptr;
     ColorManager *_colorManager = nullptr;
+    QPointer<QAction> _activityAction;
 };
 }

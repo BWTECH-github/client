@@ -276,6 +276,14 @@ public:
      */
     void setSyncEnabled(bool);
 
+    /**
+     * owncloud.online: vom Nutzer über das Tray-Menü angehaltene Synchronisation. Bricht laufende
+     * Synchronisationen ab und hält den Scheduler an, bis die Pause aufgehoben wird; interne Freigaben über
+     * setSyncEnabled(true) (Ordner hinzufügen, Einstellungen ändern) beenden sie nicht.
+     */
+    void setUserSyncPaused(bool paused);
+    bool isUserSyncPaused() const { return _userSyncPaused; }
+
     SyncScheduler *scheduler() { return _scheduler; }
 
     void setDirtyProxy();
@@ -490,6 +498,7 @@ private:
 
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;
+    bool _userSyncPaused = false;
     bool _moveToTrash = false;
 
     /// Folder aliases from the settings that weren't read

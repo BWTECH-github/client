@@ -1,1 +1,2 @@
 owncloud_add_test(ProtocolModel)
+owncloud_add_test(TrayActivityModels)

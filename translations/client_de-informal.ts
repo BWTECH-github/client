@@ -1339,6 +1339,10 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>Unter macOS wird nur das Apple File System unterstützt.</translation>
     </message>
+    <message>
+        <source>Sync paused by user</source>
+        <translation>Synchronisation vom Benutzer pausiert</translation>
+    </message>
 </context>
 <context>
     <name>OCC::FolderModelController</name>
@@ -3277,6 +3281,29 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
 </context>
 <context>
+    <name>OCC::ServerActivityFetcher</name>
+    <message>
+        <source>The notification could not be dismissed because the server is not reachable.</source>
+        <translation>Die Benachrichtigung konnte nicht verworfen werden, weil der Server nicht erreichbar ist.</translation>
+    </message>
+    <message>
+        <source>The notification could not be dismissed.</source>
+        <translation>Die Benachrichtigung konnte nicht verworfen werden.</translation>
+    </message>
+    <message>
+        <source>The action could not be carried out because the server is not reachable.</source>
+        <translation>Die Aktion konnte nicht ausgeführt werden, weil der Server nicht erreichbar ist.</translation>
+    </message>
+    <message>
+        <source>The action points to another server and was not carried out.</source>
+        <translation>Die Aktion verweist auf einen anderen Server und wurde nicht ausgeführt.</translation>
+    </message>
+    <message>
+        <source>The action could not be carried out.</source>
+        <translation>Die Aktion konnte nicht ausgeführt werden.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::TrayMenuController</name>
     <message>
         <location filename="../src/gui/traymenucontroller.cpp" line="122"/>
@@ -3313,10 +3340,6 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Synchronisation pausieren</translation>
     </message>
     <message>
-        <source>For 30 minutes</source>
-        <translation>Für 30 Minuten</translation>
-    </message>
-    <message>
         <source>For 1 hour</source>
         <translation>Für 1 Stunde</translation>
     </message>
@@ -3346,11 +3369,11 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <source>Up to date</source>
-        <translation>Aktuell</translation>
+        <translation>Synchronisiert</translation>
     </message>
     <message>
         <source>Up to date, some files were ignored</source>
-        <translation>Aktuell, einige Dateien wurden ignoriert</translation>
+        <translation>Synchronisiert, einige Dateien wurden ignoriert</translation>
     </message>
     <message>
         <source>Error</source>
@@ -3363,6 +3386,162 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <source>Unavailable</source>
         <translation>Nicht verfügbar</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n new notification(s)</source>
+        <translation><numerusform>%n neue Benachrichtigung</numerusform><numerusform>%n neue Benachrichtigungen</numerusform></translation>
+    </message>
+    <message>
+        <source>For %1. You find them in the menu of the tray icon.</source>
+        <translation>Für %1. Du findest sie im Menü des Programmsymbols.</translation>
+    </message>
+    <message>
+        <source>Add account…</source>
+        <translation>Konto hinzufügen…</translation>
+    </message>
+    <message>
+        <source>Settings…</source>
+        <translation>Einstellungen…</translation>
+    </message>
+    <message>
+        <source>Open in browser</source>
+        <translation>Im Browser öffnen</translation>
+    </message>
+    <message>
+        <source>Log in…</source>
+        <translation>Anmelden…</translation>
+    </message>
+    <message>
+        <source>Log out</source>
+        <translation>Abmelden</translation>
+    </message>
+    <message>
+        <source>Recently changed</source>
+        <translation>Zuletzt geändert</translation>
+    </message>
+    <message>
+        <source>No files synchronized recently</source>
+        <translation>In letzter Zeit keine Dateien synchronisiert</translation>
+    </message>
+    <message>
+        <source>On the server</source>
+        <translation>Auf dem Server</translation>
+    </message>
+    <message>
+        <source>Show all activity…</source>
+        <translation>Alle Aktivitäten anzeigen…</translation>
+    </message>
+    <message>
+        <source>Notifications (%1)</source>
+        <translation>Benachrichtigungen (%1)</translation>
+    </message>
+    <message>
+        <source>Dismiss</source>
+        <translation>Verwerfen</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n more on the server</source>
+        <translation><numerusform>%n weitere auf dem Server</numerusform><numerusform>%n weitere auf dem Server</numerusform></translation>
+    </message>
+    <message>
+        <source>For 2 hours</source>
+        <translation>Für 2 Stunden</translation>
+    </message>
+    <message>
+        <source>For 4 hours</source>
+        <translation>Für 4 Stunden</translation>
+    </message>
+    <message>
+        <source>Until tomorrow</source>
+        <translation>Bis morgen</translation>
+    </message>
+    <message>
+        <source>No account configured</source>
+        <translation>Kein Konto eingerichtet</translation>
+    </message>
+    <message>
+        <source>Synchronization paused until %1</source>
+        <translation>Synchronisation pausiert bis %1</translation>
+    </message>
+    <message>
+        <source>Synchronization paused</source>
+        <translation>Synchronisation pausiert</translation>
+    </message>
+    <message>
+        <source>Signed out</source>
+        <translation>Abgemeldet</translation>
+    </message>
+    <message>
+        <source>Disconnected</source>
+        <translation>Nicht verbunden</translation>
+    </message>
+    <message>
+        <source>Disconnected from some accounts</source>
+        <translation>Einige Konten sind nicht verbunden</translation>
+    </message>
+    <message>
+        <source>No sync folders configured</source>
+        <translation>Keine Ordner zur Synchronisation eingerichtet</translation>
+    </message>
+    <message numerus="yes">
+        <source>%n unresolved conflict(s)</source>
+        <translation><numerusform>%n ungelöster Konflikt</numerusform><numerusform>%n ungelöste Konflikte</numerusform></translation>
+    </message>
+    <message>
+        <source>Up to date (%1)</source>
+        <translation>Synchronisiert (%1)</translation>
+    </message>
+    <message>
+        <source>Connected</source>
+        <translation>Verbunden</translation>
+    </message>
+    <message>
+        <source>Server temporarily unavailable</source>
+        <translation>Server vorübergehend nicht erreichbar</translation>
+    </message>
+    <message>
+        <source>Server in maintenance mode</source>
+        <translation>Server im Wartungsmodus</translation>
+    </message>
+    <message>
+        <source>Network error</source>
+        <translation>Netzwerkfehler</translation>
+    </message>
+    <message>
+        <source>Server configuration error</source>
+        <translation>Fehler in der Serverkonfiguration</translation>
+    </message>
+    <message>
+        <source>Waiting for sign-in</source>
+        <translation>Wartet auf Anmeldung</translation>
+    </message>
+    <message>
+        <source>Connecting…</source>
+        <translation>Verbindung wird hergestellt…</translation>
+    </message>
+    <message>
+        <source>Waiting to sync</source>
+        <translation>Wartet auf Synchronisation</translation>
+    </message>
+    <message>
+        <source>Open folder &quot;%1&quot; (%2)</source>
+        <translation>Ordner „%1“ öffnen (%2)</translation>
+    </message>
+    <message>
+        <source>Unresolved conflicts</source>
+        <translation>Ungelöste Konflikte</translation>
+    </message>
+    <message>
+        <source>Checking for changes</source>
+        <translation>Suche nach Änderungen</translation>
+    </message>
+    <message>
+        <source>Syncing %1 of %2 (%3 left)</source>
+        <translation>Synchronisiere %1 von %2 (noch %3)</translation>
+    </message>
+    <message>
+        <source>Syncing %1 of %2</source>
+        <translation>Synchronisiere %1 von %2</translation>
     </message>
 </context>
 <context>
