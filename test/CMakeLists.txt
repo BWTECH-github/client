@@ -67,6 +67,10 @@ owncloud_add_test(FolderMan)
 
 owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp)
 
+# owncloudcmd mit OAuth2-Token-Datei: Bearer, Erneuern nach 401 und bei Ablauf, Exit-Codes
+owncloud_add_test(CmdOAuth ../src/cmd/cmdsession.cpp ../src/cmd/httpoauthcredentials.cpp ../src/cmd/oauthtokenfile.cpp)
+target_include_directories(CmdOAuthTest PRIVATE "${CMAKE_SOURCE_DIR}/src/cmd")
+
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
 
 owncloud_add_test(JobQueue)
