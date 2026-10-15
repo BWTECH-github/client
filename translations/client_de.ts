@@ -1560,6 +1560,69 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     </message>
 </context>
 <context>
+    <name>OCC::HttpOAuthCredentials</name>
+    <message>
+        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
+        <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
+        <translation>Das Zugriffstoken ist abgelaufen und die Token-Datei enthält kein Aktualisierungstoken. Melden Sie sich erneut an, um eine neue Token-Datei zu erstellen.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>owncloudcmd cannot sign in interactively. Sign in again to create a new token file.</source>
+        <translation>owncloudcmd kann sich nicht interaktiv anmelden. Melden Sie sich erneut an, um eine neue Token-Datei zu erstellen.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
+        <translation>Der Server hat das gerade ausgestellte Zugriffstoken abgelehnt (HTTP 401). Prüfen Sie, ob der Webserver den Authorization-Header an owncloud.online weitergibt.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The server rejected the access token (HTTP 401) and the token file has no refresh token. Sign in again to create a new token file.</source>
+        <translation>Der Server hat das Zugriffstoken abgelehnt (HTTP 401) und die Token-Datei enthält kein Aktualisierungstoken. Melden Sie sich erneut an, um eine neue Token-Datei zu erstellen.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>The token file %1 is locked by another owncloudcmd run.</source>
+        <translation>Die Token-Datei %1 ist durch einen anderen owncloudcmd-Lauf gesperrt.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Could not read the token file again: %1</source>
+        <translation>Die Token-Datei konnte nicht erneut gelesen werden: %1</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>Cannot refresh the access token without an account.</source>
+        <translation>Ohne Konto lässt sich das Zugriffstoken nicht erneuern.</translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
+        <translation>Der Server nimmt das Aktualisierungstoken nicht mehr an (%1). Die Anmeldung ist abgelaufen oder wurde widerrufen; melden Sie sich erneut an, um eine neue Token-Datei zu erstellen.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The server refused to refresh the access token (%1).</source>
+        <translation>Der Server hat das Erneuern des Zugriffstokens abgelehnt (%1).</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Refreshing the access token failed: %1 (HTTP %2).</source>
+        <translation>Das Erneuern des Zugriffstokens ist fehlgeschlagen: %1 (HTTP %2).</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The token endpoint answered without a usable access token (HTTP %1).</source>
+        <translation>Der Token-Endpunkt hat ohne verwendbares Zugriffstoken geantwortet (HTTP %1).</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Could not store the refreshed tokens in %1: %2</source>
+        <translation>Die erneuerten Tokens konnten nicht in %1 gespeichert werden: %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::IgnoreListEditor</name>
     <message>
         <location filename="../src/gui/ignorelisteditor.ui" line="+14"/>
@@ -2186,7 +2249,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::OCUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+150"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+248"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
         <translation>Aktualisierung kann nicht heruntergeladen werden. Bitte klicken Sie &lt;a href=&apos;%1&apos;&gt;hier&lt;/a&gt;, um die Aktualisierung manuell herunterzuladen.</translation>
     </message>
@@ -4128,7 +4191,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::UpdaterScheduler</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="-117"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="-214"/>
         <source>Update available</source>
         <translation>Update verfügbar</translation>
     </message>
@@ -4300,7 +4363,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+324"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+435"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Eine neue Version des %1 Clients ist verfügbar.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; steht zum Herunterladen bereit. Die installierte Version ist %3.&lt;/p&gt;</translation>
     </message>

@@ -12,6 +12,13 @@ on:
         description: 'Windows-Pakete mit dem DigiCert-Zertifikat signieren (nur fuer Release-Baeume)'
         type: boolean
         default: false
+      channel:
+        description: 'Kanal: beta baut mit FORCE_ASSERTS, stable ohne'
+        type: choice
+        options:
+          - beta
+          - stable
+        default: beta
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
@@ -111,6 +118,12 @@ jobs:
       # Windows-Code-Signierung nur, wenn die DigiCert-Zugangsdaten hinterlegt sind
       # (Repository-Secrets und -Variable, siehe admin/win/CODESIGNING.md).
       HAS_SIGNING: ${{ secrets.SM_API_KEY != '' && secrets.SM_CLIENT_CERT_FILE_B64 != '' && secrets.SM_CLIENT_CERT_PASSWORD != '' && vars.SM_HOST != '' }}
+      # beta (Vorgabe, auch für push und pull_request) mit FORCE_ASSERTS, stable ohne
+      BUILD_CHANNEL: ${{ inputs.channel || 'beta' }}
+      # Linux-Crash-Reporter nur mit Empfänger (Repository-Variable CRASHREPORTER_SUBMIT_URL):
+      # ohne Adresse gingen Absturzberichte ins Leere (CMakeLists.txt bricht dann ab)
+      CRASHREPORTER_SUBMIT_URL: ${{ vars.CRASHREPORTER_SUBMIT_URL }}
+      ENABLE_CRASHREPORTER: ${{ vars.CRASHREPORTER_SUBMIT_URL != '' }}
 
     container: ${{ matrix.container }}
 
@@ -151,7 +164,16 @@ jobs:
     - name: Prepare
       run: |
         New-Item -ItemType Directory "${env:GITHUB_WORKSPACE}/binaries/"
-        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set forceAsserts=true owncloud/owncloud-client
+        $forceAsserts = if ($env:BUILD_CHANNEL -eq 'stable') { 'false' } else { 'true' }
+        Write-Host "Kanal $env:BUILD_CHANNEL, forceAsserts=$forceAsserts"
+        & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set forceAsserts=$forceAsserts owncloud/owncloud-client
+        if ("${{ matrix.target }}" -eq "linux-64-gcc") {
+            if ($env:ENABLE_CRASHREPORTER -eq 'true') {
+                & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set args="-DCRASHREPORTER_SUBMIT_URL=$env:CRASHREPORTER_SUBMIT_URL" owncloud/owncloud-client
+            } else {
+                Write-Host "::notice::Linux-Crash-Reporter aus: Repository-Variable CRASHREPORTER_SUBMIT_URL ist leer"
+            }
+        }
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set srcDir="${env:GITHUB_WORKSPACE}" owncloud/owncloud-client
         if ($IsWindows) {
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c dev-utils/nsis
@@ -164,7 +186,7 @@ jobs:
           if ("${{ matrix.target }}" -eq "linux-64-gcc" ) {
               # build with appimage updater and others
               & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAppImageUpdater=true owncloud-client
-              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=true owncloud/owncloud-client
+              & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=$env:ENABLE_CRASHREPORTER owncloud/owncloud-client
               & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAutoUpdater=true owncloud/owncloud-client
           }
           & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --install-deps owncloud/owncloud-client
@@ -203,7 +225,7 @@ jobs:
         if ("${{ matrix.target }}" -eq "linux-64-gcc" ) {
             # build with appimage updater and others
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAppImageUpdater=true owncloud-client
-            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=true owncloud/owncloud-client
+            & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableCrashReporter=$env:ENABLE_CRASHREPORTER owncloud/owncloud-client
             & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --set enableAutoUpdater=true owncloud/owncloud-client
         }
         & "${env:GITHUB_WORKSPACE}/.github/workflows/.craft.ps1" -c --no-cache owncloud/owncloud-client

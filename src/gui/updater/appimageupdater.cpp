@@ -124,17 +124,16 @@ AppImageUpdater::AppImageUpdater(const QUrl &url)
 
 void AppImageUpdater::versionInfoArrived(const UpdateInfo &info)
 {
-    const auto &currentVersion = Version::versionWithBuildNumber();
-    const auto newVersion = QVersionNumber::fromString(info.version());
+    const QString newVersion = info.version();
 
-    if (info.version().isEmpty() || currentVersion >= newVersion) {
+    if (!isNewerVersion(newVersion, installedVersion(), {})) {
         qCInfo(lcUpdater) << "Client is on latest version!";
         setDownloadState(UpToDate);
         return;
     }
 
-    const auto previouslySkippedVersion = this->previouslySkippedVersion();
-    if (previouslySkippedVersion >= newVersion) {
+    const QString previouslySkippedVersion = this->previouslySkippedVersion();
+    if (!isNewerVersion(newVersion, installedVersion(), previouslySkippedVersion)) {
         qCInfo(lcUpdater) << "Update" << previouslySkippedVersion << "was skipped previously by user";
         setDownloadState(UpToDate);
         return;
@@ -153,7 +152,7 @@ void AppImageUpdater::versionInfoArrived(const UpdateInfo &info)
         return;
     }
 
-    auto widget = new AppImageUpdateAvailableWidget(currentVersion, newVersion, ocApp()->mainWindow());
+    auto widget = new AppImageUpdateAvailableWidget(Version::displayString(), newVersion, ocApp()->mainWindow());
 
     connect(widget, &AppImageUpdateAvailableWidget::skipUpdateButtonClicked, this, [newVersion]() {
         qCInfo(lcUpdater) << "Update" << newVersion << "skipped by user";

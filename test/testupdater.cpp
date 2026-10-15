@@ -6,6 +6,7 @@
 
 #include <QtTest>
 
+#include "common/version.h"
 #include "theme.h"
 #include "updater/codesignature.h"
 #include "updater/ocupdater.h"
@@ -101,6 +102,20 @@ private Q_SLOTS:
         QTest::newRow("newer than skipped") << "11.0.2" << "11.0.0" << "11.0.1" << true;
         QTest::newRow("empty") << "" << "11.0.0" << "" << false;
         QTest::newRow("garbage") << "garbage" << "1.0.0" << "" << false;
+        // installiert wie OCUpdater::installedVersion(): Baunummer 0, Suffix aus VERSION.cmake
+        QTest::newRow("beta1 to final") << "11.0.0" << "11.0.0.0-beta1" << "" << true;
+        QTest::newRow("final to final+1") << "11.0.1" << "11.0.0.0" << "" << true;
+        QTest::newRow("same version") << "11.0.0" << "11.0.0.0" << "" << false;
+        QTest::newRow("same pre-release") << "11.0.0-beta1" << "11.0.0.0-beta1" << "" << false;
+        QTest::newRow("next pre-release") << "11.0.0-beta2" << "11.0.0.0-beta1" << "" << true;
+        QTest::newRow("pre-release numbers compare as numbers") << "11.0.0-beta10" << "11.0.0.0-beta2" << "" << true;
+        QTest::newRow("rc after beta") << "11.0.0-rc1" << "11.0.0.0-beta2" << "" << true;
+        QTest::newRow("older pre-release") << "11.0.0-beta2" << "11.0.0.0-rc1" << "" << false;
+        QTest::newRow("pre-release of the installed final") << "11.0.0-rc1" << "11.0.0.0" << "" << false;
+        QTest::newRow("pre-release of the next version") << "11.0.1-beta1" << "11.0.0.0" << "" << true;
+        QTest::newRow("final skipped") << "11.0.0" << "11.0.0.0-beta1" << "11.0.0" << false;
+        QTest::newRow("final after a skipped pre-release") << "11.0.0" << "11.0.0.0-beta1" << "11.0.0-beta2" << true;
+        QTest::newRow("unreadable skipped version") << "11.0.1" << "11.0.0" << "garbage" << true;
     }
 
     void testVersionCompare()
@@ -109,7 +124,18 @@ private Q_SLOTS:
         QFETCH(QString, installed);
         QFETCH(QString, skipped);
         QFETCH(bool, newer);
-        QCOMPARE(OCUpdater::isNewerVersion(available, QVersionNumber::fromString(installed), QVersionNumber::fromString(skipped)), newer);
+        QCOMPARE(OCUpdater::isNewerVersion(available, installed, skipped), newer);
+    }
+
+    void testInstalledVersion()
+    {
+        const QString installed = OCUpdater::installedVersion();
+        QVERIFY(installed.startsWith(Version::versionWithBuildNumber().toString()));
+        QCOMPARE(installed.endsWith(QLatin1Char('-') + Version::suffix()), !Version::suffix().isEmpty());
+        // der Feed des eigenen Releases (make-update-feed.py: Version aus dem Tag) bietet nichts an
+        QVERIFY(!OCUpdater::isNewerVersion(Version::displayString(), installed, {}));
+        QVERIFY(OCUpdater::compareVersions(QStringLiteral("11.0.0-beta1"), QStringLiteral("11.0.0")) < 0);
+        QCOMPARE(OCUpdater::compareVersions(QStringLiteral("11.0.0-RC1"), QStringLiteral("11.0.0-rc01")), 0);
     }
 
     void testTrustedDownloadUrl_data()
@@ -137,13 +163,23 @@ private Q_SLOTS:
     void testSignerMatches()
     {
         const QString required = CodeSignature::requiredSigner();
-        QCOMPARE(required, QStringLiteral("BW-TECH GmbH"));
-        QVERIFY(CodeSignature::signerMatches(QStringLiteral("BW-TECH GmbH"), required));
-        QVERIFY(CodeSignature::signerMatches(QStringLiteral("BW-Tech GmbH"), required));
-        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("Microsoft Corporation"), required));
-        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("BW-TECH"), required));
-        QVERIFY(!CodeSignature::signerMatches(QString(), required));
-        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("BW-TECH GmbH"), QString()));
+        QCOMPARE(required, QString::fromUtf8("BW-TECH GmbH, IT Service für Systemintegration & Datensicherheit"));
+        const QString digiCert = QStringLiteral("DigiCert Trusted G4 Code Signing RSA4096 SHA384 2021 CA1");
+        QVERIFY(CodeSignature::signerMatches(required, digiCert));
+        // dasselbe "ü" zerlegt (u + U+0308)
+        QVERIFY(required.normalized(QString::NormalizationForm_D) != required);
+        QVERIFY(CodeSignature::signerMatches(required.normalized(QString::NormalizationForm_D), digiCert));
+        // fremde CNs, die unseren Namen nur enthalten oder anders schreiben
+        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("XYZ BW-TECH GmbH Holding"), digiCert));
+        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("BW-TECH GmbH"), digiCert));
+        QVERIFY(!CodeSignature::signerMatches(QStringLiteral("XYZ ") + required, digiCert));
+        QVERIFY(!CodeSignature::signerMatches(required + QStringLiteral(" Holding"), digiCert));
+        QVERIFY(!CodeSignature::signerMatches(required.toUpper(), digiCert));
+        QVERIFY(!CodeSignature::signerMatches(QString(required).replace(QChar(0xfc), QLatin1Char('u')), digiCert));
+        // richtiger CN, aber nicht von DigiCert ausgestellt
+        QVERIFY(!CodeSignature::signerMatches(required, QStringLiteral("Sectigo Public Code Signing CA R36")));
+        QVERIFY(!CodeSignature::signerMatches(required, QString()));
+        QVERIFY(!CodeSignature::signerMatches(QString(), digiCert));
     }
 
     void testSignatureRejection()
@@ -180,8 +216,9 @@ private Q_SLOTS:
             if (!r.valid) {
                 continue;
             }
-            qInfo() << "foreign signed file" << candidate << r.signer;
-            QVERIFY(!CodeSignature::signerMatches(r.signer, CodeSignature::requiredSigner()));
+            qInfo() << "foreign signed file" << candidate << r.signer << r.issuer;
+            QVERIFY(!r.issuer.isEmpty());
+            QVERIFY(!CodeSignature::signerMatches(r.signer, r.issuer));
             QString error;
             QVERIFY(!CodeSignature::verifyUpdatePackage(candidate, &error));
             QVERIFY(error.contains(QLatin1String("unexpected signer")));

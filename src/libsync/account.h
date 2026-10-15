@@ -225,6 +225,9 @@ Q_SIGNALS:
 
     void credentialsFetched();
 
+    // nach jedem setCapabilities() mit gültigen Capabilities
+    void capabilitiesChanged();
+
     // e.g. when the approved SSL certificates changed
     // todo: #15
     void wantsAccountSaved(Account *acc);

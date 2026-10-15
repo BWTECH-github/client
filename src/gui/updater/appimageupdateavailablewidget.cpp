@@ -23,7 +23,7 @@
 
 namespace OCC {
 
-AppImageUpdateAvailableWidget::AppImageUpdateAvailableWidget(const QVersionNumber &currentVersion, const QVersionNumber &newVersion, QWidget *parent)
+AppImageUpdateAvailableWidget::AppImageUpdateAvailableWidget(const QString &currentVersion, const QString &newVersion, QWidget *parent)
     : QDialog(parent)
     , _ui(new Ui::AppImageUpdateAvailableWidgetUi)
 {
@@ -32,8 +32,8 @@ AppImageUpdateAvailableWidget::AppImageUpdateAvailableWidget(const QVersionNumbe
     const auto *theme = Theme::instance();
 
     // the strings in the .ui file are not marked for translation, they're just placeholders
-    _ui->installedVersionLabel->setText(tr("Installed version: %1").arg(currentVersion.toString()));
-    _ui->availableVersionLabel->setText(tr("Available update: %1").arg(newVersion.toString()));
+    _ui->installedVersionLabel->setText(tr("Installed version: %1").arg(currentVersion));
+    _ui->availableVersionLabel->setText(tr("Available update: %1").arg(newVersion));
     _ui->infoLabel->setText(tr("An update is available for this AppImage of %1. Do you want to install this update?\n\nThe update will be performed in the "
                                "background, and overwrite the current AppImage file. You need to restart the app to complete the update.")
                                 .arg(theme->appNameGUI()));

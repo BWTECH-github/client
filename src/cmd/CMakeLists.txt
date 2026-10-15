@@ -1,6 +1,9 @@
 add_executable(owncloudcmd
     cmd.cpp
+    cmdsession.cpp
     httpbasiccredentials.cpp
+    httpoauthcredentials.cpp
+    oauthtokenfile.cpp
 )
 set_target_properties(owncloudcmd PROPERTIES OUTPUT_NAME "owncloudcmd")
 ecm_mark_nongui_executable(owncloudcmd)

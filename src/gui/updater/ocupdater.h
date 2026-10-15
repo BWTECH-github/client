@@ -26,7 +26,6 @@
 #include <QTemporaryFile>
 #include <QTimer>
 #include <QUrl>
-#include <QVersionNumber>
 
 
 class QNetworkAccessManager;
@@ -122,8 +121,13 @@ public:
 
     QString statusString() const;
 
-    // true, wenn available neuer ist als installed und nicht übersprungen wurde
-    static bool isNewerVersion(const QString &available, const QVersionNumber &installed, const QVersionNumber &skipped);
+    // Installierte Version mit Baunummer und Vorab-Suffix, z. B. "11.0.0.0-beta1"
+    static QString installedVersion();
+    // Vergleicht Versionsangaben wie "11.0.0", "11.0.0.0" oder "11.0.0-beta1": <0, 0 oder >0.
+    // Bei gleichem Major.Minor.Patch ist eine Vorabversion älter als das Release ohne Suffix.
+    static int compareVersions(const QString &a, const QString &b);
+    // true, wenn available neuer ist als installed und als skipped (leer = nichts übersprungen)
+    static bool isNewerVersion(const QString &available, const QString &installed, const QString &skipped);
     // Nur Release-Downloads aus unserem Repository werden automatisch geladen
     static bool isTrustedDownloadUrl(const QUrl &url);
     DownloadState downloadState() const;
@@ -153,9 +157,9 @@ private Q_SLOTS:
     void slotTimedOut();
 
 protected:
-    static QVersionNumber previouslySkippedVersion();
-    static void setPreviouslySkippedVersion(const QVersionNumber &previouslySkippedVersion);
-    static void setPreviouslySkippedVersion(const QString &previouslySkippedVersionString);
+    // so gespeichert, wie der Feed sie nannte (mit Vorab-Suffix)
+    static QString previouslySkippedVersion();
+    static void setPreviouslySkippedVersion(const QString &previouslySkippedVersion);
 
     virtual void versionInfoArrived(const UpdateInfo &info) = 0;
     bool updateSucceeded() const;
