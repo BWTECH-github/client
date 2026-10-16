@@ -2951,17 +2951,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::ResolveUrlAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="+57"/>
-        <source>SSL failure when connecting to server at %1</source>
-        <translation>SSL-Fehler beim Verbindungsaufbau zum Server unter %1</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Could not detect compatible server at %1</source>
-        <translation>Ein kompatibler Server konnte unter %1 nicht gefunden werden.</translation>
-    </message>
-    <message>
-        <location line="+5"/>
+        <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="+71"/>
         <source>Resolved url is invalid %1</source>
         <translation>Die aufgelöste URL ist ungültig %1</translation>
     </message>
@@ -4444,6 +4434,44 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <source>%1: %2</source>
         <extracomment>this displays an error string (%2) for a file %1</extracomment>
         <translation>%1: %2</translation>
+    </message>
+</context>
+<context>
+    <name>ServerDiagnostics</name>
+    <message>
+        <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+109"/>
+        <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
+        <translation>Der Server unter %1 ist nicht erreichbar. Bitte prüfen Sie die Adresse und Ihre Internetverbindung.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No secure connection to %1 could be established: the server&apos;s certificate is invalid or was not accepted. If the problem persists, please contact the server&apos;s administrator.</source>
+        <translation>Zu %1 konnte keine sichere Verbindung aufgebaut werden: Das Zertifikat des Servers ist ungültig oder wurde nicht akzeptiert. Wenn das Problem bestehen bleibt, wenden Sie sich bitte an den Administrator des Servers.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The server at %1 is in maintenance mode or temporarily unavailable. Please try again later.</source>
+        <translation>Der Server unter %1 befindet sich im Wartungsmodus oder ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>No owncloud.online server was found at %1. Please check the address.</source>
+        <translation>Unter %1 wurde kein owncloud.online-Server gefunden. Bitte prüfen Sie die Adresse.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it from the Marketplace.</source>
+        <translation>Auf diesem Server ist die App „OAuth2“ nicht installiert oder nicht aktiviert. Bitten Sie Ihren Administrator, sie über den Marketplace zu installieren und zu aktivieren.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it from the Marketplace and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translation>Hinweis für Administratoren: Der Desktop-Client meldet sich über die App „OAuth2“ an. Installieren Sie sie über den Marketplace und aktivieren Sie sie für alle Benutzer (Kommandozeile: occ app:enable oauth2).</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Could not detect compatible server at %1</source>
+        <translation>Ein kompatibler Server konnte unter %1 nicht gefunden werden.</translation>
     </message>
 </context>
 <context>

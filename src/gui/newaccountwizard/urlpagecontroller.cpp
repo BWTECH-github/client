@@ -16,10 +16,11 @@
 #include "accessmanager.h"
 #include "config/appconfig.h"
 #include "iconresources.h"
+#include "mainwindow/colormanager.h"
 #include "networkadapters/determineauthtypeadapter.h"
 #include "networkadapters/discoverwebfingerserviceadapter.h"
 #include "networkadapters/resolveurladapter.h"
-#include "mainwindow/colormanager.h"
+#include "networkadapters/serverdiagnostics.h"
 #include "theme.h"
 
 #include <QGuiApplication>
@@ -267,7 +268,13 @@ bool UrlPageController::validate()
         DetermineAuthTypeAdapter authTypeAdapter(_accessManager, finalUrl);
         const DetermineAuthTypeResult authResult = authTypeAdapter.getResult();
         if (!authResult.success()) {
-            handleError(authResult.error);
+            // Antwortete schon status.php nicht wie owncloud.online, zeigt die Adresse auf einen anderen Server; das ist dann
+            // die verständlichere Erklärung für einen sonst unklaren Fehler
+            if (authResult.issue == ServerDiagnostics::Issue::Other && !resolveUrlResult.owncloudStatus) {
+                handleError(ServerDiagnostics::message(ServerDiagnostics::Issue::NotOwncloudServer, finalUrl));
+            } else {
+                handleError(authResult.error);
+            }
             return false;
         }
 

@@ -46,6 +46,7 @@ owncloud_add_test(Adapters
     ../src/gui/networkadapters/determineauthtypeadapter.cpp
     ../src/gui/networkadapters/discoverwebfingerserviceadapter.cpp
     ../src/gui/networkadapters/fetchcapabilitiesadapter.cpp
+    ../src/gui/networkadapters/serverdiagnostics.cpp
 #    ../src/gui/networkadapters/resolveurladapter.cpp
 #    ../src/gui/tlserrordialog.cpp
     ../src/gui/networkadapters/webfingerlookupadapter.cpp

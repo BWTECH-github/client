@@ -1,6 +1,8 @@
 target_sources(owncloudGui PRIVATE
     resolveurladapter.cpp
     resolveurladapter.h
+    serverdiagnostics.cpp
+    serverdiagnostics.h
     webfingerlookupadapter.cpp
     webfingerlookupadapter.h
     discoverwebfingerserviceadapter.cpp
