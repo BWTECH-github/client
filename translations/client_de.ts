@@ -760,18 +760,28 @@ Bitte legen Sie ein Konto an, indem Sie im Menü der Schaltfläche „Mehr“ di
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+170"/>
-        <location line="+61"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+171"/>
+        <location line="+101"/>
         <source>New account failure</source>
         <translation>Fehler bei neuem Konto</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-101"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
         <translation>Die für die Erstellung eines neuen Kontos erforderlichen Informationen sind unvollständig. Bitte führen Sie den Assistenten erneut aus.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
+        <source>Import from the official ownCloud client</source>
+        <translation>Vom offiziellen ownCloud-Client übernehmen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No configuration of the official ownCloud desktop client was found on this computer.</source>
+        <translation>Auf diesem Computer wurde keine Konfiguration des offiziellen ownCloud-Desktop-Clients gefunden.</translation>
+    </message>
+    <message>
+        <location line="+36"/>
         <source>Accounts</source>
         <translation>Konten</translation>
     </message>
@@ -1095,7 +1105,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+402"/>
+        <location filename="../src/gui/folder.cpp" line="+406"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 wurde gelöscht.</translation>
@@ -1205,7 +1215,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <translation>Wechseln des VFS-Modus im Ordner &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+204"/>
         <source>Could not read system exclude file</source>
         <translation>Die systemeigene Ausschlussdatei kann nicht gelesen werden.</translation>
     </message>
@@ -1220,7 +1230,62 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <translation>Die Datei %1 wurde erzeugt, aber von der Synchronisation ausgeschlossen. Sie wird nicht synchronisiert.</translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+127"/>
+        <source>All files in the sync folder &apos;%1&apos; were deleted on the server.</source>
+        <translation>Alle Dateien im Sync-Ordner „%1“ wurden auf dem Server gelöscht.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in the sync folder &apos;%3&apos; were deleted on the server.</source>
+        <translation>%1 von %2 Dateien im Sync-Ordner „%3“ wurden auf dem Server gelöscht.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them here as well, they will be removed from this computer. If you keep them, they will be uploaded to the server again, provided you have the permission to do so.</source>
+        <translation>Wenn Sie sie auch hier löschen, werden sie von diesem Computer entfernt. Wenn Sie sie behalten, werden sie wieder auf den Server hochgeladen, sofern Sie dazu berechtigt sind.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>All files in your local sync folder &apos;%1&apos; were deleted.</source>
+        <translation>Alle Dateien in Ihrem lokalen Sync-Ordner „%1“ wurden gelöscht.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in your local sync folder &apos;%3&apos; were deleted.</source>
+        <translation>%1 von %2 Dateien in Ihrem lokalen Sync-Ordner „%3“ wurden gelöscht.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them on the server as well, they will only be available from the server&apos;s deleted files. If this was an accident, choose &quot;Keep files&quot;: they will be downloaded from the server again.</source>
+        <translation>Wenn Sie sie auch auf dem Server löschen, sind sie nur noch über die gelöschten Dateien des Servers erreichbar. War das ein Versehen, wählen Sie „Dateien behalten“; dann werden sie wieder vom Server heruntergeladen.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The synchronization of this folder is paused until you decide.</source>
+        <translation>Die Synchronisation dieses Ordners ist angehalten, bis Sie sich entscheiden.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Remove all files?</source>
+        <translation>Alle Dateien entfernen?</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Remove many files?</source>
+        <translation>Viele Dateien entfernen?</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Keep files</source>
+        <translation>Dateien behalten</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Delete files</source>
+        <translation>Dateien löschen</translation>
+    </message>
+    <message>
+        <location line="+33"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1233,7 +1298,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 %1</translation>
     </message>
     <message>
-        <location line="-79"/>
+        <location line="-143"/>
         <source>A folder from an external storage has been added: %1</source>
         <translation>Ein Ordner von einem externen Speicher wurde hinzugefügt: %1</translation>
     </message>
@@ -1664,7 +1729,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Löschung eines Ordners verhindern würden. Das trifft besonders auf Metadaten zu.</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="+110"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="+122"/>
         <source>Could not open file</source>
         <translation>Die Datei konnte nicht geöffnet werden.</translation>
     </message>
@@ -1684,9 +1749,167 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>Neues Ignoriermuster hinzufügen:</translation>
     </message>
     <message>
-        <location line="-93"/>
+        <location line="-103"/>
+        <location line="+12"/>
         <source>This entry is provided by the system at &apos;%1&apos; and cannot be modified in this view.</source>
         <translation>Dieser Eintrag wird vom System auf &apos;%1&apos; bereitgestellt und kann in dieser Ansicht nicht geändert werden.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClient</name>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+89"/>
+        <source>Spaces are not taken over; add them after signing in.</source>
+        <translation>Spaces werden nicht übernommen; fügen Sie sie nach der Anmeldung hinzu.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder belongs to a different user or server.</source>
+        <translation>Der Ordner gehört zu einem anderen Benutzer oder Server.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Only one sync folder per account is possible at the moment.</source>
+        <translation>Derzeit ist nur ein Sync-Ordner je Konto möglich.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The folder uses virtual files, which are not available on this computer.</source>
+        <translation>Der Ordner nutzt virtuelle Dateien, die auf diesem Computer nicht verfügbar sind.</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <location line="+26"/>
+        <source>The folder could not be set up.</source>
+        <translation>Der Ordner konnte nicht eingerichtet werden.</translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>The local folder does not exist.</source>
+        <translation>Der lokale Ordner existiert nicht.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder is already synchronized.</source>
+        <translation>Der Ordner wird bereits synchronisiert.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClientImportController</name>
+    <message>
+        <location line="+38"/>
+        <source>%1: already set up.</source>
+        <translation>%1: bereits eingerichtet.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>• %1 – %n sync folder(s)</source>
+        <translation>
+            <numerusform>• %1 – %n Sync-Ordner</numerusform>
+            <numerusform>• %1 – %n Sync-Ordner</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+20"/>
+        <source>Import from the official ownCloud client</source>
+        <translation>Vom offiziellen ownCloud-Client übernehmen</translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <source>All accounts of the official client are already set up.</source>
+        <translation>Alle Konten des offiziellen Clients sind bereits eingerichtet.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The official ownCloud desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
+        <translation>Auf diesem Computer ist der offizielle ownCloud-Desktop-Client eingerichtet. Möchten Sie seine Konten und Sync-Ordner übernehmen?</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <translation>Sie melden sich je Konto einmal im Browser an. Bereits synchronisierte Ordner werden erkannt und nicht erneut heruntergeladen. Am offiziellen Client wird nichts verändert.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Import</source>
+        <translation>Übernehmen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set up a new account</source>
+        <translation>Neues Konto einrichten</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The official ownCloud client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
+        <translation>Der offizielle ownCloud-Client läuft noch. Beenden Sie ihn und schalten Sie seinen Autostart aus, bevor Sie übernehmen – sonst synchronisieren beide Programme dieselben Ordner.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Check again</source>
+        <translation>Erneut prüfen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Import anyway</source>
+        <translation>Trotzdem übernehmen</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Sign in: %1</source>
+        <translation>Anmelden: %1</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: sign-in cancelled, not taken over.</source>
+        <translation>%1: Anmeldung abgebrochen, nicht übernommen.</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>%1: signed in as %2, the folders of the official client were not taken over.</source>
+        <translation>%1: als %2 angemeldet, die Ordner des offiziellen Clients wurden nicht übernommen.</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>%1: taken over, the files are recognized without downloading them again.</source>
+        <translation>%1: übernommen, die Dateien werden ohne erneuten Download erkannt.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: taken over; the synchronization state could not be read, the files are compared with the server once.</source>
+        <translation>%1: übernommen; der Synchronisationsstand war nicht lesbar, die Dateien werden einmal mit dem Server abgeglichen.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: set up again with virtual files at %2; only placeholders are created.</source>
+        <translation>%1: mit virtuellen Dateien neu eingerichtet unter %2; es werden nur Platzhalter angelegt.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1: not taken over. %2</source>
+        <translation>%1: nicht übernommen. %2</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1: the account could not be created: %2</source>
+        <translation>%1: das Konto konnte nicht angelegt werden: %2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Import finished</source>
+        <translation>Übernahme abgeschlossen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quit the official ownCloud client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
+        <translation>Beenden Sie den offiziellen ownCloud-Client dauerhaft (Autostart ausschalten oder deinstallieren), damit die Ordner nicht doppelt synchronisiert werden.</translation>
     </message>
 </context>
 <context>
@@ -1816,12 +2039,17 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::MainWindowController</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+87"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+88"/>
         <source>Add account...</source>
         <translation>Konto hinzufügen…</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
+        <source>Import from official client...</source>
+        <translation>Vom offiziellen Client übernehmen…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Settings...</source>
         <translation>Einstellungen …</translation>
     </message>
@@ -2044,7 +2272,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+56"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
         <source>Add account…</source>
         <translation>Konto hinzufügen…</translation>
     </message>
@@ -2059,7 +2287,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Erweitert</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+150"/>
         <source>Sign in</source>
         <translation>Anmelden</translation>
     </message>
@@ -2307,7 +2535,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+829"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
         <source>File %1 is currently in use</source>
         <translation>Datei %1 wird gerade benutzt</translation>
     </message>
@@ -2543,7 +2771,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-958"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
         <source>; Restoration Failed: %1</source>
         <translation>; Wiederherstellung fehlgeschlagen: %1</translation>
     </message>
@@ -2690,7 +2918,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1139"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
         <source>Could not update file : %1</source>
         <translation>Die Datei konnte nicht aktualisiert werden: %1</translation>
     </message>
@@ -3714,12 +3942,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::SyncEngine</name>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="+143"/>
+        <location filename="../src/libsync/syncengine.cpp" line="+145"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
         <translation>%1 (Übersprungen aufgrund des früheren Fehlers, erneuter Versuch in %2)</translation>
     </message>
     <message>
-        <location line="+188"/>
+        <location line="+198"/>
         <source>Unable to sync: the local folder is missing.</source>
         <translation>Synchronisierung nicht möglich: Der lokale Ordner fehlt.</translation>
     </message>
@@ -3737,7 +3965,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+11"/>
         <location line="+83"/>
-        <location line="+31"/>
+        <location line="+117"/>
         <location line="+65"/>
         <source>Cannot open the sync journal.</source>
         <translation>Das Synchronisierungsprotokoll kann nicht geöffnet werden.</translation>
@@ -3758,13 +3986,13 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Auf dem Server ist nicht genug Platz, um alle Dateien hochzuladen.</translation>
     </message>
     <message>
-        <location line="-750"/>
+        <location line="-846"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translation>Anwendung beendet</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+322"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>Fehler beim Einlesen der schwarzen Liste aus der lokalen Datenbank</translation>
     </message>
@@ -4239,7 +4467,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Zusätzliches, von der Organisation definiertes Logo</translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+113"/>
         <source>Invalid server URL: %1</source>
         <translation>Ungültige Server-URL: %1</translation>
     </message>
