@@ -4470,14 +4470,14 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Unter %1 wurde kein owncloud.online-Server gefunden. Bitte prüfe die Adresse.</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it from the Marketplace.</source>
-        <translation>Auf diesem Server ist die App „OAuth2“ nicht installiert oder nicht aktiviert. Bitte deinen Administrator, sie über den Marketplace zu installieren und zu aktivieren.</translation>
+        <location line="+3"/>
+        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <translation>Auf diesem Server ist die App „OAuth2“ nicht installiert oder nicht aktiviert. Bitte deinen Administrator, sie über den „Markt“ zu installieren und zu aktivieren.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it from the Marketplace and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translation>Hinweis für Administratoren: Der Desktop-Client meldet sich über die App „OAuth2“ an. Installiere sie über den Marketplace und aktiviere sie für alle Benutzer (Kommandozeile: occ app:enable oauth2).</translation>
+        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translation>Hinweis für Administratoren: Der Desktop-Client meldet sich über die App „OAuth2“ an. Installiere sie über den „Markt“ und aktiviere sie für alle Benutzer (Kommandozeile: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

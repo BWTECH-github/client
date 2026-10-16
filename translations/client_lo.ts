@@ -4471,13 +4471,13 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it from the Marketplace.</source>
+        <location line="+3"/>
+        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it from the Marketplace and enable it for all users (command line: occ app:enable oauth2).</source>
+        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
