@@ -291,6 +291,20 @@ private Q_SLOTS:
         watcher.reset();
         QVERIFY(timer.duration() < 1500ms);
     }
+
+    // Ein Beobachter, der gleich nach dem Anlegen wieder verschwindet: stop() kam früher mitunter vor dem Start des Threads
+    // und ging ins Leere, der Destruktor wartete dann für immer.
+    void testWatcherRemovedRightAfterCreation()
+    {
+        auto parentDir = TestUtils::createTempDir();
+        QVERIFY(parentDir.isValid());
+        Utility::ChronoElapsedTimer timer;
+        for (int i = 0; i < 200; ++i) {
+            FolderWatcherForTests watcher;
+            watcher.init(parentDir.path());
+        }
+        QVERIFY(timer.duration() < 30s);
+    }
 #endif
 };
 

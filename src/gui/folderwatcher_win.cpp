@@ -168,9 +168,6 @@ void WatcherThread::closeHandle()
 
 void WatcherThread::run()
 {
-    _resultEvent = CreateEvent(nullptr, true, false, nullptr);
-    _stopEvent = CreateEvent(nullptr, true, false, nullptr);
-
     // If this buffer fills up before we've extracted its data we will lose
     // change information. Therefore start big.
     size_t bufferSize = 4096 * 10;
@@ -203,14 +200,18 @@ WatcherThread::WatcherThread(FolderWatcherPrivate *parent, const QString &path)
     , _path(path + (path.endsWith(QLatin1Char('/')) ? QString() : QStringLiteral("/")))
     , _longPath(FileSystem::longWinPath(_path))
     , _directory(nullptr)
-    , _resultEvent(nullptr)
-    , _stopEvent(nullptr)
+    // Die Ereignisse entstehen hier, nicht erst in run(): Kam stop() vor dem Start des Threads (Ordner gleich nach dem
+    // Anlegen wieder entfernt), setzte es sonst ein Ereignis, das es noch nicht gab, und wait() im Destruktor hing für immer.
+    , _resultEvent(CreateEvent(nullptr, true, false, nullptr))
+    , _stopEvent(CreateEvent(nullptr, true, false, nullptr))
 {
 }
 
 WatcherThread::~WatcherThread()
 {
     closeHandle();
+    CloseHandle(_resultEvent);
+    CloseHandle(_stopEvent);
 }
 
 void WatcherThread::stop()
