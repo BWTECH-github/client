@@ -144,6 +144,8 @@ private Q_SLOTS:
         FakeFolder fakeFolder{FileInfo::A12_B12_C12_S12()};
         fakeFolder.syncEngine()->setPromptRemoveAllFiles(true);
         auto spy = removeAllSpy(fakeFolder);
+        // Stand vorher festhalten: ein neu erzeugter Baum trüge andere Zeitstempel
+        const auto initialState = fakeFolder.currentLocalState();
 
         fakeFolder.syncEngine()->allowRemoveAllFilesOnce();
         QVERIFY(fakeFolder.syncOnce()); // verbraucht die Erlaubnis ohne Löschungen
@@ -153,7 +155,7 @@ private Q_SLOTS:
         }
         QVERIFY(!fakeFolder.syncOnce());
         QCOMPARE(spy->count(), 1);
-        QCOMPARE(fakeFolder.currentLocalState(), FileInfo::A12_B12_C12_S12());
+        QCOMPARE(fakeFolder.currentLocalState(), initialState);
     }
 
     // Ohne Einschalten (Standard der Engine) fragt nichts

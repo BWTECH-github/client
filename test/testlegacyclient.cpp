@@ -118,6 +118,7 @@ void writeLegacyJournal(const QString &journalPath)
     record._fileSize = 5;
     record._modtime = 1700000000;
     record._inode = 4711;
+    record._remotePerm = RemotePermissions::fromDbValue("WDNVCKR");
     QVERIFY(journal.setFileRecord(record));
     journal.close();
 }
