@@ -17,6 +17,10 @@ bettet sie als Ressource ein (`src/resources/CMakeLists.txt`); jedes Paket enth�
 `client_en.ts` ist der Quellkatalog: Er braucht nur die Pluralformen (`numerus`), alle anderen Einträge bleiben offen
 und zeigen den englischen Quelltext.
 
+`client_zh-Hans.ts` trägt im Kopf `language="zh_CN"`: Das `lupdate` aus Qt 6.4 (CI-Job „translations“) erkennt
+„zh-Hans“ nicht und ließe den Katalog sonst unbearbeitet. Das Attribut bestimmt nur die Pluralregeln, die für beide
+gleich sind; welche Sprache der Client anbietet, folgt aus dem Dateinamen.
+
 ## Herkunft der Übersetzungen und Kennzeichnung
 
 1. Community-Übersetzungen bleiben, wie sie sind.
