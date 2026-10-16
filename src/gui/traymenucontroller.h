@@ -144,7 +144,7 @@ private:
 
     void onProgressInfo(Folder *folder, const ProgressInfo &progress);
     void checkPauseEnd();
-    void resumeAccountFolders(const QUuid &accountId);
+    void setAccountSyncPaused(const QUuid &accountId, bool paused);
 
     QSystemTrayIcon *_tray;
     QMenu *_menu = nullptr;

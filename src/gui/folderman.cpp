@@ -724,6 +724,22 @@ void FolderMan::setUserSyncPaused(bool paused)
     }
 }
 
+void FolderMan::setAccountSyncPaused(const QUuid &accountId, bool paused)
+{
+    for (auto *folder : foldersForAccount(accountId)) {
+        if (folder->syncPaused() == paused) {
+            continue;
+        }
+        // lokale Änderungen eines abgebrochenen Laufs bzw. aus der Pause nicht übersehen
+        folder->slotNextSyncFullLocalDiscovery();
+        if (paused && folder->isSyncRunning()) {
+            folder->slotTerminateSync(tr("Sync paused by user"));
+        }
+        // gespeichert über syncPausedChanged; fortgesetzte Ordner plant slotFolderSyncPauseChanged ein
+        folder->setSyncPaused(paused);
+    }
+}
+
 void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
 {
     if (!accountState || !accountState->account() || !_folders.contains(accountState->account()->uuid())) {
