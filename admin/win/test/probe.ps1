@@ -26,6 +26,13 @@
       upgrade     Vorversion (-PreviousSetup) mit Client-Spuren -> Setup ->
                   genau eine Installation, Spuren erhalten ->
                   Deinstallation -> Rückstände gegen den Ausgang
+      upgrade-beta1  wie upgrade, Vorversion ist die veröffentlichte
+                  11.0.0-beta1 mit derselben Kennung wie der Prüfling. Das
+                  Update muss sie an Ort und Stelle ersetzen: Vorversion
+                  wirklich beta1, Version in Programme und Features ersetzt,
+                  keine Doppel-Einträge (auch unter fremdem Namen), genau eine
+                  Programmdatei im selben Ordner, Programmdatei ersetzt,
+                  Einstellungen der Vorversion erhalten
 
     Client-Spuren, nachgebildet nach dem Client-Code (Geheimnis = Zufallswert,
     wird nie ausgegeben): Anmeldeinformation <app>_credentials:<host>:<uuid>:
@@ -47,7 +54,7 @@
     2 = Probe abgebrochen.
 
 .PARAMETER Scenario
-    frisch, koexistenz oder upgrade.
+    frisch, koexistenz, upgrade oder upgrade-beta1.
 
 .PARAMETER Setup
     Setup des Prüflings (*-Setup.exe aus dem CI-Artefakt windows-cl-x86_64).
@@ -57,7 +64,7 @@
     anlegen (Programme, Benutzerprofil, %TEMP%), z. B. unter RUNNER_TEMP.
 
 .PARAMETER PreviousSetup
-    upgrade: Setup der Vorversion.
+    upgrade, upgrade-beta1: Setup der Vorversion.
 
 .PARAMETER OfficialMsi
     koexistenz: MSI des offiziellen Clients 6.0.3.
@@ -77,7 +84,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('frisch', 'koexistenz', 'upgrade')]
+    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1')]
     [string] $Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -140,6 +147,7 @@ $trace = @{
     NavClsid   = '{' + [guid]::NewGuid().ToString().ToUpperInvariant() + '}'
     SyncDir    = Join-Path $env:USERPROFILE $appName
     UserHash   = $null
+    ConfigWritten = $false
 }
 $trace.UserFile = Join-Path $trace.SyncDir 'Probe-Nutzerdatei.txt'
 $traceErrors = @{}
@@ -368,6 +376,15 @@ function Install-Candidate {
     Test-Run $run $Id "$Label still, ohne Neustart"
 }
 
+# alle installierten Programmdateien unseres Clients unter Programme und Programme (x86)
+function Get-ClientExes {
+    foreach ($root in @($programFiles, ${env:ProgramFiles(x86)}) | Where-Object { $_ } | Select-Object -Unique) {
+        foreach ($dir in @(Get-ChildItem -LiteralPath $root -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -match $ownPattern })) {
+            Get-ChildItem -LiteralPath $dir.FullName -Recurse -File -Filter "$appName.exe" -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName }
+        }
+    }
+}
+
 function Find-ClientExe {
     foreach ($root in @($programFiles, ${env:ProgramFiles(x86)}) | Where-Object { $_ } | Select-Object -Unique) {
         foreach ($dir in @(Get-ChildItem -LiteralPath $root -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -match $ownPattern })) {
@@ -452,6 +469,7 @@ function Add-ClientTraces {
         'Einstellungen'      = {
             New-Item -ItemType Directory -Force -Path $trace.ConfigDir | Out-Null
             [IO.File]::WriteAllText((Join-Path $trace.ConfigDir "$appName.cfg"), "[General]`r`nprobe=true`r`n")
+            $trace.ConfigWritten = $true
         }
         'Cache'              = {
             $dir = Join-Path $trace.CacheDir 'cache'
@@ -595,6 +613,62 @@ function Test-TracesAfterUpgrade {
         } else {
             Add-Check "U$number" $title 'FEHLER' 'durch das Update entfernt oder verändert' ''
         }
+    }
+}
+
+# upgrade-beta1: Die Vorversion trägt dieselbe Kennung wie der Prüfling. Das Update muss
+# sie an Ort und Stelle ersetzen, nicht daneben installieren oder unverändert lassen.
+function Test-UpgradeFromBeta1 {
+    param($Previous, $Installed, [string] $PreviousExe, [string] $PreviousExeHash, [string] $Exe)
+    $before = @(Get-UninstallEntries $Previous $ownPattern)
+    $after = @(Get-UninstallEntries $Installed $ownPattern)
+    $beforeVersion = if ($before.Count -eq 1) { Get-EntryValue $before[0] 'DisplayVersion' } else { '' }
+    $afterVersion = if ($after.Count -eq 1) { Get-EntryValue $after[0] 'DisplayVersion' } else { '' }
+
+    # sonst prüfte das Szenario etwas anderes, als es vorgibt
+    if ($before.Count -eq 1 -and $beforeVersion -match '^11\.0\.0-beta1(\D|$)') {
+        Add-Check 'U8' 'Vorversion 11.0.0-beta1 war installiert' 'OK' $beforeVersion ''
+    } else {
+        Add-Check 'U8' 'Vorversion 11.0.0-beta1 war installiert' 'FEHLER' ("{0} Einträge vor dem Update, Version '{1}'" -f $before.Count, $beforeVersion) ''
+    }
+
+    if ($after.Count -eq 1 -and $afterVersion -and $afterVersion -ne $beforeVersion) {
+        Add-Check 'U9' 'Version in Programme und Features ersetzt' 'OK' "$beforeVersion -> $afterVersion" 'H19'
+    } else {
+        Add-Check 'U9' 'Version in Programme und Features ersetzt' 'FEHLER' ("vorher '{0}', nachher '{1}', {2} Einträge" -f $beforeVersion, $afterVersion, $after.Count) 'H19'
+    }
+
+    # auch unter fremdem Namen (alte Kennung, roher craft-Installer "ownCloud"); der Runner war vorher frei davon
+    $all = @(Get-UninstallEntries $Installed 'owncloud')
+    if ($all.Count -eq 1) {
+        Add-Check 'U10' 'Keine Doppel-Einträge in Programme und Features' 'OK' $all[0].Key 'H19'
+    } else {
+        Add-Check 'U10' 'Keine Doppel-Einträge in Programme und Features' 'FEHLER' ('{0} Einträge: {1}' -f $all.Count, (($all | ForEach-Object { '{0} ({1})' -f $_.Key, (Get-EntryValue $_ 'DisplayName') }) -join '; ')) 'H19'
+    }
+
+    $exes = @(Get-ClientExes)
+    if ($exes.Count -eq 1 -and $PreviousExe -and $exes[0] -eq $PreviousExe) {
+        Add-Check 'U11' 'Genau eine Installation, im Ordner der Vorversion' 'OK' $exes[0] ''
+    } else {
+        Add-Check 'U11' 'Genau eine Installation, im Ordner der Vorversion' 'FEHLER' ("Vorversion: '{0}'; nachher: {1}" -f $PreviousExe, $(if ($exes.Count) { $exes -join '; ' } else { 'keine' })) ''
+    }
+
+    if (-not $Exe -or -not $PreviousExeHash) {
+        Add-Check 'U12' 'Programmdatei durch das Update ersetzt' 'NICHT GEPRÜFT' 'Programmdatei vor oder nach dem Update nicht gefunden' ''
+    } elseif ((Get-FileHash -LiteralPath $Exe -Algorithm SHA256).Hash -ne $PreviousExeHash) {
+        Add-Check 'U12' 'Programmdatei durch das Update ersetzt' 'OK' '' ''
+    } else {
+        Add-Check 'U12' 'Programmdatei durch das Update ersetzt' 'FEHLER' 'unverändert die der Vorversion' ''
+    }
+
+    # der Wert der Probe muss bleiben; ein laufender Client darf eigene Werte ergänzt haben
+    $config = Join-Path $trace.ConfigDir "$appName.cfg"
+    if (-not $trace.ConfigWritten) {
+        Add-Check 'U13' 'Einstellungen der Vorversion erhalten (owncloud.online.cfg)' 'NICHT GEPRÜFT' 'Spur nicht angelegt' 'E4'
+    } elseif ((Test-Path -LiteralPath $config) -and (@(Get-Content -LiteralPath $config -ErrorAction SilentlyContinue) -contains 'probe=true')) {
+        Add-Check 'U13' 'Einstellungen der Vorversion erhalten (owncloud.online.cfg)' 'OK' '' 'E4'
+    } else {
+        Add-Check 'U13' 'Einstellungen der Vorversion erhalten (owncloud.online.cfg)' 'FEHLER' 'Datei oder Wert probe=true fehlt' 'E4'
     }
 }
 
@@ -933,13 +1007,16 @@ function Invoke-Upgrade {
     if ($run.zeitueberschreitung -or ($run.exitcode -ne 0 -and $run.exitcode -ne 3010)) {
         throw 'Vorversion ließ sich nicht installieren - Update nicht prüfbar'
     }
-    Add-ClientTraces (Find-ClientExe)
+    $previousExe = Find-ClientExe
+    $previousExeHash = if ($previousExe) { (Get-FileHash -LiteralPath $previousExe -Algorithm SHA256).Hash } else { '' }
+    Add-ClientTraces $previousExe
     $previous = New-Snapshot 'vorversion' 'Vorversion installiert, Client-Spuren angelegt'
     Install-Candidate 'I1'
     $exe = Find-ClientExe
     $installed = New-Snapshot 'installiert' 'Prüfling über die Vorversion installiert'
     Test-Installation $previous $installed $exe 'vorversion-installiert'
     Test-TracesAfterUpgrade $installed
+    if ($Scenario -eq 'upgrade-beta1') { Test-UpgradeFromBeta1 $previous $installed $previousExe $previousExeHash $exe }
     Uninstall-Candidate 'D1'
     $removed = New-Snapshot 'deinstalliert' 'Prüfling deinstalliert'
     Test-Removal $base $removed 'ausgang-deinstalliert' @{} $false
@@ -1040,7 +1117,7 @@ function Write-Report {
     $head.Add("## Install-Probe: $Scenario")
     $head.Add('')
     $head.Add(('- Prüfling: `{0}`, Version {1}, SHA256 `{2}`' -f (Get-Leaf $Setup), $(if ($ExpectedVersion) { $ExpectedVersion } else { 'nicht angegeben' }), $setupHash))
-    if ($Scenario -eq 'upgrade') { $head.Add(('- Vorversion: `{0}`' -f (Get-Leaf $PreviousSetup))) }
+    if ($Scenario -like 'upgrade*') { $head.Add(('- Vorversion: `{0}`' -f (Get-Leaf $PreviousSetup))) }
     if ($Scenario -eq 'koexistenz') { $head.Add(('- Offizieller Client: `{0}`' -f (Get-Leaf $OfficialMsi))) }
     $head.Add(('- Rechner: {0}, Windows PowerShell {1}' -f $os, $PSVersionTable.PSVersion))
     $head.Add(('- Ergebnis: **{0}**, {1} Warnungen' -f $verdict, $warned))
@@ -1096,7 +1173,7 @@ try {
     $principal = New-Object Security.Principal.WindowsPrincipal ([Security.Principal.WindowsIdentity]::GetCurrent())
     if (-not $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) { throw 'nicht erhöht gestartet' }
     $required = [ordered]@{ Setup = $Setup }
-    if ($Scenario -eq 'upgrade') { $required['PreviousSetup'] = $PreviousSetup }
+    if ($Scenario -like 'upgrade*') { $required['PreviousSetup'] = $PreviousSetup }
     if ($Scenario -eq 'koexistenz') { $required['OfficialMsi'] = $OfficialMsi }
     foreach ($name in $required.Keys) {
         $path = $required[$name]
@@ -1107,6 +1184,7 @@ try {
         'frisch' { Invoke-Fresh }
         'koexistenz' { Invoke-Coexistence }
         'upgrade' { Invoke-Upgrade }
+        'upgrade-beta1' { Invoke-Upgrade }
     }
 } catch {
     $abort = '{0} (Zeile {1})' -f $_.Exception.Message, $_.InvocationInfo.ScriptLineNumber
