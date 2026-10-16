@@ -40,10 +40,12 @@
 #include "common/utility_win.h"
 #endif
 
+#include <QEventLoop>
 #include <QMessageBox>
 #include <QMutableSetIterator>
 #include <QNetworkProxy>
 #include <QStringLiteral>
+#include <QTimer>
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
@@ -750,6 +752,66 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
     emit unsyncedSpaceCountChanged(id, 0, 0);
 }
 
+void FolderMan::rebuildFoldersForAccount(AccountState *accountState, const std::function<void(FolderDefinition &)> &adjust)
+{
+    if (!accountState || !accountState->account()) {
+        return;
+    }
+    const QUuid accountId = accountState->account()->uuid();
+    const QList<Folder *> oldFolders = foldersForAccount(accountId);
+    if (oldFolders.isEmpty()) {
+        return;
+    }
+
+    setSyncEnabled(false);
+    // zuerst melden: Ordnerliste, ETag-Wächter und Protokoll lassen ihre Zeiger los, bevor die Ordner verschwinden
+    emit folderListChanged(accountId, {});
+
+    QSettings settings = ConfigFile::makeQSettings();
+    settings.beginGroup(QStringLiteral("Accounts"));
+
+    QList<FolderDefinition> definitions;
+    for (Folder *folder : oldFolders) {
+        if (folder->isSyncRunning()) {
+            QEventLoop waitLoop;
+            connect(folder, &Folder::syncFinished, &waitLoop, &QEventLoop::quit);
+            // nicht endlos warten, falls das Ende nie gemeldet wird
+            QTimer::singleShot(30s, &waitLoop, &QEventLoop::quit);
+            folder->slotTerminateSync(tr("The server address of the account changed"));
+            if (folder->isSyncRunning()) {
+                waitLoop.exec();
+            }
+        }
+
+        FolderDefinition definition = folder->definition();
+        adjust(definition);
+        // zuerst die Einstellungen: scheitert das Neuladen, gilt beim nächsten Start trotzdem die angepasste Definition
+        settings.beginGroup(QStringLiteral("%1/Folders/%2").arg(accountState->account()->groupIndex(), QString::fromUtf8(definition.id())));
+        FolderDefinition::save(settings, definition);
+        settings.endGroup();
+        definitions.append(definition);
+
+        disconnectAutoSave(folder);
+        disconnectFolder(folder);
+        _disabledFolders.remove(folder);
+        _scheduler->removeFolder(folder);
+        _folders[accountId].remove(folder->mapKey());
+        // sofort löschen, nicht deleteLater(): erst dann sind Journal (exklusiv geöffnet) und Cloud-Files-Verbindung frei
+        delete folder;
+    }
+    settings.sync();
+
+    for (const FolderDefinition &definition : std::as_const(definitions)) {
+        if (!addFolder(accountState, definition)) {
+            qCWarning(lcFolderMan) << "Could not load folder" << definition.localPath() << "again after rebuilding the folders of the account";
+        }
+    }
+
+    emit folderListChanged(accountId, _folders.value(accountId).values());
+    scheduleFoldersForAccount(accountId);
+    setSyncEnabled(true);
+}
+
 void FolderMan::removeFolderSettings(const QByteArray &folderId, QSettings &settings)
 {
     if (folderId.isEmpty()) {
@@ -1036,6 +1098,7 @@ void FolderMan::deleteFolderSync(Folder *f)
     f->wipeForRemoval();
 
     _folders[f->accountState()->account()->uuid()].remove(f->mapKey());
+    _scheduler->removeFolder(f);
 
     disconnectFolder(f);
 
@@ -1190,14 +1253,6 @@ namespace {
         }
         return QLatin1Char('/') + parts.join(QLatin1Char('/')) + QLatin1Char('/');
     }
-
-    QString remoteFolderForDisplay(const QString &normalizedPath)
-    {
-        if (normalizedPath == QLatin1String("/")) {
-            return FolderMan::tr("the root folder of the account");
-        }
-        return normalizedPath.chopped(1);
-    }
 }
 
 QString FolderMan::checkRemotePathValidity(const QUuid &accountUuid, const QString &remotePath) const
@@ -1213,15 +1268,20 @@ QString FolderMan::checkRemotePathValidity(const QUuid &accountUuid, const QStri
         if (wanted == existing) {
             return tr("This server folder is already synced with the local folder %1. Each server folder can only be synced once.").arg(localFolder);
         }
+        if (existing == QLatin1String("/")) {
+            return tr("The whole account is already synced with the local folder %1. Each server folder can only be synced once. To sync this "
+                      "server folder to a different local folder, remove the existing folder sync connection first.")
+                .arg(localFolder);
+        }
         if (existing.startsWith(wanted)) {
-            return tr("This server folder contains %1, which is already synced with the local folder %2. Each server folder can only be synced once. "
-                      "Choose a folder outside of it, or remove the existing folder sync connection first.")
-                .arg(remoteFolderForDisplay(existing), localFolder);
+            return tr("This server folder contains the folder %1, which is already synced with the local folder %2. Each server folder can only be "
+                      "synced once. Choose a folder outside of it, or remove the existing folder sync connection first.")
+                .arg(existing.chopped(1), localFolder);
         }
         if (wanted.startsWith(existing)) {
-            return tr("This server folder is part of %1, which is already synced with the local folder %2. Each server folder can only be synced once. "
-                      "To sync it to a different local folder, remove the existing folder sync connection first.")
-                .arg(remoteFolderForDisplay(existing), localFolder);
+            return tr("This server folder is inside the folder %1, which is already synced with the local folder %2. Each server folder can only be "
+                      "synced once. To sync it to a different local folder, remove the existing folder sync connection first.")
+                .arg(existing.chopped(1), localFolder);
         }
     }
     return {};

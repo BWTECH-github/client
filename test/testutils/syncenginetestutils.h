@@ -490,6 +490,17 @@ public:
     QByteArray _body;
 };
 
+// Eine Weiterleitung, wie sie unter QNetworkRequest::ManualRedirectPolicy ankommt: ohne Fehler, mit Status 3xx und Ziel.
+// Gefolgt wird ihr nicht.
+class FakeRedirectReply : public FakeReply
+{
+    Q_OBJECT
+public:
+    FakeRedirectReply(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent, int httpStatus, const QUrl &location);
+
+    qint64 readData(char *, qint64) override { return 0; }
+};
+
 // A reply that never responds
 class FakeHangingReply : public FakeReply
 {

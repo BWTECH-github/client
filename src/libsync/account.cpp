@@ -318,6 +318,19 @@ QUrl Account::url() const
     return _url;
 }
 
+void Account::setUrl(const QUrl &url)
+{
+    if (_url == url) {
+        return;
+    }
+    _url = url;
+    // die Capabilities lösen App-Provider-Adressen gegen die Serveradresse auf
+    if (_capabilities.isValid()) {
+        _capabilities = Capabilities(url, _capabilities.raw());
+    }
+    Q_EMIT urlChanged();
+}
+
 QString Account::hostName() const
 {
     return _url.host();

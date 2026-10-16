@@ -49,6 +49,8 @@ private:
 
     const Account *const _account = nullptr;
     mutable std::unique_ptr<QSettings> _credentialsList;
+    // der Bereich, für den _credentialsList geöffnet wurde: er enthält den Host und wechselt mit einem Serverumzug
+    mutable QString _credentialsListScope;
 };
 
 class OWNCLOUDSYNC_EXPORT CredentialJob : public QObject

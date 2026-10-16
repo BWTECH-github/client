@@ -869,6 +869,26 @@ FakeHangingReply::FakeHangingReply(QNetworkAccessManager::Operation op, const QN
     open(QIODevice::ReadOnly);
 }
 
+FakeRedirectReply::FakeRedirectReply(
+    QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent, int httpStatus, const QUrl &location)
+    : FakeReply(parent)
+{
+    setRequest(request);
+    setUrl(request.url());
+    setOperation(op);
+    open(QIODevice::ReadOnly);
+    setAttribute(QNetworkRequest::HttpStatusCodeAttribute, httpStatus);
+    setAttribute(QNetworkRequest::RedirectionTargetAttribute, location);
+    setRawHeader("Location", location.toEncoded());
+    QMetaObject::invokeMethod(
+        this,
+        [this] {
+            Q_EMIT metaDataChanged();
+            checkedFinished();
+        },
+        Qt::QueuedConnection);
+}
+
 FakeAM::FakeAM(FileInfo initialRoot, QObject *parent)
     : OCC::AccessManager(parent)
     , _remoteRootFileInfo{std::move(initialRoot)}

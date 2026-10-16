@@ -85,6 +85,9 @@ void FolderModelController::onFolderListChanged(const QUuid &accountId, const QL
 
     // if the accountId is null it should mean that ALL folders in the system, regardless of account id, were removed, eg on shutdown
     // so we still need to clear the model even if the accountId is null. In this case the whole model needs to be cleared
+    // die Zeilen verschwinden gleich mit ihren Items, _items darf keine verwaisten Zeiger behalten
+    _items.clear();
+
     if (accountId.isNull()) {
         Q_ASSERT(folders.isEmpty());
         _model->clear();

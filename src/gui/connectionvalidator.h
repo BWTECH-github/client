@@ -120,6 +120,12 @@ public Q_SLOTS:
 Q_SIGNALS:
     void connectionResult(ConnectionValidator::Status status, const QStringList &errors);
 
+    /**
+     * status.php antwortete mit einer dauerhaften Weiterleitung (301/308): Der Server ist wohl umgezogen. Gefolgt wird ihr
+     * nicht (das Ziel kann ein fremder Host sein); die Adresse wird nur zur Übernahme angeboten. Kommt vor connectionResult().
+     */
+    void serverMoved(const QUrl &newServerUrl);
+
     void sslErrors(const QList<QSslError> &errors);
 
 protected Q_SLOTS:

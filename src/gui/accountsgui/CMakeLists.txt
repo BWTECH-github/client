@@ -11,5 +11,7 @@ target_sources(owncloudGui PRIVATE
   accountmodalwidget.cpp
   accountmodalwidget.h
   accountmodalwidget.ui
+  serveraddressdialog.cpp
+  serveraddressdialog.h
 )
 

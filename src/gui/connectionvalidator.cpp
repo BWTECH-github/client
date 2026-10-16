@@ -16,6 +16,7 @@
 #include "gui/clientproxy.h"
 #include "gui/fetchserversettings.h"
 #include "gui/networkinformation.h"
+#include "gui/servermove.h"
 #include "libsync/account.h"
 #include "libsync/creds/abstractcredentials.h"
 #include "libsync/networkjobs.h"
@@ -164,6 +165,22 @@ void ConnectionValidator::checkServerJobFinished()
             return;
         default:
             break;
+        }
+
+        // Serverumzug: status.php antwortet mit einer dauerhaften Weiterleitung. Nicht folgen (das Ziel kann ein fremder Host
+        // sein), aber die neue Adresse nennen; übernehmen lässt sie sich über „Serveradresse ändern…“ im Kontomenü.
+        const int httpStatus = _checkServerJob->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (httpStatus == 301 || httpStatus == 308) {
+            const QUrl location = _checkServerJob->reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+            const QUrl movedTo = ServerMove::serverUrlFromStatusUrl(_checkServerJob->reply()->url().resolved(location));
+            if (movedTo.isValid()) {
+                qCWarning(lcConnectionValidator) << "status.php moved permanently to" << movedTo;
+                _errors.append(tr("The server reports a new address: %1. If your server has moved, choose “Change server address…” in the account menu.")
+                                   .arg(movedTo.toDisplayString()));
+                Q_EMIT serverMoved(movedTo);
+                reportResult(StatusNotFound);
+                return;
+            }
         }
 
         if (!_account->credentials()->stillValid(_checkServerJob->reply())) {

@@ -331,6 +331,21 @@ void Credentials::askFromUserSucceeded(const QString &token, const QString &refr
     }
 }
 
+void Credentials::replaceTokens(const QString &accessToken, const QString &refreshToken)
+{
+    if (_oAuthJob) {
+        // die Erneuerung lief gegen die alte Adresse; ihr Ergebnis darf die neuen Token nicht überschreiben
+        _oAuthJob->disconnect(this);
+        _oAuthJob->deleteLater();
+        _oAuthJob = nullptr;
+    }
+    _tokenRefreshRetriesCount = 0;
+    _fetchErrorString.clear();
+    // sonst läse checkConnectivity() erst den Schlüsselbund, während der neue Token noch geschrieben wird
+    _wasEverFetched = true;
+    askFromUserSucceeded(accessToken, refreshToken);
+}
+
 void Credentials::askFromUserLogout()
 {
     Q_EMIT requestLogout();

@@ -53,6 +53,7 @@ protected:
     void onOpenAccountInBrowser();
     void onToggleSignInState();
     void onChangeAlias();
+    void onChangeServerUrl();
 
     void onFolderWizardAccepted();
 
@@ -69,6 +70,7 @@ private:
     QAction *_showInBrowser = nullptr;
     QAction *_remove = nullptr;
     QAction *_rename = nullptr;
+    QAction *_changeServerUrl = nullptr;
 
     void buildManageAccountMenu();
     void refreshAccountActions();

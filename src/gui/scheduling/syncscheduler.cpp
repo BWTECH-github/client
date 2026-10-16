@@ -85,6 +85,22 @@ public:
     auto empty() { return _queue.empty(); }
     auto size() { return _queue.size(); }
 
+    // Ein gelöschter Ordner muss ganz heraus: _scheduledFolders führt rohe Zeiger, und ein neuer Ordner an derselben Adresse
+    // gälte sonst als schon eingereiht und würde nie synchronisiert.
+    void remove(Folder *folder)
+    {
+        if (_scheduledFolders.erase(folder) == 0) {
+            return;
+        }
+        decltype(_queue) out;
+        for (; !_queue.empty(); _queue.pop()) {
+            if (_queue.top().rawFolder != folder) {
+                out.push(_queue.top());
+            }
+        }
+        _queue = std::move(out);
+    }
+
     std::pair<Folder *, SyncScheduler::Priority> pop()
     {
         Element out;
@@ -168,6 +184,11 @@ void SyncScheduler::enqueueFolder(Folder *folder, Priority priority)
     if (!_currentSync) {
         startNext();
     }
+}
+
+void SyncScheduler::removeFolder(Folder *folder)
+{
+    _queue->remove(folder);
 }
 
 void SyncScheduler::startNext()

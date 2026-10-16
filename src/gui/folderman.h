@@ -23,6 +23,8 @@
 #include <QList>
 #include <QObject>
 
+#include <functional>
+
 namespace OCC {
 
 class FolderMan;
@@ -317,6 +319,14 @@ public:
 
     // todo: #3
     void removeFolderSettings(Folder *folder);
+
+    /**
+     * Baut alle Ordnerpaare eines Kontos neu auf, etwa nach einem Serverumzug: Laufende Synchronisationen werden beendet,
+     * die Ordner entladen (Journale, lokale Ordner und virtuelle Dateien bleiben), @p adjust passt jede Definition an,
+     * dann werden sie gespeichert und neu geladen. Die alten Ordner sind gelöscht, bevor die neuen entstehen: Journal und
+     * Cloud-Files-Verbindung lassen sich nicht doppelt öffnen.
+     */
+    void rebuildFoldersForAccount(AccountState *accountState, const std::function<void(FolderDefinition &)> &adjust);
 
     /**
      * @brief folder retrieves the folder given the spaceId, or null if no folder exists for the account and space combo

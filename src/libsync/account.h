@@ -92,9 +92,16 @@ public:
 
     /**
      * url is the user endpoint for the account
-     * This value is immutable after construction.
+     * It only changes when the server moved (setUrl()).
      */
     QUrl url() const;
+
+    /**
+     * Neue Serveradresse nach einem Serverumzug (ServerMove::applyNewServerUrl()). Nur für Konten ohne Spaces: Die
+     * Ordnerpaare des Kontos muss der Aufrufer mit der neuen WebDAV-Adresse neu aufbauen, die Zugangsdaten neu speichern
+     * (sie liegen unter dem Hostnamen im Schlüsselbund).
+     */
+    void setUrl(const QUrl &url);
 
 
     /***
@@ -239,6 +246,9 @@ Q_SIGNALS:
     void accountAliasChanged(const QString &newAlias);
 
     void unknownConnectionState();
+
+    /// nach setUrl()
+    void urlChanged();
 
     // the signal exists on the Account object as the Approvider itself can change during runtime
     void appProviderErrorOccured(const QString &error);

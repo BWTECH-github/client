@@ -73,6 +73,13 @@ public:
      */
     bool refreshAccessToken() override;
 
+    /**
+     * Übernimmt Token einer Anmeldung, die außerhalb dieses Objekts lief (Serverumzug: Anmeldung an der neuen Adresse).
+     * Bricht eine laufende Erneuerung gegen die alte Adresse ab, speichert die Token unter der aktuellen Kontoadresse und
+     * schließt eine offene Neuanmeldung wie nach einer erfolgreichen Anmeldung.
+     */
+    void replaceTokens(const QString &accessToken, const QString &refreshToken);
+
 protected:
     bool networkAvailable();
 
