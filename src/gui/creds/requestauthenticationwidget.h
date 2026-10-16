@@ -29,6 +29,8 @@ public:
     explicit RequestAuthenticationWidget(QWidget *parent = nullptr);
 
     void setAuthUrl(const QString &url);
+    /** verwirft den Link einer beendeten Anmeldung: Feld leer, Anmelden und Kopieren gesperrt bis zum nächsten setAuthUrl() */
+    void clearAuthUrl();
     void setErrorMessage(const QString &error);
 
 protected:

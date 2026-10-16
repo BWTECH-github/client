@@ -131,10 +131,20 @@ private:
     QPushButton *_copyButton = nullptr;
 
     bool _oauthCompleted = false;
+    // der Browser ist zurückgekehrt, Benutzer und Server werden geprüft
+    bool _checkingResult = false;
     OAuthPageResults _results;
 
 
     void buildPage();
+    /** true, solange die Anmeldeseite im Assistenten angezeigt wird */
+    bool pageIsCurrent() const;
+    /** true, solange die Anmeldeseite angezeigt wird und _oauth noch für die eingestellte Adresse gilt */
+    bool resultStillWanted() const;
+    /** verwirft ein nicht mehr gewolltes Ergebnis; steht die Seite für eine andere Adresse, beginnt danach deren Anmeldung */
+    void discardResult();
+    /** trennt @p oauth (keine Meldungen mehr) und löscht es später, womit auch sein Listener schließt; nullptr ist erlaubt */
+    void endSignIn(OAuth *oauth);
     QIcon copyIcon();
     /** displays the error in the page, sets the error value in the results and emits failure(results) */
     void handleError(const QString &error);

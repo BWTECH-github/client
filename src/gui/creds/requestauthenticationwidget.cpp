@@ -68,6 +68,7 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     _urlField->setAccessibleDescription(tr("To copy the sign in URL to the clipboard, use the copy button"));
 
     _copyButton = new QPushButton(_copyIcon, QString(), this);
+    _copyButton->setObjectName(QStringLiteral("CopyUrlToClipboardButton"));
     _copyButton->setFlat(true);
     _copyButton->setContentsMargins(0, 0, 0, 0);
     _copyButton->setFixedSize(_urlField->height(), _urlField->height());
@@ -94,8 +95,10 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     }
 
     _cancelButton = new QPushButton(tr("Stay logged out"), this);
+    _cancelButton->setObjectName(QStringLiteral("StayLoggedOutButton"));
     connect(_cancelButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::stayLoggedOutClicked);
     _signInButton = new QPushButton(tr("Sign in"), this);
+    _signInButton->setObjectName(QStringLiteral("SignInButton"));
     connect(_signInButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::connectClicked);
 
     QVBoxLayout *layout = new QVBoxLayout();
@@ -135,6 +138,7 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     // disable buttons until the url has been set
     _cancelButton->setEnabled(false);
     _signInButton->setEnabled(false);
+    _copyButton->setEnabled(false);
 }
 
 bool RequestAuthenticationWidget::eventFilter(QObject *target, QEvent *event)
@@ -176,7 +180,19 @@ void RequestAuthenticationWidget::setAuthUrl(const QString &url)
         // and enable the buttons:
         _cancelButton->setEnabled(true);
         _signInButton->setEnabled(true);
+        _copyButton->setEnabled(true);
     }
+}
+
+void RequestAuthenticationWidget::clearAuthUrl()
+{
+    _authUrl.clear();
+    _urlField->clear();
+    onClipboardChanged();
+    _signInButton->setEnabled(false);
+    _copyButton->setEnabled(false);
+    // nach einem Fehlschlag muss man den Dialog verlassen können, auch wenn kein neuer Link kommt (Server nicht erreichbar)
+    _cancelButton->setEnabled(true);
 }
 
 void RequestAuthenticationWidget::onClipboardChanged()

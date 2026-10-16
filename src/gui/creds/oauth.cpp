@@ -136,12 +136,24 @@ bool OAuth::listen()
                 qCInfo(lcOauth) << "Waiting for the browser on 127.0.0.1 and [::1], port" << _server.serverPort();
                 return true;
             }
-            // ohne IPv6-Loopback, oder ein fester Port ist unter ::1 vergeben: nur IPv4, wie bisher
-            if (_serverV6.serverError() != QAbstractSocket::AddressInUseError || attempt == attempts) {
-                qCInfo(lcOauth) << "Waiting for the browser on 127.0.0.1, port" << _server.serverPort() << "- [::1] unavailable:" << _serverV6.errorString();
+            // Nur ohne IPv6-Loopback (Protokoll fehlt oder ::1 ist nicht vergeben) reicht IPv4 wie bisher: Dann löst auch
+            // kein Browser localhost als ::1 auf. Jeder andere Fehler (Port belegt, unter Windows exklusiv gebunden oder
+            // reserviert, Ressourcen knapp) betrifft nur diesen Port; ein Browser, der localhost als ::1 auflöst, landete
+            // sonst bei einem anderen Programm oder im Leeren: anderen Port nehmen.
+            const auto v6Error = _serverV6.serverError();
+            if (v6Error == QAbstractSocket::UnsupportedSocketOperationError || v6Error == QAbstractSocket::SocketAddressNotAvailableError) {
+                qCInfo(lcOauth) << "Waiting for the browser on 127.0.0.1, port" << _server.serverPort() << "- no IPv6 loopback:" << _serverV6.errorString();
                 return true;
             }
+            qCInfo(lcOauth) << "Cannot listen on [::1], port" << _server.serverPort() << "-" << _serverV6.errorString();
             _server.close();
+        }
+    }
+    // Kein Port ließ sich auf beiden Adressen öffnen: als letzter Ausweg nur IPv4, wie vor dem Lauschen auf ::1
+    for (const quint16 port : ports) {
+        if (_server.listen(QHostAddress::LocalHost, port)) {
+            qCWarning(lcOauth) << "Waiting for the browser on 127.0.0.1 only, port" << _server.serverPort() << "- [::1] failed for every port";
+            return true;
         }
     }
     return false;

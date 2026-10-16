@@ -8,16 +8,21 @@
 #include <QtTest/QtTest>
 #include <QDesktopServices>
 
+#include "accountsgui/accountmodalwidget.h"
 #include "common/asserts.h"
 #include "creds/oauth.h"
+#include "creds/requestauthenticationcontroller.h"
+#include "creds/requestauthenticationwidget.h"
 #include "newaccountwizard/oauthpagecontroller.h"
 #include "testutils/syncenginetestutils.h"
 #include "theme.h"
 
 #include <config/appconfig.h>
 
+#include <QPushButton>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QWizard>
 #include <QWizardPage>
 
 using namespace std::chrono_literals;
@@ -43,6 +48,34 @@ quint16 redirectPort(const QUrl &authorisationLink)
 {
     const QUrl redirectUri(QUrlQuery(authorisationLink).queryItemValue(QStringLiteral("redirect_uri"), QUrl::FullyDecoded));
     return static_cast<quint16>(redirectUri.port());
+}
+
+// simulierter Browser nach der Anmeldung: ruft http://localhost:<port>/?code=…&state=… zum Anmeldelink über 127.0.0.1 auf
+void browserCallback(const QUrl &authorisationLink, QObject *parent)
+{
+    const QByteArray state = QUrlQuery(authorisationLink).queryItemValue(QStringLiteral("state"), QUrl::FullyDecoded).toUtf8();
+    const QByteArray get = "GET /?code=probe-code&state=" + QUrl::toPercentEncoding(QString::fromUtf8(state)) + " HTTP/1.1\r\nHost: localhost\r\n\r\n";
+    auto *socket = new QTcpSocket(parent);
+    QObject::connect(socket, &QTcpSocket::connected, socket, [socket, get] { socket->write(get); });
+    socket->connectToHost(QHostAddress::LocalHost, redirectPort(authorisationLink));
+}
+
+QByteArray openIdConfigurationPayload()
+{
+    return QJsonDocument(QJsonObject{{QStringLiteral("authorization_endpoint"), QStringLiteral("oauthtest://auth.example.com/realms/test/protocol/openid-connect/auth")},
+                             {QStringLiteral("token_endpoint"), QStringLiteral("oauthtest://openidserver/token_endpoint")},
+                             {QStringLiteral("token_endpoint_auth_methods_supported"), QJsonArray{QStringLiteral("client_secret_post")}}})
+        .toJson();
+}
+
+QByteArray userInfoJson()
+{
+    return QByteArrayLiteral("{\"ocs\":{\"data\":{\"id\":\"admin\",\"display-name\":\"Admin\",\"email\":\"admin@admin.admin\"}}}");
+}
+
+QByteArray tokenJson()
+{
+    return QByteArrayLiteral("{\"access_token\":\"123\",\"refresh_token\":\"456\",\"token_type\":\"Bearer\",\"user_id\":\"admin\"}");
 }
 
 }
@@ -363,6 +396,171 @@ public:
     FakeAM *fakeAm;
     QWizardPage page;
     OAuthPageController controller;
+
+public Q_SLOTS:
+    void browserOpened(const QUrl &url) { openedLinks.append(url); }
+};
+
+// Anmeldeseite in einem echten Assistenten (davor die Adressseite) gegen einen gefälschten Server, der die Anmeldung bis
+// zu den Capabilities beantwortet. onUserInfo läuft bei der Abfrage des Benutzers, also während der Prüfung des Kontos.
+class OAuthWizardFixture : public QObject
+{
+    Q_OBJECT
+
+public:
+    OAuthWizardFixture()
+        : fakeAm(new FakeAM(this))
+    {
+        auto *urlPage = new QWizardPage;
+        auto *oauthPage = new QWizardPage;
+        wizard.addPage(urlPage);
+        wizard.addPage(oauthPage);
+        controller = new OAuthPageController(oauthPage, fakeAm, this);
+        controller->setServerUrl(sOpenIdBaseURL);
+        controller->setAuthenticationUrl(sOpenIdBaseURL);
+        fakeAm->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *) -> QNetworkReply * {
+            const QString path = req.url().path();
+            if (path.endsWith(QLatin1String(".well-known/openid-configuration"))) {
+                return new FakePayloadReply(op, req, openIdConfigurationPayload(), fakeAm);
+            }
+            if (req.url().host() == QLatin1String("openidserver")) {
+                auto payload = std::make_unique<QBuffer>();
+                payload->setData(tokenJson());
+                return new FakePostReply(op, req, std::move(payload), fakeAm);
+            }
+            if (path.endsWith(QLatin1String("ocs/v2.php/cloud/user"))) {
+                ++userInfoRequests;
+                if (onUserInfo) {
+                    onUserInfo();
+                }
+                return new FakePayloadReply(op, req, userInfoJson(), fakeAm);
+            }
+            if (path.endsWith(QLatin1String("ocs/v2.php/cloud/capabilities"))) {
+                ++capabilitiesRequests;
+                auto *reply = new FakePayloadReply(op, req,
+                    QByteArrayLiteral("{\"ocs\":{\"data\":{\"capabilities\":{\"core\":{\"status\":{\"version\":\"11.0.0.0\",\"versionstring\":\"11.0.0\"}}}}}}"),
+                    fakeAm);
+                reply->setRawHeader(QByteArrayLiteral("Content-Type"), QByteArrayLiteral("application/json; charset=utf-8"));
+                return reply;
+            }
+            return nullptr;
+        });
+        QDesktopServices::setUrlHandler(QStringLiteral("oauthtest"), this, "browserOpened");
+        // wie im Programm: von der Adressseite zur Anmeldeseite
+        wizard.restart();
+        wizard.next();
+    }
+
+    ~OAuthWizardFixture() override
+    {
+        // vor dem Assistenten: der Controller greift auf die Elemente der Seite zu
+        delete controller;
+        QDesktopServices::unsetUrlHandler(QStringLiteral("oauthtest"));
+    }
+
+    OAuth *oauth() const { return controller->findChild<OAuth *>(); }
+
+    QList<QUrl> openedLinks;
+    FakeAM *fakeAm;
+    QWizard wizard;
+    OAuthPageController *controller = nullptr;
+    std::function<void()> onUserInfo;
+    int userInfoRequests = 0;
+    int capabilitiesRequests = 0;
+
+public Q_SLOTS:
+    void browserOpened(const QUrl &url) { openedLinks.append(url); }
+};
+
+// Wie im Programm bekommt jede Prüfung des Servers einen eigenen AccessManager: CheckServerJob übernimmt ihn und löscht
+// ihn mit sich. Die FakeCredentials gäben immer denselben heraus, der zweite Anlauf griffe dann auf einen gelöschten zu.
+class FreshAccessManagerCredentials : public FakeCredentials
+{
+public:
+    FreshAccessManagerCredentials(Account *account, FakeAM *am, const FakeAM::Override &override, QObject *parent)
+        : FakeCredentials(account, am, parent)
+        , _am(am)
+        , _override(override)
+    {
+    }
+
+    OCC::AccessManager *createAccessManager() const override
+    {
+        // der erste ist der des Kontos (Account::setCredentials)
+        if (!_handedOut) {
+            _handedOut = true;
+            return _am;
+        }
+        auto *am = new FakeAM(nullptr);
+        am->setOverride(_override);
+        return am;
+    }
+
+private:
+    FakeAM *_am;
+    FakeAM::Override _override;
+    mutable bool _handedOut = false;
+};
+
+// Dialog „Anmeldung erforderlich“ eines bestehenden Kontos gegen einen gefälschten Server
+class ReauthFixture : public QObject
+{
+    Q_OBJECT
+
+public:
+    ReauthFixture()
+        : fakeAm(new FakeAM(nullptr))
+        , account(new Account(QUuid::createUuid(), QStringLiteral("admin"), sOpenIdBaseURL, this))
+        , controller(new RequestAuthenticationController(this))
+    {
+        const FakeAM::Override server = [this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *) -> QNetworkReply * {
+            const QString path = req.url().path();
+            if (path.endsWith(QLatin1String("status.php"))) {
+                ++statusRequests;
+                if (serverDown) {
+                    return new FakeErrorReply(op, req, fakeAm, 503);
+                }
+                return new FakePayloadReply(op, req,
+                    QByteArrayLiteral("{\"installed\":true,\"maintenance\":false,\"needsDbUpgrade\":false,\"version\":\"11.0.0.0\",\"versionstring\":"
+                                      "\"11.0.0\",\"edition\":\"Community\",\"productname\":\"owncloud.online\"}"),
+                    fakeAm);
+            }
+            if (path.endsWith(QLatin1String(".well-known/openid-configuration"))) {
+                return new FakePayloadReply(op, req, openIdConfigurationPayload(), fakeAm);
+            }
+            if (req.url().host() == QLatin1String("openidserver")) {
+                auto payload = std::make_unique<QBuffer>();
+                payload->setData(tokenJson());
+                return new FakePostReply(op, req, std::move(payload), fakeAm);
+            }
+            if (path.endsWith(QLatin1String("ocs/v2.php/cloud/user"))) {
+                return new FakePayloadReply(op, req, userInfoJson(), fakeAm);
+            }
+            return nullptr;
+        };
+        fakeAm->setOverride(server);
+        // die Anmeldedaten übernehmen den FakeAM
+        account->setCredentials(new FreshAccessManagerCredentials(account, fakeAm, server, account));
+        QObject::connect(controller, &RequestAuthenticationController::requestAccountModal, this, [this](AccountModalWidget *widget) { modal.reset(widget); });
+        QDesktopServices::setUrlHandler(QStringLiteral("oauthtest"), this, "browserOpened");
+    }
+
+    ~ReauthFixture() override
+    {
+        delete controller;
+        QDesktopServices::unsetUrlHandler(QStringLiteral("oauthtest"));
+    }
+
+    QPushButton *button(const char *name) const { return modal ? modal->findChild<QPushButton *>(QString::fromLatin1(name)) : nullptr; }
+    OAuth *oauth() const { return controller->findChild<OAuth *>(); }
+
+    QList<QUrl> openedLinks;
+    FakeAM *fakeAm;
+    Account *account;
+    RequestAuthenticationController *controller;
+    std::unique_ptr<AccountModalWidget> modal;
+    bool serverDown = false;
+    int statusRequests = 0;
 
 public Q_SLOTS:
     void browserOpened(const QUrl &url) { openedLinks.append(url); }
@@ -769,6 +967,273 @@ private Q_SLOTS:
         // Assert: genau ein Browserfenster, genau ein Ergebnis (angemeldet)
         QCOMPARE(test.browserOpened, 1);
         QCOMPARE(test.results, 1);
+    }
+
+    // Ist [::1] mit dem Port schon vergeben, landete ein Browser, der localhost als ::1 auflöst, bei dem anderen Programm:
+    // dann einen anderen Port nehmen. Bisher lauschte der Client bei festen Ports sofort nur noch auf 127.0.0.1. Gibt es
+    // keinen anderen Port, bleibt es wie bisher bei IPv4.
+    void testListenerAvoidsPortTakenOnIpv6_data()
+    {
+        QTest::addColumn<bool>("withAlternative");
+        QTest::newRow("next configured port") << true;
+        QTest::newRow("no other port") << false;
+    }
+
+    void testListenerAvoidsPortTakenOnIpv6()
+    {
+        // Arrange
+        QFETCH(bool, withAlternative);
+        if (!ipv6LoopbackAvailable()) {
+            QSKIP("no IPv6 loopback on this system");
+        }
+        QTcpServer otherProgram;
+        QVERIFY(otherProgram.listen(QHostAddress::LocalHostIPv6, 0));
+        const quint16 taken = otherProgram.serverPort();
+        {
+            QTcpServer probe;
+            if (!probe.listen(QHostAddress::LocalHost, taken)) {
+                QSKIP("the port is taken on 127.0.0.1 as well");
+            }
+        }
+        FakeAM fakeAm(nullptr);
+        fakeAm.setOverride([&fakeAm](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *) -> QNetworkReply * {
+            return new FakePayloadReply(op, req, openIdConfigurationPayload(), &fakeAm);
+        });
+        const OpenIdConfig defaults = AppConfig().openIdConfig();
+        const QList<quint16> ports = withAlternative ? QList<quint16>{taken, 0} : QList<quint16>{taken};
+        OAuth oauth(sOpenIdBaseURL, {}, OpenIdConfig(defaults.clientId(), defaults.clientSecret(), ports, defaults.scopes(), defaults.prompt()), &fakeAm,
+            nullptr);
+        QSignalSpy linkChanged(&oauth, &OAuth::authorisationLinkChanged);
+
+        // Act
+        oauth.startAuthentication();
+        QVERIFY(linkChanged.wait());
+
+        // Assert
+        const quint16 port = redirectPort(oauth.authorisationLink());
+        QVERIFY(acceptsConnections(QHostAddress(QHostAddress::LocalHost), port));
+        if (withAlternative) {
+            QVERIFY(port != taken);
+            QVERIFY(acceptsConnections(QHostAddress(QHostAddress::LocalHostIPv6), port));
+        } else {
+            QCOMPARE(port, taken);
+        }
+    }
+
+    // Kommt der Rückruf, nachdem der Nutzer zur Adressseite zurückgegangen ist (davor oder während der Prüfung des Kontos),
+    // gilt das Ergebnis nicht mehr: Sonst prüfte setCurrentId() die Adressseite mit der inzwischen eingetragenen Adresse,
+    // und das Konto dafür bekäme Token, Refresh-Token und Benutzer dieses Servers.
+    void testSignInResultAfterGoingBackIsDiscarded_data()
+    {
+        QTest::addColumn<bool>("backDuringAccountCheck");
+        QTest::newRow("back before the callback") << false;
+        QTest::newRow("back while the account is checked") << true;
+    }
+
+    void testSignInResultAfterGoingBackIsDiscarded()
+    {
+        // Arrange
+        QFETCH(bool, backDuringAccountCheck);
+        OAuthWizardFixture f;
+        QSignalSpy success(f.controller, &OAuthPageController::success);
+        QVERIFY(!f.controller->validate());
+        QTRY_COMPARE(f.openedLinks.size(), 1);
+        if (backDuringAccountCheck) {
+            f.onUserInfo = [&f] { QTimer::singleShot(0, &f.wizard, &QWizard::back); };
+        } else {
+            f.wizard.back();
+        }
+
+        // Act: der Browser kehrt zurück
+        browserCallback(f.openedLinks.at(0), &f);
+
+        // Assert: verworfen, die Anmeldung ist beendet
+        QTRY_VERIFY(!f.oauth());
+        QCOMPARE(f.wizard.currentId(), 0);
+        QCOMPARE(success.size(), 0);
+        QCOMPARE(f.userInfoRequests, backDuringAccountCheck ? 1 : 0);
+        QVERIFY(!acceptsConnections(QHostAddress(QHostAddress::LocalHost), redirectPort(f.openedLinks.at(0))));
+
+        // zurück auf der Anmeldeseite beginnt eine neue Anmeldung, statt das verworfene Ergebnis zu melden
+        f.wizard.next();
+        QVERIFY(!f.controller->validate());
+        QTRY_COMPARE(f.openedLinks.size(), 2);
+        QVERIFY(f.oauth());
+        QCOMPARE(success.size(), 0);
+    }
+
+    // Gegenprobe: auf der Anmeldeseite geht das Ergebnis durch
+    void testSignInResultOnSignInPageIsAccepted()
+    {
+        OAuthWizardFixture f;
+        QSignalSpy success(f.controller, &OAuthPageController::success);
+        QVERIFY(!f.controller->validate());
+        QTRY_COMPARE(f.openedLinks.size(), 1);
+
+        browserCallback(f.openedLinks.at(0), &f);
+
+        QTRY_COMPARE(success.size(), 1);
+        const auto results = success.at(0).at(0).value<OAuthPageResults>();
+        QCOMPARE(results.token, QStringLiteral("123"));
+        QCOMPARE(results.userId, QStringLiteral("admin"));
+        QCOMPARE(f.capabilitiesRequests, 1);
+    }
+
+    // Zurück und eine andere Adresse (onUrlValidationCompleted): Die Anmeldung für die vorige Adresse endet sofort, ihr
+    // Listener nimmt keinen Rückruf mehr an. Dieselbe Adresse lässt sie bestehen („Browser erneut öffnen“).
+    void testSignInEndsWhenAddressChanges()
+    {
+        // Arrange
+        OAuthWizardFixture f;
+        QSignalSpy success(f.controller, &OAuthPageController::success);
+        QVERIFY(!f.controller->validate());
+        QTRY_COMPARE(f.openedLinks.size(), 1);
+        const QPointer<OAuth> first = f.oauth();
+        const quint16 firstPort = redirectPort(f.openedLinks.at(0));
+        f.wizard.back();
+
+        // Act 1: dieselbe Adresse
+        f.controller->setAuthenticationUrl(sOpenIdBaseURL);
+
+        // Assert 1: die Anmeldung wartet weiter
+        QTest::qWait(50);
+        QVERIFY(first);
+        QVERIFY(first->isListening());
+
+        // Act 2: eine andere Adresse
+        const QUrl otherServer(QStringLiteral("oauthtest://other.example.com"));
+        f.controller->setServerUrl(otherServer);
+        f.controller->setAuthenticationUrl(otherServer);
+
+        // Assert 2: beendet, der Port ist zu
+        QTRY_VERIFY(!first);
+        QVERIFY(!f.oauth());
+        QVERIFY(!acceptsConnections(QHostAddress(QHostAddress::LocalHost), firstPort));
+
+        // zurück auf der Anmeldeseite beginnt die Anmeldung für die neue Adresse und geht durch
+        f.wizard.next();
+        QVERIFY(!f.controller->validate());
+        QTRY_COMPARE(f.openedLinks.size(), 2);
+        browserCallback(f.openedLinks.at(1), &f);
+        QTRY_COMPARE(success.size(), 1);
+        QCOMPARE(success.at(0).at(0).value<OAuthPageResults>().userId, QStringLiteral("admin"));
+    }
+
+    // Zurück während der Prüfung, eine andere Adresse und wieder zur Anmeldeseite: validate() lehnt während der Prüfung ab.
+    // Nach dem Verwerfen beginnt die Anmeldung für die neue Adresse von selbst, statt die Seite ohne Anmeldung stehen zu lassen.
+    void testSignInForNewAddressStartsAfterDiscardedCheck()
+    {
+        // Arrange
+        OAuthWizardFixture f;
+        QSignalSpy success(f.controller, &OAuthPageController::success);
+        QSignalSpy failure(f.controller, &OAuthPageController::failure);
+        QVERIFY(!f.controller->validate());
+        QTRY_COMPARE(f.openedLinks.size(), 1);
+        const QUrl otherServer(QStringLiteral("oauthtest://other.example.com"));
+        bool switched = false;
+        bool validateRefused = false;
+        f.onUserInfo = [&] {
+            if (switched) {
+                return;
+            }
+            switched = true;
+            QTimer::singleShot(0, &f.wizard, [&] {
+                // wie im Programm: Zurück, neue Adresse geprüft (onUrlValidationCompleted), Anmeldeseite prüft automatisch
+                f.wizard.back();
+                f.controller->setServerUrl(otherServer);
+                f.controller->setAuthenticationUrl(otherServer);
+                f.wizard.next();
+                validateRefused = !f.controller->validate();
+            });
+        };
+
+        // Act
+        browserCallback(f.openedLinks.at(0), &f);
+
+        // Assert: das Ergebnis des ersten Servers ist verworfen, für den neuen öffnet sich der Browser
+        QTRY_COMPARE(f.openedLinks.size(), 2);
+        QVERIFY(validateRefused);
+        QCOMPARE(f.wizard.currentId(), 1);
+        QCOMPARE(success.size(), 0);
+        QCOMPARE(failure.size(), 0);
+
+        // die neue Anmeldung geht durch
+        browserCallback(f.openedLinks.at(1), &f);
+        QTRY_COMPARE(success.size(), 1);
+        QCOMPARE(f.userInfoRequests, 2);
+    }
+
+    // Neuanmeldung: Lässt sich der Browser nicht öffnen, bleibt die Anmeldung samt Listener, Port und state bestehen; die
+    // Meldung fordert ja zum Kopieren des Links auf. Bisher begann sie neu, der kopierte Link führte auf einen geschlossenen Port.
+    void testReauthBrowserFailureKeepsSignIn()
+    {
+        // Arrange: openUrl() schlägt fehl, weil der Handler keine passende Methode hat
+        ReauthFixture f;
+        QDesktopServices::setUrlHandler(QStringLiteral("oauthtest"), &f, "noSuchMethod");
+        QSignalSpy succeeded(f.controller, &RequestAuthenticationController::authenticationSucceeded);
+        f.controller->startAuthentication(f.account);
+        QTRY_VERIFY(f.button("SignInButton") && f.button("SignInButton")->isEnabled());
+        const QPointer<OAuth> oauth = f.oauth();
+        QVERIFY(oauth);
+        const QUrl link = oauth->authorisationLink();
+
+        // Act: zweimal „Anmelden“
+        f.button("SignInButton")->click();
+        f.button("SignInButton")->click();
+        QTest::qWait(100);
+
+        // Assert: dieselbe Anmeldung wartet weiter, kein neuer Anlauf
+        QVERIFY(oauth);
+        QCOMPARE(f.oauth(), oauth.data());
+        QCOMPARE(oauth->authorisationLink(), link);
+        QCOMPARE(f.statusRequests, 1);
+
+        // der kopierte Link führt die Anmeldung zu Ende
+        browserCallback(link, &f);
+        QTRY_COMPARE(succeeded.size(), 1);
+        QCOMPARE(succeeded.at(0).at(0).toString(), QStringLiteral("123"));
+        QCOMPARE(succeeded.at(0).at(1).toString(), QStringLiteral("456"));
+    }
+
+    // Neuanmeldung ohne erreichbaren Server: nicht sofort neu beginnen (bisher eine enge Schleife aus status.php-Anfragen,
+    // solange der Dialog offen ist), sondern nach einer Pause; „Abgemeldet bleiben“ bleibt möglich
+    void testReauthRetriesWithPauseWhenServerIsDown()
+    {
+        // Arrange
+        ReauthFixture f;
+        f.serverDown = true;
+
+        // Act
+        f.controller->startAuthentication(f.account);
+
+        // Assert
+        QTRY_COMPARE(f.statusRequests, 1);
+        QTest::qWait(1000);
+        QCOMPARE(f.statusRequests, 1);
+        QVERIFY(f.button("StayLoggedOutButton")->isEnabled());
+        QVERIFY(!f.button("SignInButton")->isEnabled());
+        QVERIFY(!f.button("CopyUrlToClipboardButton")->isEnabled());
+        // auch ein direkt ausgelöstes „Anmelden“ öffnet ohne laufende Anmeldung nichts
+        Q_EMIT f.modal->findChild<RequestAuthenticationWidget *>()->connectClicked();
+        QCOMPARE(f.openedLinks.size(), 0);
+
+        // nach der Pause ein neuer Anlauf; ist der Server wieder da, kommt der Link
+        f.serverDown = false;
+        QTRY_COMPARE_WITH_TIMEOUT(f.statusRequests, 2, 5000);
+        QTRY_VERIFY(f.button("SignInButton")->isEnabled());
+        QVERIFY(f.button("CopyUrlToClipboardButton")->isEnabled());
+        f.button("SignInButton")->click();
+        QTRY_COMPARE(f.openedLinks.size(), 1);
+    }
+
+    void testReauthRestartDelay()
+    {
+        using namespace std::chrono_literals;
+        QCOMPARE(RequestAuthenticationController::restartDelay(1), 2000ms);
+        QCOMPARE(RequestAuthenticationController::restartDelay(2), 4000ms);
+        QCOMPARE(RequestAuthenticationController::restartDelay(5), 32000ms);
+        QCOMPARE(RequestAuthenticationController::restartDelay(6), 60000ms);
+        QCOMPARE(RequestAuthenticationController::restartDelay(1000), 60000ms);
     }
 };
 

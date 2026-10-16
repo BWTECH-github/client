@@ -14,6 +14,7 @@
 #pragma once
 
 #include <QObject>
+#include <QTimer>
 
 #include "oauth.h"
 
@@ -34,6 +35,9 @@ public:
 
     void startAuthentication(Account *account);
 
+    /** Pause vor dem Neubeginn nach dem n-ten Fehlschlag in Folge (n >= 1): 2 s, danach doppelt so lang, höchstens 60 s */
+    static std::chrono::milliseconds restartDelay(int failedAttempts);
+
 Q_SIGNALS:
     void requestAccountModal(OCC::AccountModalWidget *widget);
     void requestLogout();
@@ -46,9 +50,17 @@ private:
     void handleLogOut();
     void authUrlReady();
     void handleOAuthResult(OAuth::Result, const QString &accessToken, const QString &refreshToken);
+    /** beendet die laufende Anmeldung (Listener zu, Link ungültig) und beginnt nach restartDelay() neu */
+    void restartAfterError();
+    void discardOAuth();
 
     AccountBasedOAuth *_oauth = nullptr;
     QPointer<Account> _account = nullptr;
+    // Fehlschläge in Folge, seit zuletzt ein Link angezeigt wurde
+    int _failedAttempts = 0;
+    // der Link dieser Anmeldung wird angezeigt: ab hier folgt jedes Ergebnis einer Handlung des Nutzers
+    bool _linkShown = false;
+    QTimer _restartTimer;
 
     // these will be cleaned up by the account gui automatically when the AccountModalWidget is "finished"
     // that is handled internally when accept() or reject() is called

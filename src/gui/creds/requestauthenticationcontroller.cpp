@@ -21,6 +21,10 @@
 
 #include <config/appconfig.h>
 
+#include <algorithm>
+
+using namespace std::chrono_literals;
+
 namespace OCC {
 
 /**
@@ -31,6 +35,13 @@ namespace OCC {
 RequestAuthenticationController::RequestAuthenticationController(QObject *parent)
     : QObject{parent}
 {
+    _restartTimer.setSingleShot(true);
+    connect(&_restartTimer, &QTimer::timeout, this, [this] {
+        // ohne Dialog (vom Kontenbereich entfernt) gibt es niemanden, der sich anmelden könnte
+        if (_account && _widget) {
+            startAuthentication(_account);
+        }
+    });
 }
 
 RequestAuthenticationController::~RequestAuthenticationController()
@@ -41,9 +52,19 @@ RequestAuthenticationController::~RequestAuthenticationController()
         _modalWidget->reject();
 }
 
+std::chrono::milliseconds RequestAuthenticationController::restartDelay(int failedAttempts)
+{
+    const int doublings = std::clamp(failedAttempts - 1, 0, 5);
+    return std::min<std::chrono::milliseconds>(2s * (1 << doublings), 60s);
+}
+
 void RequestAuthenticationController::handleSignIn()
 {
-    _oauth->openBrowser();
+    // Nur mit angezeigtem Link einer Anmeldung, die noch auf den Browser wartet: Zwischen einem Fehlschlag und dem Neubeginn
+    // gibt es keine (der Knopf ist dann gesperrt), und nach dem Rückruf des Browsers ist der Listener schon zu.
+    if (_oauth && _linkShown && _oauth->isListening()) {
+        _oauth->openBrowser();
+    }
 }
 
 void RequestAuthenticationController::handleLogOut()
@@ -55,15 +76,25 @@ void RequestAuthenticationController::handleLogOut()
     Q_EMIT requestLogout();
 }
 
+void RequestAuthenticationController::discardOAuth()
+{
+    if (_oauth) {
+        // erst später löschen: das läuft auch aus einem Signal von _oauth heraus, etwa mitten im finished des
+        // CheckServerJob, den _oauth besitzt. Getrennt meldet es nichts mehr.
+        _oauth->disconnect(this);
+        _oauth->deleteLater();
+        _oauth = nullptr;
+    }
+}
+
 void RequestAuthenticationController::startAuthentication(Account *account)
 {
     Q_ASSERT(account);
-    if (_oauth) {
-        delete _oauth;
-        _oauth = nullptr;
-    }
+    _restartTimer.stop();
+    discardOAuth();
     AppConfig systemConfig;
     _account = account;
+    _linkShown = false;
     _oauth = new AccountBasedOAuth(_account, systemConfig.openIdConfig(), this);
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &RequestAuthenticationController::authUrlReady);
     connect(_oauth, &OAuth::result, this, &RequestAuthenticationController::handleOAuthResult);
@@ -83,12 +114,26 @@ void RequestAuthenticationController::startAuthentication(Account *account)
     _oauth->startAuthentication();
 }
 
+void RequestAuthenticationController::restartAfterError()
+{
+    // der angezeigte Link führt ins Leere, sobald diese Anmeldung beendet ist
+    _widget->clearAuthUrl();
+    discardOAuth();
+    // nicht sofort neu beginnen: Ist der Server nicht erreichbar, scheitert jeder Anlauf gleich wieder, eine enge Schleife
+    ++_failedAttempts;
+    _restartTimer.start(restartDelay(_failedAttempts));
+}
+
 void RequestAuthenticationController::authUrlReady()
 {
     if (_widget) {
         QString authUrl = _oauth->authorisationLink().toString(QUrl::FullyEncoded);
-        if (authUrl.isEmpty())
+        if (authUrl.isEmpty()) {
             _widget->setErrorMessage(tr("Unable to retrieve authorization link! Please contact your system administrator."));
+        } else {
+            _failedAttempts = 0;
+            _linkShown = true;
+        }
         _widget->setAuthUrl(authUrl);
     } else {
         // just run with it
@@ -121,19 +166,30 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
         break;
     }
 
+    // Nur nach dem Browser oder einem Klick nach vorn holen, nicht bei jedem Anlauf, der den Server nicht erreicht. Vorher
+    // lesen: authenticationSucceeded() löscht diesen Controller.
+    const bool raiseWindow = _linkShown;
 
-    if (!errString.isEmpty() && _account) {
-        if (_widget) {
-            _widget->setErrorMessage(errString);
-            startAuthentication(_account);
-        } else
-            Q_EMIT authenticationFailed(errString);
-    } else {
+    if (errString.isEmpty()) {
         if (_modalWidget)
             _modalWidget->accept();
         Q_EMIT authenticationSucceeded(accessToken, refreshToken);
+    } else if (_widget && _account) {
+        _widget->setErrorMessage(errString);
+        // Browser ließ sich nicht öffnen: Listener, state und angezeigter Link bleiben gültig, die Meldung fordert genau zum
+        // Kopieren auf (wie im Assistenten). Jeder andere Fehlschlag beendet diese Anmeldung.
+        if (result != OAuth::NotSupported) {
+            restartAfterError();
+        }
+    } else {
+        Q_EMIT authenticationFailed(errString);
     }
 
-    ocApp()->ensureVisible();
+    if (raiseWindow) {
+        // ocAppOrNull(): in den Tests gibt es keine Application
+        if (auto *app = ocAppOrNull()) {
+            app->ensureVisible();
+        }
+    }
 }
 }

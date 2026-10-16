@@ -33,13 +33,19 @@
 #include <QImageReader>
 #include <QLabel>
 #include <QLineEdit>
+#include <QLoggingCategory>
 #include <QPushButton>
+#include <QScopeGuard>
 #include <QSignalBlocker>
+#include <QTimer>
 #include <QToolTip>
 #include <QVBoxLayout>
+#include <QWizard>
 #include <QWizardPage>
 
 namespace OCC {
+
+Q_LOGGING_CATEGORY(lcOAuthPage, "gui.newaccountwizard.oauthpage", QtInfoMsg)
 
 OAuthPageController::OAuthPageController(QWizardPage *page, AccessManager *accessManager, QObject *parent)
     : QObject{parent}
@@ -181,6 +187,54 @@ void OAuthPageController::setServerUrl(const QUrl &url)
 void OAuthPageController::setAuthenticationUrl(const QUrl &url)
 {
     _authUrl = url;
+    // Nach „Zurück“ und einer anderen Adresse die noch wartende Anmeldung beenden: Ihr Listener nähme sonst weiter den
+    // Rückruf des vorigen Servers an. Wird ihr Ergebnis gerade geprüft, verwirft handleOauthResult() es am Ende selbst.
+    if (_oauth && _oauthUrl != url && !_checkingResult) {
+        qCInfo(lcOAuthPage) << "The address changed, ending the sign-in that is still waiting for the browser";
+        endSignIn(_oauth);
+    }
+}
+
+void OAuthPageController::endSignIn(OAuth *oauth)
+{
+    if (!oauth) {
+        return;
+    }
+    // getrennt meldet sie nichts mehr; erst später löschen, weil das auch aus einem Signal von ihr heraus läuft
+    oauth->disconnect(this);
+    oauth->deleteLater();
+    if (oauth == _oauth) {
+        _oauth = nullptr;
+    }
+}
+
+bool OAuthPageController::pageIsCurrent() const
+{
+    // QWizardPage::wizard() ist geschützt; die Seite hängt über einen inneren Rahmen im Assistenten
+    const QWizard *wizard = nullptr;
+    for (const QObject *object = _page; object && !wizard; object = object->parent()) {
+        wizard = qobject_cast<const QWizard *>(object);
+    }
+    return wizard && wizard->currentPage() == _page;
+}
+
+bool OAuthPageController::resultStillWanted() const
+{
+    return pageIsCurrent() && _oauthUrl == _authUrl;
+}
+
+void OAuthPageController::discardResult()
+{
+    _results = {};
+    // Steht die Anmeldeseite inzwischen für eine andere Adresse, hat validate() deren Anmeldung wegen der laufenden Prüfung
+    // abgelehnt: nachholen, sobald diese abgeschlossen ist, sonst bliebe die Seite ohne Anmeldung stehen
+    if (pageIsCurrent()) {
+        QTimer::singleShot(0, this, [this] {
+            if (pageIsCurrent() && !_oauth) {
+                validate();
+            }
+        });
+    }
 }
 
 void OAuthPageController::copyUrlClicked()
@@ -216,14 +270,19 @@ bool OAuthPageController::validate()
         return true;
     }
 
+    // Der Browser ist zurückgekehrt, das Konto wird gerade geprüft (verschachtelte Event-Loops): kein zweiter Anmeldevorgang,
+    // und handleOauthResult() darf am Ende nicht eine neue Anmeldung statt der eigenen löschen
+    if (_checkingResult) {
+        return false;
+    }
+
     // Wartet die Anmeldung für dieselbe Adresse noch auf den Browser („Browser erneut öffnen“, Enter, zurück und erneut
     // anmelden), nur den Browser wieder öffnen: Port und state bleiben, damit ein schon geöffneter oder kopierter Link
-    // gültig bleibt, bis die Anmeldung abgeschlossen oder der Assistent geschlossen ist.
-    if (_oauth && _oauth->isListening() && _oauthUrl == _authUrl) {
-        // ohne Link läuft die Abfrage der Endpunkte noch, authUrlReady() öffnet den Browser dann selbst
-        if (!_authEndpoint.isEmpty()) {
-            openBrowser();
-        }
+    // gültig bleibt, bis die Anmeldung abgeschlossen oder der Assistent geschlossen ist. Ohne Link (die Endpunkte werden
+    // noch abgefragt) kann niemand den Link haben: dann neu beginnen. Die Abfrage selbst bliebe sonst womöglich hängen,
+    // weil die Adressprüfung nach „Zurück“ den AccessManager zurücksetzt.
+    if (_oauth && _oauth->isListening() && _oauthUrl == _authUrl && !_authEndpoint.isEmpty()) {
+        openBrowser();
         return false;
     }
 
@@ -258,8 +317,7 @@ void OAuthPageController::authUrlReady()
     // If the problem continues, please contact support."
     if (_authEndpoint.isEmpty()) {
         // ohne Link kann niemand den Listener erreichen; verwerfen, damit „Browser erneut öffnen“ neu beginnt
-        _oauth->deleteLater();
-        _oauth = nullptr;
+        endSignIn(_oauth);
         handleError(tr("Unable to connect to the login service. If the problem continues, please contact support."));
         return;
     }
@@ -277,7 +335,8 @@ void OAuthPageController::authUrlReady()
 void OAuthPageController::openBrowser()
 {
     _errorField->clear();
-    _statusField->setText(tr("Please sign in using the browser window that has opened and confirm with \"Authorize\"."));
+    // ohne Knopfnamen: „Autorisieren“ zeigt nur die App „OAuth2“, und auch sie nicht für vertrauenswürdige Clients
+    _statusField->setText(tr("Please sign in using the browser window that has opened and allow access if you are asked to."));
     // schlägt das Öffnen fehl, ersetzt handleOauthResult() den Hinweis
     _oauth->openBrowser();
 }
@@ -288,6 +347,26 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
     QString extraHelp = tr("Please copy the authentication URL using the button above, and provide this information to support.");
     switch (result) {
     case OAuth::Result::LoggedIn: {
+        // Nur übernehmen, solange die Anmeldeseite angezeigt wird und derselben Adresse gilt. Kam der Rückruf nach „Zurück“,
+        // prüfte setCurrentId() sonst die Adressseite mit der inzwischen eingetragenen Adresse, und das Konto dafür bekäme
+        // Token, Refresh-Token und Benutzer dieses Servers.
+        if (!resultStillWanted()) {
+            qCInfo(lcOAuthPage) << "Discarding the sign-in result: the sign-in page is no longer shown or the address changed";
+            discardResult();
+            break;
+        }
+        _checkingResult = true;
+        const auto checkingDone = qScopeGuard([this] { _checkingResult = false; });
+        // Die Prüfungen drehen eigene Event-Loops, „Zurück“ und eine andere Adresse sind währenddessen möglich: einen Fehler
+        // nur melden, solange das Ergebnis noch gilt
+        const auto checkFailed = [this](const QString &error) {
+            if (resultStillWanted()) {
+                handleError(error);
+            } else {
+                qCInfo(lcOAuthPage) << "Discarding the failed check: the sign-in page was left while the account was checked";
+                discardResult();
+            }
+        };
         _results.token = token;
         _results.refreshToken = refreshToken;
         // special note: if the original server url does not support webfinger, the _authUrl will equal the _serverUrl
@@ -299,8 +378,8 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
             WebFingerLookupAdapter lookup(_accessManager, token, _serverUrl);
             const WebFingerLookupResult webfingerResult = lookup.getResult();
             if (!webfingerResult.success()) {
-                handleError(tr("Failed to look up WebFinger instances: %1").arg(webfingerResult.error));
-                return;
+                checkFailed(tr("Failed to look up WebFinger instances: %1").arg(webfingerResult.error));
+                break;
             } else {
                 if (!webfingerResult.urls.isEmpty())
                     _results.webfingerUserUrl = webfingerResult.urls[0];
@@ -316,15 +395,15 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
 
         if (infoResult.success()) {
             if (AccountManager::instance()->accountForLoginExists(userInfoUrl, infoResult.userId)) {
-                handleError(tr("You are already connected to an account with these credentials."));
-                return;
+                checkFailed(tr("You are already connected to an account with these credentials."));
+                break;
             } else {
                 _results.displayName = infoResult.displayName;
                 _results.userId = infoResult.userId;
             }
         } else {
-            handleError(infoResult.error);
-            return;
+            checkFailed(infoResult.error);
+            break;
         }
 
         // Finally, get the capabilities so unsupported legacy servers can still be blocked.
@@ -333,15 +412,20 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
         if (!capabilitiesResult.success()) {
             // I don't think we want to display the core error message as it's stuff like json errors and not
             // useful to the user but we can change this after we have the discussion about error messages
-            handleError(tr("Unable to retrieve capabilities from server."));
+            checkFailed(tr("Unable to retrieve capabilities from server."));
             break;
         }
         if (Account::supportLevelForCapabilities(capabilitiesResult.capabilities) != Account::ServerSupportLevel::Supported) {
-            handleError(tr("The server is not supported by this client."));
+            checkFailed(tr("The server is not supported by this client."));
             break;
         } else
             _results.capabilities = capabilitiesResult.capabilities;
 
+        if (!resultStillWanted()) {
+            qCInfo(lcOAuthPage) << "Discarding the sign-in result: the sign-in page was left while the account was checked";
+            discardResult();
+            break;
+        }
         _oauthCompleted = true;
         Q_EMIT success(_results);
         break;
@@ -364,7 +448,7 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
         break;
     }
     };
-    delete _oauth;
-    _oauth = nullptr;
+    // Nur die Anmeldung beenden, die dieses Ergebnis geliefert hat, nicht eine inzwischen neu begonnene
+    endSignIn(qobject_cast<OAuth *>(sender()));
 }
 }
