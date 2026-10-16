@@ -340,9 +340,44 @@ Anwendung zur Datei-Synchronisation.</translation>
         <translation>Über</translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+72"/>
+        <source>Updates</source>
+        <translation>Updates</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Update channel:</source>
+        <translation>Update-Kanal:</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Check for updates now</source>
+        <translation>Jetzt nach Updates suchen</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Restart and update</source>
+        <translation>Neu starten und aktualisieren</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Beta versions bring new features earlier but are less tested. There are no downgrades: after switching back to Stable, the next stable version that is newer than the installed one is offered.</source>
+        <translation>Beta-Versionen bringen neue Funktionen früher, sind aber weniger getestet. Eine ältere Version wird nie installiert: Nach dem Wechsel zurück auf „Stabil“ kommt die nächste stabile Version, die neuer ist als die installierte.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Versions</source>
         <translation>Versionen</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+54"/>
+        <source>Stable</source>
+        <translation>Stabil</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Beta</source>
+        <translation>Beta</translation>
     </message>
 </context>
 <context>
@@ -1359,7 +1394,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Konto getrennt oder pausiert</translation>
     </message>
     <message>
-        <location line="+313"/>
+        <location line="+329"/>
         <source>User triggered force sync</source>
         <translation>Benutzer hat die Synchronisierung erzwungen</translation>
     </message>
@@ -1430,7 +1465,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Der Ordner &apos;%1&apos; wird bereits von einem anderen Konto verwendet.</translation>
     </message>
     <message>
-        <location line="-945"/>
+        <location line="-961"/>
         <source>Application shutting down</source>
         <translation>Anwendung wird beendet</translation>
     </message>
@@ -1441,6 +1476,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     </message>
     <message>
         <location line="+129"/>
+        <location line="+20"/>
         <source>Sync paused by user</source>
         <translation>Synchronisation vom Benutzer pausiert</translation>
     </message>
@@ -1966,7 +2002,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Proxy-Typ</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.cpp" line="+54"/>
+        <location filename="../src/gui/networksettings.cpp" line="+55"/>
         <location line="+1"/>
         <source>Hostname of proxy server</source>
         <translation>Hostname des Proxy-Servers</translation>
@@ -1999,18 +2035,23 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Bandbreite</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
+        <source>The automatic limit of an earlier version is no longer supported. Currently not limited.</source>
+        <translation>Die automatische Begrenzung einer früheren Version wird nicht mehr unterstützt. Derzeit nicht begrenzt.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Limit upload speed to</source>
         <translation>Upload-Geschwindigkeit begrenzen auf</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+8"/>
+        <location line="+5"/>
+        <location line="+12"/>
         <source> kB/s</source>
         <translation> kB/s</translation>
     </message>
     <message>
-        <location line="-3"/>
+        <location line="-5"/>
         <source>Limit download speed to</source>
         <translation>Download-Geschwindigkeit begrenzen auf</translation>
     </message>
@@ -2860,6 +2901,19 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
 </context>
 <context>
+    <name>OCC::PublicLinkCreator</name>
+    <message>
+        <location filename="../src/gui/shareapi.cpp" line="+337"/>
+        <source>Context menu link %1</source>
+        <translation>Link aus dem Kontextmenü %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Context menu link</source>
+        <translation>Link aus dem Kontextmenü</translation>
+    </message>
+</context>
+<context>
     <name>OCC::QuotaInfo</name>
     <message>
         <location filename="../src/gui/quotainfo.cpp" line="+107"/>
@@ -3121,7 +3175,17 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Auf dem Server gelöschte Dateien in den lokalen Papierkorb verschieben statt sie zu löschen</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+7"/>
+        <source>HTTP/2 reuses a single connection for many requests, which can speed up syncing on high-latency links and with many small files. Off by default, because transfers can stall with some servers and proxies; turn it on only if your server handles HTTP/2 reliably. Takes effect after a restart.</source>
+        <translation>HTTP/2 nutzt eine einzige Verbindung für viele Anfragen und kann so die Synchronisierung bei hohen Latenzen und vielen kleinen Dateien beschleunigen. Standardmäßig aus, weil Übertragungen mit manchen Servern und Proxys hängen bleiben können; nur einschalten, wenn Ihr Server zuverlässig mit HTTP/2 umgeht. Wirksam nach einem Neustart.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Use HTTP/2 (optional, requires restart)</source>
+        <translation>HTTP/2 verwenden (optional, erfordert Neustart)</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Edit Ignored Files</source>
         <translation>Ignorierte Dateien bearbeiten</translation>
     </message>
@@ -3166,17 +3230,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Fenster beim Start anzeigen</translation>
     </message>
     <message>
-        <location line="+84"/>
-        <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
-        <translation>HTTP/2 nutzt eine einzige Verbindung für viele Anfragen und beschleunigt so die Synchronisierung bei hohen Latenzen und vielen kleinen Dateien. Standardmäßig aktiv; nur abwählen, wenn Ihr Server oder Proxy Probleme mit HTTP/2 hat. Wirksam nach einem Neustart.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Use HTTP/2 (recommended, requires restart)</source>
-        <translation>HTTP/2 verwenden (empfohlen, erfordert Neustart)</translation>
-    </message>
-    <message>
-        <location line="+43"/>
+        <location line="+130"/>
         <source>Show sync folders in the Explorer navigation pane</source>
         <translation>Sync-Ordner im Navigationsbereich des Explorers anzeigen</translation>
     </message>
@@ -3204,7 +3258,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::ShareDialog</name>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="+827"/>
+        <location filename="../src/gui/sharedialog.cpp" line="+844"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
         <translation>%1 (%2)</translation>
@@ -3220,7 +3274,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>%1 (Gruppe)</translation>
     </message>
     <message>
-        <location line="-556"/>
+        <location line="-565"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
@@ -3236,26 +3290,27 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <location line="+452"/>
+        <location line="+287"/>
         <source>Copy link</source>
         <translation>Link kopieren</translation>
     </message>
     <message>
-        <location line="-191"/>
+        <location line="-478"/>
         <source>Could not load the existing shares.</source>
         <translation>Die vorhandenen Freigaben konnten nicht geladen werden.</translation>
     </message>
     <message>
-        <location line="+291"/>
+        <location line="+300"/>
         <source>Create public link</source>
         <translation>Öffentlichen Link erstellen</translation>
     </message>
     <message>
-        <location line="-281"/>
+        <location line="-290"/>
         <source>Creating the public link failed.</source>
         <translation>Der öffentliche Link konnte nicht erstellt werden.</translation>
     </message>
     <message>
-        <location line="+223"/>
+        <location line="+232"/>
         <source>Delete the public link &quot;%1&quot;? Everyone who has the link loses access.</source>
         <translation>Den öffentlichen Link „%1“ löschen? Alle, die den Link haben, verlieren den Zugriff.</translation>
     </message>
@@ -3265,25 +3320,25 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-179"/>
+        <location line="-188"/>
         <source>Deleting the public link failed.</source>
         <translation>Der öffentliche Link konnte nicht gelöscht werden.</translation>
     </message>
     <message>
         <location line="-184"/>
-        <location line="+578"/>
+        <location line="+587"/>
         <source>Download / View / Edit</source>
         <translation>Herunterladen / Ansehen / Bearbeiten</translation>
     </message>
     <message>
-        <location line="-579"/>
-        <location line="+581"/>
+        <location line="-588"/>
+        <location line="+590"/>
         <source>Download / View / Upload</source>
         <translation>Herunterladen / Ansehen / Hochladen</translation>
     </message>
     <message>
-        <location line="-582"/>
-        <location line="+583"/>
+        <location line="-591"/>
+        <location line="+592"/>
         <source>Download / View</source>
         <translation>Herunterladen / Ansehen</translation>
     </message>
@@ -3298,7 +3353,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-156"/>
         <source>Enter at least %1 characters to search.</source>
         <translation>Für die Suche mindestens %1 Zeichen eingeben.</translation>
     </message>
@@ -3308,22 +3363,22 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Ablaufdatum</translation>
     </message>
     <message>
-        <location line="+455"/>
+        <location line="+464"/>
         <source>Leave empty to keep the current password</source>
         <translation>Leer lassen, um das bisherige Passwort zu behalten</translation>
     </message>
     <message>
-        <location line="-135"/>
+        <location line="-144"/>
         <source>Link address of %1</source>
         <translation>Linkadresse von %1</translation>
     </message>
     <message>
-        <location line="+270"/>
+        <location line="+284"/>
         <source>Link copied to the clipboard: %1</source>
         <translation>Link in die Zwischenablage kopiert: %1</translation>
     </message>
     <message>
-        <location line="-360"/>
+        <location line="-374"/>
         <location line="+62"/>
         <source>Loading shares …</source>
         <translation>Freigaben werden geladen …</translation>
@@ -3344,12 +3399,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Name:</translation>
     </message>
     <message>
-        <location line="+444"/>
+        <location line="+453"/>
         <source>New public link</source>
         <translation>Neuer öffentlicher Link</translation>
     </message>
     <message>
-        <location line="-119"/>
+        <location line="-128"/>
         <source>No public links yet.</source>
         <translation>Noch keine öffentlichen Links.</translation>
     </message>
@@ -3374,12 +3429,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Passwort</translation>
     </message>
     <message>
-        <location line="+522"/>
+        <location line="+531"/>
         <source>Please enter a password, or uncheck the password option.</source>
         <translation>Bitte ein Passwort eingeben oder die Passwort-Option abwählen.</translation>
     </message>
     <message>
-        <location line="-525"/>
+        <location line="-534"/>
         <source>Protect with a password</source>
         <translation>Mit Passwort schützen</translation>
     </message>
@@ -3400,18 +3455,18 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <location line="+220"/>
-        <location line="+69"/>
+        <location line="+78"/>
         <location line="+45"/>
         <source>Public link</source>
         <translation>Öffentlicher Link</translation>
     </message>
     <message>
-        <location line="-548"/>
+        <location line="-560"/>
         <source>Public links</source>
         <translation>Öffentliche Links</translation>
     </message>
     <message>
-        <location line="+119"/>
+        <location line="+122"/>
         <source>Recipients can:</source>
         <translation>Empfänger können:</translation>
     </message>
@@ -3426,12 +3481,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Die Freigabe konnte nicht entfernt werden.</translation>
     </message>
     <message>
-        <location line="+239"/>
+        <location line="+248"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
     <message>
-        <location line="-250"/>
+        <location line="-259"/>
         <source>Saving the public link failed.</source>
         <translation>Der öffentliche Link konnte nicht gespeichert werden.</translation>
     </message>
@@ -3461,7 +3516,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Ablaufdatum setzen</translation>
     </message>
     <message>
-        <location line="-157"/>
+        <location line="-161"/>
         <source>Share %1</source>
         <translation>%1 teilen</translation>
     </message>
@@ -3471,7 +3526,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>&lt;b&gt;%1&lt;/b&gt; teilen</translation>
     </message>
     <message>
-        <location line="+227"/>
+        <location line="+231"/>
         <source>Share removed.</source>
         <translation>Freigabe entfernt.</translation>
     </message>
@@ -3506,7 +3561,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Teilen mit %1 beenden</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+85"/>
+        <source>More</source>
+        <translation>Mehr</translation>
+    </message>
+    <message>
+        <location line="+45"/>
         <source>Stop sharing with %1?</source>
         <translation>Teilen mit %1 beenden?</translation>
     </message>
@@ -3516,7 +3576,27 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Der Server erlaubt nur einen öffentlichen Link pro Element.</translation>
     </message>
     <message>
-        <location line="-4"/>
+        <location line="+120"/>
+        <source>Open in browser</source>
+        <translation>Im Browser öffnen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copy direct download link</source>
+        <translation>Direkt-Download-Link kopieren</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send by email…</source>
+        <translation>Per E-Mail senden…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>I shared %1 with you</source>
+        <translation>Ich habe %1 mit Ihnen geteilt</translation>
+    </message>
+    <message>
+        <location line="-130"/>
         <source>The server requires a password for this kind of link.</source>
         <translation>Der Server verlangt für diese Art von Link ein Passwort.</translation>
     </message>
@@ -3531,18 +3611,18 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Der Server verlangt ein Ablaufdatum.</translation>
     </message>
     <message>
-        <location line="-505"/>
-        <location line="+575"/>
+        <location line="-514"/>
+        <location line="+584"/>
         <source>Upload only (File Drop)</source>
         <translation>Nur hochladen (Dateiablage)</translation>
     </message>
     <message>
-        <location line="-688"/>
+        <location line="-701"/>
         <source>Users and groups</source>
         <translation>Nutzer und Gruppen</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+178"/>
         <source>You are not allowed to share this item.</source>
         <translation>Dieses Element darf nicht weitergeteilt werden.</translation>
     </message>
@@ -3585,7 +3665,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+471"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+519"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>Via %1 teilen</translation>
@@ -3630,19 +3710,39 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Neuen Ort wählen…</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="-210"/>
+        <source>Public link copied</source>
+        <translation>Öffentlicher Link kopiert</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>The public link to %1 is in the clipboard.</source>
+        <translation>Der öffentliche Link zu %1 liegt in der Zwischenablage.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The public link could not be created automatically.</source>
+        <translation>Der öffentliche Link konnte nicht automatisch erstellt werden.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Server message: %1</source>
+        <translation>Meldung des Servers: %1</translation>
+    </message>
+    <message>
+        <location line="+289"/>
         <location line="+30"/>
         <source>Share…</source>
         <translation>Teilen…</translation>
     </message>
     <message>
         <location line="-28"/>
-        <location line="+32"/>
+        <location line="+40"/>
         <source>Copy private link to clipboard</source>
         <translation>Privaten Link in die Zwischenablage kopieren</translation>
     </message>
     <message>
-        <location line="-6"/>
+        <location line="-14"/>
         <source>Resharing this file is not allowed</source>
         <translation>Weiteres Teilen dieser Datei ist nicht erlaubt.</translation>
     </message>
@@ -3652,7 +3752,22 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Weiteres Teilen des Ordners ist nicht erlaubt.</translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+7"/>
+        <source>Create public link…</source>
+        <translation>Öffentlichen Link erstellen…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Create and copy public link to clipboard</source>
+        <translation>Öffentlichen Link erstellen und in die Zwischenablage kopieren</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Manage public links…</source>
+        <translation>Öffentliche Links verwalten…</translation>
+    </message>
+    <message>
+        <location line="+74"/>
         <source>Open in %1</source>
         <translation>In %1 öffnen</translation>
     </message>
@@ -3899,7 +4014,8 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>%1 beenden</translation>
     </message>
     <message>
-        <location line="+146"/>
+        <location line="+40"/>
+        <location line="+109"/>
         <source>Pause synchronization</source>
         <translation>Synchronisation pausieren</translation>
     </message>
@@ -3914,8 +4030,8 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Bis zum Fortsetzen</translation>
     </message>
     <message>
-        <location line="-114"/>
-        <location line="+105"/>
+        <location line="-116"/>
+        <location line="+107"/>
         <source>Resume synchronization</source>
         <translation>Synchronisation fortsetzen</translation>
     </message>
@@ -3925,20 +4041,20 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Synchronisation fortsetzen (pausiert bis %1)</translation>
     </message>
     <message>
-        <location line="-522"/>
+        <location line="-525"/>
         <location line="+22"/>
-        <location line="+650"/>
+        <location line="+653"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location line="-668"/>
-        <location line="+675"/>
+        <location line="-671"/>
+        <location line="+678"/>
         <source>Syncing</source>
         <translation>Synchronisation läuft</translation>
     </message>
     <message>
-        <location line="-673"/>
+        <location line="-676"/>
         <source>Aborting sync</source>
         <translation>Synchronisation wird abgebrochen</translation>
     </message>
@@ -3959,20 +4075,20 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <location line="+2"/>
-        <location line="+580"/>
+        <location line="+583"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>Synchronisation pausiert</translation>
     </message>
     <message>
-        <location line="-649"/>
-        <location line="+655"/>
+        <location line="-652"/>
+        <location line="+658"/>
         <source>Unavailable</source>
         <translation>Nicht verfügbar</translation>
     </message>
     <message numerus="yes">
-        <location line="-543"/>
+        <location line="-546"/>
         <source>%n new notification(s)</source>
         <translation>
             <numerusform>%n neue Benachrichtigung</numerusform>
@@ -3996,7 +4112,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <location line="+40"/>
-        <location line="+92"/>
+        <location line="+95"/>
         <source>Open in browser</source>
         <translation>Im Browser öffnen</translation>
     </message>
@@ -4368,7 +4484,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+473"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Eine neue Version des %1 Clients ist verfügbar.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; steht zum Herunterladen bereit. Die installierte Version ist %3.&lt;/p&gt;</translation>
     </message>
