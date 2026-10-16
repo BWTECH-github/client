@@ -25,6 +25,8 @@
 # Ergebnis: $E2E_OUT/results.md (Tabelle), $E2E_OUT/results.tsv,
 #           $E2E_OUT/logs/<nr>-<lauf>.log (owncloudcmd-Protokolle mit HTTP-Logger).
 # Exit: 0 alle PASS, 1 mindestens ein FAIL, 2 Suite-/Umgebungsfehler (ERROR).
+# SKIP: der getestete owncloudcmd kennt die Option des Falls noch nicht (Stände vor 11.0.0-beta3);
+# zählt weder als Fehler noch als Erfolg.
 set -uo pipefail
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
@@ -57,9 +59,11 @@ rnd_mib() { mkdir -p "$(dirname "$1")" && dd if=/dev/urandom of="$1" bs=1M count
 # ---------------------------------------------------------------- Fallrahmen
 ROWS=()
 ID='' TITLE='' STATUS='' NOTES=() L='' R='' LOG='' RC=0 BG_PID='' STARTED=0 LAST_RUN=
+# OCMD_ARGS: weitere owncloudcmd-Optionen des laufenden Falls; OCMD_STDIN: Datei als Standardeingabe
+OCMD_ARGS=() OCMD_STDIN=
 
 case_begin() {
-	ID=$1 TITLE=$2 STATUS=PASS NOTES=() STARTED=$SECONDS
+	ID=$1 TITLE=$2 STATUS=PASS NOTES=() STARTED=$SECONDS OCMD_ARGS=() OCMD_STDIN=
 	L=$WORK/$ID R=${BASE}e2e-$ID
 	echo "::group::Fall $ID – $TITLE"
 	rm -rf "$L" "$WORK/seed-$ID" && mkdir -p "$L" "$WORK/seed-$ID" || { case_error "lokaler Ordner $L"; return 1; }
@@ -68,6 +72,9 @@ case_begin() {
 fail() { [ "$STATUS" = ERROR ] || STATUS=FAIL; NOTES+=("$*"); echo "  FAIL: $*"; }
 note() { NOTES+=("$*"); echo "  info: $*"; }
 case_error() { STATUS=ERROR; NOTES+=("Suite: $*"); echo "  ERROR: $*"; }
+# has_option <option>: kennt der getestete owncloudcmd die Option? (Optionen aus 6.0.3 erst ab 11.0.0-beta3)
+has_option() { "$OCMD" --help 2>/dev/null | grep -q -- "$1"; }
+skip_unsupported() { STATUS=SKIP; NOTES+=("owncloudcmd kennt $1 nicht (älterer Stand)"); echo "  SKIP: $1"; }
 # annotate <titel> <text>: Fehlerhinweis an der Lauf-Übersicht (nur unter GitHub Actions);
 # Werte nach den Regeln der Workflow-Befehle kodiert, damit % : , den Befehl nicht zerlegen
 annotate() {
@@ -102,13 +109,14 @@ auth_args() {
 		AUTH_ARGS=(-u "$OC_USER" -p "$OC_PASS")
 	fi
 }
-# ocmd <lauf> [env-präfix …]: ein Sync-Lauf für den aktuellen Fall; setzt RC und LOG
+# ocmd <lauf> [env-präfix …]: ein Sync-Lauf für den aktuellen Fall; setzt RC und LOG.
+# Dazu OCMD_ARGS und als Standardeingabe OCMD_STDIN (sonst /dev/null: eine Rückfrage endet sofort).
 ocmd() {
 	local run=$1
 	shift
 	LOG=$LOGS/$ID-$run.log LAST_RUN=$run
 	auth_args
-	"$@" timeout -s KILL "$RUN_TIMEOUT" "$OCMD" "$L" "$OC_URL" "${AUTH_ARGS[@]}" --path "/$R" >"$LOG" 2>&1
+	"$@" timeout -s KILL "$RUN_TIMEOUT" "$OCMD" "$L" "$OC_URL" "${AUTH_ARGS[@]}" --path "/$R" "${OCMD_ARGS[@]}" <"${OCMD_STDIN:-/dev/null}" >"$LOG" 2>&1
 	RC=$?
 	[ "$AUTH" != oauth ] || remember_tokens "$TOKEN_FILE"
 	echo "  $run: exit $RC"
@@ -667,6 +675,114 @@ a7() {
 	note "$(sort -u "$SECRETS" | wc -l) Tokens gegen $(find "$OUT" -path "$WORK" -prune -o -type f -print | wc -l) Dateien geprüft"
 }
 
+# ---------------------------------------------------------------- Optionen aus 6.0.3 und Löschschutz
+# Lokaler Ordner leer (wie ein nicht eingehängtes Laufwerk): ohne Rückfrage nichts löschen, Exit 3;
+# mit „y“ auf der Standardeingabe löschen
+t15() {
+	has_option --non-interactive || { skip_unsupported --non-interactive; return; }
+	seed a.txt b.txt ordner/c.txt || { case_error "Vorlage nicht anlegbar"; return; }
+	ocmd lauf1
+	check_run lauf1
+	compare "$L" "$R" || return
+	find "$L" -mindepth 1 -maxdepth 1 ! -name '.sync_*' -exec rm -rf {} +
+	OCMD_ARGS=(--non-interactive)
+	ocmd lauf2
+	[ "$RC" = 3 ] || fail "lauf2: Exit $RC statt 3 – Abbruch ohne Löschen erwartet"
+	[ "$(server_files "$R")" = 3 ] || fail "lauf2 hat auf dem Server gelöscht"
+	grep -q "Nothing was changed" "$LOG" || fail "lauf2: Hinweis „Nothing was changed“ fehlt"
+	OCMD_ARGS=() OCMD_STDIN=$WORK/stdin-$ID
+	printf 'y\n' >"$OCMD_STDIN"
+	ocmd lauf3
+	check_run lauf3
+	grep -q "Delete these files" "$LOG" || fail "lauf3: keine Rückfrage"
+	[ "$(server_files "$R")" = 0 ] || fail "lauf3: nach der Bestätigung nicht gelöscht"
+	compare "$L" "$R"
+}
+
+# --exclude: zusätzliche Ausschlussliste
+t16() {
+	has_option --exclude || { skip_unsupported --exclude; return; }
+	rnd "$L/behalten.txt"
+	rnd "$L/entwurf.skipme"
+	rnd "$L/sub/auch.skipme"
+	printf '*.skipme\n' >"$WORK/exclude-$ID.lst"
+	OCMD_ARGS=(--exclude "$WORK/exclude-$ID.lst")
+	ocmd lauf1
+	check_run lauf1
+	[ "$(dav stat "$R/behalten.txt" exists)" = true ] || fail "behalten.txt fehlt auf dem Server"
+	[ "$(dav stat "$R/entwurf.skipme" exists)" = false ] || fail "ausgeschlossene Datei hochgeladen"
+	[ "$(dav stat "$R/sub/auch.skipme" exists)" = false ] || fail "ausgeschlossene Datei im Unterordner hochgeladen"
+}
+
+# --unsyncedfolders: abgewählte Serverordner nicht herunterladen, nach dem Wiederwählen schon
+t17() {
+	has_option --unsyncedfolders || { skip_unsupported --unsyncedfolders; return; }
+	seed bleibt/x.txt weg/y.txt weg/tief/z.txt || { case_error "Vorlage nicht anlegbar"; return; }
+	printf '# nicht synchronisieren\nweg\n' >"$WORK/unsynced-$ID.lst"
+	OCMD_ARGS=(--unsyncedfolders "$WORK/unsynced-$ID.lst")
+	ocmd lauf1
+	check_run lauf1
+	[ -f "$L/bleibt/x.txt" ] || fail "bleibt/x.txt fehlt lokal"
+	[ ! -e "$L/weg" ] || fail "abgewählter Ordner heruntergeladen"
+	[ "$(dav stat "$R/weg/tief/z.txt" exists)" = true ] || fail "abgewählter Ordner auf dem Server verändert"
+	: >"$WORK/unsynced-$ID.lst"
+	ocmd lauf2
+	check_run lauf2
+	[ -f "$L/weg/tief/z.txt" ] || fail "wieder gewählter Ordner nicht heruntergeladen"
+	compare "$L" "$R"
+}
+
+# Versteckte Dateien wie in 6.0.3 nur mit --sync-hidden-files
+t18() {
+	has_option --sync-hidden-files || { skip_unsupported --sync-hidden-files; return; }
+	rnd "$L/sichtbar.txt"
+	rnd "$L/.versteckt"
+	ocmd lauf1
+	check_run lauf1
+	[ "$(dav stat "$R/sichtbar.txt" exists)" = true ] || fail "sichtbare Datei fehlt auf dem Server"
+	[ "$(dav stat "$R/.versteckt" exists)" = false ] || fail "versteckte Datei ohne --sync-hidden-files hochgeladen"
+	OCMD_ARGS=(--sync-hidden-files)
+	ocmd lauf2
+	check_run lauf2
+	[ "$(dav stat "$R/.versteckt" exists)" = true ] || fail "versteckte Datei mit --sync-hidden-files nicht hochgeladen"
+}
+
+# --uplimit/--downlimit: je 3 MiB bei 512 KB/s brauchen zusammen mindestens 8 s (Startguthaben höchstens 2 s je Richtung)
+t19() {
+	has_option --uplimit || { skip_unsupported --uplimit; return; }
+	local start secs
+	rnd_mib "$WORK/seed-$ID/runter.bin" 3 && dav put "$WORK/seed-$ID/runter.bin" "$R/runter.bin" || { case_error "Vorlage nicht anlegbar"; return; }
+	rnd_mib "$L/hoch.bin" 3
+	OCMD_ARGS=(--uplimit 512 --downlimit 512)
+	start=$SECONDS
+	ocmd lauf1
+	secs=$((SECONDS - start))
+	check_run lauf1
+	compare "$L" "$R"
+	[ "$secs" -ge 8 ] || fail "je 3 MiB hoch und herunter nach ${secs}s – die Grenzen greifen nicht"
+	note "je 3 MiB hoch und herunter mit 512 KB/s in ${secs}s"
+}
+
+# --version, --silent (nur Fehler), --logdebug (Debug-Zeilen)
+t20() {
+	has_option --logdebug || { skip_unsupported --logdebug; return; }
+	local version
+	version=$("$OCMD" --version 2>&1) || fail "--version: Exit $?"
+	[[ $version == owncloudcmd\ * ]] || fail "--version: unerwartete Ausgabe ${version:0:80}"
+	rnd "$L/a.txt"
+	OCMD_ARGS=(--silent)
+	ocmd lauf1
+	check_run lauf1
+	! grep -q "Sync finished successfully" "$LOG" || fail "--silent gibt Meldungen aus"
+	rnd "$L/b.txt"
+	OCMD_ARGS=(--logdebug)
+	ocmd lauf2
+	check_run lauf2
+	grep -q "SQL prepare" "$LOG" || fail "--logdebug ohne Debug-Zeilen"
+	compare "$L" "$R"
+	note "${version:0:60}"
+}
+
 # ---------------------------------------------------------------- Ablauf
 CASES=(
 	"01|Upload kleine Datei|t01"
@@ -683,6 +799,12 @@ CASES=(
 	"12|Abbruch mitten im Upload, erneuter Lauf|t12"
 	"13|Leere Datei|t13"
 	"14|Datei während des Syncs geändert|t14"
+	"15|Löschschutz: leerer lokaler Ordner löscht nur nach Rückfrage|t15"
+	"16|--exclude: zusätzliche Ausschlussliste|t16"
+	"17|--unsyncedfolders: Serverordner abwählen|t17"
+	"18|Versteckte Dateien nur mit --sync-hidden-files|t18"
+	"19|--uplimit/--downlimit drosseln|t19"
+	"20|--version, --silent, --logdebug|t20"
 )
 
 if [ "$AUTH" = oauth ]; then
@@ -731,19 +853,19 @@ for entry in "${CASES[@]}"; do
 	run_case "$nr" "$title" "$fn"
 done
 
-pass=0 failed=0 errors=0
+pass=0 failed=0 errors=0 skipped=0
 {
 	echo "| Nr | Fall | Ergebnis | Dauer | Befund |"
 	echo "|---|---|---|---|---|"
 	for row in "${ROWS[@]}"; do
 		IFS=$'\t' read -r nr title st secs text <<<"$row"
-		case $st in PASS) pass=$((pass + 1)) ;; FAIL) failed=$((failed + 1)) ;; *) errors=$((errors + 1)) ;; esac
+		case $st in PASS) pass=$((pass + 1)) ;; FAIL) failed=$((failed + 1)) ;; SKIP) skipped=$((skipped + 1)) ;; *) errors=$((errors + 1)) ;; esac
 		echo "| $nr | $title | **$st** | ${secs}s | ${text//|/\\|} |"
 	done
 	echo
-	echo "PASS $pass, FAIL $failed, ERROR $errors"
+	echo "PASS $pass, FAIL $failed, ERROR $errors, SKIP $skipped"
 	echo
-	echo "_FAIL: Fehlverhalten des Clients, Grund in der Spalte Befund. ERROR: Suite oder Umgebung, Fall nicht bewertbar._"
+	echo "_FAIL: Fehlverhalten des Clients, Grund in der Spalte Befund. ERROR: Suite oder Umgebung, Fall nicht bewertbar. SKIP: Option im getesteten Stand noch nicht vorhanden._"
 } >"$OUT/results.md"
 printf '%s\n' "${ROWS[@]}" >"$OUT/results.tsv"
 cat "$OUT/results.md"
