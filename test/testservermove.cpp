@@ -10,6 +10,7 @@
 
 #include "accountmanager.h"
 #include "accountstate.h"
+#include "common/remotepermissions.h"
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
 #include "configfile.h"
@@ -65,6 +66,8 @@ void addSyncedFile(Folder *folder, const QByteArray &path, const QByteArray &ins
     record._modtime = 1700000000;
     record._fileSize = 5;
     record._inode = 4711;
+    // setFileRecord() verlangt Rechte (OC_ASSERT, in Beta-Builds aktiv)
+    record._remotePerm = RemotePermissions::fromDbValue("RW");
     QVERIFY(folder->journalDb()->setFileRecord(record));
 }
 }
