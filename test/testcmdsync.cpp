@@ -9,9 +9,7 @@
 // (ohne Rückfrage Abbruch mit Exit-Code 3, mit Rückfrage löschen oder behalten)
 
 #include "account.h"
-#include "bandwidthmanager.h"
 #include "cmdsession.h"
-#include "owncloudpropagator.h"
 #include "testutils/syncenginetestutils.h"
 #include "testutils/testutils.h"
 
@@ -227,22 +225,8 @@ private Q_SLOTS:
         }
     }
 
-    // --uplimit/--downlimit: die Grenzen des Laufs gehen den Netzwerk-Einstellungen vor und erreichen die Drosselung
-    void testLimitsReachThePropagator()
-    {
-        FakeFolder fakeFolder{FileInfo{}};
-        SyncOptions options = fakeFolder.syncEngine()->syncOptions();
-        options._uploadLimit = 100 * 1024;
-        options._downloadLimit = 250 * 1024;
-        OwncloudPropagator propagator(
-            fakeFolder.account(), options, fakeFolder.account()->davUrl(), fakeFolder.localPath(), QString(), fakeFolder.syncJournal(), nullptr);
-        propagator.start(SyncFileItemSet{});
-        QVERIFY(propagator._bandwidthManager);
-        QCOMPARE(propagator._bandwidthManager->currentUploadLimit(), qint64{100 * 1024});
-        QCOMPARE(propagator._bandwidthManager->currentDownloadLimit(), qint64{250 * 1024});
-    }
-
-    // Mit Grenze kommt die Datei vollständig an
+    // --downlimit: mit Grenze kommt die Datei vollständig an (die Drosselung selbst prüft die E2E-Suite gegen einen
+    // echten Server, der Testserver liefert ohne Puffergrenze)
     void testDownloadWithLimit()
     {
         const auto dir = TestUtils::createTempDir();
