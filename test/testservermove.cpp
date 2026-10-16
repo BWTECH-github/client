@@ -86,6 +86,7 @@ private Q_SLOTS:
         QTest::newRow("subfolder") << QStringLiteral("https://example.org/owncloud/") << QStringLiteral("https://example.org/owncloud");
         QTest::newRow("status.php") << QStringLiteral("https://example.org/oc/status.php") << QStringLiteral("https://example.org/oc");
         QTest::newRow("index.php") << QStringLiteral("https://example.org/index.php") << QStringLiteral("https://example.org");
+        QTest::newRow("double slashes") << QStringLiteral("https://example.org//oc//") << QStringLiteral("https://example.org/oc");
         QTest::newRow("port") << QStringLiteral("example.org:8443") << QStringLiteral("https://example.org:8443");
         QTest::newRow("upper case scheme and host") << QStringLiteral("HTTPS://Cloud.Example.ORG") << QStringLiteral("https://cloud.example.org");
         QTest::newRow("http stays http") << QStringLiteral("http://intranet.local") << QStringLiteral("http://intranet.local");
@@ -123,6 +124,16 @@ private Q_SLOTS:
         QVERIFY(!ServerMove::isSafeRedirect(https, QUrl(QStringLiteral("https://cloud.example.org:8443/status.php"))));
         QVERIFY(!ServerMove::isSafeRedirect(https, QUrl(QStringLiteral("https://user:pw@cloud.example.org/status.php"))));
         QVERIFY(!ServerMove::isSafeRedirect(https, QUrl(QStringLiteral("ftp://cloud.example.org/status.php"))));
+    }
+
+    void testServerUrlFromStatusUrl()
+    {
+        QCOMPARE(ServerMove::serverUrlFromStatusUrl(QUrl(QStringLiteral("https://neu.example.org/oc/status.php"))), QUrl(QStringLiteral("https://neu.example.org/oc")));
+        QCOMPARE(ServerMove::serverUrlFromStatusUrl(QUrl(QStringLiteral("https://neu.example.org/status.php?x=1"))), QUrl(QStringLiteral("https://neu.example.org")));
+        // „//“ vom Server darf nicht bis zu concatUrlPath() durchschlagen
+        QCOMPARE(ServerMove::serverUrlFromStatusUrl(QUrl(QStringLiteral("https://neu.example.org//oc//status.php"))), QUrl(QStringLiteral("https://neu.example.org/oc")));
+        QCOMPARE(ServerMove::serverUrlFromStatusUrl(QUrl(QStringLiteral("https://neu.example.org/oc/index.php"))), QUrl());
+        QCOMPARE(ServerMove::serverUrlFromStatusUrl(QUrl()), QUrl());
     }
 
     void testInstanceIdFromFileId()

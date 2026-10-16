@@ -55,6 +55,17 @@ namespace {
     {
         return httpStatus == 301 || httpStatus == 302 || httpStatus == 303 || httpStatus == 307 || httpStatus == 308;
     }
+
+    // „//“ im Pfad (Eingabe oder Weiterleitung des Servers) zu „/“ zusammenfassen und „/“ am Ende entfernen:
+    // Utility::concatUrlPath() verlangt Pfade ohne „//“ (Q_ASSERT, in Beta-Builds aktiv)
+    QString cleanServerPath(const QString &path)
+    {
+        const QStringList parts = path.split(QLatin1Char('/'), Qt::SkipEmptyParts);
+        if (parts.isEmpty()) {
+            return {};
+        }
+        return QLatin1Char('/') + parts.join(QLatin1Char('/'));
+    }
 }
 
 QUrl ServerMove::normalizeServerUrl(const QString &input, QString *error)
@@ -89,18 +100,12 @@ QUrl ServerMove::normalizeServerUrl(const QString &input, QString *error)
     }
 
     url.setScheme(scheme);
-    QString path = url.path();
-    while (path.endsWith(QLatin1Char('/'))) {
-        path.chop(1);
-    }
+    QString path = cleanServerPath(url.path());
     for (const auto suffix : {QLatin1String("/status.php"), QLatin1String("/index.php")}) {
         if (path.endsWith(suffix)) {
             path.chop(suffix.size());
             break;
         }
-    }
-    while (path.endsWith(QLatin1Char('/'))) {
-        path.chop(1);
     }
     url.setPath(path);
     return url;
@@ -112,14 +117,11 @@ QUrl ServerMove::serverUrlFromStatusUrl(const QUrl &statusUrl)
         return {};
     }
     const QString statusSuffix = QStringLiteral("/status.php");
-    QString path = statusUrl.path();
+    QString path = cleanServerPath(statusUrl.path());
     if (!path.endsWith(statusSuffix)) {
         return {};
     }
     path.chop(statusSuffix.size());
-    while (path.endsWith(QLatin1Char('/'))) {
-        path.chop(1);
-    }
     QUrl serverUrl = statusUrl.adjusted(QUrl::RemoveUserInfo | QUrl::RemoveQuery | QUrl::RemoveFragment);
     serverUrl.setPath(path);
     return serverUrl;
