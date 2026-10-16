@@ -36,7 +36,7 @@
         <location filename="../src/gui/main.cpp" line="+102"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation>%1 wersja %2&lt;byte value=&quot;xd&quot;/&gt;
+        <translation>%1 wersja %2<byte value="xd"/>
 Narzędzie pulpitu do synchronizacji plików.</translation>
     </message>
     <message>
@@ -96,7 +96,7 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
     <message>
         <location line="+6"/>
         <source>Show in %1</source>
-        <translation> Pokaż w %1 </translation>
+        <translation>Pokaż w %1</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -200,7 +200,7 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
     <message>
         <location line="+6"/>
         <source>Sync failed</source>
-        <translation>Nieudana synchronizacja </translation>
+        <translation>Nieudana synchronizacja</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -225,7 +225,8 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
     <message>
         <location line="+3"/>
         <source>, %1 left</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>, pozostało %1</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -393,7 +394,8 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
         <location line="+21"/>
         <location line="+238"/>
         <source>Manage availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zarządzaj dostępnością</translation>
     </message>
     <message>
         <location line="-226"/>
@@ -417,8 +419,7 @@ This action will abort any currently running synchronization.</source>
 
 Jedyną zaletą wyłączenia obsługi plików wirtualnych jest to, że funkcja selektywnej synchronizacji będzie ponownie dostępna.
 
-Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.
-</translation>
+Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -443,7 +444,8 @@ Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.
     <message>
         <location line="+9"/>
         <source>Deactivate virtual files</source>
-        <translation>Deactivate virtual files</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wyłącz pliki wirtualne</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -534,17 +536,19 @@ Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.
     <message>
         <location line="+49"/>
         <source>Unchecked folders will be removed from your local file system and will not be synchronized to this computer anymore.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Odznaczone foldery zostaną usunięte z lokalnego systemu plików i nie będą już synchronizowane z tym komputerem.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Zastosuj</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Discard</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Odrzuć</translation>
     </message>
 </context>
 <context>
@@ -567,7 +571,10 @@ Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.
         <source>You don&apos;t have any connected accounts yet.
 
 Please create an account by selecting the &quot;Add account...&quot; option on the More button menu.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie masz jeszcze żadnych połączonych kont.
+
+Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -585,12 +592,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+7"/>
         <source>Retrieving user settings and server capabilities timed out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Upłynął limit czasu pobierania ustawień użytkownika i możliwości serwera.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można pobrać ustawień użytkownika i możliwości serwera.</translation>
     </message>
 </context>
 <context>
@@ -624,13 +633,15 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <location line="+105"/>
         <source>%1 of %2 used</source>
         <extracomment>storage quota, %1 and %2 are sizes like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wykorzystano %1 z %2</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>%1 used</source>
         <extracomment>storage quota without a server-side limit, %1 is a size like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wykorzystano %1</translation>
     </message>
 </context>
 <context>
@@ -654,7 +665,8 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+5"/>
         <source>Change alias...</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zmień alias...</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -684,12 +696,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+24"/>
         <source>Change alias</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zmień alias</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Account alias:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Alias konta:</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -704,12 +718,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+4"/>
         <source>Server is temporarily unavailable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer jest tymczasowo niedostępny.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Server is currently in maintenance mode.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer jest obecnie w trybie konserwacji.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -729,7 +745,8 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+2"/>
         <source>Sync is paused due to metered internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronizacja jest wstrzymana z powodu taryfowego połączenia internetowego.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -754,7 +771,8 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+3"/>
         <source>Invalid connection status</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nieprawidłowy stan połączenia</translation>
     </message>
 </context>
 <context>
@@ -903,7 +921,8 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
     <message>
         <location line="+2"/>
         <source>You are almost set! The synchronization options are under Advanced. By default the client enables the Virtual File System (VFS) and only downloads files when you open them.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Prawie gotowe! Opcje synchronizacji znajdziesz w sekcji Zaawansowane. Domyślnie klient włącza wirtualny system plików (VFS) i pobiera pliki dopiero wtedy, gdy je otworzysz.</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -916,42 +935,46 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished">%1 plik jest obecnie używany</translation>
+        <translation>%1 plik jest obecnie używany</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można odczytać %1</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Local file changed during sync.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokalny plik zmienił się podczas synchronizacji.</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Bulk upload failed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zbiorcze wysyłanie nie powiodło się</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Server did not confirm the upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer nie potwierdził wysłania</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Server confirmed the upload without an etag</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer potwierdził wysłanie bez znacznika ETag</translation>
     </message>
     <message>
         <location line="+70"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished">Serwer nie zapewnił uprawnień do pliku</translation>
+        <translation>Serwer nie zapewnił uprawnień do pliku</translation>
     </message>
     <message>
         <location line="+74"/>
         <source>Error updating metadata: %1</source>
-        <translation type="unfinished">Błąd podczas aktualizacji metadanych: %1</translation>
+        <translation>Błąd podczas aktualizacji metadanych: %1</translation>
     </message>
 </context>
 <context>
@@ -982,7 +1005,8 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
     <message>
         <location line="-79"/>
         <source>No owncloud.online account configured</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie skonfigurowano konta owncloud.online</translation>
     </message>
     <message>
         <location line="+152"/>
@@ -1058,7 +1082,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
     <message>
         <location line="+4"/>
         <source>Directory not found: %1</source>
-        <translation>Nie znaleziono katalogu: %1&#xa0;</translation>
+        <translation>Nie znaleziono katalogu: %1</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -1120,10 +1144,11 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
     <message numerus="yes">
         <location line="-30"/>
         <source>%1 and %n other file(s) have been removed.</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>Usunięto %1 i %n inny plik.</numerusform>
+            <numerusform>Usunięto %1 i %n inne pliki.</numerusform>
+            <numerusform>Usunięto %1 i %n innych plików.</numerusform>
         </translation>
     </message>
     <message>
@@ -1134,10 +1159,11 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
     <message numerus="yes">
         <location line="+74"/>
         <source>%1 and %n other file(s) have been added.</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>Dodano %1 i %n inny plik.</numerusform>
+            <numerusform>Dodano %1 i %n inne pliki.</numerusform>
+            <numerusform>Dodano %1 i %n innych plików.</numerusform>
         </translation>
     </message>
     <message>
@@ -1149,37 +1175,41 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
     <message numerus="yes">
         <location line="+5"/>
         <source>%1 and %n other file(s) have been updated.</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>Zaktualizowano %1 i %n inny plik.</numerusform>
+            <numerusform>Zaktualizowano %1 i %n inne pliki.</numerusform>
+            <numerusform>Zaktualizowano %1 i %n innych plików.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>Zmieniono nazwę %1 na %2. Zmieniono też nazwy innych plików: %n.</numerusform>
+            <numerusform>Zmieniono nazwę %1 na %2. Zmieniono też nazwy innych plików: %n.</numerusform>
+            <numerusform>Zmieniono nazwę %1 na %2. Zmieniono też nazwy innych plików: %n.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>Przeniesiono %1 do %2 oraz %n inny plik.</numerusform>
+            <numerusform>Przeniesiono %1 do %2 oraz %n inne pliki.</numerusform>
+            <numerusform>Przeniesiono %1 do %2 oraz %n innych plików.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>Konflikty synchronizacji: %1 i %n inny plik.</numerusform>
+            <numerusform>Konflikty synchronizacji: %1 i %n inne pliki.</numerusform>
+            <numerusform>Konflikty synchronizacji: %1 i %n innych plików.</numerusform>
         </translation>
     </message>
     <message>
@@ -1190,10 +1220,11 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
     <message numerus="yes">
         <location line="+5"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>Nie udało się zsynchronizować %1 i %n innego pliku z powodu błędów. Szczegóły znajdują się w dzienniku.</numerusform>
+            <numerusform>Nie udało się zsynchronizować %1 i %n innych plików z powodu błędów. Szczegóły znajdują się w dzienniku.</numerusform>
+            <numerusform>Nie udało się zsynchronizować %1 i %n innych plików z powodu błędów. Szczegóły znajdują się w dzienniku.</numerusform>
         </translation>
     </message>
     <message>
@@ -1229,37 +1260,44 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
     <message>
         <location line="+38"/>
         <source>A folder from an external storage has been added: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dodano folder z magazynu zewnętrznego: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>A new folder larger than %1 MB has been added: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dodano nowy folder większy niż %1 MB: %2</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>The folder %1 was added on the server from an external storage.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Folder %1 został dodany na serwerze z magazynu zewnętrznego.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The new folder %1 on the server is larger than %2 MB.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nowy folder %1 na serwerze jest większy niż %2 MB.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Do you want to synchronize it to this computer?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Czy chcesz go zsynchronizować z tym komputerem?</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronizuj</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Do not synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie synchronizuj</translation>
     </message>
     <message>
         <location line="+53"/>
@@ -1268,9 +1306,12 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
 
 %1</source>
-        <translation>Zmiany w zsynchronizowanych folderach nie mogły być wiarygodnie śledzone.
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie udało się niezawodnie śledzić zmian w synchronizowanych folderach.
 
-Oznacza to, że klient synchronizacji może nie przesyłać zmian lokalnych od razu i zamiast tego będzie tylko skanować w poszukiwaniu zmian lokalnych i przesyłać je sporadycznie (domyślnie co dwie godziny).</translation>
+Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od razu, a zamiast tego tylko wyszukiwać zmiany lokalne i wysyłać je co jakiś czas (domyślnie co dwie godziny).
+
+%1</translation>
     </message>
 </context>
 <context>
@@ -1278,54 +1319,62 @@ Oznacza to, że klient synchronizacji może nie przesyłać zmian lokalnych od r
     <message>
         <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+136"/>
         <source>Loading …</source>
-        <translation type="unfinished">Wczytuję ...</translation>
+        <translation>Wczytuję ...</translation>
     </message>
     <message>
         <location line="+206"/>
         <source>This folder no longer exists on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ten folder już nie istnieje na serwerze.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>An error occurred while loading the folder contents.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wystąpił błąd podczas wczytywania zawartości folderu.</translation>
     </message>
     <message>
         <location line="+202"/>
         <source>This folder is empty on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ten folder na serwerze jest pusty.</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Plik %1, %2</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Folder %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote folder row, %1 is the folder name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Folder %1, %2</translation>
     </message>
     <message>
         <location line="+284"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zawsze przechowuj na tym urządzeniu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zwolnij miejsce (tylko online)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Przywróć domyślne</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Share…</source>
-        <translation type="unfinished">Współdzielić</translation>
+        <translation>Współdzielić</translation>
     </message>
 </context>
 <context>
@@ -1366,7 +1415,7 @@ Oznacza to, że klient synchronizacji może nie przesyłać zmian lokalnych od r
     <message>
         <location line="+35"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished">Synchronizacja wstrzymana przez użytkownika</translation>
+        <translation>Synchronizacja wstrzymana przez użytkownika</translation>
     </message>
     <message>
         <location line="+278"/>
@@ -1381,12 +1430,12 @@ Oznacza to, że klient synchronizacji może nie przesyłać zmian lokalnych od r
     <message>
         <location line="+24"/>
         <source> (backup)</source>
-        <translation>(kopia zapasowa)</translation>
+        <translation> (kopia zapasowa)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source> (backup %1)</source>
-        <translation>(kopia zapasowa %1)</translation>
+        <translation> (kopia zapasowa %1)</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -1441,7 +1490,8 @@ Oznacza to, że klient synchronizacji może nie przesyłać zmian lokalnych od r
     <message>
         <location line="-945"/>
         <source>Application shutting down</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zamykanie aplikacji</translation>
     </message>
     <message>
         <location line="+404"/>
@@ -1568,62 +1618,74 @@ Oznacza to, że klient synchronizacji może nie przesyłać zmian lokalnych od r
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Token dostępu wygasł, a plik tokenu nie zawiera tokenu odświeżania. Zaloguj się ponownie, aby utworzyć nowy plik tokenu.</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>owncloudcmd cannot sign in interactively. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>owncloudcmd nie może zalogować się interaktywnie. Zaloguj się ponownie, aby utworzyć nowy plik tokenu.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer odrzucił token dostępu, który właśnie wydał (HTTP 401). Sprawdź, czy serwer WWW przekazuje nagłówek Authorization do owncloud.online.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The server rejected the access token (HTTP 401) and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer odrzucił token dostępu (HTTP 401), a plik tokenu nie zawiera tokenu odświeżania. Zaloguj się ponownie, aby utworzyć nowy plik tokenu.</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Plik tokenu %1 jest zablokowany przez inne uruchomienie owncloudcmd.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read the token file again: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można ponownie odczytać pliku tokenu: %1</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Cannot refresh the access token without an account.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można odświeżyć tokenu dostępu bez konta.</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer nie akceptuje już tokenu odświeżania (%1). Logowanie wygasło lub zostało cofnięte; zaloguj się ponownie, aby utworzyć nowy plik tokenu.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The server refused to refresh the access token (%1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer odmówił odświeżenia tokenu dostępu (%1).</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Odświeżanie tokenu dostępu nie powiodło się: %1 (HTTP %2).</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Punkt końcowy tokenu odpowiedział bez użytecznego tokenu dostępu (HTTP %1).</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można zapisać odświeżonych tokenów w %1: %2</translation>
     </message>
 </context>
 <context>
@@ -1724,7 +1786,7 @@ Elementy, których usunięcie jest dozwolone, zostaną usunięte, jeśli uniemo�
     <message>
         <location line="+42"/>
         <source>Share…</source>
-        <translation type="unfinished">Współdzielić</translation>
+        <translation>Współdzielić</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1779,7 +1841,7 @@ Ponieważ pliki logów mogą być duże, klient będzie tworzył nowy plik dla k
     <message>
         <location line="+32"/>
         <source>Log Http traffic </source>
-        <translation>Rejestruj ruch HTTP</translation>
+        <translation>Rejestruj ruch HTTP </translation>
     </message>
     <message>
         <location line="+9"/>
@@ -1809,12 +1871,14 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+55"/>
         <source>Main toolbar for the application</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Główny pasek narzędzi aplikacji</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Main toolbar</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Główny pasek narzędzi</translation>
     </message>
 </context>
 <context>
@@ -1822,7 +1886,8 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+87"/>
         <source>Add account...</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dodaj konto...</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1853,7 +1918,8 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <location line="+14"/>
         <location line="+8"/>
         <source>Errors: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Błędy: %1</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2000,23 +2066,27 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+49"/>
         <source>Bandwidth</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Przepustowość</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Limit upload speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ogranicz prędkość wysyłania do</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+8"/>
         <source> kB/s</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> kB/s</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>Limit download speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ogranicz prędkość pobierania do</translation>
     </message>
 </context>
 <context>
@@ -2177,7 +2247,8 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kopiuj adres URL logowania</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2202,12 +2273,14 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+67"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można połączyć się z usługą logowania. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Please sign in using the browser window that has opened and allow access if you are asked to.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zaloguj się w otwartym oknie przeglądarki i zezwól na dostęp, jeśli pojawi się takie pytanie.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2242,7 +2315,8 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+5"/>
         <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można otworzyć przeglądarki. Skopiuj link za pomocą przycisku powyżej i otwórz go w przeglądarce.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2326,7 +2400,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/libsync/discovery.cpp" line="+178"/>
         <source>Symbolic links are not supported in syncing.</source>
-        <translation>Linki symboliczne nie są wspierane przy synchronizacji. </translation>
+        <translation>Linki symboliczne nie są wspierane przy synchronizacji.</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -2341,7 +2415,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+13"/>
         <source>File names containing the character &apos;%1&apos; are not supported on this file system.</source>
-        <translation>Nazwy plików zawierające znaki &apos;%1&apos; nie są wspierane </translation>
+        <translation>Nazwy plików zawierające znaki &apos;%1&apos; nie są wspierane</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2772,34 +2846,37 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/libsync/propagateuploadng.cpp" line="+156"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished">%1 plik jest obecnie używany</translation>
+        <translation>%1 plik jest obecnie używany</translation>
     </message>
     <message>
         <location line="+166"/>
         <location line="+124"/>
         <location line="+253"/>
         <source>Unexpected return code from server (%1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nieoczekiwany kod odpowiedzi serwera (%1)</translation>
     </message>
     <message>
         <location line="-71"/>
         <source>The local file was removed during sync.</source>
-        <translation type="unfinished">Pliki lokalny został usunięty podczas synchronizacji.</translation>
+        <translation>Pliki lokalny został usunięty podczas synchronizacji.</translation>
     </message>
     <message>
         <location line="+66"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation type="unfinished">Serwer poprosił o usunięcie starszej funkcji (sondaż)</translation>
+        <translation>Serwer poprosił o usunięcie starszej funkcji (sondaż)</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Missing File ID from server</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Brak identyfikatora pliku z serwera</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Missing ETag from server</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Brak znacznika ETag z serwera</translation>
     </message>
 </context>
 <context>
@@ -2868,12 +2945,14 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/gui/quotainfo.cpp" line="+107"/>
         <source>Storage space almost full</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Miejsce na dane prawie zapełnione</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The cloud storage of %1 is almost full: %2 of %3 are used.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Magazyn w chmurze %1 jest prawie pełny: wykorzystano %2 z %3.</translation>
     </message>
 </context>
 <context>
@@ -2881,7 +2960,8 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+132"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można pobrać linku autoryzacji! Skontaktuj się z administratorem systemu.</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -2891,12 +2971,14 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+4"/>
         <source>The browser could not be opened. Copy the link and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można otworzyć przeglądarki. Skopiuj link i otwórz go w przeglądarce.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Strona logowania nie używa bezpiecznego połączenia (HTTPS), dlatego nie została otwarta. Skontaktuj się z administratorem systemu.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2934,7 +3016,8 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kopiuj adres URL logowania</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3016,27 +3099,32 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+364"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Przeglądaj swoje pliki poniżej. Kliknij folder prawym przyciskiem myszy, aby zmienić jego dostępność: zawsze przechowuj go na tym urządzeniu albo zwolnij miejsce, udostępniając go tylko online.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dostępność</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zawsze przechowuj na tym urządzeniu</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zwolnij miejsce (tylko online)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Przywróć domyślne</translation>
     </message>
 </context>
 <context>
@@ -3044,27 +3132,32 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można odrzucić powiadomienia, ponieważ serwer jest nieosiągalny.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The notification could not be dismissed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można odrzucić powiadomienia.</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>The action could not be carried out because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można wykonać akcji, ponieważ serwer jest nieosiągalny.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>The action points to another server and was not carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Akcja wskazuje na inny serwer i nie została wykonana.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>The action could not be carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można wykonać akcji.</translation>
     </message>
 </context>
 <context>
@@ -3097,7 +3190,8 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+7"/>
         <source>Show window on startup</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pokazuj okno przy uruchomieniu</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -3132,12 +3226,14 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+7"/>
         <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>HTTP/2 używa jednego połączenia dla wielu żądań, co przyspiesza synchronizację na łączach o dużych opóźnieniach i przy wielu małych plikach. Domyślnie włączone; odznacz tylko wtedy, gdy Twój serwer lub serwer proxy ma problemy z HTTP/2. Zmiana zacznie obowiązywać po ponownym uruchomieniu.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Use HTTP/2 (recommended, requires restart)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Używaj HTTP/2 (zalecane, wymaga ponownego uruchomienia)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3152,27 +3248,30 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+27"/>
         <source>Show sync folders in the Explorer navigation pane</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pokazuj synchronizowane foldery w okienku nawigacji Eksploratora</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Advanced - Approve folder sync (non-virtual files mode only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zaawansowane - Zatwierdzaj synchronizację folderów (tylko bez plików wirtualnych)</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Ask for confirmation before synchronizing folders larger than</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapytaj o potwierdzenie przed synchronizacją folderów większych niż</translation>
     </message>
     <message>
         <location line="+7"/>
         <source> MB</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> MB</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>Ask for confirmation before synchronizing external storages</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapytaj o potwierdzenie przed synchronizacją zewnętrznych skladowisk plikow</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3210,380 +3309,442 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="+107"/>
         <source>Share %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Udostępnij %1</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Share &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Udostępnij &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Użytkownicy i grupy</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Public links</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Linki publiczne</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Close</source>
-        <translation type="unfinished">Zamknij</translation>
+        <translation>Zamknij</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Not connected to the server. Please check the connection and reopen the dialog.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Brak połączenia z serwerem. Sprawdź połączenie i ponownie otwórz okno dialogowe.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Share with users or groups:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Udostępnij użytkownikom lub grupom:</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Name of a user or group …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nazwa użytkownika lub grupy …</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Matching users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pasujący użytkownicy i grupy</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Shared with:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Udostępniono:</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nazwa:</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+583"/>
         <source>Download / View</source>
-        <translation type="unfinished"></translation>
+        <translation>Pobierz / Podgląd</translation>
     </message>
     <message>
         <location line="-582"/>
         <location line="+581"/>
         <source>Download / View / Upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pobieranie / Podgląd / Wysyłanie</translation>
     </message>
     <message>
         <location line="-580"/>
         <location line="+578"/>
         <source>Download / View / Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Pobieranie / Przeglądanie / Edycja</translation>
     </message>
     <message>
         <location line="-577"/>
         <location line="+575"/>
         <source>Upload only (File Drop)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tylko wysyłanie (upuszczanie pliku)</translation>
     </message>
     <message>
         <location line="-567"/>
         <source>Recipients can:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Odbiorcy mogą:</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Protect with a password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Chroń hasłem</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Hasło</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Set an expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ustaw datę wygaśnięcia</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Data wygaśnięcia</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Cancel</source>
-        <translation type="unfinished">Anuluj</translation>
+        <translation>Anuluj</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>You are not allowed to share this item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie masz uprawnień do udostępniania tego elementu.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Public link created.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Utworzono link publiczny.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Shared with %1.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Udostępniono: %1.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Public link saved.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zapisano link publiczny.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Public link deleted.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usunięto link publiczny.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Share removed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usunięto udostępnienie.</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>No users or groups found.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie znaleziono użytkowników ani grup.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Select a user or group to share with.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wybierz użytkownika lub grupę, której chcesz udostępnić.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Server message: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Komunikat serwera: %1</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Searching for users and groups failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wyszukiwanie użytkowników i grup nie powiodło się.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Could not load the existing shares.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można wczytać istniejących udostępnień.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Creating the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Utworzenie linku publicznego nie powiodło się.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sharing with %1 failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Udostępnienie dla %1 nie powiodło się.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Saving the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zapisanie linku publicznego nie powiodło się.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Changing the permissions failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zmiana uprawnień nie powiodła się.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Deleting the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usunięcie linku publicznego nie powiodło się.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Removing the share failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usunięcie udostępnienia nie powiodło się.</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Enter at least %1 characters to search.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wpisz co najmniej %1 znaki, aby wyszukać.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Searching …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wyszukiwanie …</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Sharing with %1 …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Udostępnianie dla %1 …</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Not shared with any user or group yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Jeszcze nie udostępniono żadnemu użytkownikowi ani grupie.</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+62"/>
         <source>Loading shares …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wczytywanie udostępnień …</translation>
     </message>
     <message>
         <location line="-46"/>
         <source>Remove</source>
-        <translation type="unfinished">Usuń</translation>
+        <translation>Usuń</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zakończ udostępnianie dla %1</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>can view</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>może przeglądać</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>can edit</source>
-        <translation type="unfinished"></translation>
+        <translation>może edytować</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>can create</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>może tworzyć</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>can delete</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>może usuwać</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>can share</source>
-        <translation type="unfinished"></translation>
+        <translation>może współdzielić</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>No public links yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Brak linków publicznych.</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+69"/>
         <location line="+45"/>
         <source>Public link</source>
-        <translation type="unfinished"></translation>
+        <translation>Link publiczny</translation>
     </message>
     <message>
         <location line="-109"/>
         <source>password protected</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>chroniony hasłem</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>expires %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>wygasa %1</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Link address of %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Adres linku do %1</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Copy link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kopiuj link</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Edytuj</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Delete</source>
-        <translation type="unfinished">Usuń</translation>
+        <translation>Usuń</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Delete the public link &quot;%1&quot;? Everyone who has the link loses access.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usunąć link publiczny „%1”? Wszyscy, którzy mają ten link, utracą dostęp.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zakończyć udostępnianie dla %1?</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Edit public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Edytuj link publiczny</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zapisz</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>New public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nowy link publiczny</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Create public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Utwórz link publiczny</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Leave empty to keep the current password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pozostaw puste, aby zachować obecne hasło</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>The server requires a password for this kind of link.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer wymaga hasła dla tego typu linku.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server requires an expiration date at most %1 days ahead.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer wymaga daty wygaśnięcia nie później niż za %1 dni.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The server requires an expiration date.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer wymaga daty wygaśnięcia.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server allows only one public link per item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer pozwala tylko na jeden link publiczny na element.</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Please enter a password, or uncheck the password option.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wpisz hasło lub odznacz opcję hasła.</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (%2)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>%1 (group)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (grupa)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 (federated)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (federacyjny)</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Link copied to the clipboard: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link skopiowany do schowka: %1</translation>
     </message>
 </context>
 <context>
@@ -3837,9 +3998,10 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="+178"/>
+        <location filename="../src/libsync/theme.cpp" line="+180"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;Wersja %1. Więcej informacji na stronie &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Autorzy: Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller i inni.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Klient desktopowy owncloud.online jest rozpowszechniany przez %4 na licencji GNU General Public License (GPL) w wersji 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -3877,33 +4039,37 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <location line="+22"/>
         <location line="+650"/>
         <source>Offline</source>
-        <translation type="unfinished">Offline</translation>
+        <translation>Offline</translation>
     </message>
     <message>
         <location line="-668"/>
         <location line="+675"/>
         <source>Syncing</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronizowanie</translation>
     </message>
     <message>
         <location line="-673"/>
         <source>Aborting sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Przerywanie synchronizacji</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aktualne</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date, some files were ignored</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aktualne, niektóre pliki zostały zignorowane</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Error</source>
-        <translation type="unfinished">Błąd</translation>
+        <translation>Błąd</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3911,27 +4077,30 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
-        <translation type="unfinished">Synchronizacja wstrzymana</translation>
+        <translation>Synchronizacja wstrzymana</translation>
     </message>
     <message>
         <location line="-649"/>
         <location line="+655"/>
         <source>Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Niedostępne</translation>
     </message>
     <message numerus="yes">
         <location line="-543"/>
         <source>%n new notification(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n nowe powiadomienie</numerusform>
+            <numerusform>%n nowe powiadomienia</numerusform>
+            <numerusform>%n nowych powiadomień</numerusform>
         </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For %1. You find them in the menu of the tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dla %1. Znajdziesz je w menu ikony w zasobniku systemowym.</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -3946,17 +4115,18 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+170"/>
         <source>Show %1</source>
-        <translation> Pokaż %1 </translation>
+        <translation>Pokaż %1</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Add account…</source>
-        <translation type="unfinished">Dodaj konto…</translation>
+        <translation>Dodaj konto…</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Settings…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ustawienia…</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3977,214 +4147,238 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <location line="+33"/>
         <location line="+92"/>
         <source>Open in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Otwórz w przeglądarce</translation>
     </message>
     <message>
         <location line="-88"/>
         <location line="+105"/>
         <source>Resume synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>Wznów synchronizację</translation>
     </message>
     <message>
         <location line="-102"/>
         <source>Log in…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zaloguj…</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Log out</source>
-        <translation type="unfinished">Wyloguj</translation>
+        <translation>Wyloguj</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Recently changed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ostatnio zmienione</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>No files synchronized recently</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ostatnio nie zsynchronizowano żadnych plików</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>On the server</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Na serwerze</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Show all activity…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pokaż całą aktywność…</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Notifications (%1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Powiadomienia (%1)</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Dismiss</source>
-        <translation type="unfinished"></translation>
+        <translation>Anuluj</translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n more on the server</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>jeszcze %n na serwerze</numerusform>
+            <numerusform>jeszcze %n na serwerze</numerusform>
+            <numerusform>jeszcze %n na serwerze</numerusform>
         </translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Resume synchronization (paused until %1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wznów synchronizację (wstrzymana do %1)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Pause synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>Wstrzymaj synchronizację</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 1 hour</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Na 1 godzinę</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 2 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Na 2 godziny</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 4 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Na 4 godziny</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until tomorrow</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Do jutra</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until I resume</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Do czasu wznowienia</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>No account configured</source>
-        <translation type="unfinished">Brak skonfigurowanego konta</translation>
+        <translation>Brak skonfigurowanego konta</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronization paused until %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronizacja wstrzymana do %1</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Synchronization paused</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronizacja wstrzymana</translation>
     </message>
     <message>
         <location line="+21"/>
         <location line="+37"/>
         <source>Signed out</source>
-        <translation type="unfinished">Odłączony</translation>
+        <translation>Odłączony</translation>
     </message>
     <message>
         <location line="-34"/>
         <location line="+36"/>
         <location line="+16"/>
         <source>Disconnected</source>
-        <translation type="unfinished">Rozłączony</translation>
+        <translation>Rozłączony</translation>
     </message>
     <message>
         <location line="-49"/>
         <source>Disconnected from some accounts</source>
-        <translation type="unfinished"></translation>
+        <translation>Rozłącz od wybranych kont</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>No sync folders configured</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie ustawiono katalogów do synchronizacji</translation>
     </message>
     <message numerus="yes">
         <location line="+12"/>
         <source>%n unresolved conflict(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n nierozwiązany konflikt</numerusform>
+            <numerusform>%n nierozwiązane konflikty</numerusform>
+            <numerusform>%n nierozwiązanych konfliktów</numerusform>
         </translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Up to date (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktualne (%1)</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Connected</source>
-        <translation type="unfinished">Połączony</translation>
+        <translation>Połączony</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server temporarily unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer tymczasowo niedostępny</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server in maintenance mode</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer w trybie konserwacji</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Network error</source>
-        <translation type="unfinished"></translation>
+        <translation>Błąd sieci</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server configuration error</source>
-        <translation type="unfinished">Błąd konfiguracji serwera</translation>
+        <translation>Błąd konfiguracji serwera</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Waiting for sign-in</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Oczekiwanie na zalogowanie</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Connecting…</source>
-        <translation type="unfinished">Łączenie...</translation>
+        <translation>Łączenie...</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Waiting to sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Oczekiwanie na synchronizację</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Open folder &quot;%1&quot; (%2)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Otwórz folder „%1” (%2)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Unresolved conflicts</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nierozwiązane konflikty</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Checking for changes</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sprawdzanie zmian</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2 (%3 left)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronizowanie %1 z %2 (pozostało %3)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchronizowanie %1 of %2</translation>
     </message>
 </context>
 <context>
@@ -4377,7 +4571,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;Nowa wersja klienta %1 jest dostępna.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt;jest dostępna do pobrania. Zainstalowana wersja to %3.&lt;p&gt;</translation>
+        <translation>&lt;p&gt;Nowa wersja klienta %1 jest dostępna.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt;jest dostępna do pobrania. Zainstalowana wersja to %3.&lt;/p&gt;</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -4411,6 +4605,15 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
 </context>
 <context>
+    <name>QGuiApplication</name>
+    <message>
+        <location filename="../src/gui/translations.cpp" line="+32"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <extracomment>Translate this string to &quot;RTL&quot; in right-to-left languages (such as Arabic or Uyghur), otherwise to &quot;LTR&quot;.</extracomment>
+        <translation>LTR</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/common/utility.cpp" line="+309"/>
@@ -4420,8 +4623,9 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message numerus="yes">
         <location line="-5"/>
         <source>%n day(s) ago</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%d dzień temu</numerusform>
+            <numerusform>%n dzień temu</numerusform>
             <numerusform>%n dni temu</numerusform>
             <numerusform>%n dni temu</numerusform>
         </translation>
@@ -4466,37 +4670,43 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+114"/>
         <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można połączyć się z serwerem %1. Sprawdź adres i połączenie internetowe.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No secure connection to %1 could be established: the server&apos;s certificate is invalid or was not accepted. If the problem persists, please contact the server&apos;s administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można nawiązać bezpiecznego połączenia z %1: certyfikat serwera jest nieprawidłowy lub nie został zaakceptowany. Jeśli problem będzie się powtarzał, skontaktuj się z administratorem serwera.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The server at %1 is in maintenance mode or temporarily unavailable. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer %1 jest w trybie konserwacji lub jest tymczasowo niedostępny. Spróbuj ponownie później.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No owncloud.online server was found at %1. Please check the address.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pod adresem %1 nie znaleziono serwera owncloud.online. Sprawdź adres.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aplikacja „OAuth2” nie jest zainstalowana lub nie jest włączona na tym serwerze. Poproś administratora o jej zainstalowanie i włączenie przez „Market”.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Informacja dla administratorów: klient desktopowy loguje się przez aplikację „OAuth2”. Zainstaluj ją przez „Market” i włącz dla wszystkich użytkowników (wiersz poleceń: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not detect compatible server at %1</source>
-        <translation type="unfinished">Nie można wykryć zgodnego serwera w %1</translation>
+        <translation>Nie można wykryć zgodnego serwera w %1</translation>
     </message>
 </context>
 <context>
@@ -4600,19 +4810,21 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="-118"/>
         <source>%n year(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n rok</numerusform>
+            <numerusform>%n lata</numerusform>
+            <numerusform>%n lat</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n month(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n miesiąc</numerusform>
+            <numerusform>%n miesiące</numerusform>
+            <numerusform>%n miesięcy</numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -4645,10 +4857,11 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message numerus="yes">
         <location line="+1"/>
         <source>%n second(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n sekunda</numerusform>
+            <numerusform>%n sekundy</numerusform>
+            <numerusform>%n sekund</numerusform>
         </translation>
     </message>
     <message>
@@ -4826,22 +5039,25 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 został zainstalowany lub zaktualizowany. Aby dokończyć instalację, należy ponownie uruchomić system Windows, aby integracja z Eksploratorem plików działała poprawnie.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Restart Windows now</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Uruchom ponownie system Windows teraz</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Restart later</source>
-        <translation type="unfinished">Restartuj później</translation>
+        <translation>Restartuj później</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>%1 installation finished - restarting Windows</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Instalacja %1 zakończona - ponowne uruchamianie systemu Windows</translation>
     </message>
 </context>
 <context>

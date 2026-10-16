@@ -62,7 +62,7 @@ namespace Translations {
     /**
      * Lädt für @p language den ersten Katalog aus @p catalogPrefixes (z. B. "qt_", "qtbase_"), der in einem der
      * Verzeichnisse liegt und sich laden lässt. Varianten der Client-Übersetzung wie "de-informal" werden auf die
-     * Sprache ("de") abgebildet, Qt liefert nur diese.
+     * Sprache ("de") abgebildet, Qt liefert nur diese; "zh-Hans" nutzt den Katalog zh_CN, "zh_HK" den Katalog zh_TW.
      *
      * @return true, wenn ein Katalog geladen wurde
      */

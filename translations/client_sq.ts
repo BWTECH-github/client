@@ -36,7 +36,7 @@
         <location filename="../src/gui/main.cpp" line="+102"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation>%1 version %2&lt;byte value=&quot;xd&quot;/&gt;
+        <translation>%1 version %2<byte value="xd"/>
 Mjet njëkohësimi kartelash për desktop.</translation>
     </message>
     <message>
@@ -224,7 +224,8 @@ Mjet njëkohësimi kartelash për desktop.</translation>
     <message>
         <location line="+3"/>
         <source>, %1 left</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>, edhe %1</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -392,7 +393,8 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <location line="+21"/>
         <location line="+238"/>
         <source>Manage availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Administroni gatishmërinë</translation>
     </message>
     <message>
         <location line="-226"/>
@@ -532,17 +534,19 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
     <message>
         <location line="+49"/>
         <source>Unchecked folders will be removed from your local file system and will not be synchronized to this computer anymore.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dosjet e pacekuara do të hiqen nga sistemi juaj vendor i kartelave dhe s’do të njëkohësohen më me këtë kompjuter.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Zbatoje</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Discard</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Hidhe tej</translation>
     </message>
 </context>
 <context>
@@ -585,12 +589,14 @@ Ju lutemi, krijoni një llogari duke përzgjedhur mundësinë “Shtoni llogari�
     <message>
         <location line="+7"/>
         <source>Retrieving user settings and server capabilities timed out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Marrjes së rregullimeve të përdoruesit dhe aftësive të shërbyesit i mbaroi koha.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’arrihet të merren rregullimet e përdoruesit dhe aftësitë e shërbyesit.</translation>
     </message>
 </context>
 <context>
@@ -624,13 +630,14 @@ Ju lutemi, krijoni një llogari duke përzgjedhur mundësinë “Shtoni llogari�
         <location line="+105"/>
         <source>%1 of %2 used</source>
         <extracomment>storage quota, %1 and %2 are sizes like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Përdorur %1 nga %2</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>%1 used</source>
         <extracomment>storage quota without a server-side limit, %1 is a size like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 të përdorura</translation>
     </message>
 </context>
 <context>
@@ -654,7 +661,8 @@ Ju lutemi, krijoni një llogari duke përzgjedhur mundësinë “Shtoni llogari�
     <message>
         <location line="+5"/>
         <source>Change alias...</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndryshoni aliasin...</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -684,12 +692,14 @@ Ju lutemi, krijoni një llogari duke përzgjedhur mundësinë “Shtoni llogari�
     <message>
         <location line="+24"/>
         <source>Change alias</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndryshoni aliasin</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Account alias:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Alias llogarie:</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -903,7 +913,8 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
     <message>
         <location line="+2"/>
         <source>You are almost set! The synchronization options are under Advanced. By default the client enables the Virtual File System (VFS) and only downloads files when you open them.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gati keni mbaruar! Mundësitë e njëkohësimit gjenden te Të mëtejshme. Si parazgjedhje, klienti aktivizon Sistemin Virtual të Kartelave (VFS) dhe i shkarkon kartelat vetëm kur i hapni.</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -916,42 +927,46 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished">%1 kartela është aktualisht në përdorim</translation>
+        <translation>%1 kartela është aktualisht në përdorim</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’u lexua dot %1</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Local file changed during sync.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kartela vendore ndryshoi gjatë njëkohësimit.</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Bulk upload failed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ngarkimi në masë dështoi</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Server did not confirm the upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi s’e ripohoi ngarkimin</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Server confirmed the upload without an etag</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi e ripohoi ngarkimin pa ETag</translation>
     </message>
     <message>
         <location line="+70"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished">Shërbyesi s’dha lejet për kartelën</translation>
+        <translation>Shërbyesi s’dha lejet për kartelën</translation>
     </message>
     <message>
         <location line="+74"/>
         <source>Error updating metadata: %1</source>
-        <translation type="unfinished">Gabim në përditësim tejtëdhënash: %1</translation>
+        <translation>Gabim në përditësim tejtëdhënash: %1</translation>
     </message>
 </context>
 <context>
@@ -982,7 +997,8 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
     <message>
         <location line="-79"/>
         <source>No owncloud.online account configured</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’ka llogari owncloud.online të formësuar</translation>
     </message>
     <message>
         <location line="+152"/>
@@ -1222,37 +1238,44 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
     <message>
         <location line="+38"/>
         <source>A folder from an external storage has been added: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>U shtua një dosje nga një depozitë e jashtme: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>A new folder larger than %1 MB has been added: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>U shtua një dosje e re më e madhe se %1 MB: %2</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>The folder %1 was added on the server from an external storage.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dosja %1 u shtua te shërbyesi nga një depozitë e jashtme.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The new folder %1 on the server is larger than %2 MB.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dosja e re %1 te shërbyesi është më e madhe se %2 MB.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Do you want to synchronize it to this computer?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Doni ta njëkohësoni me këtë kompjuter?</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Njëkohësoje</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Do not synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mos e njëkohëso</translation>
     </message>
     <message>
         <location line="+53"/>
@@ -1273,54 +1296,62 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+136"/>
         <source>Loading …</source>
-        <translation type="unfinished">Po ngarkohet…</translation>
+        <translation>Po ngarkohet…</translation>
     </message>
     <message>
         <location line="+206"/>
         <source>This folder no longer exists on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kjo dosje s’ekziston më te shërbyesi.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>An error occurred while loading the folder contents.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndodhi një gabim teksa ngarkohej lënda e dosjes.</translation>
     </message>
     <message>
         <location line="+202"/>
         <source>This folder is empty on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kjo dosje është e zbrazët te shërbyesi.</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kartelë %1, %2</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Folder %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote folder row, %1 is the folder name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dosje %1, %2</translation>
     </message>
     <message>
         <location line="+284"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mbaje përherë në këtë pajisje</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Liro hapësirë (vetëm në linjë)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Riktheje te parazgjedhjet</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Share…</source>
-        <translation type="unfinished">Ndani me të tjerë…</translation>
+        <translation>Ndani me të tjerë…</translation>
     </message>
 </context>
 <context>
@@ -1361,7 +1392,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location line="+35"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished">Njëkohësim i ndalur nga përdoruesi</translation>
+        <translation>Njëkohësim i ndalur nga përdoruesi</translation>
     </message>
     <message>
         <location line="+278"/>
@@ -1436,7 +1467,8 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location line="-945"/>
         <source>Application shutting down</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aplikacioni po mbyllet</translation>
     </message>
     <message>
         <location line="+404"/>
@@ -1470,7 +1502,8 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location filename="../src/gui/folderwatcher_linux.cpp" line="+81"/>
         <source>This problem usually happens when the inotify watches are exhausted. Check the FAQ for details.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ky problem ndodh zakonisht kur janë shteruar vëzhguesit inotify. Për hollësi, shihni PBR-të.</translation>
     </message>
 </context>
 <context>
@@ -1563,62 +1596,74 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Token-i i hyrjes ka skaduar dhe kartela e token-it s’ka token rifreskimi. Hyni sërish që të krijohet një kartelë e re token-i.</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>owncloudcmd cannot sign in interactively. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>owncloudcmd s’mund të hyjë në mënyrë ndërvepruese. Hyni sërish që të krijohet një kartelë e re token-i.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi hodhi poshtë token-in e hyrjes që sapo lëshoi (HTTP 401). Kontrolloni nëse shërbyesi web ia përcjell kryet Authorization owncloud.online-it.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The server rejected the access token (HTTP 401) and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi hodhi poshtë token-in e hyrjes (HTTP 401) dhe kartela e token-it s’ka token rifreskimi. Hyni sërish që të krijohet një kartelë e re token-i.</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kartela e token-it %1 është kyçur nga një tjetër xhirim i owncloudcmd.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read the token file again: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’u lexua dot sërish kartela e token-it: %1</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Cannot refresh the access token without an account.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Token-i i hyrjes s’mund të rifreskohet pa një llogari.</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi nuk e pranon më token-in e rifreskimit (%1). Hyrja ka skaduar ose është shfuqizuar; hyni sërish që të krijohet një kartelë e re token-i.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The server refused to refresh the access token (%1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi nuk pranoi të rifreskojë token-in e hyrjes (%1).</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Rifreskimi i token-it të hyrjes dështoi: %1 (HTTP %2).</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pika përfundimtare e token-it u përgjigj pa një token hyrjeje të përdorshëm (HTTP %1).</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’u ruajtën dot token-ët e rifreskuar te %1: %2</translation>
     </message>
 </context>
 <context>
@@ -1719,7 +1764,7 @@ Objektet mbi të cilët lejohet fshirja do të fshihen, nëse pengojnë heqjen e
     <message>
         <location line="+42"/>
         <source>Share…</source>
-        <translation type="unfinished">Ndani me të tjerë…</translation>
+        <translation>Ndani me të tjerë…</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1995,23 +2040,27 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+49"/>
         <source>Bandwidth</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gjerësi bande</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Limit upload speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kufizoje shpejtësinë e ngarkimit në</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+8"/>
         <source> kB/s</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> kB/s</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>Limit download speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kufizoje shpejtësinë e shkarkimit në</translation>
     </message>
 </context>
 <context>
@@ -2172,7 +2221,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kopjo URL-në e hyrjes</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2202,7 +2252,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+18"/>
         <source>Please sign in using the browser window that has opened and allow access if you are asked to.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ju lutemi, hyni duke përdorur dritaren e shfletuesit që u hap dhe lejoni hyrjen, nëse ju kërkohet.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2237,7 +2288,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+5"/>
         <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shfletuesi s’u hap dot. Kopjoni lidhjen me butonin më sipër dhe hapeni te shfletuesi juaj.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2468,7 +2520,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+3"/>
         <source>%1 the folder is currently in use</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 dosja është aktualisht në përdorim</translation>
     </message>
 </context>
 <context>
@@ -2767,34 +2820,34 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/libsync/propagateuploadng.cpp" line="+156"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished">%1 kartela është aktualisht në përdorim</translation>
+        <translation>%1 kartela është aktualisht në përdorim</translation>
     </message>
     <message>
         <location line="+166"/>
         <location line="+124"/>
         <location line="+253"/>
         <source>Unexpected return code from server (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Kod i papritur përgjigjeje nga shërbyesi (%1)</translation>
     </message>
     <message>
         <location line="-71"/>
         <source>The local file was removed during sync.</source>
-        <translation type="unfinished">Kartela vendore u hoq gjatë njëkohësimit.</translation>
+        <translation>Kartela vendore u hoq gjatë njëkohësimit.</translation>
     </message>
     <message>
         <location line="+66"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation type="unfinished">Shërbyesi kërkoi një veçori të dikurshme të hequr (polling)</translation>
+        <translation>Shërbyesi kërkoi një veçori të dikurshme që është hequr (vjelje)</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Missing File ID from server</source>
-        <translation type="unfinished"></translation>
+        <translation>Mungon ID kartele nga shërbyesi</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Missing ETag from server</source>
-        <translation type="unfinished"></translation>
+        <translation>Mungon ETag nga shërbyesi</translation>
     </message>
 </context>
 <context>
@@ -2863,12 +2916,14 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/quotainfo.cpp" line="+107"/>
         <source>Storage space almost full</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Hapësira e depozitimit thuajse plot</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The cloud storage of %1 is almost full: %2 of %3 are used.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Depozita në re e %1 është thuajse plot: janë përdorur %2 nga %3.</translation>
     </message>
 </context>
 <context>
@@ -2876,7 +2931,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+132"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’arrihet të merret lidhja e autorizimit! Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -2886,12 +2942,14 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+4"/>
         <source>The browser could not be opened. Copy the link and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shfletuesi s’u hap dot. Kopjoni lidhjen dhe hapeni te shfletuesi juaj.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Faqja e hyrjes nuk përdor lidhje të sigurt (HTTPS), ndaj s’u hap. Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2929,7 +2987,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kopjo URL-në e hyrjes</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3011,27 +3070,32 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+364"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shfletoni më poshtë kartelat tuaja. Që të ndryshoni gatishmërinë e një dosjeje, klikoni mbi të me të djathtin: mbajeni përherë në këtë pajisje, ose lironi hapësirë duke e bërë vetëm në linjë.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gatishmëri</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mbaje përherë në këtë pajisje</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Liro hapësirë (vetëm në linjë)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Riktheje te parazgjedhjet</translation>
     </message>
 </context>
 <context>
@@ -3039,27 +3103,32 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Njoftimi s’u hodh dot tej, ngaqë shërbyesi s’është i kapshëm.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The notification could not be dismissed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Njoftimi s’u hodh dot tej.</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>The action could not be carried out because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Veprimi s’u krye dot, ngaqë shërbyesi s’është i kapshëm.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>The action points to another server and was not carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Veprimi shpie te një tjetër shërbyes dhe s’u krye.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>The action could not be carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Veprimi s’u krye dot.</translation>
     </message>
 </context>
 <context>
@@ -3092,7 +3161,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+7"/>
         <source>Show window on startup</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shfaqe dritaren gjatë nisjes</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -3127,12 +3197,14 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+7"/>
         <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>HTTP/2 ripërdor një lidhje të vetme për shumë kërkesa, çka e shpejton njëkohësimin në lidhje me vonesë të madhe dhe me shumë kartela të vogla. Aktiv si parazgjedhje; hiqjani shenjën vetëm nëse shërbyesi apo ndërmjetësi juaj ka probleme me HTTP/2. Hyn në fuqi pas rinisjes.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Use HTTP/2 (recommended, requires restart)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Përdor HTTP/2 (e rekomanduar, lyp rinisje)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3147,27 +3219,30 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+27"/>
         <source>Show sync folders in the Explorer navigation pane</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shfaq dosjet e njëkohësuara te paneli i lëvizjes i Explorer-it</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Advanced - Approve folder sync (non-virtual files mode only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Të mëtejshme - Miratoni njëkohësim dosjesh (vetëm pa kartela virtuale)</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Ask for confirmation before synchronizing folders larger than</source>
-        <translation type="unfinished"></translation>
+        <translation>Kërko ripohim përpara njëkohësimi dosjesh më të mëdha se</translation>
     </message>
     <message>
         <location line="+7"/>
         <source> MB</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> MB</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>Ask for confirmation before synchronizing external storages</source>
-        <translation type="unfinished"></translation>
+        <translation>Kërko ripohim përpara njëkohësimi depozitash të jashtme</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3205,380 +3280,442 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="+107"/>
         <source>Share %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndani %1</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Share &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndani &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Përdorues dhe grupe</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Public links</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lidhje publike</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Close</source>
-        <translation type="unfinished">Mbylle</translation>
+        <translation>Mbylle</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Not connected to the server. Please check the connection and reopen the dialog.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’jeni i lidhur me shërbyesin. Ju lutemi, kontrolloni lidhjen dhe rihapeni dialogun.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Share with users or groups:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndajeni me përdorues ose grupe:</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Name of a user or group …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Emër përdoruesi ose grupi …</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Matching users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Përdorues dhe grupe që përputhen</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Shared with:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndarë me:</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Emër:</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+583"/>
         <source>Download / View</source>
-        <translation type="unfinished"></translation>
+        <translation>Të shkarkojë / Të shohë</translation>
     </message>
     <message>
         <location line="-582"/>
         <location line="+581"/>
         <source>Download / View / Upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shkarkim / Parje / Ngarkim</translation>
     </message>
     <message>
         <location line="-580"/>
         <location line="+578"/>
         <source>Download / View / Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Të shkarkojë / Të shohë / Të përpunojë</translation>
     </message>
     <message>
         <location line="-577"/>
         <location line="+575"/>
         <source>Upload only (File Drop)</source>
-        <translation type="unfinished"></translation>
+        <translation>Vetëm ngarkim (Lënie Kartele)</translation>
     </message>
     <message>
         <location line="-567"/>
         <source>Recipients can:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Marrësit mund të:</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Protect with a password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mbroje me fjalëkalim</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Fjalëkalim</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Set an expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Caktoni një datë skadimi</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Datë skadimi</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Cancel</source>
-        <translation type="unfinished">Anuloje</translation>
+        <translation>Anuloje</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>You are not allowed to share this item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’keni leje ta ndani këtë element.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Public link created.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lidhja publike u krijua.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Shared with %1.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>U nda me %1.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Public link saved.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lidhja publike u ruajt.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Public link deleted.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lidhja publike u fshi.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Share removed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndarja u hoq.</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>No users or groups found.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’u gjetën përdorues apo grupe.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Select a user or group to share with.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Përzgjidhni një përdorues ose grup me të cilin të ndahet.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Server message: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mesazh shërbyesi: %1</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Searching for users and groups failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kërkimi për përdorues dhe grupe dështoi.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Could not load the existing shares.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’u ngarkuan dot ndarjet ekzistuese.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Creating the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Krijimi i lidhjes publike dështoi.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sharing with %1 failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndarja me %1 dështoi.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Saving the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ruajtja e lidhjes publike dështoi.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Changing the permissions failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndryshimi i lejeve dështoi.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Deleting the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Fshirja e lidhjes publike dështoi.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Removing the share failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Heqja e ndarjes dështoi.</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Enter at least %1 characters to search.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Që të kërkohet, jepni të paktën %1 shenja.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Searching …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Po kërkohet …</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Sharing with %1 …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Po ndahet me %1 …</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Not shared with any user or group yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ende pa u ndarë me ndonjë përdorues apo grup.</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+62"/>
         <source>Loading shares …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Po ngarkohen ndarjet …</translation>
     </message>
     <message>
         <location line="-46"/>
         <source>Remove</source>
-        <translation type="unfinished">Hiqe</translation>
+        <translation>Hiqe</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndalni ndarjen me %1</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>can view</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>mund të shohë</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>can edit</source>
-        <translation type="unfinished"></translation>
+        <translation>mund të përpunojnë</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>can create</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>mund të krijojë</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>can delete</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>mund të fshijë</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>can share</source>
-        <translation type="unfinished"></translation>
+        <translation>mund të ndajnë</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>No public links yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ende pa lidhje publike.</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+69"/>
         <location line="+45"/>
         <source>Public link</source>
-        <translation type="unfinished"></translation>
+        <translation>Lidhje publike</translation>
     </message>
     <message>
         <location line="-109"/>
         <source>password protected</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>mbrojtur me fjalëkalim</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>expires %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>skadon më %1</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Link address of %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Adresë lidhjeje e %1</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Copy link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kopjo lidhjen</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Përpunoni</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Delete</source>
-        <translation type="unfinished">Fshije</translation>
+        <translation>Fshije</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Delete the public link &quot;%1&quot;? Everyone who has the link loses access.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Të fshihet lidhja publike &quot;%1&quot;? Cilido që ka lidhjen, humb hyrjen.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Të ndalet ndarja me %1?</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Edit public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Përpunoni lidhje publike</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ruaje</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>New public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lidhje e re publike</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Create public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Krijo lidhje publike</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Leave empty to keep the current password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lëreni të zbrazët që të mbahet fjalëkalimi i tanishëm</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>The server requires a password for this kind of link.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi lyp fjalëkalim për këtë lloj lidhjeje.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server requires an expiration date at most %1 days ahead.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi lyp një datë skadimi jo më shumë se %1 ditë më pas.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The server requires an expiration date.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi lyp një datë skadimi.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server allows only one public link per item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi lejon vetëm një lidhje publike për element.</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Please enter a password, or uncheck the password option.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ju lutemi, jepni një fjalëkalim, ose hiqini shenjën mundësisë së fjalëkalimit.</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (%2)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>%1 (group)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (grup)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 (federated)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (i federuar)</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Link copied to the clipboard: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lidhja u kopjua në të papastër: %1</translation>
     </message>
 </context>
 <context>
@@ -3832,9 +3969,10 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="+178"/>
+        <location filename="../src/libsync/theme.cpp" line="+180"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;Version %1. Për më tepër hollësi, vizitoni &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Nga Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller dhe të tjerë.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Klienti owncloud.online për Desktop shpërndahet nga %4 dhe licencohet sipas GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -3872,33 +4010,37 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <location line="+22"/>
         <location line="+650"/>
         <source>Offline</source>
-        <translation type="unfinished">Jashtë linje</translation>
+        <translation>Jashtë linje</translation>
     </message>
     <message>
         <location line="-668"/>
         <location line="+675"/>
         <source>Syncing</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Po njëkohësohet</translation>
     </message>
     <message>
         <location line="-673"/>
         <source>Aborting sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Po ndërpritet njëkohësimi</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>I përditësuar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date, some files were ignored</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>I përditësuar, disa kartela u shpërfillën</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Error</source>
-        <translation type="unfinished">Gabim</translation>
+        <translation>Gabim</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3906,26 +4048,29 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
-        <translation type="unfinished">Njëkohësimi u ndal</translation>
+        <translation>Njëkohësimi u ndal</translation>
     </message>
     <message>
         <location line="-649"/>
         <location line="+655"/>
         <source>Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Jo gati</translation>
     </message>
     <message numerus="yes">
         <location line="-543"/>
         <source>%n new notification(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n njoftim i ri</numerusform>
+            <numerusform>%n njoftime të reja</numerusform>
         </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For %1. You find them in the menu of the tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Për %1. I gjeni te menuja e ikonës në hapësirën e sistemit.</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -3945,12 +4090,13 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+10"/>
         <source>Add account…</source>
-        <translation type="unfinished">Shtoni llogari…</translation>
+        <translation>Shtoni llogari…</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Settings…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Rregullime…</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3971,212 +4117,236 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <location line="+33"/>
         <location line="+92"/>
         <source>Open in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Hape në shfletues</translation>
     </message>
     <message>
         <location line="-88"/>
         <location line="+105"/>
         <source>Resume synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>Riktheju njëkohësimit</translation>
     </message>
     <message>
         <location line="-102"/>
         <source>Log in…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Hyni…</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Log out</source>
-        <translation type="unfinished">Dilni</translation>
+        <translation>Dilni</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Recently changed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ndryshuar së fundi</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>No files synchronized recently</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’është njëkohësuar së fundi ndonjë kartelë</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>On the server</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Te shërbyesi</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Show all activity…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shfaq krejt veprimtarinë…</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Notifications (%1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Njoftime (%1)</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Dismiss</source>
-        <translation type="unfinished"></translation>
+        <translation>Mos e merr parasysh</translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n more on the server</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n tjetër te shërbyesi</numerusform>
+            <numerusform>%n të tjera te shërbyesi</numerusform>
         </translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Resume synchronization (paused until %1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Rimerre njëkohësimin (ndalur deri më %1)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Pause synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>Ndale njëkohësimin</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 1 hour</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Për 1 orë</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 2 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Për 2 orë</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 4 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Për 4 orë</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until tomorrow</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Deri nesër</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until I resume</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Deri sa ta rimarr</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>No account configured</source>
-        <translation type="unfinished">S’ka llogari të formësuar</translation>
+        <translation>S’ka llogari të formësuar</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronization paused until %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Njëkohësimi u ndal deri më %1</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Synchronization paused</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Njëkohësimi u ndal</translation>
     </message>
     <message>
         <location line="+21"/>
         <location line="+37"/>
         <source>Signed out</source>
-        <translation type="unfinished">I dalë</translation>
+        <translation>I dalë</translation>
     </message>
     <message>
         <location line="-34"/>
         <location line="+36"/>
         <location line="+16"/>
         <source>Disconnected</source>
-        <translation type="unfinished">I shkëputur</translation>
+        <translation>I shkëputur</translation>
     </message>
     <message>
         <location line="-49"/>
         <source>Disconnected from some accounts</source>
-        <translation type="unfinished"></translation>
+        <translation>I shkëputur prej disa llogarish</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>No sync folders configured</source>
-        <translation type="unfinished"></translation>
+        <translation>S’ka të formësuara dosje njëkohësimesh</translation>
     </message>
     <message numerus="yes">
         <location line="+12"/>
         <source>%n unresolved conflict(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n përplasje e pazgjidhur</numerusform>
+            <numerusform>%n përplasje të pazgjidhura</numerusform>
         </translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Up to date (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Të përditësuar (%1)</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Connected</source>
-        <translation type="unfinished">I lidhur</translation>
+        <translation>I lidhur</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server temporarily unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi përkohësisht jo gati</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server in maintenance mode</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi nën mënyrën mirëmbajtje</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Network error</source>
-        <translation type="unfinished"></translation>
+        <translation>Gabim rrjeti</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server configuration error</source>
-        <translation type="unfinished">Gabim formësimi shërbyesi</translation>
+        <translation>Gabim formësimi shërbyesi</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Waiting for sign-in</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Po pritet për hyrje</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Connecting…</source>
-        <translation type="unfinished">Po bëhet lidhja…</translation>
+        <translation>Po bëhet lidhja…</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Waiting to sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Po pritet për njëkohësim</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Open folder &quot;%1&quot; (%2)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Hap dosjen &quot;%1&quot; (%2)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Unresolved conflicts</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Përplasje të pazgjidhura</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Checking for changes</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Po kontrollohet për ndryshime</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2 (%3 left)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Po njëkohësohet %1 nga %2 (edhe %3)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Po njëkohësohet %1 nga %2</translation>
     </message>
 </context>
 <context>
@@ -4403,6 +4573,15 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
 </context>
 <context>
+    <name>QGuiApplication</name>
+    <message>
+        <location filename="../src/gui/translations.cpp" line="+32"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <extracomment>Translate this string to &quot;RTL&quot; in right-to-left languages (such as Arabic or Uyghur), otherwise to &quot;LTR&quot;.</extracomment>
+        <translation>LTR</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/common/utility.cpp" line="+309"/>
@@ -4455,37 +4634,43 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+114"/>
         <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi te %1 s’u kap dot. Ju lutemi, kontrolloni adresën dhe lidhjen tuaj internet.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No secure connection to %1 could be established: the server&apos;s certificate is invalid or was not accepted. If the problem persists, please contact the server&apos;s administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’u vendos dot lidhje e sigurt me %1: dëshmia e shërbyesit është e pavlefshme, ose s’u pranua. Nëse problemi vazhdon, ju lutemi, lidhuni me përgjegjësin e shërbyesit.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The server at %1 is in maintenance mode or temporarily unavailable. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbyesi te %1 është nën mënyrën mirëmbajtje, ose përkohësisht jo gati. Ju lutemi, riprovoni më vonë.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No owncloud.online server was found at %1. Please check the address.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S’u gjet shërbyes owncloud.online te %1. Ju lutemi, kontrolloni adresën.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aplikacioni &quot;OAuth2&quot; s’është i instaluar, ose s’është aktivizuar në këtë shërbyes. Ju lutemi, kërkojini përgjegjësit tuaj ta instalojë dhe aktivizojë përmes &quot;Market&quot;.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shënim për përgjegjës: klienti desktop bën hyrjen përmes aplikacionit &quot;OAuth2&quot;. Instalojeni përmes &quot;Market&quot; dhe aktivizojeni për krejt përdoruesit (rresht urdhrash: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not detect compatible server at %1</source>
-        <translation type="unfinished">S’u pikas dot shërbyes i përputhshmë te %1</translation>
+        <translation>S’u pikas dot shërbyes i përputhshmë te %1</translation>
     </message>
 </context>
 <context>
@@ -4697,12 +4882,14 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+2"/>
         <source>Some available online only</source>
-        <translation>Disa të passhëm vetëm &lt;em&gt;online&lt;/em&gt;</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Disa të gatshme vetëm në linjë</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Available online only</source>
-        <translation>I passhëm vetëm &lt;em&gt;online&lt;/em&gt;</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>E gatshme vetëm në linjë</translation>
     </message>
 </context>
 <context>
@@ -4809,22 +4996,25 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 u instalua ose u përditësua. Që të plotësohet instalimi, Windows-i duhet rinisur, që integrimi me eksploruesin e kartelave të funksionojë si duhet.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Restart Windows now</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Rinise Windows-in tani</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Restart later</source>
-        <translation type="unfinished">Riniseni më vonë</translation>
+        <translation>Riniseni më vonë</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>%1 installation finished - restarting Windows</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Instalimi i %1 përfundoi - po riniset Windows-i</translation>
     </message>
 </context>
 <context>

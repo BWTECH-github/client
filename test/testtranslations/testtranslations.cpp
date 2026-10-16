@@ -8,6 +8,7 @@
 #include "gui/translations.h"
 
 #include <QDialogButtonBox>
+#include <QGuiApplication>
 #include <QLibraryInfo>
 #include <QPushButton>
 #include <QTemporaryDir>
@@ -81,6 +82,31 @@ private Q_SLOTS:
         QCOMPARE(buttonText(box, QDialogButtonBox::No), QStringLiteral("Nein"));
     }
 
+    void testLoadsQtCatalogForChineseScriptVariants_data()
+    {
+        QTest::addColumn<QString>("language");
+        QTest::addColumn<QString>("qtCatalog");
+
+        // Qt liefert Chinesisch nur als zh_CN (Kurzzeichen) und zh_TW (Langzeichen)
+        QTest::newRow("Simplified zh-Hans") << QStringLiteral("zh-Hans") << QStringLiteral("qtbase_zh_CN.qm");
+        QTest::newRow("Traditional zh_HK") << QStringLiteral("zh_HK") << QStringLiteral("qtbase_zh_TW.qm");
+    }
+
+    // ohne Zuordnung blieben die Standardknöpfe in zh-Hans und zh_HK englisch
+    void testLoadsQtCatalogForChineseScriptVariants()
+    {
+        QFETCH(QString, language);
+        QFETCH(QString, qtCatalog);
+
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        QVERIFY(QFile::copy(QStringLiteral(TEST_QTBASE_DE_QM), QDir(dir.path()).filePath(qtCatalog)));
+
+        QTranslator translator;
+        QVERIFY(Translations::loadQtTranslation(&translator, qtCatalogPrefixes, language, {dir.path()}));
+        QVERIFY(!translator.isEmpty());
+    }
+
     void testReportsMissingCatalog()
     {
         QTemporaryDir empty;
@@ -89,6 +115,57 @@ private Q_SLOTS:
         QTranslator translator;
         QVERIFY(!Translations::loadQtTranslation(&translator, qtCatalogPrefixes, QStringLiteral("de"), {empty.path()}));
         QVERIFY(translator.isEmpty());
+    }
+
+    // Sprachumfang wie der letzte Community-Client 6.0.3 (dazu pl und sv aus upstream 7.x); upstream hatte elf davon
+    // gestrichen, sie sind wieder eingebaut und landen über die Ressourcen in jedem Paket
+    void testCommunityLanguagesAreShipped()
+    {
+        const QStringList expected = {QStringLiteral("ar"), QStringLiteral("bg_BG"), QStringLiteral("cs"), QStringLiteral("de"),
+            QStringLiteral("de-informal"), QStringLiteral("en"), QStringLiteral("en_GB"), QStringLiteral("en_US"), QStringLiteral("es"),
+            QStringLiteral("et"), QStringLiteral("fr"), QStringLiteral("it"), QStringLiteral("ja"), QStringLiteral("ko"), QStringLiteral("lo"),
+            QStringLiteral("nl"), QStringLiteral("pl"), QStringLiteral("pt"), QStringLiteral("pt_BR"), QStringLiteral("ru"), QStringLiteral("sq"),
+            QStringLiteral("sv"), QStringLiteral("tr"), QStringLiteral("ug"), QStringLiteral("zh-Hans"), QStringLiteral("zh_CN"),
+            QStringLiteral("zh_HK"), QStringLiteral("zh_TW")};
+
+        const auto available = Translations::listAvailableTranslations();
+
+        for (const auto &language : expected) {
+            QVERIFY2(available.contains(language), qPrintable(language));
+            QTranslator translator;
+            QVERIFY2(translator.load(Translations::translationsFilePrefix() + language, Translations::translationsDirectoryPath()),
+                qPrintable(language));
+            QVERIFY2(!translator.isEmpty(), qPrintable(language));
+        }
+    }
+
+    void testLayoutDirectionFollowsLanguage_data()
+    {
+        QTest::addColumn<QString>("language");
+        QTest::addColumn<Qt::LayoutDirection>("direction");
+
+        QTest::newRow("Arabic") << QStringLiteral("ar") << Qt::RightToLeft;
+        // für Uigurisch liefert Qt keinen eigenen Katalog, die Richtung kommt allein aus client_ug
+        QTest::newRow("Uyghur") << QStringLiteral("ug") << Qt::RightToLeft;
+        QTest::newRow("German") << QStringLiteral("de") << Qt::LeftToRight;
+        QTest::newRow("Russian") << QStringLiteral("ru") << Qt::LeftToRight;
+        QTest::newRow("Chinese") << QStringLiteral("zh_CN") << Qt::LeftToRight;
+    }
+
+    // Qt spiegelt die Oberfläche, wenn eine installierte Übersetzung „QT_LAYOUT_DIRECTION“ (Kontext QGuiApplication)
+    // mit „RTL“ übersetzt; ohne Qt-Katalog muss das der eigene Katalog leisten
+    void testLayoutDirectionFollowsLanguage()
+    {
+        QFETCH(QString, language);
+        QFETCH(Qt::LayoutDirection, direction);
+
+        QTranslator translator;
+        QVERIFY(translator.load(Translations::translationsFilePrefix() + language, Translations::translationsDirectoryPath()));
+        QVERIFY(QCoreApplication::installTranslator(&translator));
+        QCOMPARE(QGuiApplication::layoutDirection(), direction);
+
+        QVERIFY(QCoreApplication::removeTranslator(&translator));
+        QCOMPARE(QGuiApplication::layoutDirection(), Qt::LeftToRight);
     }
 
     // der echte Qt-Katalog der Bauumgebung, so wie ihn das Paket mitliefert

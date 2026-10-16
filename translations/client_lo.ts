@@ -36,7 +36,7 @@
         <location filename="../src/gui/main.cpp" line="+102"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation>%1 ເວີຊັນ %2&lt;byte value=&quot;xd&quot;/&gt;
+        <translation>%1 ເວີຊັນ %2<byte value="xd"/>
 ເຄື່ອງມືຊິງໂຄໄນໄຟລ໌ສຳລັບເດັສທັອບ.</translation>
     </message>
     <message>
@@ -111,9 +111,10 @@ File synchronization desktop utility.</source>
     <message numerus="yes">
         <location line="+5"/>
         <source>%n Filter(s)</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%n ໂຕກອງ</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n ຕົວກອງ</numerusform>
+            <numerusform>%n ຕົວກອງ</numerusform>
         </translation>
     </message>
     <message>
@@ -224,7 +225,8 @@ File synchronization desktop utility.</source>
     <message>
         <location line="+3"/>
         <source>, %1 left</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>, ເຫຼືອ %1</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -249,7 +251,7 @@ File synchronization desktop utility.</source>
     <message>
         <location line="+2"/>
         <source>%1 is not a folder.</source>
-        <translation>%1 ບໍ່ແມ່ນໂຟນເດີ. </translation>
+        <translation>%1 ບໍ່ແມ່ນໂຟນເດີ.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -392,7 +394,8 @@ File synchronization desktop utility.</source>
         <location line="+21"/>
         <location line="+238"/>
         <source>Manage availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຈັດການການມີໃຫ້ໃຊ້</translation>
     </message>
     <message>
         <location line="-226"/>
@@ -532,17 +535,20 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location line="+49"/>
         <source>Unchecked folders will be removed from your local file system and will not be synchronized to this computer anymore.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໂຟນເດີທີ່ບໍ່ໄດ້ໝາຍຖືກຈະຖືກລຶບອອກຈາກລະບົບໄຟລ໌ໃນເຄື່ອງຂອງທ່ານ ແລະ ຈະບໍ່ຖືກຊິງກັບຄອມພິວເຕີນີ້ອີກ.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ນຳໃຊ້</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Discard</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຍົກເລີກ</translation>
     </message>
 </context>
 <context>
@@ -565,7 +571,7 @@ This action will abort any currently running synchronization.</source>
         <source>You don&apos;t have any connected accounts yet.
 
 Please create an account by selecting the &quot;Add account...&quot; option on the More button menu.</source>
-        <translation>ທ່ານຍັງບໍ່ມີບັນຊີທີ່ເຊື່ອມຕໍ່ເທື່ອ. ກະລຸນາສ້າງບັນຊີໂດຍການເລືອກຕົວເລືອກ &quot;ເພີ່ມບັນຊີ...&quot; ຢູ່ເມນູປຸ່ມເພີ່ມເຕີມ. </translation>
+        <translation>ທ່ານຍັງບໍ່ມີບັນຊີທີ່ເຊື່ອມຕໍ່ເທື່ອ. ກະລຸນາສ້າງບັນຊີໂດຍການເລືອກຕົວເລືອກ &quot;ເພີ່ມບັນຊີ...&quot; ຢູ່ເມນູປຸ່ມເພີ່ມເຕີມ.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -583,12 +589,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+7"/>
         <source>Retrieving user settings and server capabilities timed out.</source>
-        <translation>ການດຶງຂໍ້ມູນການຕັ້ງຄ່າຜູ້ໃຊ້ ແລະ ຄວາມສາມາດຂອງເຊີບເວີໝົດເວລາແລ້ວ. </translation>
+        <translation>ການດຶງຂໍ້ມູນການຕັ້ງຄ່າຜູ້ໃຊ້ ແລະ ຄວາມສາມາດຂອງເຊີບເວີໝົດເວລາແລ້ວ.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
-        <translation>ບໍ່ສາມາດດຶງຂໍ້ມູນການຕັ້ງຄ່າຜູ້ໃຊ້ ແລະ ຄວາມສາມາດຂອງເຊີບເວີໄດ້. </translation>
+        <translation>ບໍ່ສາມາດດຶງຂໍ້ມູນການຕັ້ງຄ່າຜູ້ໃຊ້ ແລະ ຄວາມສາມາດຂອງເຊີບເວີໄດ້.</translation>
     </message>
 </context>
 <context>
@@ -622,13 +628,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <location line="+105"/>
         <source>%1 of %2 used</source>
         <extracomment>storage quota, %1 and %2 are sizes like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>ໃຊ້ໄປ %1 ຈາກ %2</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>%1 used</source>
         <extracomment>storage quota without a server-side limit, %1 is a size like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໃຊ້ໄປແລ້ວ %1</translation>
     </message>
 </context>
 <context>
@@ -652,7 +659,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+5"/>
         <source>Change alias...</source>
-        <translation>ປ່ຽນນາມແຝງ... </translation>
+        <translation>ປ່ຽນນາມແຝງ...</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -901,7 +908,8 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location line="+2"/>
         <source>You are almost set! The synchronization options are under Advanced. By default the client enables the Virtual File System (VFS) and only downloads files when you open them.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເກືອບສຳເລັດແລ້ວ! ຕົວເລືອກການຊິງຢູ່ໃນສ່ວນຂັ້ນສູງ. ໂດຍຄ່າເລີ່ມຕົ້ນ ໄຄລເອັນຈະເປີດໃຊ້ລະບົບໄຟລ໌ສະເໝືອນ (VFS) ແລະ ຈະດາວໂຫຼດໄຟລ໌ສະເພາະເມື່ອທ່ານເປີດມັນເທົ່ານັ້ນ.</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -914,42 +922,47 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished">%1 ໄຟລ໌ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
+        <translation>%1 ໄຟລ໌ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດອ່ານ %1 ໄດ້</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Local file changed during sync.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໄຟລ໌ໃນເຄື່ອງມີການປ່ຽນແປງລະຫວ່າງການຊິງ.</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Bulk upload failed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການອັບໂຫຼດແບບກຸ່ມລົ້ມເຫຼວ</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Server did not confirm the upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີບໍ່ໄດ້ຢືນຢັນການອັບໂຫຼດ</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Server confirmed the upload without an etag</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີຢືນຢັນການອັບໂຫຼດໂດຍບໍ່ມີ ETag</translation>
     </message>
     <message>
         <location line="+70"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished">ເຊີບເວີບໍ່ໄດ້ໃຫ້ສິດໃນການເຂົ້າເຖິງໄຟລ໌</translation>
+        <translation>ເຊີບເວີບໍ່ໄດ້ໃຫ້ສິດໃນການເຂົ້າເຖິງໄຟລ໌</translation>
     </message>
     <message>
         <location line="+74"/>
         <source>Error updating metadata: %1</source>
-        <translation type="unfinished">ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
+        <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
 </context>
 <context>
@@ -980,7 +993,8 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location line="-79"/>
         <source>No owncloud.online account configured</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ມີບັນຊີ owncloud.online ທີ່ຕັ້ງຄ່າໄວ້</translation>
     </message>
     <message>
         <location line="+152"/>
@@ -1118,9 +1132,10 @@ The update will be performed in the background, and overwrite the current AppIma
     <message numerus="yes">
         <location line="-30"/>
         <source>%1 and %n other file(s) have been removed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກລຶບອອກແລ້ວ.</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ຖືກລຶບອອກແລ້ວ.</numerusform>
+            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ຖືກລຶບອອກແລ້ວ.</numerusform>
         </translation>
     </message>
     <message>
@@ -1131,9 +1146,10 @@ The update will be performed in the background, and overwrite the current AppIma
     <message numerus="yes">
         <location line="+74"/>
         <source>%1 and %n other file(s) have been added.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກເພີ່ມເຂົ້າມາແລ້ວ.</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ຖືກເພີ່ມແລ້ວ.</numerusform>
+            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ຖືກເພີ່ມແລ້ວ.</numerusform>
         </translation>
     </message>
     <message>
@@ -1145,33 +1161,37 @@ The update will be performed in the background, and overwrite the current AppIma
     <message numerus="yes">
         <location line="+5"/>
         <source>%1 and %n other file(s) have been updated.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກອັບເດດແລ້ວ.</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ຖືກອັບເດດແລ້ວ.</numerusform>
+            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ຖືກອັບເດດແລ້ວ.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 ຖືກປ່ຽນຊື່ເປັນ %2 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກປ່ຽນຊື່ແລ້ວ.</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%1 ຖືກປ່ຽນຊື່ເປັນ %2 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ຖືກປ່ຽນຊື່ແລ້ວ.</numerusform>
+            <numerusform>%1 ຖືກປ່ຽນຊື່ເປັນ %2 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ຖືກປ່ຽນຊື່ແລ້ວ.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 ຖືກຍ້າຍໄປທີ່ %2 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ຖືກຍ້າຍແລ້ວ.</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%1 ຖືກຍ້າຍໄປທີ່ %2 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ຖືກຍ້າຍແລ້ວ.</numerusform>
+            <numerusform>%1 ຖືກຍ້າຍໄປທີ່ %2 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ຖືກຍ້າຍແລ້ວ.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ມີບັນຫາການຊິງຂັດກັນ.</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ມີຂໍ້ຂັດແຍ່ງໃນການຊິງ.</numerusform>
+            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ມີຂໍ້ຂັດແຍ່ງໃນການຊິງ.</numerusform>
         </translation>
     </message>
     <message>
@@ -1182,9 +1202,10 @@ The update will be performed in the background, and overwrite the current AppIma
     <message numerus="yes">
         <location line="+5"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນໆອີກ %n ໄຟລ໌ບໍ່ສາມາດຊິງໄດ້ເນື່ອງຈາກຄວາມຜິດພາດ. ເບິ່ງລາຍລະອຽດໃນລັອກ.</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ບໍ່ສາມາດຊິງໄດ້ເນື່ອງຈາກມີຂໍ້ຜິດພາດ. ເບິ່ງລາຍລະອຽດໃນບັນທຶກ.</numerusform>
+            <numerusform>%1 ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌ບໍ່ສາມາດຊິງໄດ້ເນື່ອງຈາກມີຂໍ້ຜິດພາດ. ເບິ່ງລາຍລະອຽດໃນບັນທຶກ.</numerusform>
         </translation>
     </message>
     <message>
@@ -1220,37 +1241,44 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location line="+38"/>
         <source>A folder from an external storage has been added: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໄດ້ເພີ່ມໂຟນເດີຈາກບ່ອນເກັບຂໍ້ມູນພາຍນອກແລ້ວ: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>A new folder larger than %1 MB has been added: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໄດ້ເພີ່ມໂຟນເດີໃໝ່ທີ່ໃຫຍ່ກວ່າ %1 MB ແລ້ວ: %2</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>The folder %1 was added on the server from an external storage.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໂຟນເດີ %1 ຖືກເພີ່ມໃສ່ເຊີບເວີຈາກບ່ອນເກັບຂໍ້ມູນພາຍນອກ.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The new folder %1 on the server is larger than %2 MB.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໂຟນເດີໃໝ່ %1 ໃນເຊີບເວີໃຫຍ່ກວ່າ %2 MB.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Do you want to synchronize it to this computer?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ທ່ານຕ້ອງການຊິງມັນກັບຄອມພິວເຕີນີ້ບໍ?</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຊິງ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Do not synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ຊິງ</translation>
     </message>
     <message>
         <location line="+53"/>
@@ -1271,54 +1299,62 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+136"/>
         <source>Loading …</source>
-        <translation type="unfinished">ກຳລັງໂຫຼດ…</translation>
+        <translation>ກຳລັງໂຫຼດ…</translation>
     </message>
     <message>
         <location line="+206"/>
         <source>This folder no longer exists on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໂຟນເດີນີ້ບໍ່ມີຢູ່ໃນເຊີບເວີອີກຕໍ່ໄປ.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>An error occurred while loading the folder contents.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເກີດຂໍ້ຜິດພາດໃນຂະນະໂຫຼດເນື້ອຫາຂອງໂຟນເດີ.</translation>
     </message>
     <message>
         <location line="+202"/>
         <source>This folder is empty on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໂຟນເດີນີ້ຫວ່າງເປົ່າຢູ່ໃນເຊີບເວີ.</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໄຟລ໌ %1, %2</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Folder %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote folder row, %1 is the folder name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໂຟນເດີ %1, %2</translation>
     </message>
     <message>
         <location line="+284"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເກັບໄວ້ໃນອຸປະກອນນີ້ສະເໝີ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເພີ່ມພື້ນທີ່ວ່າງ (ອອນລາຍເທົ່ານັ້ນ)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຕັ້ງຄືນເປັນຄ່າເລີ່ມຕົ້ນ</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Share…</source>
-        <translation type="unfinished">ແຊຣ໌…</translation>
+        <translation>ແຊຣ໌…</translation>
     </message>
 </context>
 <context>
@@ -1359,7 +1395,7 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location line="+35"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished">ການຊິງຖືກຢຸດຊົ່ວຄາວໂດຍຜູ້ໃຊ້</translation>
+        <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວໂດຍຜູ້ໃຊ້</translation>
     </message>
     <message>
         <location line="+278"/>
@@ -1561,62 +1597,74 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໂທເຄັນການເຂົ້າເຖິງໝົດອາຍຸແລ້ວ ແລະ ໄຟລ໌ໂທເຄັນບໍ່ມີໂທເຄັນສຳລັບຕໍ່ອາຍຸ. ກະລຸນາເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອສ້າງໄຟລ໌ໂທເຄັນໃໝ່.</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>owncloudcmd cannot sign in interactively. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>owncloudcmd ບໍ່ສາມາດເຂົ້າສູ່ລະບົບແບບໂຕ້ຕອບໄດ້. ກະລຸນາເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອສ້າງໄຟລ໌ໂທເຄັນໃໝ່.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີປະຕິເສດໂທເຄັນການເຂົ້າເຖິງທີ່ຫາກໍອອກໃຫ້ (HTTP 401). ກະລຸນາກວດສອບວ່າເວັບເຊີບເວີສົ່ງສ່ວນຫົວ Authorization ຕໍ່ໄປຫາ owncloud.online.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The server rejected the access token (HTTP 401) and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີປະຕິເສດໂທເຄັນການເຂົ້າເຖິງ (HTTP 401) ແລະ ໄຟລ໌ໂທເຄັນບໍ່ມີໂທເຄັນສຳລັບຕໍ່ອາຍຸ. ກະລຸນາເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອສ້າງໄຟລ໌ໂທເຄັນໃໝ່.</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໄຟລ໌ໂທເຄັນ %1 ຖືກລັອກໂດຍການເຮັດວຽກອື່ນຂອງ owncloudcmd.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read the token file again: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດອ່ານໄຟລ໌ໂທເຄັນໄດ້ອີກຄັ້ງ: %1</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Cannot refresh the access token without an account.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດຕໍ່ອາຍຸໂທເຄັນການເຂົ້າເຖິງໄດ້ຖ້າບໍ່ມີບັນຊີ.</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີບໍ່ຍອມຮັບໂທເຄັນສຳລັບຕໍ່ອາຍຸອີກຕໍ່ໄປ (%1). ການເຂົ້າສູ່ລະບົບໝົດອາຍຸ ຫຼື ຖືກຍົກເລີກແລ້ວ; ກະລຸນາເຂົ້າສູ່ລະບົບອີກຄັ້ງເພື່ອສ້າງໄຟລ໌ໂທເຄັນໃໝ່.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The server refused to refresh the access token (%1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີປະຕິເສດການຕໍ່ອາຍຸໂທເຄັນການເຂົ້າເຖິງ (%1).</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການຕໍ່ອາຍຸໂທເຄັນການເຂົ້າເຖິງລົ້ມເຫຼວ: %1 (HTTP %2).</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຈຸດປາຍທາງໂທເຄັນຕອບກັບໂດຍບໍ່ມີໂທເຄັນການເຂົ້າເຖິງທີ່ໃຊ້ໄດ້ (HTTP %1).</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດບັນທຶກໂທເຄັນທີ່ຕໍ່ອາຍຸແລ້ວໄວ້ໃນ %1: %2</translation>
     </message>
 </context>
 <context>
@@ -1717,7 +1765,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location line="+42"/>
         <source>Share…</source>
-        <translation type="unfinished">ແຊຣ໌…</translation>
+        <translation>ແຊຣ໌…</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1825,7 +1873,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+5"/>
         <source>About...</source>
-        <translation>ກ່ຽວກັບ... </translation>
+        <translation>ກ່ຽວກັບ...</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1846,7 +1894,7 @@ Note that using any logging command line options will override the settings.</so
         <location line="+14"/>
         <location line="+8"/>
         <source>Errors: %1</source>
-        <translation>ຂໍ້ຜິດພາດ: %1 </translation>
+        <translation>ຂໍ້ຜິດພາດ: %1</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -1993,23 +2041,27 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+49"/>
         <source>Bandwidth</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ແບນວິດ</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Limit upload speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຈຳກັດຄວາມໄວອັບໂຫຼດທີ່</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+8"/>
         <source> kB/s</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> kB/s</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>Limit download speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຈຳກັດຄວາມໄວດາວໂຫຼດທີ່</translation>
     </message>
 </context>
 <context>
@@ -2170,7 +2222,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສຳເນົາ URL ສຳລັບເຂົ້າສູ່ລະບົບ</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2195,12 +2248,13 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+67"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
-        <translation>ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບບໍລິການເຂົ້າສູ່ລະບົບໄດ້. ຖ້າບັນຫາຍັງສືບຕໍ່, ກະລຸນາຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ. </translation>
+        <translation>ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບບໍລິການເຂົ້າສູ່ລະບົບໄດ້. ຖ້າບັນຫາຍັງສືບຕໍ່, ກະລຸນາຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ.</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Please sign in using the browser window that has opened and allow access if you are asked to.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກະລຸນາເຂົ້າສູ່ລະບົບໃນໜ້າຕ່າງບຣາວເຊີທີ່ເປີດຂຶ້ນມາ ແລະ ອະນຸຍາດການເຂົ້າເຖິງຫາກມີການຖາມ.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2235,7 +2289,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+5"/>
         <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດເປີດບຣາວເຊີໄດ້. ສຳເນົາລິ້ງດ້ວຍປຸ່ມດ້ານເທິງ ແລະ ເປີດມັນໃນບຣາວເຊີຂອງທ່ານ.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2765,34 +2820,34 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagateuploadng.cpp" line="+156"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished">%1 ໄຟລ໌ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
+        <translation>%1 ໄຟລ໌ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
         <location line="+166"/>
         <location line="+124"/>
         <location line="+253"/>
         <source>Unexpected return code from server (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>ລະຫັດທີ່ບໍ່ຄາດຄິດຖືກສົ່ງຄືນຈາກເຊີບເວີ (%1)</translation>
     </message>
     <message>
         <location line="-71"/>
         <source>The local file was removed during sync.</source>
-        <translation type="unfinished">ໄຟລ໌ໃນເຄື່ອງຖືກລຶບອອກຂະນະກຳລັງຊິ້ງ.</translation>
+        <translation>ໄຟລ໌ໃນເຄື່ອງຖືກລຶບອອກຂະນະກຳລັງຊິ້ງ.</translation>
     </message>
     <message>
         <location line="+66"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation type="unfinished">ເຊີບເວີໄດ້ຮ້ອງຂໍຄຸນສົມບັດເກົ່າທີ່ຖືກລຶບອອກໄປແລ້ວ (polling)</translation>
+        <translation>ເຊີບເວີໄດ້ຮ້ອງຂໍຄຸນສົມບັດເກົ່າທີ່ຖືກລຶບອອກໄປແລ້ວ (polling)</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Missing File ID from server</source>
-        <translation type="unfinished"></translation>
+        <translation>ບໍ່ມີ ID ໄຟລ໌ຈາກເຊີບເວີ</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Missing ETag from server</source>
-        <translation type="unfinished"></translation>
+        <translation>ບໍ່ມີ ETag ຈາກເຊີບເວີ</translation>
     </message>
 </context>
 <context>
@@ -2861,12 +2916,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/quotainfo.cpp" line="+107"/>
         <source>Storage space almost full</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ພື້ນທີ່ເກັບຂໍ້ມູນເກືອບເຕັມແລ້ວ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The cloud storage of %1 is almost full: %2 of %3 are used.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ພື້ນທີ່ຄລາວຂອງ %1 ເກືອບເຕັມແລ້ວ: ໃຊ້ໄປ %2 ຈາກ %3.</translation>
     </message>
 </context>
 <context>
@@ -2884,12 +2941,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+4"/>
         <source>The browser could not be opened. Copy the link and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດເປີດບຣາວເຊີໄດ້. ສຳເນົາລິ້ງ ແລະ ເປີດມັນໃນບຣາວເຊີຂອງທ່ານ.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໜ້າເຂົ້າສູ່ລະບົບບໍ່ໄດ້ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພ (HTTPS) ຈຶ່ງບໍ່ໄດ້ເປີດ. ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2927,7 +2986,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສຳເນົາ URL ສຳລັບເຂົ້າສູ່ລະບົບ</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3009,27 +3069,32 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+364"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເບິ່ງໄຟລ໌ຂອງທ່ານຢູ່ລຸ່ມນີ້. ຄລິກຂວາໃສ່ໂຟນເດີເພື່ອປ່ຽນການມີໃຫ້ໃຊ້: ເກັບໄວ້ໃນອຸປະກອນນີ້ສະເໝີ ຫຼື ເພີ່ມພື້ນທີ່ວ່າງໂດຍໃຫ້ເປັນແບບອອນລາຍເທົ່ານັ້ນ.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການມີໃຫ້ໃຊ້</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເກັບໄວ້ໃນອຸປະກອນນີ້ສະເໝີ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເພີ່ມພື້ນທີ່ວ່າງ (ອອນລາຍເທົ່ານັ້ນ)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຕັ້ງຄືນເປັນຄ່າເລີ່ມຕົ້ນ</translation>
     </message>
 </context>
 <context>
@@ -3037,27 +3102,32 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດປິດການແຈ້ງເຕືອນໄດ້ ເພາະບໍ່ສາມາດເຊື່ອມຕໍ່ເຊີບເວີໄດ້.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The notification could not be dismissed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດປິດການແຈ້ງເຕືອນໄດ້.</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>The action could not be carried out because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດດຳເນີນການໄດ້ ເພາະບໍ່ສາມາດເຊື່ອມຕໍ່ເຊີບເວີໄດ້.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>The action points to another server and was not carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການດຳເນີນການນີ້ຊີ້ໄປຫາເຊີບເວີອື່ນ ແລະ ບໍ່ໄດ້ຖືກດຳເນີນການ.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>The action could not be carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດດຳເນີນການໄດ້.</translation>
     </message>
 </context>
 <context>
@@ -3090,7 +3160,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+7"/>
         <source>Show window on startup</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສະແດງໜ້າຕ່າງເມື່ອເລີ່ມຕົ້ນ</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -3125,12 +3196,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+7"/>
         <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>HTTP/2 ໃຊ້ການເຊື່ອມຕໍ່ດຽວສຳລັບຫຼາຍຄຳຮ້ອງຂໍ ເຊິ່ງເຮັດໃຫ້ການຊິງໄວຂຶ້ນໃນເຄືອຂ່າຍທີ່ມີຄວາມໜ່ວງສູງ ແລະ ເມື່ອມີໄຟລ໌ນ້ອຍຫຼາຍ. ເປີດໄວ້ໂດຍຄ່າເລີ່ມຕົ້ນ; ໃຫ້ຍົກເລີກການໝາຍສະເພາະເມື່ອເຊີບເວີ ຫຼື ພຣັອກຊີຂອງທ່ານມີບັນຫາກັບ HTTP/2. ມີຜົນຫຼັງຈາກເລີ່ມໃໝ່.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Use HTTP/2 (recommended, requires restart)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໃຊ້ HTTP/2 (ແນະນຳ, ຕ້ອງເລີ່ມໃໝ່)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3145,27 +3218,32 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+27"/>
         <source>Show sync folders in the Explorer navigation pane</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສະແດງໂຟນເດີທີ່ຊິງໃນແຖບນຳທາງຂອງ Explorer</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Advanced - Approve folder sync (non-virtual files mode only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຂັ້ນສູງ - ອະນຸມັດການຊິງໂຟນເດີ (ສະເພາະເມື່ອບໍ່ໃຊ້ໄຟລ໌ສະເໝືອນ)</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Ask for confirmation before synchronizing folders larger than</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຖາມເພື່ອຢືນຢັນກ່ອນຊິງໂຟນເດີທີ່ໃຫຍ່ກວ່າ</translation>
     </message>
     <message>
         <location line="+7"/>
         <source> MB</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> MB</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>Ask for confirmation before synchronizing external storages</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຖາມເພື່ອຢືນຢັນກ່ອນຊິງບ່ອນເກັບຂໍ້ມູນພາຍນອກ</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3203,380 +3281,442 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="+107"/>
         <source>Share %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ແຊຣ໌ %1</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Share &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ແຊຣ໌ &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຜູ້ໃຊ້ ແລະ ກຸ່ມ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Public links</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ລິ້ງສາທາລະນະ</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Close</source>
-        <translation type="unfinished">ປິດ</translation>
+        <translation>ປິດ</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Not connected to the server. Please check the connection and reopen the dialog.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ໄດ້ເຊື່ອມຕໍ່ກັບເຊີບເວີ. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ ແລະ ເປີດກ່ອງໂຕ້ຕອບອີກຄັ້ງ.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Share with users or groups:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ແຊຣ໌ກັບຜູ້ໃຊ້ ຫຼື ກຸ່ມ:</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Name of a user or group …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຊື່ຂອງຜູ້ໃຊ້ ຫຼື ກຸ່ມ …</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Matching users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຜູ້ໃຊ້ ແລະ ກຸ່ມທີ່ກົງກັນ</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Shared with:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ແຊຣ໌ກັບ:</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>ຊື່:</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+583"/>
         <source>Download / View</source>
-        <translation type="unfinished"></translation>
+        <translation>ດາວໂຫຼດ / ເບິ່ງ</translation>
     </message>
     <message>
         <location line="-582"/>
         <location line="+581"/>
         <source>Download / View / Upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ດາວໂຫຼດ / ເບິ່ງ / ອັບໂຫຼດ</translation>
     </message>
     <message>
         <location line="-580"/>
         <location line="+578"/>
         <source>Download / View / Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>ດາວໂຫຼດ / ເບິ່ງ / ແກ້ໄຂ</translation>
     </message>
     <message>
         <location line="-577"/>
         <location line="+575"/>
         <source>Upload only (File Drop)</source>
-        <translation type="unfinished"></translation>
+        <translation>ອັບໂຫຼດເທົ່ານັ້ນ (ຝາກໄຟລ໌)</translation>
     </message>
     <message>
         <location line="-567"/>
         <source>Recipients can:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຜູ້ຮັບສາມາດ:</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Protect with a password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ປ້ອງກັນດ້ວຍລະຫັດຜ່ານ</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>ລະຫັດຜ່ານ</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Set an expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຕັ້ງວັນໝົດອາຍຸ</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ວັນໝົດອາຍຸ</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Cancel</source>
-        <translation type="unfinished">ຍົກເລີກ</translation>
+        <translation>ຍົກເລີກ</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>You are not allowed to share this item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ທ່ານບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ແຊຣ໌ລາຍການນີ້.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Public link created.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສ້າງລິ້ງສາທາລະນະແລ້ວ.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Shared with %1.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ແຊຣ໌ກັບ %1 ແລ້ວ.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Public link saved.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບັນທຶກລິ້ງສາທາລະນະແລ້ວ.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Public link deleted.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ລຶບລິ້ງສາທາລະນະແລ້ວ.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Share removed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ລຶບການແຊຣ໌ແລ້ວ.</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>No users or groups found.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ພົບຜູ້ໃຊ້ ຫຼື ກຸ່ມ.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Select a user or group to share with.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເລືອກຜູ້ໃຊ້ ຫຼື ກຸ່ມທີ່ຈະແຊຣ໌ນຳ.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Server message: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຂໍ້ຄວາມຈາກເຊີບເວີ: %1</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Searching for users and groups failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການຄົ້ນຫາຜູ້ໃຊ້ ແລະ ກຸ່ມລົ້ມເຫຼວ.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Could not load the existing shares.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດໂຫຼດການແຊຣ໌ທີ່ມີຢູ່ໄດ້.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Creating the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການສ້າງລິ້ງສາທາລະນະລົ້ມເຫຼວ.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sharing with %1 failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການແຊຣ໌ກັບ %1 ລົ້ມເຫຼວ.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Saving the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການບັນທຶກລິ້ງສາທາລະນະລົ້ມເຫຼວ.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Changing the permissions failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການປ່ຽນສິດລົ້ມເຫຼວ.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Deleting the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການລຶບລິ້ງສາທາລະນະລົ້ມເຫຼວ.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Removing the share failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການລຶບການແຊຣ໌ລົ້ມເຫຼວ.</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Enter at least %1 characters to search.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ປ້ອນຢ່າງໜ້ອຍ %1 ຕົວອັກສອນເພື່ອຄົ້ນຫາ.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Searching …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກຳລັງຄົ້ນຫາ …</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Sharing with %1 …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກຳລັງແຊຣ໌ກັບ %1 …</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Not shared with any user or group yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຍັງບໍ່ໄດ້ແຊຣ໌ກັບຜູ້ໃຊ້ ຫຼື ກຸ່ມໃດເທື່ອ.</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+62"/>
         <source>Loading shares …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກຳລັງໂຫຼດການແຊຣ໌ …</translation>
     </message>
     <message>
         <location line="-46"/>
         <source>Remove</source>
-        <translation type="unfinished">ລຶບ</translation>
+        <translation>ລຶບ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຢຸດການແຊຣ໌ກັບ %1</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>can view</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສາມາດເບິ່ງ</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>can edit</source>
-        <translation type="unfinished"></translation>
+        <translation>ສາມາດແກ້ໄຂ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>can create</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສາມາດສ້າງ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>can delete</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສາມາດລຶບ</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>can share</source>
-        <translation type="unfinished"></translation>
+        <translation>ສາມາດແຊຣ໌</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>No public links yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຍັງບໍ່ມີລິ້ງສາທາລະນະ.</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+69"/>
         <location line="+45"/>
         <source>Public link</source>
-        <translation type="unfinished"></translation>
+        <translation>ລິ້ງສາທາລະນະ</translation>
     </message>
     <message>
         <location line="-109"/>
         <source>password protected</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ປ້ອງກັນດ້ວຍລະຫັດຜ່ານ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>expires %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໝົດອາຍຸ %1</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Link address of %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ທີ່ຢູ່ລິ້ງຂອງ %1</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Copy link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສຳເນົາລິ້ງ</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ແກ້ໄຂ</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Delete</source>
-        <translation type="unfinished">ລຶບ</translation>
+        <translation>ລຶບ</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Delete the public link &quot;%1&quot;? Everyone who has the link loses access.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ລຶບລິ້ງສາທາລະນະ &quot;%1&quot; ບໍ? ທຸກຄົນທີ່ມີລິ້ງນີ້ຈະເສຍສິດການເຂົ້າເຖິງ.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຢຸດການແຊຣ໌ກັບ %1 ບໍ?</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Edit public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ແກ້ໄຂລິ້ງສາທາລະນະ</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບັນທຶກ</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>New public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ລິ້ງສາທາລະນະໃໝ່</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Create public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສ້າງລິ້ງສາທາລະນະ</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Leave empty to keep the current password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ປະວ່າງໄວ້ເພື່ອໃຊ້ລະຫັດຜ່ານປັດຈຸບັນຕໍ່</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>The server requires a password for this kind of link.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີຕ້ອງການລະຫັດຜ່ານສຳລັບລິ້ງປະເພດນີ້.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server requires an expiration date at most %1 days ahead.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີຕ້ອງການວັນໝົດອາຍຸບໍ່ເກີນ %1 ມື້ຂ້າງໜ້າ.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The server requires an expiration date.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີຕ້ອງການວັນໝົດອາຍຸ.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server allows only one public link per item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີອະນຸຍາດໃຫ້ມີລິ້ງສາທາລະນະພຽງອັນດຽວຕໍ່ລາຍການ.</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Please enter a password, or uncheck the password option.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກະລຸນາປ້ອນລະຫັດຜ່ານ ຫຼື ຍົກເລີກການໝາຍຕົວເລືອກລະຫັດຜ່ານ.</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (%2)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>%1 (group)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (ກຸ່ມ)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 (federated)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (ສະຫະພັນ)</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Link copied to the clipboard: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສຳເນົາລິ້ງໄປທີ່ຄລິບບອດແລ້ວ: %1</translation>
     </message>
 </context>
 <context>
@@ -3830,9 +3970,10 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="+178"/>
+        <location filename="../src/libsync/theme.cpp" line="+180"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;ເວີຊັນ %1. ສຳລັບຂໍ້ມູນເພີ່ມເຕີມ ເຂົ້າໄປທີ່ &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;ໂດຍ Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller ແລະ ຄົນອື່ນໆ.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;ໄຄລເອັນເດັສທັອບ owncloud.online ຖືກເຜີຍແຜ່ໂດຍ %4 ແລະ ໄດ້ຮັບອະນຸຍາດພາຍໃຕ້ GNU General Public License (GPL) ເວີຊັນ 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -3870,33 +4011,37 @@ Note that using any logging command line options will override the settings.</so
         <location line="+22"/>
         <location line="+650"/>
         <source>Offline</source>
-        <translation type="unfinished">ອອບໄລນ໌</translation>
+        <translation>ອອບໄລນ໌</translation>
     </message>
     <message>
         <location line="-668"/>
         <location line="+675"/>
         <source>Syncing</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກຳລັງຊິງ</translation>
     </message>
     <message>
         <location line="-673"/>
         <source>Aborting sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກຳລັງຍົກເລີກການຊິງ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເປັນປັດຈຸບັນແລ້ວ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date, some files were ignored</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເປັນປັດຈຸບັນແລ້ວ, ບາງໄຟລ໌ຖືກຂ້າມໄປ</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Error</source>
-        <translation type="unfinished">ຂໍ້ຜິດພາດ</translation>
+        <translation>ຂໍ້ຜິດພາດ</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3904,26 +4049,29 @@ Note that using any logging command line options will override the settings.</so
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
-        <translation type="unfinished">ການຊິງຖືກຢຸດຊົ່ວຄາວ</translation>
+        <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວ</translation>
     </message>
     <message>
         <location line="-649"/>
         <location line="+655"/>
         <source>Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ມີໃຫ້ໃຊ້</translation>
     </message>
     <message numerus="yes">
         <location line="-543"/>
         <source>%n new notification(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>ການແຈ້ງເຕືອນໃໝ່ %n ລາຍການ</numerusform>
+            <numerusform>ການແຈ້ງເຕືອນໃໝ່ %n ລາຍການ</numerusform>
         </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For %1. You find them in the menu of the tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສຳລັບ %1. ທ່ານສາມາດເບິ່ງໄດ້ໃນເມນູຂອງໄອຄອນໃນຖາດລະບົບ.</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -3943,12 +4091,13 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+10"/>
         <source>Add account…</source>
-        <translation type="unfinished">ເພີ່ມບັນຊີ…</translation>
+        <translation>ເພີ່ມບັນຊີ…</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Settings…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການຕັ້ງຄ່າ…</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3969,212 +4118,239 @@ Note that using any logging command line options will override the settings.</so
         <location line="+33"/>
         <location line="+92"/>
         <source>Open in browser</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເປີດໃນບຣາວເຊີ</translation>
     </message>
     <message>
         <location line="-88"/>
         <location line="+105"/>
         <source>Resume synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>ສືບຕໍ່ການຊິ້ງຂໍ້ມູນ</translation>
     </message>
     <message>
         <location line="-102"/>
         <source>Log in…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຂົ້າສູ່ລະບົບ…</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Log out</source>
-        <translation type="unfinished">ອອກຈາກລະບົບ</translation>
+        <translation>ອອກຈາກລະບົບ</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Recently changed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ປ່ຽນແປງຫຼ້າສຸດ</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>No files synchronized recently</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ມີໄຟລ໌ທີ່ຖືກຊິງເມື່ອບໍ່ດົນມານີ້</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>On the server</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຢູ່ໃນເຊີບເວີ</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Show all activity…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສະແດງກິດຈະກຳທັງໝົດ…</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Notifications (%1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການແຈ້ງເຕືອນ (%1)</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Dismiss</source>
-        <translation type="unfinished"></translation>
+        <translation>ປິດ</translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n more on the server</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>ອີກ %n ລາຍການໃນເຊີບເວີ</numerusform>
+            <numerusform>ອີກ %n ລາຍການໃນເຊີບເວີ</numerusform>
         </translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Resume synchronization (paused until %1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສືບຕໍ່ການຊິງ (ຢຸດຊົ່ວຄາວຈົນຮອດ %1)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Pause synchronization</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຢຸດການຊິງຊົ່ວຄາວ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 1 hour</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເປັນເວລາ 1 ຊົ່ວໂມງ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 2 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເປັນເວລາ 2 ຊົ່ວໂມງ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 4 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເປັນເວລາ 4 ຊົ່ວໂມງ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until tomorrow</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຈົນຮອດມື້ອື່ນ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until I resume</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຈົນກວ່າຂ້ອຍຈະສືບຕໍ່</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>No account configured</source>
-        <translation type="unfinished">ບໍ່ມີການຕັ້ງຄ່າບັນຊີ</translation>
+        <translation>ບໍ່ມີການຕັ້ງຄ່າບັນຊີ</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronization paused until %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວຈົນຮອດ %1</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Synchronization paused</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວ</translation>
     </message>
     <message>
         <location line="+21"/>
         <location line="+37"/>
         <source>Signed out</source>
-        <translation type="unfinished">ອອກຈາກລະບົບແລ້ວ</translation>
+        <translation>ອອກຈາກລະບົບແລ້ວ</translation>
     </message>
     <message>
         <location line="-34"/>
         <location line="+36"/>
         <location line="+16"/>
         <source>Disconnected</source>
-        <translation type="unfinished">ຕັດການເຊື່ອມຕໍ່ແລ້ວ</translation>
+        <translation>ຕັດການເຊື່ອມຕໍ່ແລ້ວ</translation>
     </message>
     <message>
         <location line="-49"/>
         <source>Disconnected from some accounts</source>
-        <translation type="unfinished"></translation>
+        <translation>ຕັດການເຊື່ອມຕໍ່ຈາກບາງບັນຊີ</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>No sync folders configured</source>
-        <translation type="unfinished"></translation>
+        <translation>ບໍ່ມີໂຟເດີຊິ້ງທີ່ຖືກຕັ້ງຄ່າ</translation>
     </message>
     <message numerus="yes">
         <location line="+12"/>
         <source>%n unresolved conflict(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>ຂໍ້ຂັດແຍ່ງທີ່ຍັງບໍ່ໄດ້ແກ້ໄຂ %n ລາຍການ</numerusform>
+            <numerusform>ຂໍ້ຂັດແຍ່ງທີ່ຍັງບໍ່ໄດ້ແກ້ໄຂ %n ລາຍການ</numerusform>
         </translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Up to date (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>ເປັນປັດຈຸບັນແລ້ວ (%1)</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Connected</source>
-        <translation type="unfinished">ເຊື່ອມຕໍ່ແລ້ວ</translation>
+        <translation>ເຊື່ອມຕໍ່ແລ້ວ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server temporarily unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີບໍ່ມີໃຫ້ໃຊ້ຊົ່ວຄາວ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server in maintenance mode</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີຢູ່ໃນໂໝດບຳລຸງຮັກສາ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Network error</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຄືອຂ່າຍຜິດພາດ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server configuration error</source>
-        <translation type="unfinished">ການຕັ້ງຄ່າເຊີບເວີຜິດພາດ</translation>
+        <translation>ການຕັ້ງຄ່າເຊີບເວີຜິດພາດ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Waiting for sign-in</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກຳລັງລໍຖ້າການເຂົ້າສູ່ລະບົບ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Connecting…</source>
-        <translation type="unfinished">ກຳລັງເຊື່ອມຕໍ່…</translation>
+        <translation>ກຳລັງເຊື່ອມຕໍ່…</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Waiting to sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກຳລັງລໍຖ້າການຊິງ</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Open folder &quot;%1&quot; (%2)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເປີດໂຟນເດີ &quot;%1&quot; (%2)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Unresolved conflicts</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ຂໍ້ຂັດແຍ່ງທີ່ຍັງບໍ່ໄດ້ແກ້ໄຂ</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Checking for changes</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກຳລັງກວດສອບການປ່ຽນແປງ</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2 (%3 left)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກຳລັງຊິງ %1 ຈາກ %2 (ເຫຼືອ %3)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>ກຳລັງຊິ້ງ %1 ຈາກທັງໝົດ %2</translation>
     </message>
 </context>
 <context>
@@ -4401,6 +4577,15 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>QGuiApplication</name>
+    <message>
+        <location filename="../src/gui/translations.cpp" line="+32"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <extracomment>Translate this string to &quot;RTL&quot; in right-to-left languages (such as Arabic or Uyghur), otherwise to &quot;LTR&quot;.</extracomment>
+        <translation>LTR</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/common/utility.cpp" line="+309"/>
@@ -4410,17 +4595,19 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location line="-5"/>
         <source>%n day(s) ago</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%n ມື້ກ່ອນ</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n ມື້ກ່ອນ</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+10"/>
         <source>%n hour(s) ago</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%n ຊົ່ວໂມງກ່ອນ</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n ຊົ່ວໂມງກ່ອນ</numerusform>
         </translation>
     </message>
     <message>
@@ -4436,9 +4623,10 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location line="+4"/>
         <source>%n minute(s) ago</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%n ນາທີກ່ອນ</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n ນາທີກ່ອນ</numerusform>
         </translation>
     </message>
     <message>
@@ -4453,37 +4641,43 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+114"/>
         <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດເຊື່ອມຕໍ່ເຊີບເວີທີ່ %1 ໄດ້. ກະລຸນາກວດສອບທີ່ຢູ່ ແລະ ການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No secure connection to %1 could be established: the server&apos;s certificate is invalid or was not accepted. If the problem persists, please contact the server&apos;s administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດສ້າງການເຊື່ອມຕໍ່ທີ່ປອດໄພກັບ %1 ໄດ້: ໃບຢັ້ງຢືນຂອງເຊີບເວີບໍ່ຖືກຕ້ອງ ຫຼື ບໍ່ໄດ້ຮັບການຍອມຮັບ. ຖ້າບັນຫາຍັງຄົງຢູ່ ກະລຸນາຕິດຕໍ່ຜູ້ດູແລເຊີບເວີ.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The server at %1 is in maintenance mode or temporarily unavailable. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີທີ່ %1 ຢູ່ໃນໂໝດບຳລຸງຮັກສາ ຫຼື ບໍ່ມີໃຫ້ໃຊ້ຊົ່ວຄາວ. ກະລຸນາລອງໃໝ່ພາຍຫຼັງ.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No owncloud.online server was found at %1. Please check the address.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ພົບເຊີບເວີ owncloud.online ທີ່ %1. ກະລຸນາກວດສອບທີ່ຢູ່.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ແອັບ &quot;OAuth2&quot; ບໍ່ໄດ້ຕິດຕັ້ງ ຫຼື ບໍ່ໄດ້ເປີດໃຊ້ໃນເຊີບເວີນີ້. ກະລຸນາຂໍໃຫ້ຜູ້ດູແລລະບົບຂອງທ່ານຕິດຕັ້ງ ແລະ ເປີດໃຊ້ມັນຜ່ານ &quot;Market&quot;.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໝາຍເຫດສຳລັບຜູ້ດູແລລະບົບ: ໄຄລເອັນເດັສທັອບເຂົ້າສູ່ລະບົບຜ່ານແອັບ &quot;OAuth2&quot;. ຕິດຕັ້ງມັນຜ່ານ &quot;Market&quot; ແລະ ເປີດໃຊ້ສຳລັບຜູ້ໃຊ້ທຸກຄົນ (ແຖວຄຳສັ່ງ: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not detect compatible server at %1</source>
-        <translation type="unfinished">ບໍ່ສາມາດກວດພົບເຊີບເວີທີ່ເຂົ້າກັນໄດ້ທີ່ %1</translation>
+        <translation>ບໍ່ສາມາດກວດພົບເຊີບເວີທີ່ເຂົ້າກັນໄດ້ທີ່ %1</translation>
     </message>
 </context>
 <context>
@@ -4587,49 +4781,55 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location filename="../src/common/utility.cpp" line="-118"/>
         <source>%n year(s)</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%n ປີ</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n ປີ</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n month(s)</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%n ເດືອນ</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n ເດືອນ</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n day(s)</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%n ມື້</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n ມື້</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n hour(s)</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%n ຊົ່ວໂມງ</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n ຊົ່ວໂມງ</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n minute(s)</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%n ນາທີ</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n ນາທີ</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+1"/>
         <source>%n second(s)</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%n ວິນາທີ</numerusform>
-            <numerusform></numerusform>
+            <numerusform>%n ວິນາທີ</numerusform>
         </translation>
     </message>
     <message>
@@ -4807,22 +5007,25 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 ໄດ້ຖືກຕິດຕັ້ງ ຫຼື ອັບເດດແລ້ວ. ເພື່ອໃຫ້ການຕິດຕັ້ງສຳເລັດ ຕ້ອງເລີ່ມ Windows ໃໝ່ ເພື່ອໃຫ້ການເຊື່ອມໂຍງກັບຕົວຈັດການໄຟລ໌ເຮັດວຽກໄດ້ຢ່າງຖືກຕ້ອງ.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Restart Windows now</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເລີ່ມ Windows ໃໝ່ດຽວນີ້</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Restart later</source>
-        <translation type="unfinished">ເລີ່ມໃໝ່ພາຍຫຼັງ</translation>
+        <translation>ເລີ່ມໃໝ່ພາຍຫຼັງ</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>%1 installation finished - restarting Windows</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການຕິດຕັ້ງ %1 ສຳເລັດແລ້ວ - ກຳລັງເລີ່ມ Windows ໃໝ່</translation>
     </message>
 </context>
 <context>

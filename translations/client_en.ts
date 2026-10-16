@@ -3810,7 +3810,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="+178"/>
+        <location filename="../src/libsync/theme.cpp" line="+180"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3895,9 +3895,9 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location line="-543"/>
         <source>%n new notification(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n new notification</numerusform>
+            <numerusform>%n new notifications</numerusform>
         </translation>
     </message>
     <message>
@@ -3979,9 +3979,9 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location line="+4"/>
         <source>%n more on the server</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n more on the server</numerusform>
+            <numerusform>%n more on the server</numerusform>
         </translation>
     </message>
     <message>
@@ -4030,9 +4030,9 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location line="+12"/>
         <source>%n unresolved conflict(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n unresolved conflict</numerusform>
+            <numerusform>%n unresolved conflicts</numerusform>
         </translation>
     </message>
     <message>
@@ -4377,6 +4377,15 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+1"/>
         <source>Update manually</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QGuiApplication</name>
+    <message>
+        <location filename="../src/gui/translations.cpp" line="+32"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <extracomment>Translate this string to &quot;RTL&quot; in right-to-left languages (such as Arabic or Uyghur), otherwise to &quot;LTR&quot;.</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>
