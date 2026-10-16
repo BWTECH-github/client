@@ -747,7 +747,8 @@ t18() {
 	[ "$(dav stat "$R/.versteckt" exists)" = true ] || fail "versteckte Datei mit --sync-hidden-files nicht hochgeladen"
 }
 
-# --uplimit/--downlimit: je 3 MiB bei 512 KB/s brauchen zusammen mindestens 8 s (Startguthaben höchstens 2 s je Richtung)
+# --uplimit/--downlimit: je 3 MiB bei 512 KB/s brauchen gut 6 s; beide Richtungen laufen gleichzeitig, ungedrosselt
+# dauert es auf dem Testserver unter einer Sekunde. Prüfgrenze 4 s (Startguthaben höchstens 2 s).
 t19() {
 	has_option --uplimit || { skip_unsupported --uplimit; return; }
 	local start secs
@@ -759,7 +760,7 @@ t19() {
 	secs=$((SECONDS - start))
 	check_run lauf1
 	compare "$L" "$R"
-	[ "$secs" -ge 8 ] || fail "je 3 MiB hoch und herunter nach ${secs}s – die Grenzen greifen nicht"
+	[ "$secs" -ge 4 ] || fail "je 3 MiB hoch und herunter nach ${secs}s – die Grenzen greifen nicht"
 	note "je 3 MiB hoch und herunter mit 512 KB/s in ${secs}s"
 }
 
