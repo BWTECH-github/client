@@ -268,6 +268,30 @@ private Q_SLOTS:
         mkdir(dir);
         QVERIFY(waitForPathChanged(dir));
     }
+
+#ifdef Q_OS_WIN
+    // Wird der beobachtete Ordner selbst gelöscht (oder das Laufwerk getrennt), wartet der Beobachter-Thread und versucht
+    // es erneut. Früher fiel er nach zwei Sekunden in Q_UNREACHABLE() und riss im Release-Build das Programm mit.
+    void testWatchedFolderRemoved()
+    {
+        auto parentDir = TestUtils::createTempDir();
+        QVERIFY(parentDir.isValid());
+        const QString watched = parentDir.path() + QStringLiteral("/watched");
+        QVERIFY(QDir().mkpath(watched));
+
+        auto watcher = std::make_unique<FolderWatcherForTests>();
+        watcher->init(watched);
+        QVERIFY(QDir(watched).removeRecursively());
+
+        // länger als zwei Pausen nach einem Fehler: der Thread muss die Fehler überstehen
+        QTest::qWait(4500);
+
+        // stop() beendet die Pause sofort, das Entfernen des Beobachters hängt nicht
+        Utility::ChronoElapsedTimer timer;
+        watcher.reset();
+        QVERIFY(timer.duration() < 1500ms);
+    }
+#endif
 };
 
 #ifdef Q_OS_MAC

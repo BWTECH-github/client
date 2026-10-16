@@ -184,10 +184,13 @@ void WatcherThread::run()
         case WatchChanges::Done:
             return;
         case WatchChanges::Error:
-            // Other errors shouldn't actually happen,
-            // so sleep a bit to avoid running into the same error case in a
-            // tight loop.
-            sleep(2);
+            // Etwa wenn der Ordner gelöscht oder das Laufwerk getrennt wurde: nach einer Pause erneut versuchen, nicht in
+            // einer engen Schleife. Früher fiel der Fall nach sleep(2) in Q_UNREACHABLE() durch, im Release-Build ein
+            // Absturz des ganzen Programms. stop() beendet die Pause sofort.
+            if (WaitForSingleObject(_stopEvent, 2000) == WAIT_OBJECT_0) {
+                return;
+            }
+            continue;
         default:
             Q_UNREACHABLE();
         }
