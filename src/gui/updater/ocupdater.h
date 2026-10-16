@@ -119,6 +119,14 @@ public:
 
     void checkForUpdate() override;
 
+    // neue Feed-Adresse nach einem Kanalwechsel; gilt ab der nächsten Prüfung
+    void setUpdateUrl(const QUrl &url);
+
+    // Prüfen auf Wunsch (Über-Fenster): nicht während einer Prüfung oder eines Downloads und nicht, wenn ein Update bereitliegt
+    bool canCheckNow() const;
+    // prüft sofort, sofern canCheckNow()
+    void checkNow();
+
     QString statusString() const;
 
     // Installierte Version mit Baunummer und Vorab-Suffix, z. B. "11.0.0.0-beta1"

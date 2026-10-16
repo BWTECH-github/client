@@ -57,6 +57,7 @@ const QString optionalDesktopNotificationsC()
     return QStringLiteral("optionalDesktopNotifications");
 }
 const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
+const QString updateChannelC() { return QStringLiteral("updateChannel"); }
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
 const QString timeoutC() { return QStringLiteral("timeout"); }
@@ -423,6 +424,17 @@ chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) 
         interval = minInterval;
     }
     return interval;
+}
+
+QString ConfigFile::updateChannel() const
+{
+    // frühe Bauten dieses Forks schrieben hier ungefragt "ocis": ungültige Werte verwirft Updater::channel()
+    return getValue(updateChannelC()).toString();
+}
+
+void ConfigFile::setUpdateChannel(const QString &channel)
+{
+    setValue(updateChannelC(), channel);
 }
 
 QString ConfigFile::uiLanguage() const

@@ -33,6 +33,8 @@ public:
 private:
     void openBrowser(const QString &s);
     void openBrowserFromUrl(const QUrl &s);
+    /// Update-Bereich: Status, Prüfen auf Wunsch, Kanalwahl; ausgeblendet ohne eigenen Updater
+    void setupUpdater();
 
 private:
     Ui::AboutView *ui;

@@ -7,6 +7,7 @@
 #include <QtTest>
 
 #include "common/version.h"
+#include "configfile.h"
 #include "theme.h"
 #include "updater/codesignature.h"
 #include "updater/ocupdater.h"
@@ -92,6 +93,83 @@ private Q_SLOTS:
         const QUrl full(QStringLiteral("http://127.0.0.1:8080/test.xml"));
         QCOMPARE(Updater::feedUrl(full, QStringLiteral("win-x64"), QStringLiteral("beta")), full);
         QVERIFY(Updater::feedUrl(QUrl(), QStringLiteral("win-x64"), QStringLiteral("beta")).isEmpty());
+    }
+
+    void testUpdateChannel_data()
+    {
+        QTest::addColumn<QString>("stored");
+        QTest::addColumn<QString>("suffix");
+        QTest::addColumn<QString>("expected");
+
+        // ohne Wahl entscheidet das Versionssuffix
+        QTest::newRow("release") << QString() << QString() << QStringLiteral("stable");
+        QTest::newRow("beta build") << QString() << QStringLiteral("beta3") << QStringLiteral("beta");
+        QTest::newRow("rc build") << QString() << QStringLiteral("rc1") << QStringLiteral("beta");
+        QTest::newRow("daily build") << QString() << QStringLiteral("daily20261016") << QStringLiteral("beta");
+        // die gespeicherte Wahl gilt in beide Richtungen
+        QTest::newRow("beta chosen on release") << QStringLiteral("beta") << QString() << QStringLiteral("beta");
+        QTest::newRow("stable chosen on beta") << QStringLiteral("stable") << QStringLiteral("beta3") << QStringLiteral("stable");
+        // frühe Bauten schrieben ungefragt "ocis": zählt wie keine Wahl
+        QTest::newRow("stale ocis value") << QStringLiteral("ocis") << QStringLiteral("beta3") << QStringLiteral("beta");
+        QTest::newRow("unknown value") << QStringLiteral("nightly") << QString() << QStringLiteral("stable");
+    }
+
+    void testUpdateChannel()
+    {
+        QFETCH(QString, stored);
+        QFETCH(QString, suffix);
+        QFETCH(QString, expected);
+
+        QCOMPARE(Updater::channel(stored, suffix), expected);
+    }
+
+    // Wahl im Über-Fenster: gespeichert und für die Feed-Adresse maßgeblich
+    void testChosenChannelSelectsFeed()
+    {
+        const QString platform = Updater::feedPlatform();
+        const QString otherChannel = Updater::defaultChannel(Version::suffix()) == QLatin1String("beta") ? QStringLiteral("stable") : QStringLiteral("beta");
+
+        ConfigFile().setUpdateChannel(otherChannel);
+        QCOMPARE(updateChannel(), otherChannel);
+        QVERIFY(Updater::updateUrl().path().endsWith(Updater::feedFileName(platform, otherChannel)));
+        QCOMPARE(QUrlQuery(Updater::updateUrl()).queryItemValue(QStringLiteral("channel")), otherChannel);
+
+        // ohne Wahl wieder nach dem Versionssuffix
+        ConfigFile().setUpdateChannel(QString());
+        QCOMPARE(updateChannel(), Updater::defaultChannel(Version::suffix()));
+    }
+
+    void testCheckNow()
+    {
+        // Arrange: nach einem Kanalwechsel fragt dieselbe Updater-Instanz den neuen Feed
+        FeedServer server;
+        server.feed = QByteArrayLiteral("<owncloudclient><version>11.0.0-beta3</version></owncloudclient>");
+        QVERIFY(server.listen(QHostAddress::LocalHost));
+        FeedProbe updater(QUrl(QStringLiteral("http://127.0.0.1:%1/old-channel.xml").arg(server.serverPort())));
+        updater.setUpdateUrl(QUrl(QStringLiteral("http://127.0.0.1:%1/feed.xml").arg(server.serverPort())));
+        QVERIFY(updater.canCheckNow());
+
+        // Act
+        updater.checkNow();
+        // eine laufende Prüfung lässt keine zweite zu
+        QCOMPARE(updater.downloadState(), OCUpdater::CheckingServer);
+        QVERIFY(!updater.canCheckNow());
+        updater.checkNow();
+
+        // Assert
+        QTRY_COMPARE(updater.received.size(), 1);
+        QCOMPARE(server.requestedPaths, QStringList({QStringLiteral("/feed.xml"), QStringLiteral("/asset.xml")}));
+
+        // Prüfen auf Wunsch nur, wenn weder ein Download läuft noch ein Update bereitliegt
+        for (const auto state : {OCUpdater::Unknown, OCUpdater::UpToDate, OCUpdater::DownloadFailed, OCUpdater::DownloadTimedOut,
+                 OCUpdater::UpdateOnlyAvailableThroughSystem}) {
+            updater.setDownloadState(state);
+            QVERIFY2(updater.canCheckNow(), QMetaEnum::fromType<OCUpdater::DownloadState>().valueToKey(state));
+        }
+        for (const auto state : {OCUpdater::CheckingServer, OCUpdater::Downloading, OCUpdater::DownloadComplete}) {
+            updater.setDownloadState(state);
+            QVERIFY2(!updater.canCheckNow(), QMetaEnum::fromType<OCUpdater::DownloadState>().valueToKey(state));
+        }
     }
 
     void testDefaultUpdateUrl()

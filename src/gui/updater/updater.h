@@ -44,6 +44,11 @@ public:
     // Basisadresse (endet auf '/') + Feed-Datei; volle Adressen bleiben unverändert
     static QUrl feedUrl(const QUrl &base, const QString &platform, const QString &channel);
 
+    // Kanal nach dem Versionssuffix: Vorabversionen (daily, nightly, alpha, rc, beta) -> "beta", sonst "stable"
+    static QString defaultChannel(const QString &versionSuffix);
+    // die gespeicherte Wahl, wenn sie "stable" oder "beta" ist, sonst defaultChannel()
+    static QString channel(const QString &storedChoice, const QString &versionSuffix);
+
     virtual void checkForUpdate() = 0;
     virtual void backgroundCheckForUpdate() = 0;
     virtual void validateUpdate();

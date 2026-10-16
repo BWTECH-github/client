@@ -295,6 +295,37 @@ QString OCUpdater::availableVersionString() const
     return _updateInfo.versionString();
 }
 
+void OCUpdater::setUpdateUrl(const QUrl &url)
+{
+    qCInfo(lcUpdater) << "Update url changed to" << url.toDisplayString();
+    _updateUrl = url;
+}
+
+bool OCUpdater::canCheckNow() const
+{
+    switch (downloadState()) {
+    case CheckingServer:
+    case Downloading:
+    case DownloadComplete:
+        return false;
+    case Unknown:
+    case UpToDate:
+    case DownloadFailed:
+    case DownloadTimedOut:
+    case UpdateOnlyAvailableThroughSystem:
+        break;
+    }
+    return true;
+}
+
+void OCUpdater::checkNow()
+{
+    if (canCheckNow()) {
+        qCInfo(lcUpdater) << "Checking for available update on request";
+        checkForUpdate();
+    }
+}
+
 void OCUpdater::checkForUpdate()
 {
     QNetworkRequest request(_updateUrl);
@@ -302,7 +333,8 @@ void OCUpdater::checkForUpdate()
     // AccessManager ManualRedirectPolicy: Die Antwort wäre die leere Weiterleitung, der Feed nie lesbar.
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
     QNetworkReply *reply = _accessManager->get(request);
-    connect(_timeoutWatchdog, &QTimer::timeout, this, &OCUpdater::slotTimedOut);
+    // einmal verbinden: sonst meldete jede frühere Prüfung die Zeitüberschreitung noch einmal
+    connect(_timeoutWatchdog, &QTimer::timeout, this, &OCUpdater::slotTimedOut, Qt::UniqueConnection);
     _timeoutWatchdog->start(30s);
     connect(reply, &QNetworkReply::finished, this, &OCUpdater::slotVersionInfoArrived);
 

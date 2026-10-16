@@ -18,7 +18,11 @@
 #include "iconresources.h"
 #include "libsync/theme.h"
 
-// #include <QMessageBox>
+#ifdef WITH_AUTO_UPDATER
+#include "config/appconfig.h"
+#include "configfile.h"
+#include "updater/ocupdater.h"
+#endif
 
 namespace OCC {
 
@@ -33,6 +37,48 @@ AboutView::AboutView(QWidget *parent)
 
     connect(ui->versionInfo, &QTextBrowser::anchorClicked, this, &AboutView::openBrowserFromUrl);
     connect(ui->aboutText, &QLabel::linkActivated, this, &AboutView::openBrowser);
+
+    setupUpdater();
+}
+
+void AboutView::setupUpdater()
+{
+#ifdef WITH_AUTO_UPDATER
+    // keine Prüfung per Systemvorgabe (SkipUpdateCheck) oder ohne Feed-Adresse: kein Bereich; Sparkle (macOS) hat eine eigene Oberfläche
+    auto *updater = AppConfig().skipUpdateCheck() ? nullptr : qobject_cast<OCUpdater *>(Updater::instance());
+    if (!updater) {
+        ui->updaterGroup->hide();
+        return;
+    }
+
+    ui->updateChannel->addItem(tr("Stable"), QStringLiteral("stable"));
+    ui->updateChannel->addItem(tr("Beta"), QStringLiteral("beta"));
+    ui->updateChannel->setCurrentIndex(ui->updateChannel->findData(updateChannel()));
+    // activated statt currentIndexChanged: nur eine Wahl des Nutzers wird gespeichert, nie die Vorgabe beim Füllen
+    connect(ui->updateChannel, &QComboBox::activated, this, [this, updater](int index) {
+        const QString channel = ui->updateChannel->itemData(index).toString();
+        if (channel.isEmpty() || channel == updateChannel()) {
+            return;
+        }
+        ConfigFile().setUpdateChannel(channel);
+        updater->setUpdateUrl(Updater::updateUrl());
+        updater->checkNow();
+    });
+
+    const auto refresh = [this, updater] {
+        ui->updateStatusLabel->setText(updater->statusString());
+        ui->checkForUpdatesButton->setEnabled(updater->canCheckNow());
+        ui->restartButton->setVisible(updater->downloadState() == OCUpdater::DownloadComplete);
+    };
+    connect(updater, &OCUpdater::downloadStateChanged, this, refresh);
+    connect(ui->checkForUpdatesButton, &QPushButton::clicked, updater, &OCUpdater::checkNow);
+    connect(ui->restartButton, &QPushButton::clicked, updater, &Updater::applyUpdateAndRestart);
+    // „hier herunterladen“ nach einem gescheiterten Download
+    connect(ui->updateStatusLabel, &QLabel::linkActivated, this, &AboutView::openBrowser);
+    refresh();
+#else
+    ui->updaterGroup->hide();
+#endif
 }
 
 AboutView::~AboutView()
