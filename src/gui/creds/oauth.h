@@ -73,6 +73,12 @@ public:
     void openBrowser();
     QUrl authorisationLink() const;
 
+    /**
+     * true, solange der Rückruf-Listener auf den Browser wartet: ab startAuthentication() bis der Rückruf mit
+     * passendem state eintrifft. Bis dahin bleibt jeder ausgegebene authorisationLink() gültig.
+     */
+    bool isListening() const;
+
 Q_SIGNALS:
     /**
      * The state has changed.
@@ -104,6 +110,7 @@ protected Q_SLOTS:
     void handleSocketReadyRead();
 
 private:
+    bool listen();
     void handleTcpConnection();
     void getTokens();
     void checkUserInfo();
@@ -119,7 +126,9 @@ private:
     QUrl _messageUrl;
 
     // peripheral deps
+    // Rückruf-Listener auf 127.0.0.1 und ::1 mit demselben Port; redirect_uri nennt localhost
     QTcpServer _server;
+    QTcpServer _serverV6;
     QPointer<QTcpSocket> _socket;
     QUrlQuery _queryArgs;
     quint16 _serverPort;

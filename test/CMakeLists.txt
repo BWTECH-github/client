@@ -26,6 +26,11 @@ owncloud_add_test(Utility)
 owncloud_add_test(AppConfig ../src/libsync/owncloudtheme.cpp)
 owncloud_add_test(Theme)
 
+# Qt-Kataloge (Standardknöpfe Ja/Nein) aus den Paket-Layouts laden; qtbase_de.ts ist ein Ausschnitt des Qt-Katalogs
+owncloud_add_test(Translations)
+qt_add_lrelease(TranslationsTest TS_FILES ${CMAKE_CURRENT_SOURCE_DIR}/testtranslations/qtbase_de.ts QM_FILES_OUTPUT_VARIABLE test_qtbase_de_qm)
+target_compile_definitions(TranslationsTest PRIVATE TEST_QTBASE_DE_QM="${test_qtbase_de_qm}")
+
 owncloud_add_test(SyncEngine)
 owncloud_add_test(SyncMove)
 add_dependencies(SyncMoveTest test_helper)
@@ -66,7 +71,10 @@ owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
 
-owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp)
+owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp
+    # Anmeldeseite des Assistenten: Browser erneut öffnen, Browser lässt sich nicht öffnen, Assistent geschlossen
+    ../src/gui/newaccountwizard/oauthpagecontroller.cpp ../src/gui/networkadapters/fetchcapabilitiesadapter.cpp
+    ../src/gui/networkadapters/webfingerlookupadapter.cpp ../src/gui/mainwindow/colormanager.cpp)
 
 # owncloudcmd mit OAuth2-Token-Datei: Bearer, Erneuern nach 401 und bei Ablauf, Exit-Codes
 owncloud_add_test(CmdOAuth ../src/cmd/cmdsession.cpp ../src/cmd/httpoauthcredentials.cpp ../src/cmd/oauthtokenfile.cpp)

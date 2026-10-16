@@ -101,14 +101,7 @@ void OAuth::startAuthentication()
     qCDebug(lcOauth) << "starting authentication";
 
     // Listen on the socket to get a port which will be used in the redirect_uri
-    QList<quint16> ports = _openIdConfig.ports();
-    for (const auto port : std::as_const(ports)) {
-        if (_server.listen(QHostAddress::LocalHost, port)) {
-            break;
-        }
-        qCDebug(lcOauth) << "Creating local server Port:" << port << "failed. Error:" << _server.errorString();
-    }
-    if (!_server.isListening()) {
+    if (!listen()) {
         qCDebug(lcOauth) << "server is not listening";
         Q_EMIT result(Error, {});
         return;
@@ -123,6 +116,40 @@ void OAuth::startAuthentication()
     fetchWellKnown();
 
     QObject::connect(&_server, &QTcpServer::newConnection, this, &OAuth::handleTcpConnection);
+    QObject::connect(&_serverV6, &QTcpServer::newConnection, this, &OAuth::handleTcpConnection);
+}
+
+bool OAuth::listen()
+{
+    // Browser lösen localhost je nach System zuerst als ::1 oder als 127.0.0.1 auf und fallen nicht immer auf die
+    // andere Adresse zurück: deshalb auf beiden mit demselben Port lauschen
+    const QList<quint16> ports = _openIdConfig.ports();
+    for (const quint16 port : ports) {
+        // Port 0 wählt das System; ist der gewählte Port unter ::1 schon vergeben, mit einem anderen erneut versuchen
+        const int attempts = port == 0 ? 10 : 1;
+        for (int attempt = 1; attempt <= attempts; ++attempt) {
+            if (!_server.listen(QHostAddress::LocalHost, port)) {
+                qCDebug(lcOauth) << "Creating local server on 127.0.0.1, port" << port << "failed. Error:" << _server.errorString();
+                break;
+            }
+            if (_serverV6.listen(QHostAddress::LocalHostIPv6, _server.serverPort())) {
+                qCInfo(lcOauth) << "Waiting for the browser on 127.0.0.1 and [::1], port" << _server.serverPort();
+                return true;
+            }
+            // ohne IPv6-Loopback, oder ein fester Port ist unter ::1 vergeben: nur IPv4, wie bisher
+            if (_serverV6.serverError() != QAbstractSocket::AddressInUseError || attempt == attempts) {
+                qCInfo(lcOauth) << "Waiting for the browser on 127.0.0.1, port" << _server.serverPort() << "- [::1] unavailable:" << _serverV6.errorString();
+                return true;
+            }
+            _server.close();
+        }
+    }
+    return false;
+}
+
+bool OAuth::isListening() const
+{
+    return _server.isListening();
 }
 
 void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, bool success, const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
@@ -173,14 +200,16 @@ void OAuth::finalize(const QString &accessToken, const QString &refreshToken, co
 // authentication web page. The async handling for tcp includes this function + the handleSocketReadyRead
 void OAuth::handleTcpConnection()
 {
-    while (_server.hasPendingConnections()) {
-        auto socket = _server.nextPendingConnection();
+    for (QTcpServer *server : {&_server, &_serverV6}) {
+        while (server->hasPendingConnections()) {
+            auto socket = server->nextPendingConnection();
 
-        qCDebug(lcOauth) << "accepted client connection from" << socket->peerAddress();
+            qCDebug(lcOauth) << "accepted client connection from" << socket->peerAddress();
 
-        QObject::connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
+            QObject::connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
 
-        QObject::connect(socket, &QIODevice::readyRead, this, &OAuth::handleSocketReadyRead);
+            QObject::connect(socket, &QIODevice::readyRead, this, &OAuth::handleSocketReadyRead);
+        }
     }
 }
 
@@ -231,6 +260,8 @@ void OAuth::handleSocketReadyRead()
     // therefore we have to store it beforehand
     _serverPort = _server.serverPort();
     _server.close();
+    _serverV6.close();
+    qCInfo(lcOauth) << "Browser callback received, stopped listening on port" << _serverPort;
 
     getTokens();
 }

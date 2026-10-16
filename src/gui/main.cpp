@@ -361,31 +361,23 @@ QString setupTranslations(QApplication *app)
             qCInfo(lcMain) << "Using" << lang << "translation" << translator->language();
             displayLanguage = lang;
 
-            const QString qtTrPath = QLibraryInfo::path(QLibraryInfo::TranslationsPath);
-            qCDebug(lcMain) << "qtTrPath:" << qtTrPath;
-            const QString qtTrFile = QLatin1String("qt_") + lang;
-            qCDebug(lcMain) << "qtTrFile:" << qtTrFile;
-            const QString qtBaseTrFile = QLatin1String("qtbase_") + lang;
-            qCDebug(lcMain) << "qtBaseTrFile:" << qtBaseTrFile;
+            // QLibraryInfo zeigt im Windows-Paket auf das nicht vorhandene bin/translations, daher auch die Orte der Pakete
+            QStringList qtTrPaths =
+                Translations::qtTranslationsSearchPaths(QLibraryInfo::path(QLibraryInfo::TranslationsPath), QCoreApplication::applicationDirPath());
+            qtTrPaths.append(trPath);
+            qCDebug(lcMain) << "Qt translations search paths:" << qtTrPaths;
 
             QTranslator *qtTranslator = new QTranslator(app);
             QTranslator *qtkeychainTranslator = new QTranslator(app);
 
-            if (!qtTranslator->load(qtTrFile, qtTrPath)) {
-                if (!qtTranslator->load(qtTrFile, trPath)) {
-                    if (!qtTranslator->load(qtBaseTrFile, qtTrPath)) {
-                        if (!qtTranslator->load(qtBaseTrFile, trPath)) {
-                            qCCritical(lcMain) << "Could not load Qt translations";
-                        }
-                    }
-                }
+            // der Sammelkatalog qt_<lang> lädt nur, wenn alle Teilkataloge daliegen (im Paket fehlt qtmultimedia_<lang>),
+            // sonst trägt qtbase_<lang> die Standardknöpfe (Ja/Nein, Abbrechen …)
+            if (!Translations::loadQtTranslation(qtTranslator, {QStringLiteral("qt_"), QStringLiteral("qtbase_")}, lang, qtTrPaths)) {
+                qCCritical(lcMain) << "Could not load Qt translations";
             }
 
-            const QString qtkeychainTrFile = QLatin1String("qtkeychain_") + lang;
-            if (!qtkeychainTranslator->load(qtkeychainTrFile, qtTrPath)) {
-                if (!qtkeychainTranslator->load(qtkeychainTrFile, trPath)) {
-                    qCCritical(lcMain) << "Could not load qtkeychain translations";
-                }
+            if (!Translations::loadQtTranslation(qtkeychainTranslator, {QStringLiteral("qtkeychain_")}, lang, qtTrPaths)) {
+                qCCritical(lcMain) << "Could not load qtkeychain translations";
             }
 
             if (!translator->isEmpty() && !qApp->installTranslator(translator)) {

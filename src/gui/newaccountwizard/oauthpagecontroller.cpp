@@ -89,6 +89,11 @@ void OAuthPageController::buildPage()
     _copyButton->installEventFilter(this);
     connect(_copyButton, &QPushButton::clicked, this, &OAuthPageController::copyUrlClicked);
 
+    _statusField = new QLabel(QString(), _page);
+    _statusField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _statusField->setWordWrap(true);
+    _statusField->setAlignment(Qt::AlignCenter);
+
     _errorField = new QLabel(QString(), _page);
     // Fehlerrot aus dem Theme (WCAG 4,5:1); Qt::red erreichte auf Weiß nur 4:1 und wirkte auf QLabel gar nicht
     ColorManager::applyErrorColor(_errorField);
@@ -122,6 +127,7 @@ void OAuthPageController::buildPage()
     urlAreaLayout->addWidget(_copyButton);
     layout->addLayout(urlAreaLayout);
 
+    layout->addWidget(_statusField);
     layout->addWidget(_errorField);
 
     if (footerLogoLabel)
@@ -142,6 +148,7 @@ void OAuthPageController::updateIcons()
 
 void OAuthPageController::handleError(const QString &error)
 {
+    _statusField->clear();
     _errorField->setText(error);
     _results.error = error;
     Q_EMIT failure(_results);
@@ -195,11 +202,6 @@ void OAuthPageController::clipboardChanged()
 
 bool OAuthPageController::validate()
 {
-    // this should have already been cleaned up after the auth routine but who knows. Never hurts to be sure.
-    if (_oauth) {
-        delete _oauth;
-        _oauth = nullptr;
-    }
     // this is a little bit tricky. Because we "auto advance" the wizard to the next page when the oauth step has succeeded, validate
     // will be called *twice*
     // first when the page change triggers the authentication step in the browser, then a second time when we auto-advance after the main controller has
@@ -214,13 +216,32 @@ bool OAuthPageController::validate()
         return true;
     }
 
+    // Wartet die Anmeldung für dieselbe Adresse noch auf den Browser („Browser erneut öffnen“, Enter, zurück und erneut
+    // anmelden), nur den Browser wieder öffnen: Port und state bleiben, damit ein schon geöffneter oder kopierter Link
+    // gültig bleibt, bis die Anmeldung abgeschlossen oder der Assistent geschlossen ist.
+    if (_oauth && _oauth->isListening() && _oauthUrl == _authUrl) {
+        // ohne Link läuft die Abfrage der Endpunkte noch, authUrlReady() öffnet den Browser dann selbst
+        if (!_authEndpoint.isEmpty()) {
+            openBrowser();
+        }
+        return false;
+    }
+
+    // this should have already been cleaned up after the auth routine but who knows. Never hurts to be sure.
+    if (_oauth) {
+        delete _oauth;
+        _oauth = nullptr;
+    }
+
     _results = {};
+    _statusField->clear();
     _errorField->clear();
     _authEndpoint.clear();
     _urlField->clear();
 
     AppConfig systemConfig;
     _oauth = new OAuth(_authUrl, {}, systemConfig.openIdConfig(), _accessManager.get(), this);
+    _oauthUrl = _authUrl;
     // if we ever need to split out the auth link calculation, it's coming from fetchWellKnown which is a subset of
     // the "full" authentication routine in the oauth impl
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &OAuthPageController::authUrlReady);
@@ -236,6 +257,9 @@ void OAuthPageController::authUrlReady()
     // I hit this when demo was down - browser showed "We're having trouble connecting to the login service.
     // If the problem continues, please contact support."
     if (_authEndpoint.isEmpty()) {
+        // ohne Link kann niemand den Listener erreichen; verwerfen, damit „Browser erneut öffnen“ neu beginnt
+        _oauth->deleteLater();
+        _oauth = nullptr;
         handleError(tr("Unable to connect to the login service. If the problem continues, please contact support."));
         return;
     }
@@ -247,11 +271,20 @@ void OAuthPageController::authUrlReady()
     // for a moment
     // note in my experience mac does not always honor repaint()s
     _page->repaint();
+    openBrowser();
+}
+
+void OAuthPageController::openBrowser()
+{
+    _errorField->clear();
+    _statusField->setText(tr("Please sign in using the browser window that has opened and confirm with \"Authorize\"."));
+    // schlägt das Öffnen fehl, ersetzt handleOauthResult() den Hinweis
     _oauth->openBrowser();
 }
 
 void OAuthPageController::handleOauthResult(OAuth::Result result, const QString &token, const QString &refreshToken)
 {
+    _statusField->clear();
     QString extraHelp = tr("Please copy the authentication URL using the button above, and provide this information to support.");
     switch (result) {
     case OAuth::Result::LoggedIn: {
@@ -317,12 +350,10 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
         handleError(tr("Error while trying to log in to OAuth2-enabled server. %1").arg(extraHelp));
         break;
     }
-        // todo: this is returned when the oauth routine can't open the browser with that url - this error is misleading as there are multiple
-        // reasons this can fail! Needs further investigation
     case OAuth::Result::NotSupported: {
-        // should never happen
-        handleError(tr("Unable to open browser with provided URL. %1").arg(extraHelp));
-        break;
+        // Der Browser ließ sich nicht öffnen. Die Anmeldung wartet weiter, damit der kopierte Link zum Client zurückführt.
+        handleError(tr("The browser could not be opened. Copy the link with the button above and open it in your browser."));
+        return;
     }
     case OAuth::Result::ErrorInsecureUrl: {
         handleError(tr("OAuth2 authentication requires a secured connection. %1").arg(extraHelp));

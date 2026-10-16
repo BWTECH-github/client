@@ -18,9 +18,11 @@
 #include "translations.h"
 
 #include <QApplication>
+#include <QDir>
 #include <QDirIterator>
 #include <QLoggingCategory>
 #include <QStandardPaths>
+#include <QTranslator>
 
 namespace OCC {
 
@@ -63,6 +65,50 @@ namespace Translations {
         }
 
         return availableTranslations;
+    }
+
+    QStringList qtTranslationsSearchPaths(const QString &qtTranslationsPath, const QString &applicationDirPath)
+    {
+        QStringList candidates = {qtTranslationsPath};
+        if (!applicationDirPath.isEmpty()) {
+            candidates += {
+                // windeployqt: neben der exe
+                applicationDirPath + QStringLiteral("/translations"),
+                // Windows-Installer (<Programmordner>/bin/..) und AppImage (usr/bin/..)
+                applicationDirPath + QStringLiteral("/../translations"),
+                // macOS-Bundle: Contents/MacOS/../Resources
+                applicationDirPath + QStringLiteral("/../Resources/translations"),
+                // Linux-Pakete nach FHS
+                applicationDirPath + QStringLiteral("/../share/qt6/translations"),
+            };
+        }
+
+        QStringList paths;
+        for (const auto &candidate : std::as_const(candidates)) {
+            if (candidate.isEmpty()) {
+                continue;
+            }
+            const QString path = QDir::cleanPath(candidate);
+            if (!paths.contains(path)) {
+                paths.append(path);
+            }
+        }
+        return paths;
+    }
+
+    bool loadQtTranslation(QTranslator *translator, const QStringList &catalogPrefixes, const QString &language, const QStringList &searchPaths)
+    {
+        // "de-informal" -> "de"; Gebietsangaben wie in "de_DE" kürzt QTranslator::load() selbst
+        const QString qtLanguage = language.section(QLatin1Char('-'), 0, 0);
+        for (const auto &dir : searchPaths) {
+            for (const auto &prefix : catalogPrefixes) {
+                if (translator->load(prefix + qtLanguage, dir)) {
+                    qCInfo(lcTranslations) << "Loaded Qt translation" << prefix + qtLanguage << "from" << dir;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 } // namespace Translations
