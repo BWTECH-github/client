@@ -849,23 +849,24 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
 
     QUuid accountId = accountState->account()->uuid();
 
-    if (Folder *f = folder(accountId, folderDefinition.spaceId())) {
+    // ohne Spaces führt FolderMan jedes Ordnerpaar unter seiner eigenen ID, siehe FolderDefinition::mapKey()
+    if (_folders.contains(accountId) && _folders[accountId].contains(folderDefinition.mapKey())) {
         qCWarning(lcFolderMan) << "Trying to add new folder for " << folderDefinition.localPath() << "but it already exists in folder list";
-        return f;
+        return _folders[accountId][folderDefinition.mapKey()];
     }
 
     FolderBuilder builder(folderDefinition);
     auto folder = builder.buildFolder(accountState, _ignoreHiddenFiles, _moveToTrash, this);
 
     if (!folder) {
-        qCWarning(lcFolderMan) << "Unable to create Folder for " << folder->path() << " with spaceId " << folderDefinition.spaceId();
+        // folder ist hier null, daher die Angaben aus der Definition
+        qCWarning(lcFolderMan) << "Unable to create Folder for " << folderDefinition.localPath() << " with spaceId " << folderDefinition.spaceId();
         return nullptr;
     }
 
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
-    QString spaceId = folder->spaceId();
     // always add the folder even if it had a setup error - future add special handling for incomplete folders if possible
-    _folders[accountId].insert(spaceId, folder);
+    _folders[accountId].insert(folder->mapKey(), folder);
 
     if (folder->syncPaused()) {
         _disabledFolders.insert(folder);
@@ -1034,7 +1035,7 @@ void FolderMan::deleteFolderSync(Folder *f)
     // this function includes the stuff to remove the database files.
     f->wipeForRemoval();
 
-    _folders[f->accountState()->account()->uuid()].remove(f->spaceId());
+    _folders[f->accountState()->account()->uuid()].remove(f->mapKey());
 
     disconnectFolder(f);
 
@@ -1174,6 +1175,56 @@ QString FolderMan::checkPathValidity(const QString &path, NewFolderType folderTy
 
     // Now run filesystem based checks
     return findExistingFolderAndCheckValidity(path, folderType, accountUuid);
+}
+
+namespace {
+    // „/Dokumente“, „Dokumente/“ und „//Dokumente//“ meinen denselben Serverordner; das Ergebnis beginnt und endet mit „/“.
+    // Groß-/Kleinschreibung bleibt: Serverpfade unterscheiden sie. Nicht QDir::cleanPath(): unter Windows bliebe ein
+    // führendes „//“ (UNC) stehen.
+    QString normalizedRemoteFolder(const QString &remotePath)
+    {
+        QStringList parts = remotePath.split(QLatin1Char('/'), Qt::SkipEmptyParts);
+        parts.removeAll(QStringLiteral("."));
+        if (parts.isEmpty()) {
+            return QStringLiteral("/");
+        }
+        return QLatin1Char('/') + parts.join(QLatin1Char('/')) + QLatin1Char('/');
+    }
+
+    QString remoteFolderForDisplay(const QString &normalizedPath)
+    {
+        if (normalizedPath == QLatin1String("/")) {
+            return FolderMan::tr("the root folder of the account");
+        }
+        return normalizedPath.chopped(1);
+    }
+}
+
+QString FolderMan::checkRemotePathValidity(const QUuid &accountUuid, const QString &remotePath) const
+{
+    const QString wanted = normalizedRemoteFolder(remotePath);
+    for (const Folder *f : _folders.value(accountUuid)) {
+        // Spaces (oCIS) haben eigene Prüfungen über die Space-Auswahl
+        if (!f->spaceId().isEmpty()) {
+            continue;
+        }
+        const QString existing = normalizedRemoteFolder(f->remotePath());
+        const QString localFolder = QDir::toNativeSeparators(f->cleanPath());
+        if (wanted == existing) {
+            return tr("This server folder is already synced with the local folder %1. Each server folder can only be synced once.").arg(localFolder);
+        }
+        if (existing.startsWith(wanted)) {
+            return tr("This server folder contains %1, which is already synced with the local folder %2. Each server folder can only be synced once. "
+                      "Choose a folder outside of it, or remove the existing folder sync connection first.")
+                .arg(remoteFolderForDisplay(existing), localFolder);
+        }
+        if (wanted.startsWith(existing)) {
+            return tr("This server folder is part of %1, which is already synced with the local folder %2. Each server folder can only be synced once. "
+                      "To sync it to a different local folder, remove the existing folder sync connection first.")
+                .arg(remoteFolderForDisplay(existing), localFolder);
+        }
+    }
+    return {};
 }
 
 QString FolderMan::findExistingFolderAndCheckValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid)
@@ -1344,6 +1395,16 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
 {
     if (!accountState || !accountState->account())
         return;
+
+    // letzte Sicherung hinter dem Ordner-Assistenten: denselben Serverordner (oder einen Ober-/Unterordner) nie ein
+    // zweites Mal spiegeln
+    if (description.spaceId.isEmpty()) {
+        const QString remoteError = checkRemotePathValidity(accountState->account()->uuid(), description.remotePath);
+        if (!remoteError.isEmpty()) {
+            qCWarning(lcFolderMan) << "Refusing to add folder sync connection for" << description.remotePath << ":" << remoteError;
+            return;
+        }
+    }
 
     setSyncEnabled(false);
 

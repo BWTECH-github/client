@@ -148,6 +148,19 @@ public:
      */
     QString checkPathValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid) const;
 
+    /**
+     * @brief Prüft einen Serverordner für ein neues Ordnerpaar eines Kontos ohne Spaces (ownCloud 10/owncloud.online).
+     *
+     * Jeder Serverordner wird je Konto höchstens einmal gespiegelt: weder derselbe Ordner noch ein Ober- oder Unterordner
+     * (die Kontowurzel eingeschlossen) eines schon synchronisierten Serverordners. Sonst läge jede Datei doppelt auf der
+     * Platte, und Löschungen wirkten über beide Kopien. Ordner von Spaces (mit Space-ID) bleiben außen vor.
+     *
+     * @param accountUuid das Konto
+     * @param remotePath der Serverordner relativ zur WebDAV-Wurzel des Kontos, etwa "/" oder "/Dokumente"
+     * @return eine Fehlermeldung, oder einen leeren String, wenn der Serverordner frei ist
+     */
+    QString checkRemotePathValidity(const QUuid &accountUuid, const QString &remotePath) const;
+
     static std::unique_ptr<FolderMan> createInstance();
 
     ~FolderMan() override;

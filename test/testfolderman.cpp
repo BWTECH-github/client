@@ -9,7 +9,9 @@
 #include <QTemporaryDir>
 #include <QtTest>
 
+#include "common/syncjournaldb.h"
 #include "common/utility.h"
+#include "folder.h"
 #include "folderman.h"
 #include "accountstate.h"
 
@@ -25,6 +27,26 @@
 #endif
 
 using namespace OCC;
+
+namespace {
+// Fähigkeiten eines ownCloud-10-Servers (owncloud.online): ohne Spaces
+QVariantMap oc10Capabilities()
+{
+    auto caps = TestUtils::testCapabilities();
+    caps.remove(QStringLiteral("spaces"));
+    return caps;
+}
+
+// ein Ordnerpaar wie aus dem Ordner-Assistenten für ownCloud 10: ohne Space-ID, mit Serverordner
+FolderDefinition oc10FolderDefinition(Account *account, const QString &localPath, const QString &remotePath)
+{
+    FolderDefinition definition(account->davUrl(), {}, {});
+    definition.setLocalPath(localPath);
+    definition.setTargetPath(remotePath);
+    definition.setJournalPath(SyncJournalDb::makeDbName(definition.localPath()));
+    return definition;
+}
+}
 
 
 class TestFolderMan: public QObject
@@ -237,6 +259,90 @@ private Q_SLOTS:
         // normalise the name
         QCOMPARE(folderman->findGoodPathForNewSyncFolder(dirPath, QStringLiteral("            Bo:*<>!b          "), folderType, uuid),
             QString(dirPath + QStringLiteral("/Bo____!b")));
+    }
+
+    /*
+     * Ohne Spaces (ownCloud 10) haben alle Ordnerpaare eines Kontos eine leere Space-ID. Sie dürfen sich in FolderMan nicht
+     * gegenseitig ersetzen, und ein Serverordner darf weder selbst noch als Ober- oder Unterordner ein zweites Mal
+     * gespiegelt werden.
+     */
+    void testOc10FolderPairsAndRemotePathValidity()
+    {
+        auto dir = TestUtils::createTempDir();
+        QVERIFY(dir.isValid());
+        QDir dir2(dir.path());
+        QVERIFY(dir2.mkpath(QStringLiteral("docs")));
+        QVERIFY(dir2.mkpath(QStringLiteral("photos")));
+        const QString dirPath = dir2.canonicalPath();
+
+        auto accountState = createDummyAccount();
+        Account *account = accountState->account();
+        account->setCapabilities({account->url(), oc10Capabilities()});
+        const QUuid uuid = account->uuid();
+
+        FolderMan *folderman = TestUtils::folderMan();
+        // ohne Ordnerpaar ist jeder Serverordner frei, auch die Wurzel
+        QCOMPARE(folderman->checkRemotePathValidity(uuid, QStringLiteral("/")), QString());
+
+        Folder *docs = folderman->addFolder(accountState.get(), oc10FolderDefinition(account, dirPath + QStringLiteral("/docs"), QStringLiteral("/Dokumente")));
+        QVERIFY(docs);
+        Folder *photos = folderman->addFolder(accountState.get(), oc10FolderDefinition(account, dirPath + QStringLiteral("/photos"), QStringLiteral("/Fotos")));
+        QVERIFY(photos);
+        QVERIFY(photos != docs);
+        QCOMPARE(folderman->foldersForAccount(uuid).size(), 2);
+
+        // derselbe Ordner, gleich wie geschrieben
+        for (const auto &same : {QStringLiteral("/Dokumente"), QStringLiteral("/Dokumente/"), QStringLiteral("Dokumente"), QStringLiteral("//Dokumente//")}) {
+            const QString error = folderman->checkRemotePathValidity(uuid, same);
+            QVERIFY2(!error.isEmpty(), qPrintable(same));
+            // die Meldung nennt den lokalen Ordner, mit dem der Serverordner schon verbunden ist
+            QVERIFY(error.contains(QDir::toNativeSeparators(docs->cleanPath())));
+        }
+        // Unterordner eines gespiegelten Ordners
+        QVERIFY(!folderman->checkRemotePathValidity(uuid, QStringLiteral("/Dokumente/Rechnungen")).isEmpty());
+        QVERIFY(!folderman->checkRemotePathValidity(uuid, QStringLiteral("/Fotos/2026/Urlaub")).isEmpty());
+        // Oberordner, auch die Kontowurzel
+        QVERIFY(!folderman->checkRemotePathValidity(uuid, QStringLiteral("/")).isEmpty());
+        QVERIFY(!folderman->checkRemotePathValidity(uuid, QString()).isEmpty());
+        // gleicher Anfang ist kein Unterordner, Serverpfade unterscheiden Groß- und Kleinschreibung
+        QCOMPARE(folderman->checkRemotePathValidity(uuid, QStringLiteral("/Dokumente-Archiv")), QString());
+        QCOMPARE(folderman->checkRemotePathValidity(uuid, QStringLiteral("/dokumente")), QString());
+        QCOMPARE(folderman->checkRemotePathValidity(uuid, QStringLiteral("/Musik")), QString());
+        // andere Konten bleiben unberührt
+        QCOMPARE(folderman->checkRemotePathValidity(QUuid::createUuid(), QStringLiteral("/Dokumente")), QString());
+
+        // die letzte Sicherung in FolderMan legt kein Paar für einen schon gespiegelten Serverordner an
+        FolderMan::SyncConnectionDescription description{account->davUrl(), {}, dirPath + QStringLiteral("/rechnungen"),
+            QStringLiteral("/Dokumente/Rechnungen"), QStringLiteral("Rechnungen"), false, 0, {}};
+        folderman->addFolderFromGui(accountState.get(), description);
+        QCOMPARE(folderman->foldersForAccount(uuid).size(), 2);
+        QVERIFY(!QFileInfo::exists(dirPath + QStringLiteral("/rechnungen")));
+
+        // Entfernen eines Paars lässt das andere stehen und gibt seinen Serverordner frei
+        folderman->removeFolderFromGui(photos);
+        const auto remaining = folderman->foldersForAccount(uuid);
+        QCOMPARE(remaining.size(), 1);
+        QCOMPARE(remaining.first(), docs);
+        QCOMPARE(folderman->checkRemotePathValidity(uuid, QStringLiteral("/Fotos")), QString());
+        QVERIFY(!folderman->checkRemotePathValidity(uuid, QStringLiteral("/Dokumente")).isEmpty());
+    }
+
+    // Spaces (oCIS) bleiben wie bisher: dort gibt es keine Prüfung der Serverordner
+    void testRemotePathValidityIgnoresSpaces()
+    {
+        auto dir = TestUtils::createTempDir();
+        QVERIFY(dir.isValid());
+        QDir dir2(dir.path());
+        QVERIFY(dir2.mkpath(QStringLiteral("space")));
+
+        auto accountState = createDummyAccount();
+        FolderMan *folderman = TestUtils::folderMan();
+        QVERIFY(folderman->addFolder(
+            accountState.get(), TestUtils::createDummyFolderDefinition(accountState->account(), dir2.canonicalPath() + QStringLiteral("/space"))));
+
+        const QUuid uuid = accountState->account()->uuid();
+        QCOMPARE(folderman->checkRemotePathValidity(uuid, QStringLiteral("/")), QString());
+        QCOMPARE(folderman->checkRemotePathValidity(uuid, dir2.canonicalPath() + QStringLiteral("/space")), QString());
     }
 
     void testSpacesSyncRootAndFolderCreation()
