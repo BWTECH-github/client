@@ -28,9 +28,9 @@ private Q_SLOTS:
 
     void testFeedUrl()
     {
-        const QUrl base(QStringLiteral("https://github.com/BWTECH-github/client/releases/latest/download/"));
+        const QUrl base(QStringLiteral("https://github.com/BWTECH-github/client/releases/download/update-feed/"));
         QCOMPARE(Updater::feedUrl(base, QStringLiteral("win-x64"), QStringLiteral("stable")).toString(),
-            QStringLiteral("https://github.com/BWTECH-github/client/releases/latest/download/owncloud.online-update-win-x64-stable.xml"));
+            QStringLiteral("https://github.com/BWTECH-github/client/releases/download/update-feed/owncloud.online-update-win-x64-stable.xml"));
         // volle Adresse (z. B. OCC_UPDATE_URL) bleibt unverändert
         const QUrl full(QStringLiteral("http://127.0.0.1:8080/test.xml"));
         QCOMPARE(Updater::feedUrl(full, QStringLiteral("win-x64"), QStringLiteral("beta")), full);
@@ -39,7 +39,8 @@ private Q_SLOTS:
 
     void testDefaultUpdateUrl()
     {
-        QVERIFY(Theme::instance()->updateCheckUrl().toString().endsWith(QLatin1String("/releases/latest/download/")));
+        // fester Ablageort aller Kanäle, nicht releases/latest (das wäre nur das neueste stabile Release)
+        QCOMPARE(Theme::instance()->updateCheckUrl().toString(), QStringLiteral("https://github.com/BWTECH-github/client/releases/download/update-feed/"));
         const QString platform = Updater::feedPlatform();
 #ifdef Q_OS_WIN
         if (QSysInfo::buildCpuArchitecture() == QLatin1String("x86_64")) {

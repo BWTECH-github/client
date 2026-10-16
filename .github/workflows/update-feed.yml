@@ -1,17 +1,22 @@
 # Update-Feed des Desktop-Clients: erzeugt je Plattform und Kanal eine
-# XML-Datei (Format von src/gui/updater/updateinfo.cpp) und hängt sie an das
-# Release. Über die feste Adresse
-#   https://github.com/BWTECH-github/client/releases/latest/download/owncloud.online-update-<plattform>-<kanal>.xml
-# liefert GitHub immer den Feed des neuesten stabilen Releases aus.
+# XML-Datei (Format von src/gui/updater/updateinfo.cpp) und legt sie am festen
+# Ablageort ab, dem dauerhaften Release "update-feed" (Vorabversion, nie
+# "Latest"):
+#   https://github.com/BWTECH-github/client/releases/download/update-feed/owncloud.online-update-<plattform>-<kanal>.xml
+# Stabile Releases schreiben die stable- UND die beta-Dateien, Vorabversionen nur
+# die beta-Dateien. Ein Lauf für ein älteres Release setzt den Feed nicht zurück
+# (--keep-newer), außer mit allow_older (Release bewusst zurückziehen).
+# Zusätzlich hängen die Dateien wie bisher am Release selbst; darüber finden
+# Clients, die noch .../releases/latest/download/ abfragen (11.0.0-beta1), das
+# nächste stabile Release.
 # Format, Adressen, Kanäle und was der Client dafür braucht: admin/release/UPDATE-FEED.md
 #
 # Auslöser:
 # - release: published – nur, wenn ein Mensch (oder ein persönliches Token) das
 #   Release veröffentlicht. Releases, die publish-release.yml mit dem
-#   GITHUB_TOKEN anlegt, starten KEINEN Workflow (Regel von GitHub); dafür
-#   diesen Workflow per workflow_call aus publish-release.yml aufrufen (siehe
-#   UPDATE-FEED.md) oder von Hand starten. GitHub nimmt bei diesem Auslöser die
-#   Workflow-Datei aus dem getaggten Commit.
+#   GITHUB_TOKEN anlegt, starten KEINEN Workflow (Regel von GitHub); dafür ruft
+#   publish-release.yml diesen Workflow per workflow_call auf. GitHub nimmt bei
+#   diesem Auslöser die Workflow-Datei aus dem getaggten Commit.
 # - workflow_dispatch / workflow_call mit dem Tag: Feed (neu) erzeugen, z. B. für
 #   ein Release, dessen Tag älter als dieser Workflow ist.
 name: Update feed
@@ -25,6 +30,11 @@ on:
         description: 'Release-Tag, z. B. v7.11.1'
         required: true
         type: string
+      allow_older:
+        description: 'Auch eine ältere Version an den festen Ablageort schreiben (Release zurückziehen)'
+        required: false
+        default: false
+        type: boolean
   workflow_call:
     inputs:
       tag:
@@ -33,18 +43,25 @@ on:
         type: string
 
 permissions:
-  contents: write # Feed-Dateien an das Release hängen
+  contents: write # Feed-Dateien an die Releases hängen, Ablage-Release anlegen
 
 jobs:
   feed:
+    # das Ablage-Release selbst ist kein Client-Release
+    if: ${{ (inputs.tag || github.event.release.tag_name) != 'update-feed' }}
     runs-on: ubuntu-latest
-    # zwei Läufe für dasselbe Release nacheinander, nicht ineinander (--clobber)
+    # Alle Läufe schreiben in dasselbe Ablage-Release: nacheinander, nicht
+    # ineinander (Lesen, Vergleichen, --clobber). Achtung: GitHub hält je Gruppe
+    # nur EINEN wartenden Lauf; ein dritter verdrängt den wartenden, der dann
+    # von Hand nachzuholen ist (siehe UPDATE-FEED.md).
     concurrency:
-      group: update-feed-${{ inputs.tag || github.event.release.tag_name }}
+      group: update-feed-ablage
       cancel-in-progress: false
     env:
       GH_TOKEN: ${{ github.token }}
       TAG: ${{ inputs.tag || github.event.release.tag_name }}
+      FEED_TAG: update-feed
+      ALLOW_OLDER: ${{ inputs.allow_older && 'true' || 'false' }}
     steps:
       - name: Check out the generator
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -53,6 +70,35 @@ jobs:
 
       - name: Self-test the generator
         run: python3 -B admin/release/test_make_update_feed.py -v
+
+      - name: Make sure the fixed location exists
+        run: |
+          set -euo pipefail
+          if gh release view "$FEED_TAG" -R "$GITHUB_REPOSITORY" --json isPrerelease,isDraft > feed-release.json 2>/dev/null; then
+            # nie Entwurf (Adresse liefert dann nichts) und nie "Latest"
+            # (releases/latest zeigte sonst auf die Ablage statt auf ein Release)
+            if [ "$(jq -r '.isPrerelease and (.isDraft | not)' feed-release.json)" != "true" ]; then
+              gh release edit "$FEED_TAG" -R "$GITHUB_REPOSITORY" --prerelease --draft=false --latest=false
+            fi
+          else
+            DEFAULT_BRANCH=$(gh api "repos/$GITHUB_REPOSITORY" --jq .default_branch)
+            gh release create "$FEED_TAG" -R "$GITHUB_REPOSITORY" \
+              --target "$DEFAULT_BRANCH" --prerelease --latest=false \
+              --title "Update-Feed (kein Client-Release)" \
+              --notes "Fester Ablageort der Update-Feeds des owncloud.online Desktop-Clients. Wird von .github/workflows/update-feed.yml bei jedem Release aktualisiert. Bitte nicht löschen; die Pakete liegen an den jeweiligen Releases."
+          fi
+
+      - name: Fetch the current feed files
+        run: |
+          set -euo pipefail
+          mkdir -p current
+          # ein Fehler hier bricht ab, statt den Feed ungeprüft zurückzusetzen
+          gh release view "$FEED_TAG" -R "$GITHUB_REPOSITORY" --json assets \
+            --jq '.assets[].name | select(startswith("owncloud.online-update-") and endswith(".xml"))' > current.txt
+          if [ -s current.txt ]; then
+            gh release download "$FEED_TAG" -R "$GITHUB_REPOSITORY" -p 'owncloud.online-update-*.xml' -D current --clobber
+          fi
+          ls -la current
 
       - name: Generate the feed files
         run: |
@@ -90,27 +136,43 @@ jobs:
             exit 1
           fi
 
-          python3 -B admin/release/make-update-feed.py --tag "$TAG" --web "$(jq -r .url release.json)" --out feed "${platforms[@]}"
+          common=(--tag "$TAG" --web "$(jq -r .url release.json)" "${platforms[@]}")
+          # alle Dateien für das Release selbst
+          python3 -B admin/release/make-update-feed.py "${common[@]}" --out feed
+          # für den festen Ablageort nur, was dort nichts Neueres ersetzt
+          mkdir -p feed-ablage
+          if [ "$ALLOW_OLDER" = "true" ]; then
+            echo "::warning::allow_older: der feste Ablageort bekommt $TAG auch dann, wenn dort Neueres liegt"
+            python3 -B admin/release/make-update-feed.py "${common[@]}" --out feed-ablage
+          else
+            python3 -B admin/release/make-update-feed.py "${common[@]}" --out feed-ablage --keep-newer current
+          fi
           for file in feed/*.xml; do
             echo "::group::$file"
             cat "$file"
             echo "::endgroup::"
           done
 
-      - name: Attach the feed files to the release
+      - name: Attach the feed files to the release itself
         run: gh release upload "$TAG" feed/*.xml --clobber -R "$GITHUB_REPOSITORY"
 
-      - name: Check what the fixed address serves
+      - name: Upload to the fixed location
         run: |
           set -euo pipefail
           shopt -s nullglob
-          latest=$(gh api "repos/$GITHUB_REPOSITORY/releases/latest" --jq .tag_name 2>/dev/null || true)
-          if [ "$latest" != "$TAG" ]; then
-            echo "::notice::Die feste Adresse .../releases/latest/download/ liefert den Feed von '${latest:-keinem Release}', nicht von $TAG (Vorabversion, älteres Release oder nicht als Latest markiert)."
+          files=(feed-ablage/*.xml)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::notice::Am festen Ablageort liegt für jede Datei eine neuere Version als $TAG; nichts ersetzt."
             exit 0
           fi
-          for file in feed/*-stable.xml; do
-            url="https://github.com/$GITHUB_REPOSITORY/releases/latest/download/$(basename "$file")"
+          gh release upload "$FEED_TAG" "${files[@]}" --clobber -R "$GITHUB_REPOSITORY"
+
+      - name: Check what the fixed location serves
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          for file in feed-ablage/*.xml; do
+            url="https://github.com/$GITHUB_REPOSITORY/releases/download/$FEED_TAG/$(basename "$file")"
             for attempt in 1 2 3; do
               if curl -fsSL --proto '=https' "$url" -o served.xml && cmp -s served.xml "$file"; then
                 echo "ok: $url"
@@ -119,6 +181,6 @@ jobs:
               echo "Versuch $attempt: $url liefert (noch) nicht die neue Datei"
               sleep 10
             done
-            echo "::error::$url liefert nicht die eben angehängte Datei"
+            echo "::error::$url liefert nicht die eben abgelegte Datei"
             exit 1
           done

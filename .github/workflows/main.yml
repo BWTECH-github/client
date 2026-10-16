@@ -44,6 +44,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      # Update-Feed-Generator: Format, Kanäle, Versionsvergleich, fester Ablageort
+      - name: update-feed-selftest
+        run: python3 -B admin/release/test_make_update_feed.py
       - name: install-deps
         run: sudo apt-get update -q && sudo apt-get install -y -q qt6-l10n-tools
       - name: lupdate-check

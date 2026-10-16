@@ -71,9 +71,9 @@ jobs:
           test -n "$TARGET" || { echo "::error::Commit des CI-Laufs ${{ inputs.run_id }} nicht ermittelbar"; exit 1; }
           # Tags mit Bindestrich (z. B. v11.0.0-beta1) sind Vorabversionen und
           # werden als Pre-release angelegt. So bleibt releases/latest beim
-          # letzten stabilen Release; sonst würde die Beta "Latest" und der
-          # stable-Feed der installierten Clients
-          # (releases/latest/download/...-stable.xml) liefert 404.
+          # letzten stabilen Release; Clients bis 11.0.0-beta1 fragen noch
+          # releases/latest/download/... ab. Neuere Clients lesen den festen
+          # Ablageort (Release "update-feed", siehe update-feed.yml).
           PRERELEASE=()
           BETA_KOPF=""
           BETA_FUSS=""
@@ -105,11 +105,13 @@ jobs:
             assets/*
 
   # Ein mit dem GITHUB_TOKEN angelegtes Release startet keinen
-  # "release: published"-Lauf, daher den Update-Feed hier direkt erzeugen.
+  # "release: published"-Lauf, daher den Update-Feed hier direkt erzeugen:
+  # für stabile Releases UND Vorabversionen, am Release selbst und am festen
+  # Ablageort (Release "update-feed").
   update-feed:
     needs: publish
     permissions:
-      contents: write # Feed-Dateien an das Release hängen
+      contents: write # Feed-Dateien an die Releases hängen, Ablage-Release anlegen
     uses: ./.github/workflows/update-feed.yml
     with:
       tag: ${{ inputs.tag }}
