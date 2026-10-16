@@ -1006,17 +1006,17 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+62"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+83"/>
         <source>Server does not support OAuth</source>
         <translation>Servern stöder inte OAuth</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+4"/>
         <source>Server did not ask for authorization</source>
         <translation>Servern begärde inte auktorisering</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Failed to determine authentication type: %1</source>
         <translation>Det gick inte att avgöra autentiseringstyp: %1</translation>
     </message>
@@ -2089,7 +2089,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+160"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+187"/>
         <source>Successfully signed in</source>
         <translation>Inloggningen lyckades</translation>
     </message>
@@ -2099,7 +2099,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Utforska nu %1 på skrivbordet.</translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+115"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Fel returnerat från server: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2180,12 +2180,12 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Kopiera URL för inloggning</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+24"/>
         <source>Additional logo defined by the organization</source>
         <translation>Ytterligare logotyp definierad av organisationen</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+86"/>
         <source>URL copied</source>
         <translation>URL kopierad</translation>
     </message>
@@ -2195,12 +2195,17 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Kopiera URL</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+63"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation>Det gick inte att ansluta till inloggningstjänsten. Kontakta supporten om problemet kvarstår.</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+17"/>
+        <source>Please sign in using the browser window that has opened and confirm with &quot;Authorize&quot;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation>Kopiera autentiserings-URL:en med knappen ovan och lämna informationen till supporten.</translation>
     </message>
@@ -2230,9 +2235,9 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Fel vid inloggning på en OAuth2-aktiverad server. %1</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Unable to open browser with provided URL. %1</source>
-        <translation>Det gick inte att öppna webbläsaren med angiven URL. %1</translation>
+        <location line="+5"/>
+        <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2879,7 +2884,17 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>IdP kan inte nås. Kontakta systemadministratören eller försök igen senare.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+4"/>
+        <source>The browser could not be opened. Copy the link and open it in your browser.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Authentication failed.</source>
         <translation>Autentisering misslyckades.</translation>
     </message>
@@ -4188,7 +4203,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+57"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Webbläsaren öppnas för att slutföra inloggningen.</translation>
     </message>
@@ -4633,7 +4648,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="+319"/>
+        <location filename="../src/gui/main.cpp" line="+311"/>
         <source>Error accessing the configuration file</source>
         <translation>Kunde inte komma åt konfigurationsfilen</translation>
     </message>
@@ -4792,7 +4807,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>restart prompt</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="-288"/>
+        <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
         <translation type="unfinished"></translation>
     </message>

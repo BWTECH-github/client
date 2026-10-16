@@ -677,6 +677,99 @@ private Q_SLOTS:
         // Assert
         QVERIFY(!acceptsConnections(QHostAddress(QHostAddress::LocalHost), port));
     }
+
+    // Ohne nutzbare Angabe in token_endpoint_auth_methods_supported gilt client_secret_basic. Bisher beendete hier ein
+    // OC_ASSERT_X mit FORCE_ASSERTS (Beta) das Programm schon wegen der Serverantwort.
+    void testWellKnownWithoutUsableAuthMethod_data()
+    {
+        QTest::addColumn<QJsonValue>("authMethods");
+        QTest::newRow("missing") << QJsonValue(QJsonValue::Undefined);
+        QTest::newRow("empty") << QJsonValue(QJsonArray{});
+        QTest::newRow("unknown only") << QJsonValue(QJsonArray{QStringLiteral("private_key_jwt")});
+    }
+
+    void testWellKnownWithoutUsableAuthMethod()
+    {
+        // Arrange
+        QFETCH(QJsonValue, authMethods);
+        struct Test : OAuthTestCase {
+            QJsonValue authMethods;
+            QByteArray tokenAuthorization;
+            QByteArray tokenBody;
+
+            QNetworkReply *wellKnownReply(QNetworkAccessManager::Operation op, const QNetworkRequest &req) override
+            {
+                QJsonObject data{{QStringLiteral("authorization_endpoint"), sOpenIdAuthURL.toString()},
+                    {QStringLiteral("token_endpoint"), QStringLiteral("oauthtest://openidserver/token_endpoint")}};
+                if (!authMethods.isUndefined()) {
+                    data.insert(QStringLiteral("token_endpoint_auth_methods_supported"), authMethods);
+                }
+                return new FakePayloadReply(op, req, QJsonDocument(data).toJson(), fakeAm);
+            }
+
+            QNetworkReply *tokenReply(QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) override
+            {
+                tokenAuthorization = req.rawHeader("Authorization");
+                tokenBody = device->peek(device->bytesAvailable());
+                return OAuthTestCase::tokenReply(op, req, device);
+            }
+        } test;
+        test.authMethods = authMethods;
+
+        // Act
+        test.test();
+
+        // Assert: Client-Kennung und Geheimnis im Basic-Header, nicht im Formular
+        QVERIFY(test.tokenAuthorization.startsWith("Basic "));
+        QVERIFY(!test.tokenBody.contains("client_secret"));
+    }
+
+    // „Anmelden“ geklickt, bevor der Link feststeht (nach einem Fehler beginnt die Anmeldung neu), oder nachdem der Browser
+    // schon zurückgekehrt ist: nichts öffnen und kein Ergebnis melden. authorisationLink() setzt beides voraus; mit
+    // FORCE_ASSERTS (Beta) brach das Programm hier bisher ab.
+    void testOpenBrowserWithoutValidLinkDoesNothing()
+    {
+        struct Test : OAuthTestCase {
+            int results = 0;
+            int browserOpened = 0;
+
+            void openBrowserHook(const QUrl &url) override
+            {
+                ++browserOpened;
+                OAuthTestCase::openBrowserHook(url);
+            }
+
+            QNetworkReply *tokenReply(QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *device) override
+            {
+                // der Rückruf ist da, der Listener geschlossen
+                oauth->openBrowser();
+                return OAuthTestCase::tokenReply(op, req, device);
+            }
+
+            void runTest() override
+            {
+                oauth = prepareOauth();
+                QObject::connect(oauth.get(), &OAuth::result, this, [this] { ++results; });
+                oauth->startAuthentication();
+                QSignalSpy linkChanged(oauth.get(), &OAuth::authorisationLinkChanged);
+
+                // zu früh: die Endpunkte werden noch abgefragt
+                oauth->openBrowser();
+                QCOMPARE(results, 0);
+                QCOMPARE(browserOpened, 0);
+
+                QVERIFY(linkChanged.wait());
+                oauth->openBrowser();
+            }
+        } test;
+
+        // Act
+        test.test();
+
+        // Assert: genau ein Browserfenster, genau ein Ergebnis (angemeldet)
+        QCOMPARE(test.browserOpened, 1);
+        QCOMPARE(test.results, 1);
+    }
 };
 
 

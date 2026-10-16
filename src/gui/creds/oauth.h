@@ -70,6 +70,10 @@ public:
     ~OAuth() override;
 
     virtual void startAuthentication();
+    /**
+     * Öffnet authorisationLink() im Browser. Vor authorisationLinkChanged() und nach dem Rückruf des Browsers gibt es
+     * keinen gültigen Link; dann geschieht nichts und es kommt auch kein result().
+     */
     void openBrowser();
     QUrl authorisationLink() const;
 

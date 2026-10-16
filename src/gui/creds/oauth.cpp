@@ -454,7 +454,13 @@ void OAuth::fetchWellKnown()
             } else if (authMethods.contains(QStringLiteral("client_secret_post"))) {
                 _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_post;
             } else {
-                OC_ASSERT_X(false, qPrintable(QStringLiteral("Unsupported token_endpoint_auth_methods_supported: %1").arg(QDebug::toString(authMethods))));
+                // Die Angabe ist optional, ohne sie gilt client_secret_basic (OpenID Connect Discovery 1.0, Abschnitt 3). Auch bei
+                // unbekannten Verfahren damit versuchen, statt abzubrechen: das OC_ASSERT_X hier beendete mit FORCE_ASSERTS (Beta)
+                // das Programm schon wegen dieser Serverantwort
+                if (!authMethods.isEmpty()) {
+                    qCWarning(lcOauth) << "Unsupported token_endpoint_auth_methods_supported" << authMethods << "- trying client_secret_basic";
+                }
+                _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
             }
             const auto promptValuesSupported = data.value(QStringLiteral("prompt_values_supported")).toArray();
             if (!promptValuesSupported.isEmpty()) {
@@ -506,6 +512,14 @@ bool isUrlSchemeValid(const QUrl &url)
 
 void OAuth::openBrowser()
 {
+    // Einen gültigen Link gibt es erst nach der Abfrage der Endpunkte und nur, solange der Listener wartet. Ein Klick auf
+    // „Anmelden“, während die Anmeldung nach einem Fehler neu beginnt oder der Browser schon zurückgekehrt ist, öffnet
+    // deshalb nichts: authorisationLink() setzt beides voraus, mit FORCE_ASSERTS (Beta) brach das Programm sonst ab
+    if (!_wellKnownFinished || !_server.isListening()) {
+        qCInfo(lcOauth) << "Not opening the browser: the sign-in link is not ready yet or the browser has already returned";
+        return;
+    }
+
     auto authorisationURL = authorisationLink();
     if (authorisationURL.isEmpty()) {
         qCWarning(lcOauth) << "Authorization URL is unknown - well-known/openid-configuration endpoint did not return usable information";

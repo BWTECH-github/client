@@ -1006,17 +1006,17 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+62"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+83"/>
         <source>Server does not support OAuth</source>
         <translation>Der Server unterstützt OAuth nicht</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+4"/>
         <source>Server did not ask for authorization</source>
         <translation>Der Server hat nicht nach Authentifizierung gefragt.</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Failed to determine authentication type: %1</source>
         <translation>Der Authentifizierungstyp konnte nicht bestimmt werden: %1</translation>
     </message>
@@ -2890,7 +2890,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Der Browser konnte nicht geöffnet werden. Kopieren Sie den Link und öffnen Sie ihn in Ihrem Browser.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+5"/>
+        <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
+        <translation>Die Anmeldeseite verwendet keine sichere Verbindung (HTTPS) und wurde deshalb nicht geöffnet. Bitte wenden Sie sich an Ihren Systemadministrator.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Authentication failed.</source>
         <translation>Authentifizierung fehlgeschlagen.</translation>
     </message>
@@ -4199,7 +4204,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+57"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Ihr Webbrowser wird geöffnet, um die Anmeldung abzuschließen.</translation>
     </message>

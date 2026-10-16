@@ -1004,17 +1004,17 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+62"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+83"/>
         <source>Server does not support OAuth</source>
         <translation>ເຊີບເວີບໍ່ຮອງຮັບ OAuth</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+4"/>
         <source>Server did not ask for authorization</source>
         <translation>ເຊີບເວີບໍ່ໄດ້ຮ້ອງຂໍການອະນຸຍາດ</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Failed to determine authentication type: %1</source>
         <translation>ກວດສອບປະເພດການຢືນຢັນຕົວຕົນບໍ່ສຳເລັດ: %1</translation>
     </message>
@@ -2087,7 +2087,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+160"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+187"/>
         <source>Successfully signed in</source>
         <translation>ເຂົ້າສູ່ລະບົບສຳເລັດແລ້ວ</translation>
     </message>
@@ -2097,7 +2097,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ດຽວນີ້, ສຳຫຼວດ %1 ໃນເດັສທັອບ.</translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+115"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>ຂໍ້ຜິດພາດທີ່ສົ່ງຄືນຈາກເຊີບເວີ: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2178,12 +2178,12 @@ Note that using any logging command line options will override the settings.</so
         <translation>ສຳເນົາ URL ເພື່ອເຂົ້າສູ່ລະບົບ</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+24"/>
         <source>Additional logo defined by the organization</source>
         <translation>ໂລໂກ້ເພີ່ມເຕີມທີ່ກຳນົດໂດຍອົງກອນ</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+86"/>
         <source>URL copied</source>
         <translation>ສຳເນົາ URL ແລ້ວ</translation>
     </message>
@@ -2193,12 +2193,17 @@ Note that using any logging command line options will override the settings.</so
         <translation>ສຳເນົາ URL</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+63"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation>ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບບໍລິການເຂົ້າສູ່ລະບົບໄດ້. ຖ້າບັນຫາຍັງສືບຕໍ່, ກະລຸນາຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ. </translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+17"/>
+        <source>Please sign in using the browser window that has opened and confirm with &quot;Authorize&quot;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation>ກະລຸນາສຳເນົາ URL ການຢືນຢັນຕົວຕົນໂດຍໃຊ້ປຸ່ມຂ້າງເທິງ, ແລະ ສົ່ງຂໍ້ມູນນີ້ໃຫ້ກັບຝ່າຍຊ່ວຍເຫຼືອ.</translation>
     </message>
@@ -2228,9 +2233,9 @@ Note that using any logging command line options will override the settings.</so
         <translation>ເກີດຂໍ້ຜິດພາດຂະນະພະຍາຍາມເຂົ້າສູ່ລະບົບເຊີບເວີທີ່ເປີດໃຊ້ OAuth2. %1</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Unable to open browser with provided URL. %1</source>
-        <translation>ບໍ່ສາມາດເປີດເບຣົາເຊີດ້ວຍ URL ທີ່ໃຫ້ມາ. %1</translation>
+        <location line="+5"/>
+        <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2877,7 +2882,17 @@ Note that using any logging command line options will override the settings.</so
         <translation>ບໍ່ສາມາດເຂົ້າເຖິງ IdP ໄດ້. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ ຫຼື ລອງໃໝ່ພາຍຫຼັງ.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+4"/>
+        <source>The browser could not be opened. Copy the link and open it in your browser.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Authentication failed.</source>
         <translation>ການຢືນຢັນຕົວຕົນລົ້ມເຫຼວ.</translation>
     </message>
@@ -4186,7 +4201,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+57"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>ເວັບເບຣົາເຊີຂອງທ່ານຈະຖືກເປີດຂຶ້ນເພື່ອສຳເລັດການເຂົ້າສູ່ລະບົບ.</translation>
     </message>
@@ -4631,7 +4646,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="+319"/>
+        <location filename="../src/gui/main.cpp" line="+311"/>
         <source>Error accessing the configuration file</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການເຂົ້າເຖິງໄຟລ໌ການຕັ້ງຄ່າ</translation>
     </message>
@@ -4790,7 +4805,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>restart prompt</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="-288"/>
+        <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
         <translation type="unfinished"></translation>
     </message>

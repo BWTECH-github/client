@@ -109,9 +109,10 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
         errString = tr("The browser could not be opened. Copy the link and open it in your browser.");
         break;
     case OAuth::ErrorInsecureUrl:
-        // should not happen after the initial setup
-        Q_ASSERT(false);
-        [[fallthrough]];
+        // der Server nennt eine Anmeldeseite ohne HTTPS (etwa hinter einem Proxy ohne overwriteprotocol); mit FORCE_ASSERTS
+        // (Beta) brach hier ein Q_ASSERT das Programm ab
+        errString = tr("The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.");
+        break;
     case OAuth::Error:
         errString = tr("Authentication failed.");
         break;

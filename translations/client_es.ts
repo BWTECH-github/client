@@ -1006,17 +1006,17 @@ La actualización se realizará en segundo plano, y sobreescribirá el actual fi
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+62"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+83"/>
         <source>Server does not support OAuth</source>
         <translation>El servidor no admite OAuth</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+4"/>
         <source>Server did not ask for authorization</source>
         <translation>El servidor no solicitó autorización</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Failed to determine authentication type: %1</source>
         <translation>No se pudo determinar el tipo de autenticación: %1</translation>
     </message>
@@ -2089,7 +2089,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+160"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+187"/>
         <source>Successfully signed in</source>
         <translation>Inicio de sesión correcto</translation>
     </message>
@@ -2099,7 +2099,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>Ahora, explore %1 en el escritorio.</translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+115"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Error devuelto desde el servidor: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2179,12 +2179,12 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>Copiar URL para iniciar sesión</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+24"/>
         <source>Additional logo defined by the organization</source>
         <translation>Logotipo adicional definido por la organización.</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+86"/>
         <source>URL copied</source>
         <translation>URL copiada</translation>
     </message>
@@ -2194,12 +2194,17 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>Copiar URL</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+63"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation>No se ha podido conectar al servicio de inicio de sesión. Si el problema persiste, póngase en contacto con el servicio de asistencia.</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+17"/>
+        <source>Please sign in using the browser window that has opened and confirm with &quot;Authorize&quot;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation>Copie la URL de autenticación utilizando el botón de arriba y facilite esta información al servicio de asistencia.</translation>
     </message>
@@ -2229,9 +2234,9 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>Error al intentar iniciar sesión en el servidor habilitado para OAuth2. %1</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Unable to open browser with provided URL. %1</source>
-        <translation>No se puede abrir el navegador con la URL proporcionada. %1</translation>
+        <location line="+5"/>
+        <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2878,7 +2883,17 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>No se puede acceder a IdP. Póngase en contacto con el administrador del sistema o vuelva a intentarlo más tarde.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+4"/>
+        <source>The browser could not be opened. Copy the link and open it in your browser.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Authentication failed.</source>
         <translation>La autenticación ha fallado.</translation>
     </message>
@@ -4187,7 +4202,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+57"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Se abrirá su navegador web para completar el inicio de sesión.</translation>
     </message>
@@ -4632,7 +4647,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="+319"/>
+        <location filename="../src/gui/main.cpp" line="+311"/>
         <source>Error accessing the configuration file</source>
         <translation>Error al acceder al archivo de configuración</translation>
     </message>
@@ -4791,7 +4806,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>restart prompt</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="-288"/>
+        <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
         <translation type="unfinished"></translation>
     </message>

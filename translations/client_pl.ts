@@ -1006,17 +1006,17 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+62"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+83"/>
         <source>Server does not support OAuth</source>
         <translation>Serwer nie obsługuje protokołu OAuth</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+4"/>
         <source>Server did not ask for authorization</source>
         <translation>Serwer nie poprosił o autoryzację</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Failed to determine authentication type: %1</source>
         <translation>Nie udało się określić typu uwierzytelniania: %1</translation>
     </message>
@@ -2094,7 +2094,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+160"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+187"/>
         <source>Successfully signed in</source>
         <translation>Pomyślnie zalogowano</translation>
     </message>
@@ -2104,7 +2104,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Teraz poznaj %1 na komputerze.</translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+115"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Błąd zwrócony przez serwer: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2185,12 +2185,12 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Skopiuj adres URL, aby się zalogować</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+24"/>
         <source>Additional logo defined by the organization</source>
         <translation>Dodatkowe logo zdefiniowane przez organizację</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+86"/>
         <source>URL copied</source>
         <translation>Skopiowano adres URL</translation>
     </message>
@@ -2200,12 +2200,17 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Kopiuj URL</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+63"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+17"/>
+        <source>Please sign in using the browser window that has opened and confirm with &quot;Authorize&quot;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation>Skopiuj adres URL uwierzytelniania za pomocą przycisku powyżej i przekaż te informacje działowi pomocy technicznej.</translation>
     </message>
@@ -2235,9 +2240,9 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Błąd podczas próby zalogowania się do serwera obsługującego OAuth2. %1</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Unable to open browser with provided URL. %1</source>
-        <translation>Nie można otworzyć przeglądarki z podanym adresem URL. %1</translation>
+        <location line="+5"/>
+        <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2884,7 +2889,17 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Dostawca tożsamości jest niedostępny. Skontaktuj się z administratorem systemu lub spróbuj ponownie później.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+4"/>
+        <source>The browser could not be opened. Copy the link and open it in your browser.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Authentication failed.</source>
         <translation>Uwierzytelnianie nieudane.</translation>
     </message>
@@ -4196,7 +4211,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+57"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Przeglądarka internetowa zostanie otwarta w celu dokończenia logowania.</translation>
     </message>
@@ -4650,7 +4665,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="+319"/>
+        <location filename="../src/gui/main.cpp" line="+311"/>
         <source>Error accessing the configuration file</source>
         <translation>Błąd przy dostępie do pliku konfiguracji</translation>
     </message>
@@ -4809,7 +4824,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>restart prompt</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="-288"/>
+        <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
         <translation type="unfinished"></translation>
     </message>
