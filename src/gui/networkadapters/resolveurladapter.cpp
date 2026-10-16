@@ -18,6 +18,7 @@
 #include "common/utility.h"
 #include "gui/application.h"
 #include "gui/tlserrordialog.h"
+#include "serverdiagnostics.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -54,21 +55,26 @@ ResolveUrlResult ResolveUrlAdapter::getResult()
     waitLoop.exec();
 
     if (!_sslErrors.isEmpty()) {
-        result.error = tr("SSL failure when connecting to server at %1").arg(_url.toDisplayString());
+        result.error = ServerDiagnostics::message(ServerDiagnostics::Issue::Tls, _url);
         QString allErrors = _sslErrors.join(QStringLiteral("\n"));
         qCritical(lcResolveUrlAdapter) << QStringLiteral("Attempt to resolve Url: %1 failed with SSL errors: %2.").arg(_url.toDisplayString(), allErrors);
     } else if (reply->error() != QNetworkReply::NoError) {
-        result.error = tr("Could not detect compatible server at %1").arg(_url.toDisplayString());
+        const auto issue = ServerDiagnostics::classifyFailure(reply->error(), reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
+        result.error = ServerDiagnostics::message(issue, _url);
         qCritical(lcResolveUrlAdapter) << QStringLiteral("Network error when resolving Url %1: %2.").arg(_url.toDisplayString(), reply->errorString());
     } else {
+        const ServerDiagnostics::ServerStatus status = ServerDiagnostics::parseStatus(reply->readAll());
         auto newUrl = reply->url();
-        if (!newUrl.isValid()) {
+        if (status.maintenance) {
+            result.error = ServerDiagnostics::message(ServerDiagnostics::Issue::Maintenance, _url);
+        } else if (!newUrl.isValid()) {
             result.error = tr("Resolved url is invalid %1").arg(newUrl.toDisplayString());
         } else if (!newUrl.matches(req.url(), QUrl::RemoveFilename)) {
             qCWarning(lcResolveUrlAdapter) << _url << " redirect to " << newUrl << " is rejected";
             result.error = tr("Rejected redirect from %1 to %2").arg(_url.toDisplayString(), newUrl.toDisplayString());
         } else {
             result.resolvedUrl = newUrl.adjusted(QUrl::RemoveFilename);
+            result.owncloudStatus = status.valid;
         }
 
         if (!_certificates.isEmpty()) {

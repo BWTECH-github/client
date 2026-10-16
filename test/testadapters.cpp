@@ -18,6 +18,7 @@
 #include "../src/gui/networkadapters/discoverwebfingerserviceadapter.h"
 #include "../src/gui/networkadapters/fetchcapabilitiesadapter.h"
 // #include "../src/gui/networkadapters/resolveurladapter.h"
+#include "../src/gui/networkadapters/serverdiagnostics.h"
 #include "../src/gui/networkadapters/webfingerlookupadapter.h"
 #include "testutils/syncenginetestutils.h"
 
@@ -195,6 +196,84 @@ protected:
     }
 };
 
+/*
+ * Simuliert für den DetermineAuthTypeAdapter einen owncloud.online-Server, dessen PROPFIND-Antwort, OpenID-Konfiguration
+ * und Token-Endpunkt der App „OAuth2“ je Test einstellbar sind. Voreingestellt ist ein Server ohne die App, so wie ihn
+ * testoo zeigte: DAV verlangt nur Basic, keine OpenID-Konfiguration (404), der Token-Endpunkt leitet zur Anmeldeseite um.
+ */
+class AuthProbeAM : public FakeAM
+{
+    Q_OBJECT
+
+public:
+    using Responder = std::function<QNetworkReply *(QNetworkAccessManager::Operation, const QNetworkRequest &)>;
+
+    AuthProbeAM()
+        : FakeAM(nullptr)
+    {
+        setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *) -> QNetworkReply * {
+            const QString path = req.url().path();
+            if (op == QNetworkAccessManager::CustomOperation && req.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray() == "PROPFIND"
+                && path == QLatin1String("/remote.php/webdav/")) {
+                return propfind(op, req);
+            }
+            if (op == QNetworkAccessManager::GetOperation && path == QLatin1String("/.well-known/openid-configuration")) {
+                ++openIdRequests;
+                return openIdConfiguration(op, req);
+            }
+            if (op == QNetworkAccessManager::PostOperation && path == QLatin1String("/index.php/apps/oauth2/api/v1/token")) {
+                ++tokenRequests;
+                return token(op, req);
+            }
+            ++unexpectedRequests;
+            return new FakeErrorReply(op, req, this, 404);
+        });
+    }
+
+    QNetworkReply *challenge(QNetworkAccessManager::Operation op, const QNetworkRequest &req, const QByteArray &wwwAuthenticate)
+    {
+        auto reply = new FakeErrorReply(op, req, this, 401);
+        reply->setRawHeader(QByteArrayLiteral("WWW-Authenticate"), wwwAuthenticate);
+        return reply;
+    }
+
+    // so antwortet der Kern auf eine unbekannte Route, solange niemand angemeldet ist
+    QNetworkReply *redirectToLogin(QNetworkAccessManager::Operation op, const QNetworkRequest &req)
+    {
+        auto reply = new FakePayloadReply(op, req, QByteArrayLiteral("<!DOCTYPE html><html><body></body></html>"), this);
+        reply->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 302);
+        reply->setRawHeader(QByteArrayLiteral("Location"), QByteArrayLiteral("https://demo.test/index.php/login"));
+        reply->setRawHeader(QByteArrayLiteral("Content-Type"), QByteArrayLiteral("text/html; charset=UTF-8"));
+        return reply;
+    }
+
+    // so antwortet die App „OAuth2“ auf eine Anfrage ohne grant_type
+    QNetworkReply *oauth2InvalidRequest(QNetworkAccessManager::Operation op, const QNetworkRequest &req)
+    {
+        auto reply = new FakeErrorReply(op, req, this, 400, QByteArrayLiteral("{\"error\":\"invalid_request\"}"));
+        reply->setRawHeader(QByteArrayLiteral("Content-Type"), QByteArrayLiteral("application/json; charset=utf-8"));
+        return reply;
+    }
+
+    Responder propfind = [this](QNetworkAccessManager::Operation op, const QNetworkRequest &req) {
+        return challenge(op, req, QByteArrayLiteral("Basic realm=\"owncloud.online\", charset=\"UTF-8\""));
+    };
+    Responder openIdConfiguration = [this](QNetworkAccessManager::Operation op, const QNetworkRequest &req) -> QNetworkReply * {
+        return new FakeErrorReply(op, req, this, 404);
+    };
+    Responder token = [this](QNetworkAccessManager::Operation op, const QNetworkRequest &req) { return redirectToLogin(op, req); };
+
+    int openIdRequests = 0;
+    int tokenRequests = 0;
+    int unexpectedRequests = 0;
+
+    static QByteArray ValidOpenIdConfiguration;
+};
+
+QByteArray AuthProbeAM::ValidOpenIdConfiguration = QByteArrayLiteral(
+    "{\"issuer\":\"https://demo.test\",\"authorization_endpoint\":\"https://demo.test/authorize\",\"token_endpoint\":\"https://demo.test/token\","
+    "\"token_endpoint_auth_methods_supported\":[\"client_secret_basic\"]}");
+
 class TestAdapters : public QObject
 {
     Q_OBJECT
@@ -270,6 +349,206 @@ private Q_SLOTS:
         WebFingerLookupResult result = adapter.getResult();
         QVERIFY(result.success());
         QCOMPARE(result.urls.size(), 2);
+    }
+
+    void testDetermineAuthType_OAuth2AppMissing_data()
+    {
+        QTest::addColumn<bool>("redirect");
+        // der Kern leitet unbekannte Routen zur Anmeldeseite um, manche Reverse-Proxys antworten selbst mit 404
+        QTest::newRow("redirect to login") << true;
+        QTest::newRow("not found") << false;
+    }
+
+    void testDetermineAuthType_OAuth2AppMissing()
+    {
+        QFETCH(bool, redirect);
+        AuthProbeAM fakeAM;
+        if (!redirect) {
+            fakeAM.token = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) -> QNetworkReply * {
+                return new FakeErrorReply(op, req, &fakeAM, 404, QByteArrayLiteral("<html><body>Not Found</body></html>"));
+            };
+        }
+
+        DetermineAuthTypeAdapter adapter(&fakeAM, testUrl());
+        const DetermineAuthTypeResult result = adapter.getResult();
+        QVERIFY(!result.success());
+        QCOMPARE(result.issue, ServerDiagnostics::Issue::OAuth2AppMissing);
+        QCOMPARE(result.error, ServerDiagnostics::message(ServerDiagnostics::Issue::OAuth2AppMissing, testUrl()));
+        QVERIFY(result.error.contains(QLatin1String("\"OAuth2\"")));
+        QCOMPARE(fakeAM.openIdRequests, 1);
+        QCOMPARE(fakeAM.tokenRequests, 1);
+        QCOMPARE(fakeAM.unexpectedRequests, 0);
+    }
+
+    void testDetermineAuthType_OAuth2AppPresent()
+    {
+        // mit der App verlangt DAV einen Bearer-Token; weitere Anfragen sind dann unnötig
+        AuthProbeAM fakeAM;
+        fakeAM.propfind = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) {
+            return fakeAM.challenge(op, req, QByteArrayLiteral("Bearer realm=\"owncloud.online\""));
+        };
+        fakeAM.token = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) { return fakeAM.oauth2InvalidRequest(op, req); };
+
+        DetermineAuthTypeAdapter adapter(&fakeAM, testUrl());
+        const DetermineAuthTypeResult result = adapter.getResult();
+        QVERIFY(result.success());
+        QCOMPARE(result.type, AuthenticationType::OAuth);
+        QCOMPARE(result.issue, ServerDiagnostics::Issue::None);
+        QCOMPARE(fakeAM.openIdRequests + fakeAM.tokenRequests + fakeAM.unexpectedRequests, 0);
+    }
+
+    void testDetermineAuthType_OAuth2AppAnswersWithoutBearer()
+    {
+        // antwortet die App am Token-Endpunkt, fehlt sie nicht, auch wenn DAV keinen Bearer-Token verlangt
+        AuthProbeAM fakeAM;
+        fakeAM.token = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) { return fakeAM.oauth2InvalidRequest(op, req); };
+
+        DetermineAuthTypeAdapter adapter(&fakeAM, testUrl());
+        const DetermineAuthTypeResult result = adapter.getResult();
+        QVERIFY(!result.success());
+        QCOMPARE(result.issue, ServerDiagnostics::Issue::Other);
+        QCOMPARE(fakeAM.tokenRequests, 1);
+        QCOMPARE(fakeAM.unexpectedRequests, 0);
+    }
+
+    void testDetermineAuthType_OpenIdConnect_data()
+    {
+        QTest::addColumn<bool>("bearer");
+        QTest::newRow("with bearer challenge") << true;
+        QTest::newRow("without bearer challenge") << false;
+    }
+
+    void testDetermineAuthType_OpenIdConnect()
+    {
+        // ein Server mit OpenID Connect braucht die App „OAuth2“ nicht: nie als fehlende App melden
+        QFETCH(bool, bearer);
+        AuthProbeAM fakeAM;
+        if (bearer) {
+            fakeAM.propfind = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) {
+                return fakeAM.challenge(op, req, QByteArrayLiteral("Basic realm=\"test\", Bearer realm=\"test\""));
+            };
+        }
+        fakeAM.openIdConfiguration = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) -> QNetworkReply * {
+            return new AdapterJSonReply(op, req, AuthProbeAM::ValidOpenIdConfiguration, &fakeAM);
+        };
+
+        DetermineAuthTypeAdapter adapter(&fakeAM, testUrl());
+        const DetermineAuthTypeResult result = adapter.getResult();
+        QCOMPARE(result.success(), bearer);
+        QCOMPARE(result.issue, bearer ? ServerDiagnostics::Issue::None : ServerDiagnostics::Issue::Other);
+        QCOMPARE(fakeAM.openIdRequests, bearer ? 0 : 1);
+        QCOMPARE(fakeAM.tokenRequests, 0);
+        QCOMPARE(fakeAM.unexpectedRequests, 0);
+    }
+
+    void testDetermineAuthType_ServerProblems_data()
+    {
+        QTest::addColumn<int>("httpStatus");
+        QTest::addColumn<int>("networkError");
+        QTest::addColumn<int>("issue");
+        QTest::newRow("maintenance") << 503 << int(QNetworkReply::ServiceUnavailableError) << int(ServerDiagnostics::Issue::Maintenance);
+        QTest::newRow("unreachable") << 0 << int(QNetworkReply::HostNotFoundError) << int(ServerDiagnostics::Issue::Unreachable);
+        QTest::newRow("tls") << 0 << int(QNetworkReply::SslHandshakeFailedError) << int(ServerDiagnostics::Issue::Tls);
+        QTest::newRow("no dav") << 404 << int(QNetworkReply::ContentNotFoundError) << int(ServerDiagnostics::Issue::NotOwncloudServer);
+    }
+
+    void testDetermineAuthType_ServerProblems()
+    {
+        QFETCH(int, httpStatus);
+        QFETCH(int, networkError);
+        QFETCH(int, issue);
+        AuthProbeAM fakeAM;
+        fakeAM.propfind = [&](QNetworkAccessManager::Operation op, const QNetworkRequest &req) -> QNetworkReply * {
+            auto reply = new FakeErrorReply(op, req, &fakeAM, httpStatus);
+            if (httpStatus == 0) {
+                // keine HTTP-Antwort, nur der Transportfehler
+                reply->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, QVariant());
+            }
+            reply->setError(static_cast<QNetworkReply::NetworkError>(networkError), QStringLiteral("Fake error"));
+            return reply;
+        };
+
+        DetermineAuthTypeAdapter adapter(&fakeAM, testUrl());
+        const DetermineAuthTypeResult result = adapter.getResult();
+        QVERIFY(!result.success());
+        QCOMPARE(int(result.issue), issue);
+        QCOMPARE(result.error, ServerDiagnostics::message(result.issue, testUrl()));
+        QCOMPARE(fakeAM.openIdRequests + fakeAM.tokenRequests + fakeAM.unexpectedRequests, 0);
+    }
+
+    void testServerDiagnostics_ClassifyFailure_data()
+    {
+        QTest::addColumn<int>("networkError");
+        QTest::addColumn<int>("httpStatus");
+        QTest::addColumn<int>("issue");
+        QTest::newRow("host not found") << int(QNetworkReply::HostNotFoundError) << 0 << int(ServerDiagnostics::Issue::Unreachable);
+        QTest::newRow("connection refused") << int(QNetworkReply::ConnectionRefusedError) << 0 << int(ServerDiagnostics::Issue::Unreachable);
+        QTest::newRow("transfer timeout") << int(QNetworkReply::OperationCanceledError) << 0 << int(ServerDiagnostics::Issue::Unreachable);
+        QTest::newRow("proxy") << int(QNetworkReply::ProxyConnectionRefusedError) << 0 << int(ServerDiagnostics::Issue::Unreachable);
+        QTest::newRow("tls handshake") << int(QNetworkReply::SslHandshakeFailedError) << 0 << int(ServerDiagnostics::Issue::Tls);
+        QTest::newRow("503") << int(QNetworkReply::ServiceUnavailableError) << 503 << int(ServerDiagnostics::Issue::Maintenance);
+        QTest::newRow("502") << int(QNetworkReply::UnknownServerError) << 502 << int(ServerDiagnostics::Issue::Maintenance);
+        QTest::newRow("404") << int(QNetworkReply::ContentNotFoundError) << 404 << int(ServerDiagnostics::Issue::NotOwncloudServer);
+        QTest::newRow("500") << int(QNetworkReply::InternalServerError) << 500 << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("403") << int(QNetworkReply::ContentAccessDenied) << 403 << int(ServerDiagnostics::Issue::Other);
+    }
+
+    void testServerDiagnostics_ClassifyFailure()
+    {
+        QFETCH(int, networkError);
+        QFETCH(int, httpStatus);
+        QFETCH(int, issue);
+        QCOMPARE(int(ServerDiagnostics::classifyFailure(static_cast<QNetworkReply::NetworkError>(networkError), httpStatus)), issue);
+    }
+
+    void testServerDiagnostics_ParseStatus_data()
+    {
+        QTest::addColumn<QByteArray>("body");
+        QTest::addColumn<bool>("valid");
+        QTest::addColumn<bool>("maintenance");
+        QTest::newRow("ready") << QByteArray("{\"installed\":true,\"maintenance\":false,\"needsDbUpgrade\":false,\"version\":\"11.0.0.0\","
+                                             "\"versionstring\":\"11.0.0\",\"productname\":\"owncloud.online\"}")
+                               << true << false;
+        QTest::newRow("maintenance") << QByteArray("{\"installed\":true,\"maintenance\":true,\"needsDbUpgrade\":false,\"version\":\"11.0.0.0\"}") << true
+                                     << true;
+        QTest::newRow("upgrade pending") << QByteArray("{\"installed\":true,\"maintenance\":false,\"needsDbUpgrade\":true,\"version\":\"11.0.0.0\"}") << true
+                                         << true;
+        QTest::newRow("html") << QByteArray("<!DOCTYPE html><html><body>Welcome</body></html>") << false << false;
+        QTest::newRow("other json") << QByteArray("{\"status\":\"ok\"}") << false << false;
+        QTest::newRow("empty") << QByteArray() << false << false;
+    }
+
+    void testServerDiagnostics_ParseStatus()
+    {
+        QFETCH(QByteArray, body);
+        QFETCH(bool, valid);
+        QFETCH(bool, maintenance);
+        const ServerDiagnostics::ServerStatus status = ServerDiagnostics::parseStatus(body);
+        QCOMPARE(status.valid, valid);
+        QCOMPARE(status.maintenance, maintenance);
+    }
+
+    void testServerDiagnostics_ClassifyOAuth2TokenReply_data()
+    {
+        QTest::addColumn<int>("httpStatus");
+        QTest::addColumn<QByteArray>("body");
+        QTest::addColumn<int>("issue");
+        QTest::newRow("app answers") << 400 << QByteArray("{\"error\":\"invalid_request\"}") << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("app answers 401") << 401 << QByteArray("{\"error\":\"invalid_client\"}") << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("redirect to login") << 302 << QByteArray() << int(ServerDiagnostics::Issue::OAuth2AppMissing);
+        QTest::newRow("not found") << 404 << QByteArray("<html></html>") << int(ServerDiagnostics::Issue::OAuth2AppMissing);
+        QTest::newRow("html page") << 200 << QByteArray("<!DOCTYPE html><html></html>") << int(ServerDiagnostics::Issue::OAuth2AppMissing);
+        // ohne HTTP-Antwort oder bei einem Serverfehler ist die Ursache unklar
+        QTest::newRow("no reply") << 0 << QByteArray() << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("server error") << 500 << QByteArray("<html></html>") << int(ServerDiagnostics::Issue::Other);
+    }
+
+    void testServerDiagnostics_ClassifyOAuth2TokenReply()
+    {
+        QFETCH(int, httpStatus);
+        QFETCH(QByteArray, body);
+        QFETCH(int, issue);
+        QCOMPARE(int(ServerDiagnostics::classifyOAuth2TokenReply(httpStatus, body)), issue);
     }
 
 private:

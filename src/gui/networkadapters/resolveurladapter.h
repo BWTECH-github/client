@@ -35,6 +35,8 @@ struct ResolveUrlResult
     QString error;
     QUrl resolvedUrl;
     QSet<QSslCertificate> acceptedCertificates;
+    /// status.php antwortete wie ein owncloud.online-Server; sonst deutet ein späterer Fehler auf eine falsche Adresse hin
+    bool owncloudStatus = false;
     bool success() const { return error.isEmpty() && resolvedUrl.isValid(); }
 };
 

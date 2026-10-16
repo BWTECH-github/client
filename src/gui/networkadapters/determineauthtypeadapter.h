@@ -15,6 +15,7 @@
 #pragma once
 
 #include "creds/credentialssupport.h"
+#include "serverdiagnostics.h"
 #include <QObject>
 #include <QUrl>
 
@@ -26,6 +27,8 @@ struct DetermineAuthTypeResult
 {
     QString error;
     AuthenticationType type = AuthenticationType::Unknown;
+    /// erkannte Ursache, wenn error gesetzt ist
+    ServerDiagnostics::Issue issue = ServerDiagnostics::Issue::None;
     bool success() const { return error.isEmpty(); }
 };
 
@@ -36,6 +39,8 @@ struct DetermineAuthTypeResult
  *
  * This routine used to identify basic http server authentication as well but the Basic type is obsolete after client 6.0
  *
+ * Verlangt der Server keinen Bearer-Token, prüft der Adapter zusätzlich die OpenID-Konfiguration und den Token-Endpunkt
+ * der App „OAuth2“, um eine fehlende App eindeutig zu melden.
  */
 class DetermineAuthTypeAdapter : public QObject
 {
@@ -58,6 +63,9 @@ public:
     DetermineAuthTypeResult getResult();
 
 private:
+    /// OAuth2AppMissing, wenn der Server weder OpenID Connect noch den Token-Endpunkt der App „OAuth2“ bedient
+    ServerDiagnostics::Issue probeMissingOAuth();
+
     QNetworkAccessManager *_nam;
     QUrl _url;
 };
