@@ -70,10 +70,12 @@ public:
 
     /**
      * Wertet die Antwort des Token-Endpunkts auf eine Anfrage ohne grant_type aus: Die App „OAuth2“ antwortet
-     * mit einem JSON-Fehlerobjekt, ohne die App kommt eine Umleitung zur Anmeldeseite, HTML oder 404.
-     * @return OAuth2AppMissing, wenn der Server antwortet, aber nicht die App; sonst Other
+     * mit einem JSON-Fehlerobjekt, ohne die App leitet der Kern zur Anmeldeseite um (@p location), manche
+     * Reverse-Proxys antworten mit 404.
+     * @return OAuth2AppMissing nur für diese beiden Antworten; alles andere (401/403 eines Proxys, eine HTML-Seite
+     * mit 200, Serverfehler) sagt nichts über die App: Other
      */
-    static Issue classifyOAuth2TokenReply(int httpStatus, const QByteArray &body);
+    static Issue classifyOAuth2TokenReply(int httpStatus, const QByteArray &body, const QUrl &location);
 
     /// Meldung zur Ursache; Other und None bekommen den allgemeinen Text „kein kompatibler Server“
     static QString message(Issue issue, const QUrl &url);

@@ -219,10 +219,12 @@ public:
             }
             if (op == QNetworkAccessManager::GetOperation && path == QLatin1String("/.well-known/openid-configuration")) {
                 ++openIdRequests;
+                openIdTimeoutMs = req.transferTimeout();
                 return openIdConfiguration(op, req);
             }
             if (op == QNetworkAccessManager::PostOperation && path == QLatin1String("/index.php/apps/oauth2/api/v1/token")) {
                 ++tokenRequests;
+                tokenTimeoutMs = req.transferTimeout();
                 return token(op, req);
             }
             ++unexpectedRequests;
@@ -266,6 +268,8 @@ public:
     int openIdRequests = 0;
     int tokenRequests = 0;
     int unexpectedRequests = 0;
+    int openIdTimeoutMs = -1;
+    int tokenTimeoutMs = -1;
 
     static QByteArray ValidOpenIdConfiguration;
 };
@@ -378,6 +382,20 @@ private Q_SLOTS:
         QCOMPARE(fakeAM.openIdRequests, 1);
         QCOMPARE(fakeAM.tokenRequests, 1);
         QCOMPARE(fakeAM.unexpectedRequests, 0);
+    }
+
+    // Die Proben dienen nur der Fehlermeldung: höchstens 15 s je Anfrage statt httpTimeout (5 min), sonst hielte ein WAF
+    // oder Tarpit die Adressseite bis zu 10 Minuten fest
+    void testDetermineAuthType_ProbesAreShort()
+    {
+        AuthProbeAM fakeAM;
+
+        DetermineAuthTypeAdapter adapter(&fakeAM, testUrl());
+        adapter.getResult();
+
+        QCOMPARE(fakeAM.tokenRequests, 1);
+        QVERIFY2(fakeAM.openIdTimeoutMs > 0 && fakeAM.openIdTimeoutMs <= 15000, qPrintable(QString::number(fakeAM.openIdTimeoutMs)));
+        QVERIFY2(fakeAM.tokenTimeoutMs > 0 && fakeAM.tokenTimeoutMs <= 15000, qPrintable(QString::number(fakeAM.tokenTimeoutMs)));
     }
 
     void testDetermineAuthType_OAuth2AppPresent()
@@ -532,23 +550,34 @@ private Q_SLOTS:
     {
         QTest::addColumn<int>("httpStatus");
         QTest::addColumn<QByteArray>("body");
+        QTest::addColumn<QString>("location");
         QTest::addColumn<int>("issue");
-        QTest::newRow("app answers") << 400 << QByteArray("{\"error\":\"invalid_request\"}") << int(ServerDiagnostics::Issue::Other);
-        QTest::newRow("app answers 401") << 401 << QByteArray("{\"error\":\"invalid_client\"}") << int(ServerDiagnostics::Issue::Other);
-        QTest::newRow("redirect to login") << 302 << QByteArray() << int(ServerDiagnostics::Issue::OAuth2AppMissing);
-        QTest::newRow("not found") << 404 << QByteArray("<html></html>") << int(ServerDiagnostics::Issue::OAuth2AppMissing);
-        QTest::newRow("html page") << 200 << QByteArray("<!DOCTYPE html><html></html>") << int(ServerDiagnostics::Issue::OAuth2AppMissing);
+        const QString none;
+        QTest::newRow("app answers") << 400 << QByteArray("{\"error\":\"invalid_request\"}") << none << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("app answers 401") << 401 << QByteArray("{\"error\":\"invalid_client\"}") << none << int(ServerDiagnostics::Issue::Other);
+        // so antwortet der Kern ohne die App (lib/base.php), mit und ohne index.php in der Adresse
+        QTest::newRow("redirect to login") << 302 << QByteArray() << QStringLiteral("https://demo.test/index.php/login") << int(ServerDiagnostics::Issue::OAuth2AppMissing);
+        QTest::newRow("redirect to login, pretty url") << 302 << QByteArray() << QStringLiteral("/owncloud/login?redirect_url=x") << int(ServerDiagnostics::Issue::OAuth2AppMissing);
+        QTest::newRow("not found") << 404 << QByteArray("<html></html>") << none << int(ServerDiagnostics::Issue::OAuth2AppMissing);
+        QTest::newRow("gone") << 410 << QByteArray() << none << int(ServerDiagnostics::Issue::OAuth2AppMissing);
+        // sagt nichts über die App: Weiterleitung anderswohin (etwa auf https), Proxy-Anmeldung, Sammelseite
+        QTest::newRow("redirect elsewhere") << 301 << QByteArray() << QStringLiteral("https://demo.test/index.php/apps/oauth2/api/v1/token") << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("redirect without location") << 302 << QByteArray() << none << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("proxy basic auth") << 401 << QByteArray("<html>Authorization Required</html>") << none << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("waf") << 403 << QByteArray("<html>Forbidden</html>") << none << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("html page") << 200 << QByteArray("<!DOCTYPE html><html></html>") << none << int(ServerDiagnostics::Issue::Other);
         // ohne HTTP-Antwort oder bei einem Serverfehler ist die Ursache unklar
-        QTest::newRow("no reply") << 0 << QByteArray() << int(ServerDiagnostics::Issue::Other);
-        QTest::newRow("server error") << 500 << QByteArray("<html></html>") << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("no reply") << 0 << QByteArray() << none << int(ServerDiagnostics::Issue::Other);
+        QTest::newRow("server error") << 500 << QByteArray("<html></html>") << none << int(ServerDiagnostics::Issue::Other);
     }
 
     void testServerDiagnostics_ClassifyOAuth2TokenReply()
     {
         QFETCH(int, httpStatus);
         QFETCH(QByteArray, body);
+        QFETCH(QString, location);
         QFETCH(int, issue);
-        QCOMPARE(int(ServerDiagnostics::classifyOAuth2TokenReply(httpStatus, body)), issue);
+        QCOMPARE(int(ServerDiagnostics::classifyOAuth2TokenReply(httpStatus, body, QUrl(location))), issue);
     }
 
 private:

@@ -32,6 +32,9 @@ namespace {
     // dieselben Pfade wie in creds/oauth.cpp, das ohne OpenID-Konfiguration auf die App „OAuth2“ zurückfällt
     const QString openIdConfigurationPathC = QStringLiteral("/.well-known/openid-configuration");
     const QString oauth2TokenPathC = QStringLiteral("/index.php/apps/oauth2/api/v1/token");
+    // Die Proben formulieren nur die Fehlermeldung: kurz begrenzt wie die Anfragen in creds/oauth.cpp statt mit
+    // httpTimeout (5 min je Anfrage), sonst hielte ein WAF oder Tarpit die Adressseite minutenlang fest
+    constexpr int probeTimeoutMsC = 15 * 1000;
 
     void waitForFinished(QNetworkReply *reply)
     {
@@ -100,6 +103,7 @@ ServerDiagnostics::Issue DetermineAuthTypeAdapter::probeMissingOAuth()
     // Wer OpenID Connect anbietet, braucht die App „OAuth2“ nicht; dann liegt die Ursache woanders
     QNetworkRequest openIdRequest = AbstractCoreJobFactory::makeRequest(Utility::concatUrlPath(_url, openIdConfigurationPathC));
     openIdRequest.setAttribute(DontAddCredentialsAttribute, true);
+    openIdRequest.setTransferTimeout(probeTimeoutMsC);
     QNetworkReply *openIdReply = _nam->get(openIdRequest);
     waitForFinished(openIdReply);
     const bool offersOpenIdConnect = openIdReply->error() == QNetworkReply::NoError && ServerDiagnostics::isOpenIdConfiguration(openIdReply->readAll());
@@ -115,10 +119,13 @@ ServerDiagnostics::Issue DetermineAuthTypeAdapter::probeMissingOAuth()
     tokenRequest.setAttribute(DontAddCredentialsAttribute, true);
     tokenRequest.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
     tokenRequest.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded"));
+    tokenRequest.setTransferTimeout(probeTimeoutMsC);
     QNetworkReply *tokenReply = _nam->post(tokenRequest, QByteArray());
     waitForFinished(tokenReply);
     const int httpStatus = tokenReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    const ServerDiagnostics::Issue issue = ServerDiagnostics::classifyOAuth2TokenReply(httpStatus, tokenReply->readAll());
+    // Location-Kopf statt RedirectionTargetAttribute: das setzt nur Qts eigene HTTP-Antwort
+    const ServerDiagnostics::Issue issue =
+        ServerDiagnostics::classifyOAuth2TokenReply(httpStatus, tokenReply->readAll(), QUrl::fromEncoded(tokenReply->rawHeader(QByteArrayLiteral("Location"))));
     qCInfo(lcDetermineAuthTypeAdapter) << "OAuth2 token endpoint answered" << httpStatus << tokenReply->header(QNetworkRequest::ContentTypeHeader).toString()
                                        << (issue == ServerDiagnostics::Issue::OAuth2AppMissing ? "- the OAuth2 app is missing" : "- cause unclear");
     delete tokenReply;

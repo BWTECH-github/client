@@ -88,17 +88,22 @@ bool ServerDiagnostics::isOpenIdConfiguration(const QByteArray &body)
     return !object.value(QStringLiteral("authorization_endpoint")).toString().isEmpty() && !object.value(QStringLiteral("token_endpoint")).toString().isEmpty();
 }
 
-ServerDiagnostics::Issue ServerDiagnostics::classifyOAuth2TokenReply(int httpStatus, const QByteArray &body)
+ServerDiagnostics::Issue ServerDiagnostics::classifyOAuth2TokenReply(int httpStatus, const QByteArray &body, const QUrl &location)
 {
     // die App antwortet auf eine unvollständige Anfrage immer mit {"error": "..."} (RFC 6749, Abschnitt 5.2)
     if (parseJsonObject(body).value(QStringLiteral("error")).isString()) {
         return Issue::Other;
     }
-    // keine HTTP-Antwort oder ein Serverfehler sagen nichts darüber aus, ob die App fehlt
-    if (httpStatus <= 0 || httpStatus >= 500) {
-        return Issue::Other;
+    // ohne die App kennt der Kern die Route nicht und leitet zur Anmeldeseite um (lib/base.php: …/index.php/login)
+    if (httpStatus >= 300 && httpStatus < 400) {
+        return location.path().endsWith(QLatin1String("/login")) ? Issue::OAuth2AppMissing : Issue::Other;
     }
-    return Issue::OAuth2AppMissing;
+    if (httpStatus == 404 || httpStatus == 410) {
+        return Issue::OAuth2AppMissing;
+    }
+    // 401/403 kommen auch von einem Proxy oder einer Basic-Auth vor dem Server, eine HTML-Seite mit 200 von einer
+    // Sammelseite, und ohne HTTP-Antwort ist ohnehin nichts bekannt: kein Rat, die App zu installieren
+    return Issue::Other;
 }
 
 QString ServerDiagnostics::message(Issue issue, const QUrl &url)
