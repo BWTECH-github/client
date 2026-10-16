@@ -43,6 +43,13 @@ NewAccountWizardController::NewAccountWizardController(NewAccountModel *model, N
     connectWizard();
 }
 
+void NewAccountWizardController::presetServerUrl(const QUrl &url)
+{
+    if (_urlController && url.isValid()) {
+        _urlController->presetUrl(url.toString());
+    }
+}
+
 void NewAccountWizardController::setupWizard()
 {
     if (!_wizard) {
@@ -75,6 +82,7 @@ void NewAccountWizardController::buildPages()
 
     QWizardPage *urlPage = new QWizardPage(_wizard);
     UrlPageController *urlController = new UrlPageController(urlPage, _accessManager, this);
+    _urlController = urlController;
     connect(_colorManager, &ColorManager::appColorsChanged, urlController, &UrlPageController::updateColorsAndIcons);
     connect(urlController, &UrlPageController::success, this, &NewAccountWizardController::onUrlValidationCompleted);
     _urlPageIndex = _wizard->addPage(urlPage, urlController);

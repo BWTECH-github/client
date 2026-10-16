@@ -79,6 +79,9 @@ public:
 
     void updateColorsAndIcons();
 
+    /** owncloud.online: Adresse vorbelegen (Umstieg vom offiziellen Client); eine vom Administrator vorgegebene bleibt */
+    void presetUrl(const QString &urlText);
+
 Q_SIGNALS:
 
     /**

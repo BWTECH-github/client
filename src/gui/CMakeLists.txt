@@ -112,6 +112,7 @@ add_subdirectory(FoldersGui)
 add_subdirectory(mainwindow)
 add_subdirectory(accountsgui)
 add_subdirectory(foldermanagement)
+add_subdirectory(legacyclient)
 
 target_include_directories(owncloudGui PUBLIC
     ${CMAKE_SOURCE_DIR}/src/3rdparty/QProgressIndicator

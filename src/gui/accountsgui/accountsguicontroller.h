@@ -41,6 +41,9 @@ public:
     AccountsGuiController(AccountManager *accountMgr, MainWindow *window, ColorManager *colorManager, QObject *parent);
     void runAccountWizard();
 
+    /** owncloud.online: Konten und Sync-Ordner des offiziellen ownCloud-Clients übernehmen (Menü) */
+    void runLegacyImport();
+
 
 private:
     QPointer<AccountManager> _accountMgr;
@@ -63,5 +66,10 @@ private:
 
     void setupAccountPlaceholder();
     void removeAccountPlaceholder();
+
+    /** erster Start ohne Konto: Umstieg vom offiziellen Client anbieten, sonst der Assistent */
+    void runFirstStart();
+    /** false, wenn nichts übernommen wird */
+    bool startLegacyImport(bool firstStart);
 };
 }

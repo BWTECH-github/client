@@ -28,6 +28,7 @@
 #include "creds/abstractcredentials.h"
 #include "folderman.h"
 #include "iconresources.h"
+#include "legacyclient/legacyclientimport.h"
 #include "mainwindow/colormanager.h"
 #include "mainwindow/mainwindow.h"
 #include "newaccountwizard/newaccountbuilder.h"
@@ -59,7 +60,7 @@ AccountsGuiController::AccountsGuiController(AccountManager *accountMgr, MainWin
     if (accounts.isEmpty()) {
         // this is a genuinely reasonable use of timer to execute an operation after construction and any
         // other event loop actions have finished
-        QTimer::singleShot(0, this, &AccountsGuiController::runAccountWizard);
+        QTimer::singleShot(0, this, &AccountsGuiController::runFirstStart);
     }
 }
 
@@ -181,6 +182,46 @@ void AccountsGuiController::runAccountWizard()
         // if there are no accounts, add a placeholder "page" to the main window that informs the user how to create one
         setupAccountPlaceholder();
     }
+}
+
+void AccountsGuiController::runFirstStart()
+{
+    if (!startLegacyImport(/*firstStart=*/true)) {
+        runAccountWizard();
+    }
+}
+
+void AccountsGuiController::runLegacyImport()
+{
+    if (!_window) {
+        return;
+    }
+    if (!LegacyClient::findConfig()) {
+        QMessageBox::information(_window, tr("Import from the official ownCloud client"),
+            tr("No configuration of the official ownCloud desktop client was found on this computer."));
+        return;
+    }
+    startLegacyImport(/*firstStart=*/false);
+}
+
+bool AccountsGuiController::startLegacyImport(bool firstStart)
+{
+    const auto config = LegacyClient::findConfig();
+    if (!_window || !config) {
+        return false;
+    }
+    auto *import = new LegacyClientImportController(*config, _window, _colorManager, this);
+    if (!import->confirm(firstStart)) {
+        delete import;
+        return false;
+    }
+    connect(import, &LegacyClientImportController::finished, this, [this, import] {
+        import->deleteLater();
+        // wie nach einem abgebrochenen Assistenten
+        setupAccountPlaceholder();
+    });
+    import->start();
+    return true;
 }
 
 void AccountsGuiController::setupAccountPlaceholder()

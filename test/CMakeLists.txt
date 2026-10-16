@@ -74,6 +74,8 @@ endif(UNIX AND NOT APPLE)
 owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
+# owncloud.online: Umstieg vom offiziellen Client (Konfiguration lesen, Journal kopieren, Ordner übernehmen)
+owncloud_add_test(LegacyClient)
 
 owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp
     # Anmeldeseite des Assistenten: Browser erneut öffnen, Browser lässt sich nicht öffnen, Assistent geschlossen
