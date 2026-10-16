@@ -89,6 +89,12 @@ set_target_properties(OAuthTest PROPERTIES AUTOUIC ON)
 owncloud_add_test(CmdOAuth ../src/cmd/cmdsession.cpp ../src/cmd/httpoauthcredentials.cpp ../src/cmd/oauthtokenfile.cpp)
 target_include_directories(CmdOAuthTest PRIVATE "${CMAKE_SOURCE_DIR}/src/cmd")
 
+# owncloudcmd: Optionen wie 6.0.3 (Befehlszeile) und ihre Wirkung im Lauf, Löschschutz ohne/mit Rückfrage
+owncloud_add_test(CmdOptions ../src/cmd/cmdoptions.cpp)
+target_include_directories(CmdOptionsTest PRIVATE "${CMAKE_SOURCE_DIR}/src/cmd")
+owncloud_add_test(CmdSync ../src/cmd/cmdsession.cpp ../src/cmd/httpbasiccredentials.cpp ../src/cmd/httpoauthcredentials.cpp ../src/cmd/oauthtokenfile.cpp)
+target_include_directories(CmdSyncTest PRIVATE "${CMAKE_SOURCE_DIR}/src/cmd")
+
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
 
 owncloud_add_test(JobQueue)

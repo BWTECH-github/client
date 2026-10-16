@@ -24,18 +24,29 @@
 
 #include <QJsonObject>
 #include <QNetworkReply>
+#include <QSslError>
+#include <QTimer>
 #include <QUuid>
+
+#include <utility>
 
 namespace OCC {
 
 CmdSession::CmdSession(const QUrl &serverUrl, const QString &user, const QString &localDir, const QString &remotePath,
     const CredentialsFactory &credentialsFactory, QObject *parent)
+    : CmdSession(serverUrl, user, localDir, remotePath, credentialsFactory, Settings{}, parent)
+{
+}
+
+CmdSession::CmdSession(const QUrl &serverUrl, const QString &user, const QString &localDir, const QString &remotePath,
+    const CredentialsFactory &credentialsFactory, const Settings &settings, QObject *parent)
     : QObject(parent)
     , _serverUrl(serverUrl)
     , _user(user)
     , _localDir(localDir)
     , _remotePath(remotePath)
     , _credentialsFactory(credentialsFactory)
+    , _settings(settings)
 {
 }
 
@@ -59,6 +70,17 @@ Account *CmdSession::createAccount(const QString &davUser)
     auto *account = new Account(QUuid::createUuid(), davUser, _serverUrl, this);
     AbstractCredentials *credentials = _credentialsFactory(account);
     account->setCredentials(credentials);
+    // wie 6.0.3: ungültige Zertifikate nur mit --trust, sonst den Grund nennen
+    connect(account->accessManager(), &QNetworkAccessManager::sslErrors, this, [this](QNetworkReply *reply, const QList<QSslError> &errors) {
+        if (_settings.trustSsl) {
+            reply->ignoreSslErrors(errors);
+            return;
+        }
+        for (const auto &error : errors) {
+            qCritical().noquote() << "TLS error:" << error.errorString();
+        }
+        qCritical() << "If you trust the certificate of the server, use the --trust option.";
+    });
     connect(credentials, &AbstractCredentials::authenticationFailed, this, [this, credentials] {
         const auto *oauth = qobject_cast<HttpOAuthCredentials *>(credentials);
         if (oauth) {
@@ -164,26 +186,95 @@ void CmdSession::startSync(Account *account)
     SyncOptions opt(vfs);
     opt.fillFromEnvironmentVariables();
     opt.verifyChunkSizes();
+    // owncloudcmd hat keine Netzwerk-Einstellungen: die Grenzen der Befehlszeile gelten, 0 = unbegrenzt
+    opt._uploadLimit = _settings.uploadLimit;
+    opt._downloadLimit = _settings.downloadLimit;
+
+    // --unsyncedfolders: geänderte Einträge müssen vom Server neu gelesen werden (wie SelectiveSyncDialog)
+    if (_settings.unsyncedFolders) {
+        bool ok = false;
+        const auto previous = db->getSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, ok);
+        if (!ok) {
+            qCritical() << "Could not read the selective sync list from" << dbPath;
+            finish(ExitFailure);
+            return;
+        }
+        const auto &current = *_settings.unsyncedFolders;
+        for (const auto &path : (previous - current) + (current - previous)) {
+            db->schedulePathForRemoteDiscovery(path);
+        }
+        db->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, current);
+    }
 
     auto *engine = new SyncEngine(account, account->davUrl(), _localDir, _remotePath, db, db);
     _engine = engine;
     engine->setSyncOptions(opt);
+    engine->setIgnoreHiddenFiles(_settings.ignoreHiddenFiles);
+    // Löschschutz: alle bzw. sehr viele Dateien nur nach Rückfrage löschen
+    engine->setPromptRemoveAllFiles(true);
     SyncEngine::minimumFileAgeForUpload = std::chrono::seconds(0);
 
-    connect(engine, &SyncEngine::finished, this, [this](bool ok) {
-        if (ok) {
-            qInfo() << "Sync finished successfully";
-            finish(ExitSuccess);
-        } else {
-            qWarning() << "Sync failed";
-            finish(ExitFailure);
-        }
-    });
+    connect(engine, &SyncEngine::finished, this, &CmdSession::onSyncFinished);
     connect(engine, &SyncEngine::syncError, this, [](const QString &error, ErrorCategory) { qWarning() << "Sync error:" << error; });
+    connect(engine, &SyncEngine::aboutToRemoveAllFiles, this, [this](SyncFileItem::Direction direction, bool allFiles, int removedFiles, int knownFiles) {
+        const QString what = allFiles ? QStringLiteral("All files") : QStringLiteral("%1 of %2 files").arg(removedFiles).arg(knownFiles);
+        _removeAllMessage = direction == SyncFileItem::Down
+            ? QStringLiteral("%1 in the remote folder %2 were deleted on the server. The sync would delete them in the local folder %3 as well.")
+                  .arg(what, _remotePath, _localDir)
+            : QStringLiteral("%1 in the local folder %2 were deleted. The sync would delete them on the server as well (remote folder %3).")
+                  .arg(what, _localDir, _remotePath);
+    });
 
     // lädt die System- und die Benutzer-Ausschlussliste (ConfigFile::setupDefaultExcludeFilePaths)
-    engine->loadDefaultExcludes();
+    if (!_settings.excludeFile.isEmpty()) {
+        engine->addExcludeList(_settings.excludeFile);
+    }
+    if (!engine->loadDefaultExcludes()) {
+        qCritical() << "Cannot load the exclude lists";
+        finish(ExitFailure);
+        return;
+    }
     engine->startSync();
+}
+
+void CmdSession::onSyncFinished(bool ok)
+{
+    if (!_removeAllMessage.isEmpty()) {
+        // der Lauf hat nichts geändert; löschen nur nach ausdrücklicher Bestätigung
+        const QString message = std::exchange(_removeAllMessage, QString());
+        if (!_settings.confirmRemoveAll) {
+            qCritical().noquote() << message;
+            qCritical() << "Nothing was changed. Run owncloudcmd without --non-interactive to confirm the deletion.";
+            finish(ExitRemoveAllNotConfirmed);
+            return;
+        }
+        if (!_settings.confirmRemoveAll(message)) {
+            qCritical() << "Nothing was deleted.";
+            finish(ExitRemoveAllNotConfirmed);
+            return;
+        }
+        qInfo() << "Deletion confirmed, syncing again";
+        _engine->allowRemoveAllFilesOnce();
+        QTimer::singleShot(0, _engine.data(), &SyncEngine::startSync);
+        return;
+    }
+    if (!ok) {
+        qWarning() << "Sync failed";
+        finish(ExitFailure);
+        return;
+    }
+    // wie 6.0.3: Änderungen während des Laufs mit weiteren Läufen nachziehen
+    if (_engine->isAnotherSyncNeeded() && _restarts < _settings.maxSyncRetries) {
+        ++_restarts;
+        qInfo() << "Another sync is needed, starting sync" << _restarts + 1;
+        QTimer::singleShot(0, _engine.data(), &SyncEngine::startSync);
+        return;
+    }
+    if (_engine->isAnotherSyncNeeded()) {
+        qWarning() << "Another sync is needed, but the retry limit" << _settings.maxSyncRetries << "is reached";
+    }
+    qInfo() << "Sync finished successfully";
+    finish(ExitSuccess);
 }
 
 void CmdSession::finish(int exitCode)

@@ -967,4 +967,9 @@ void SyncEngine::addManualExclude(const QString &filePath)
     _excludedFiles->addManualExclude(filePath);
 }
 
+void SyncEngine::addExcludeList(const QString &filePath)
+{
+    _excludedFiles->addExcludeFilePath(filePath);
+}
+
 } // namespace OCC

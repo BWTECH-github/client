@@ -18,6 +18,8 @@
 
 #pragma once
 
+#include "owncloudlib.h"
+
 #include <QObject>
 #include <QTimer>
 #include <QIODevice>
@@ -34,7 +36,8 @@ class OwncloudPropagator;
  * @brief The BandwidthManager class
  * @ingroup libsync
  */
-class BandwidthManager : public QObject
+// exportiert für die Tests der Bandbreitengrenzen (owncloudcmd --uplimit/--downlimit)
+class OWNCLOUDSYNC_EXPORT BandwidthManager : public QObject
 {
     Q_OBJECT
 public:

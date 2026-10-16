@@ -447,9 +447,10 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
     // configured. The manager stays null (and transfers are unaffected) when no
     // limit is set. Limits are stored in kB/s and passed as bytes/s.
     {
+        // eine Vorgabe des Laufs (owncloudcmd --uplimit/--downlimit) geht den Einstellungen vor
         const ConfigFile cfg;
-        const qint64 uploadLimit = cfg.useUploadLimit() == 1 ? cfg.uploadLimit() * 1024LL : 0;
-        const qint64 downloadLimit = cfg.useDownloadLimit() == 1 ? cfg.downloadLimit() * 1024LL : 0;
+        const qint64 uploadLimit = _syncOptions._uploadLimit.value_or(cfg.useUploadLimit() == 1 ? cfg.uploadLimit() * 1024LL : 0);
+        const qint64 downloadLimit = _syncOptions._downloadLimit.value_or(cfg.useDownloadLimit() == 1 ? cfg.downloadLimit() * 1024LL : 0);
         if ((uploadLimit != 0 || downloadLimit != 0) && !_bandwidthManager) {
             _bandwidthManager = new BandwidthManager(this);
         }

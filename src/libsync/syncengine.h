@@ -98,6 +98,8 @@ public:
     // file path must be absolute!
     bool isExcluded(QStringView filePath) const;
     void addManualExclude(const QString &filePath);
+    /** Zusätzliche Ausschlussliste aus einer Datei (owncloudcmd --exclude); greift nach reloadExcludes(). */
+    void addExcludeList(const QString &filePath);
     bool loadDefaultExcludes();
     bool reloadExcludes();
     void clearManualExcludes();
