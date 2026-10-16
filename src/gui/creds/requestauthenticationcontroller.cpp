@@ -105,9 +105,9 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
         errString = tr("IdP is unreachable. Contact your system administrator or try again later.");
         break;
     case OAuth::NotSupported:
-        // also should not happen after initial setup?
-        Q_ASSERT(false);
-        [[fallthrough]];
+        // der Browser ließ sich nicht öffnen; mit FORCE_ASSERTS (Beta) brach hier ein Q_ASSERT das Programm ab
+        errString = tr("The browser could not be opened. Copy the link and open it in your browser.");
+        break;
     case OAuth::ErrorInsecureUrl:
         // should not happen after the initial setup
         Q_ASSERT(false);

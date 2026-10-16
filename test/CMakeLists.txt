@@ -70,7 +70,10 @@ owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
 
-owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp)
+owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp
+    # Anmeldeseite des Assistenten: Browser erneut öffnen, Browser lässt sich nicht öffnen, Assistent geschlossen
+    ../src/gui/newaccountwizard/oauthpagecontroller.cpp ../src/gui/networkadapters/fetchcapabilitiesadapter.cpp
+    ../src/gui/networkadapters/webfingerlookupadapter.cpp ../src/gui/mainwindow/colormanager.cpp)
 
 # owncloudcmd mit OAuth2-Token-Datei: Bearer, Erneuern nach 401 und bei Ablauf, Exit-Codes
 owncloud_add_test(CmdOAuth ../src/cmd/cmdsession.cpp ../src/cmd/httpoauthcredentials.cpp ../src/cmd/oauthtokenfile.cpp)

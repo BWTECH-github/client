@@ -119,10 +119,14 @@ private:
     // this is calculated by the oauth routine - this is also what the copy button should put in the clipboard!
     QString _authEndpoint;
     OAuth *_oauth;
+    // die Adresse, für die _oauth gestartet wurde
+    QUrl _oauthUrl;
     bool _lookupWebfingerUrls = false;
 
     QLabel *_logoLabel = nullptr;
     QLabel *_urlField = nullptr;
+    // Hinweis, solange die Anmeldung im Browser läuft
+    QLabel *_statusField = nullptr;
     QLabel *_errorField = nullptr;
     QPushButton *_copyButton = nullptr;
 
@@ -136,6 +140,8 @@ private:
     void handleError(const QString &error);
     void handleOauthResult(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString());
     void authUrlReady();
+    /** öffnet den Anmeldelink im Browser und zeigt den Hinweis, dort die Anmeldung abzuschließen */
+    void openBrowser();
 };
 }
 Q_DECLARE_METATYPE(OCC::OAuthPageResults)

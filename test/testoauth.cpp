@@ -10,13 +10,42 @@
 
 #include "common/asserts.h"
 #include "creds/oauth.h"
+#include "newaccountwizard/oauthpagecontroller.h"
 #include "testutils/syncenginetestutils.h"
 #include "theme.h"
 
 #include <config/appconfig.h>
 
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QWizardPage>
+
 using namespace std::chrono_literals;
 using namespace OCC;
+
+namespace {
+
+// IPv6-Loopback fehlt z. B. in Containern mit abgeschaltetem IPv6
+bool ipv6LoopbackAvailable()
+{
+    QTcpServer probe;
+    return probe.listen(QHostAddress::LocalHostIPv6, 0);
+}
+
+bool acceptsConnections(const QHostAddress &address, quint16 port)
+{
+    QTcpSocket socket;
+    socket.connectToHost(address, port);
+    return socket.waitForConnected(5000);
+}
+
+quint16 redirectPort(const QUrl &authorisationLink)
+{
+    const QUrl redirectUri(QUrlQuery(authorisationLink).queryItemValue(QStringLiteral("redirect_uri"), QUrl::FullyDecoded));
+    return static_cast<quint16>(redirectUri.port());
+}
+
+}
 
 class DesktopServiceHook : public QObject
 {
@@ -301,6 +330,44 @@ public:
     }
 };
 
+// Anmeldeseite des Assistenten gegen einen gefälschten Server: .well-known nennt die Endpunkte,
+// der „Browser“ merkt sich die geöffneten Anmeldelinks
+class OAuthPageFixture : public QObject
+{
+    Q_OBJECT
+
+public:
+    OAuthPageFixture()
+        : fakeAm(new FakeAM(this))
+        , controller(&page, fakeAm, nullptr)
+    {
+        fakeAm->setOverride([this](QNetworkAccessManager::Operation op, const QNetworkRequest &req, QIODevice *) -> QNetworkReply * {
+            if (!req.url().path().endsWith(QLatin1String(".well-known/openid-configuration"))) {
+                return nullptr;
+            }
+            const QJsonDocument json(QJsonObject{{QStringLiteral("authorization_endpoint"), sOpenIdAuthURL.toString()},
+                {QStringLiteral("token_endpoint"), QStringLiteral("oauthtest://openidserver/token_endpoint")},
+                {QStringLiteral("token_endpoint_auth_methods_supported"), QJsonArray{QStringLiteral("client_secret_post")}}});
+            return new FakePayloadReply(op, req, json.toJson(), fakeAm);
+        });
+        controller.setServerUrl(sOpenIdBaseURL);
+        controller.setAuthenticationUrl(sOpenIdBaseURL);
+        QDesktopServices::setUrlHandler(QStringLiteral("oauthtest"), this, "browserOpened");
+    }
+
+    ~OAuthPageFixture() override { QDesktopServices::unsetUrlHandler(QStringLiteral("oauthtest")); }
+
+    OAuth *oauth() const { return controller.findChild<OAuth *>(); }
+
+    QList<QUrl> openedLinks;
+    FakeAM *fakeAm;
+    QWizardPage page;
+    OAuthPageController controller;
+
+public Q_SLOTS:
+    void browserOpened(const QUrl &url) { openedLinks.append(url); }
+};
+
 class TestOAuth: public QObject
 {
     Q_OBJECT
@@ -511,6 +578,104 @@ private Q_SLOTS:
             }
         } test;
         test.test();
+    }
+
+    void testCallbackOverLoopback_data()
+    {
+        QTest::addColumn<QHostAddress>("address");
+
+        QTest::newRow("IPv4") << QHostAddress(QHostAddress::LocalHost);
+        QTest::newRow("IPv6") << QHostAddress(QHostAddress::LocalHostIPv6);
+    }
+
+    // Browser lösen localhost je nach System als 127.0.0.1 oder als ::1 auf: der Rückruf muss über beide ankommen.
+    // Nach dem Rückruf ist der Listener auf beiden Adressen zu.
+    void testCallbackOverLoopback()
+    {
+        QFETCH(QHostAddress, address);
+        if (address.protocol() == QAbstractSocket::IPv6Protocol && !ipv6LoopbackAvailable()) {
+            QSKIP("no IPv6 loopback on this system");
+        }
+
+        struct Test : OAuthTestCase
+        {
+            QHostAddress browserAddress;
+            quint16 callbackPort = 0;
+            QByteArray browserResponse;
+
+            // simulierter Browser: ruft http://localhost:<port>/?code=…&state=… über die gewählte Loopback-Adresse auf
+            QNetworkReply *createBrowserReply(const QNetworkRequest &request) override
+            {
+                callbackPort = static_cast<quint16>(request.url().port());
+                const QByteArray get = "GET /?" + request.url().query(QUrl::FullyEncoded).toUtf8() + " HTTP/1.1\r\nHost: localhost\r\n\r\n";
+                auto *socket = new QTcpSocket(this);
+                QObject::connect(socket, &QTcpSocket::connected, socket, [socket, get] { socket->write(get); });
+                QObject::connect(socket, &QTcpSocket::readyRead, this, [this, socket] { browserResponse += socket->readAll(); });
+                QObject::connect(socket, &QTcpSocket::disconnected, this, [this] { replyToBrowserOk = browserResponse.startsWith("HTTP/1.1 303"); });
+                socket->connectToHost(browserAddress, callbackPort);
+                return nullptr;
+            }
+        } test;
+        test.browserAddress = address;
+
+        test.test();
+
+        QVERIFY(!acceptsConnections(QHostAddress(QHostAddress::LocalHost), test.callbackPort));
+        if (ipv6LoopbackAvailable()) {
+            QVERIFY(!acceptsConnections(QHostAddress(QHostAddress::LocalHostIPv6), test.callbackPort));
+        }
+    }
+
+    // „Browser erneut öffnen“ darf die wartende Anmeldung nicht verwerfen: Port und state bleiben gleich,
+    // ein zuerst geöffneter oder kopierter Link führt weiter zum Client
+    void testReopenBrowserKeepsPendingSignIn()
+    {
+        // Arrange
+        OAuthPageFixture f;
+        QVERIFY(!f.controller.validate());
+        QTRY_COMPARE(f.openedLinks.size(), 1);
+
+        // Act
+        QVERIFY(!f.controller.validate());
+
+        // Assert
+        QTRY_COMPARE(f.openedLinks.size(), 2);
+        QCOMPARE(f.openedLinks.at(1), f.openedLinks.at(0));
+        QVERIFY(acceptsConnections(QHostAddress(QHostAddress::LocalHost), redirectPort(f.openedLinks.at(0))));
+    }
+
+    // Lässt sich der Browser nicht öffnen, wartet die Anmeldung weiter: der Link wird kopiert und von Hand geöffnet
+    void testBrowserFailureKeepsSignInOpen()
+    {
+        // Arrange: openUrl() schlägt fehl, weil der Handler keine passende Methode hat
+        OAuthPageFixture f;
+        QDesktopServices::setUrlHandler(QStringLiteral("oauthtest"), &f, "noSuchMethod");
+        QSignalSpy failure(&f.controller, &OAuthPageController::failure);
+
+        // Act
+        QVERIFY(!f.controller.validate());
+        QTRY_COMPARE(failure.size(), 1);
+
+        // Assert
+        const QPointer<OAuth> oauth = f.oauth();
+        QVERIFY(oauth);
+        QVERIFY(acceptsConnections(QHostAddress(QHostAddress::LocalHost), redirectPort(oauth->authorisationLink())));
+    }
+
+    // ausdrücklich abgebrochen: mit dem Assistenten schließt auch der Listener
+    void testClosingWizardClosesListener()
+    {
+        // Arrange
+        auto f = std::make_unique<OAuthPageFixture>();
+        QVERIFY(!f->controller.validate());
+        QTRY_COMPARE(f->openedLinks.size(), 1);
+        const quint16 port = redirectPort(f->openedLinks.at(0));
+
+        // Act
+        f.reset();
+
+        // Assert
+        QVERIFY(!acceptsConnections(QHostAddress(QHostAddress::LocalHost), port));
     }
 };
 

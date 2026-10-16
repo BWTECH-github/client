@@ -2063,7 +2063,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+3"/>
         <source>Open sign in again</source>
-        <translation>Öffne die Anmeldung erneut</translation>
+        <translation>Browser erneut öffnen</translation>
     </message>
 </context>
 <context>
@@ -2087,7 +2087,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+160"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+187"/>
         <source>Successfully signed in</source>
         <translation>Erfolgreich angemeldet</translation>
     </message>
@@ -2097,7 +2097,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Erkunde nun %1 auf deinem Desktop.</translation>
     </message>
     <message>
-        <location line="+111"/>
+        <location line="+115"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Fehler vom Server zurückgegeben: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2174,30 +2174,35 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="-1"/>
         <source>Copy sign in URL</source>
-        <translation>Anmelde-URL kopieren</translation>
+        <translation>Anmeldelink kopieren</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+25"/>
         <source>Additional logo defined by the organization</source>
         <translation>Zusätzliches, von der Organisation definiertes Logo</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+86"/>
         <source>URL copied</source>
-        <translation>URL kopiert</translation>
+        <translation>Link kopiert</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Copy URL</source>
-        <translation>URL kopieren</translation>
+        <translation>Link kopieren</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+63"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation>Keine Verbindung zum Anmeldedienst möglich. Wenn das Problem weiterhin besteht, wende dich bitte an den Support.</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+17"/>
+        <source>Please sign in using the browser window that has opened and confirm with &quot;Authorize&quot;.</source>
+        <translation>Bitte melde dich im geöffneten Browserfenster an und bestätige mit „Autorisieren“.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
         <translation>Bitte kopiere die Authentifizierungs-URL mithilfe der Schaltfläche oben und gib diese Informationen an den Support weiter.</translation>
     </message>
@@ -2227,9 +2232,9 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Fehler beim Versuch sich bei einem OAuth2-fähigen Server anzumelden. %1</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Unable to open browser with provided URL. %1</source>
-        <translation>Der Browser konnte die angegebene URL nicht öffnen. %1</translation>
+        <location line="+5"/>
+        <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
+        <translation>Der Browser konnte nicht geöffnet werden. Kopiere den Link mit der Schaltfläche oben und öffne ihn in deinem Browser.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2876,7 +2881,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Der Identitätsanbieter (IdP) ist nicht erreichbar. Wende dich an deinen Systemadministrator oder versuche es später erneut.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+4"/>
+        <source>The browser could not be opened. Copy the link and open it in your browser.</source>
+        <translation>Der Browser konnte nicht geöffnet werden. Kopiere den Link und öffne ihn in deinem Browser.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Authentication failed.</source>
         <translation>Authentifizierung fehlgeschlagen.</translation>
     </message>
@@ -4602,7 +4612,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>account loading</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="+319"/>
+        <location filename="../src/gui/main.cpp" line="+311"/>
         <source>Error accessing the configuration file</source>
         <translation>Fehler beim Zugriff auf die Konfigurationsdatei</translation>
     </message>
@@ -4761,7 +4771,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>restart prompt</name>
     <message>
-        <location filename="../src/gui/main.cpp" line="-288"/>
+        <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
         <translation>%1 wurde installiert oder aktualisiert. Um die Installation abzuschließen, muss Windows neu gestartet werden, damit die Explorer-Integration korrekt funktioniert.</translation>
     </message>
