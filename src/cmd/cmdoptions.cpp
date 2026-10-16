@@ -56,7 +56,8 @@ std::optional<QNetworkProxy> parseCmdProxy(const QString &value, QString *error)
         return {};
     }
     if (!url.isValid() || url.host().isEmpty() || url.port() <= 0 || url.port() > std::numeric_limits<quint16>::max()) {
-        *error = QStringLiteral("Could not read the proxy '%1', it should have the format http://host:port").arg(value);
+        // den Wert nicht wiederholen: er kann Zugangsdaten enthalten
+        *error = QStringLiteral("Could not read the proxy, it should have the format http://host:port");
         return {};
     }
     QNetworkProxy proxy(type, url.host(), static_cast<quint16>(url.port()));
