@@ -71,6 +71,12 @@ owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
 
+# Bandbreite: Altwert -1 („automatisch“) bleibt, bis der Nutzer die Richtung ändert. Der Aufbau liest das
+# Proxy-Passwort aus dem Schlüsselbund, darum wie CredentialManager nicht auf den macOS-Läufern von GitHub.
+if (NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})
+    owncloud_add_test(NetworkSettings)
+endif()
+
 owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp
     # Anmeldeseite des Assistenten: Browser erneut öffnen, Browser lässt sich nicht öffnen, Assistent geschlossen
     ../src/gui/newaccountwizard/oauthpagecontroller.cpp ../src/gui/networkadapters/fetchcapabilitiesadapter.cpp
