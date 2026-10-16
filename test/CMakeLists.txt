@@ -35,6 +35,8 @@ owncloud_add_test(SyncEngine)
 owncloud_add_test(SyncMove)
 add_dependencies(SyncMoveTest test_helper)
 owncloud_add_test(SyncDelete)
+# owncloud.online: Löschschutz („Alle Dateien entfernen?“) wie im 2.x-Client
+owncloud_add_test(AllFilesDeleted)
 owncloud_add_test(SyncConflict)
 owncloud_add_test(SyncFileStatusTracker)
 owncloud_add_test(Download)

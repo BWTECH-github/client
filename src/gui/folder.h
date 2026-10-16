@@ -28,12 +28,14 @@
 
 #include <QDateTime>
 #include <QObject>
+#include <QPointer>
 #include <QUuid>
 #include <QtQml/QtQml>
 
 #include <chrono>
 #include <memory>
 
+class QMessageBox;
 class QThread;
 class QSettings;
 
@@ -460,7 +462,14 @@ private Q_SLOTS:
      * blacklist + undecided list and asks the user. */
     void slotNewBigFolderDiscovered(const QString &newFolder, bool isExternal);
 
+    /** owncloud.online: der Lauf würde alle bzw. sehr viele Dateien löschen (SyncEngine::aboutToRemoveAllFiles).
+     * Hält den Ordner an und fragt „Behalten“ oder „Löschen“. */
+    void slotAboutToRemoveAllFiles(SyncFileItem::Direction direction, bool allFiles, int removedFiles, int knownFiles);
+
 private:
+    // offene Rückfrage des Löschschutzes, höchstens eine je Ordner
+    QPointer<QMessageBox> _removeAllFilesDialog;
+
     /** Resolution of slotNewBigFolderDiscovered: sync the folder after all (approved)
      * or keep it excluded. folderPath must have a trailing slash. */
     void setNewBigFolderApproval(const QString &folderPath, bool approved);

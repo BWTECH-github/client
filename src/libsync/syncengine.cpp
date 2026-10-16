@@ -25,7 +25,9 @@
 #include "discoveryphase.h"
 #include "owncloudpropagator.h"
 
+#include <algorithm>
 #include <chrono>
+#include <utility>
 
 #include <QDir>
 #include <QLoggingCategory>
@@ -259,6 +261,14 @@ void OCC::SyncEngine::slotItemDiscovered(const OCC::SyncFileItemPtr &item)
 
     if (Utility::isConflictFile(item->_file))
         _seenConflictFiles.insert(item->_file);
+
+    // Löschschutz (wie 2.x): bleibt irgendein Eintrag erhalten, verschwindet nicht alles. Unveränderte Teilbäume
+    // werden nicht durchlaufen, ihr Ordner kommt aber als NONE an.
+    if (item->instruction() == CSYNC_INSTRUCTION_NONE || item->instruction() == CSYNC_INSTRUCTION_RENAME
+        || (item->instruction() == CSYNC_INSTRUCTION_UPDATE_METADATA && !item->isDirectory())) {
+        _hasNoneFiles = true;
+    }
+
     if (item->instruction() == CSYNC_INSTRUCTION_NONE)
         return;
 
@@ -314,6 +324,8 @@ void SyncEngine::startSync()
     _progressInfo->reset();
     _syncItems.clear();
     _needsUpdate = false;
+    _hasNoneFiles = false;
+    _removeAllFilesPromptPaths.clear();
 
     // Functionality like selective sync might have set up etag storage
     // filtering via schedulePathForRemoteDiscovery(). This *is* the next sync, so
@@ -470,7 +482,95 @@ void SyncEngine::slotDiscoveryFinished()
     if (_discoveryPhase->_anotherSyncNeeded) {
         _anotherSyncNeeded = true;
     }
+
+    // „Löschen“ gilt für genau den Lauf, der als nächster bis hierher kommt
+    const bool removeAllAllowed = std::exchange(_allowRemoveAllFilesOnce, false);
+    if (_promptRemoveAllFiles && !removeAllAllowed && checkRemoveAllFiles()) {
+        finalize(false);
+        return;
+    }
     startPropagation();
+}
+
+bool SyncEngine::checkRemoveAllFiles()
+{
+    // Je Richtung die Dateien, die der Lauf löschen würde. Ein gelöschter Ordner kommt meist ohne seinen Inhalt an
+    // (unveränderte Teilbäume werden nicht durchlaufen), seine Dateien zählt deshalb das Journal.
+    int removed[2] = {0, 0};
+    QStringList paths[2];
+    // der Inhalt eines Ordners folgt in _syncItems direkt auf ihn (Sortierung „foo“, „foo/bar“, „foo-bar“)
+    QString removedDir;
+    for (const auto &item : std::as_const(_syncItems)) {
+        if (!removedDir.isEmpty() && FileSystem::isChildPathOf(item->_file, removedDir)) {
+            continue;
+        }
+        removedDir.clear();
+        // abgewählte Ordner (Auswahl-Sync) löscht der Lauf mit Absicht
+        if (item->instruction() != CSYNC_INSTRUCTION_REMOVE || item->_isSelectiveSync) {
+            continue;
+        }
+        const bool down = item->_direction == SyncFileItem::Down;
+        int files = 0;
+        if (item->isDirectory()) {
+            removedDir = item->_file;
+            _journal->getFilesBelowPath(item->_file.toUtf8(), [&files, down](const SyncJournalFileRecord &record) {
+                // ein lokaler Platzhalter ohne Inhalt verliert beim Löschen nichts
+                if (!record.isDirectory() && !(down && record.isVirtualFile())) {
+                    ++files;
+                }
+            });
+        } else if (!(down && (item->_type == ItemTypeVirtualFile || item->_type == ItemTypeVirtualFileDownload))) {
+            files = 1;
+        }
+        if (files > 0) {
+            removed[down] += files;
+            paths[down].append(item->_file);
+        }
+    }
+
+    const int removedFiles = removed[0] + removed[1];
+    if (removedFiles == 0) {
+        return false;
+    }
+    // 2.x: nichts bleibt, wie es war (alles gelöscht oder auf dem Server ersetzt)
+    const bool allFiles = !_hasNoneFiles;
+    int knownFiles = 0;
+    if (allFiles || removedFiles >= removeManyFilesMinimum) {
+        _journal->getFilesBelowPath(QByteArray(), [&knownFiles](const SyncJournalFileRecord &record) {
+            if (!record.isDirectory()) {
+                ++knownFiles;
+            }
+        });
+    }
+    const bool manyFiles = removedFiles >= removeManyFilesMinimum && 2 * qint64(removedFiles) >= knownFiles;
+    if (!allFiles && !manyFiles) {
+        return false;
+    }
+
+    // wie 2.x: die Richtung mit den meisten Löschungen, bei Gleichstand der Server
+    const bool down = removed[1] >= removed[0];
+    const auto direction = down ? SyncFileItem::Down : SyncFileItem::Up;
+    qCWarning(lcEngine) << "The sync would remove" << removedFiles << "of" << knownFiles << "files (all:" << allFiles << "), direction" << direction
+                        << "- asking the user first";
+    _removeAllFilesPromptPaths = paths[down];
+    Q_EMIT aboutToRemoveAllFiles(direction, allFiles, removed[down], std::max(knownFiles, removed[down]));
+    return true;
+}
+
+void SyncEngine::keepFilesOfRemoveAllPrompt()
+{
+    if (!_journal) {
+        return;
+    }
+    for (const auto &path : std::as_const(_removeAllFilesPromptPaths)) {
+        // ohne Eintrag ist die Datei für den nächsten Lauf neu auf der Seite, die sie noch hat
+        _journal->deleteFileRecord(path, true);
+        // die Ordner darüber hält das Journal sonst für unverändert und fragt den Server nicht
+        _journal->schedulePathForRemoteDiscovery(path);
+    }
+    _journal->commit(QStringLiteral("keep files of remove all prompt"));
+    qCInfo(lcEngine) << "Keeping" << _removeAllFilesPromptPaths.size() << "removed entries, they are restored by the next sync";
+    _removeAllFilesPromptPaths.clear();
 }
 
 void SyncEngine::startPropagation()
