@@ -160,7 +160,7 @@ public:
      * If the function is overridden to return an empty string the action is removed from
      * the menu.
      *
-     * @default ownCloud's client documentation URL.
+     * @default das Handbuch des Desktop-Clients, https://docs.owncloud.online/user/desktop-client
      *
      * @return URL for help documentation.
      */
@@ -173,8 +173,9 @@ public:
      *
      * If the function is overridden to return an empty string no help link for conflicts will be shown.
      *
-     * @default helpUrl() + "conflicts.html".
-     * Note that if the help URL is empty, the default implementation returns empty string.
+     * @default der Konflikt-Abschnitt der Handbuchseite (Standard-helpUrl() mit Anker). Liefert ein Theme
+     * eine eigene oder leere helpUrl(), gibt die Standardumsetzung einen leeren Text zurück; dann muss das
+     * Theme den Konfliktlink selbst bereitstellen.
 
      * @return the URL for conflicts help.
      */
