@@ -19,6 +19,11 @@ Beispiel:
         --platform win-x64=https://github.com/BWTECH-github/client/releases/download/v7.11.1/owncloud.online-client-7.11.1-win-x64-Setup.exe \\
         --platform linux-x86_64 --platform macos-arm64 --out feed
 
+Mit --keep-newer AKTUELL werden Dateien übersprungen, deren Gegenstück in
+AKTUELL (der Stand am festen Ablageort, Release "update-feed") eine neuere
+Version anbietet; so setzt ein nachträglicher Lauf für ein älteres Release den
+Feed nicht zurück.
+
 Format, Adressen, Kanäle und was der Client dafür braucht: admin/release/UPDATE-FEED.md.
 Nur Standardbibliothek, Python 3.8 oder neuer; Selbsttest: test_make_update_feed.py.
 """
@@ -28,9 +33,16 @@ import re
 import sys
 from pathlib import Path
 from urllib.parse import urlsplit
+from xml.dom import minidom
+from xml.parsers.expat import ExpatError
 from xml.sax.saxutils import escape
 
 FEED_PREFIX = "owncloud.online-update"
+# Fester Ablageort aller Kanäle: ein dauerhaftes Release (Vorabversion, nie
+# "Latest") mit diesem Tag; der Client hängt den Dateinamen an FEED_BASE_URL an
+# (APPLICATION_UPDATE_URL in OWNCLOUD.cmake).
+FEED_RELEASE_TAG = "update-feed"
+FEED_BASE_URL = f"https://github.com/BWTECH-github/client/releases/download/{FEED_RELEASE_TAG}/"
 ROOT_ELEMENT = "owncloudclient"
 FIELDS = ("version", "versionstring", "web", "downloadurl")
 CHANNELS = ("stable", "beta")
@@ -195,6 +207,76 @@ def build_feeds(tag, web, platforms, channels=None, version=None, version_string
     return feeds
 
 
+def _split_version(text):
+    """parseVersion() in ocupdater.cpp: führende Zahlen (wie QVersionNumber) und Suffix ohne '-'."""
+    text = text.strip()
+    match = re.match(r"[0-9]+(?:\.[0-9]+)*", text)
+    segments = tuple(int(part) for part in match.group(0).split(".")) if match else ()
+    suffix = text[match.end():] if match else text
+    return segments, suffix[1:] if suffix.startswith("-") else suffix
+
+
+def _compare_suffixes(a, b):
+    """compareSuffixes() in ocupdater.cpp: Ziffernfolgen als Zahl, der Rest ohne Groß-/Kleinschreibung."""
+    tokens_a = re.findall(r"\d+|\D+", a)
+    tokens_b = re.findall(r"\d+|\D+", b)
+    for token_a, token_b in zip(tokens_a, tokens_b):
+        if token_a[0].isdigit() and token_b[0].isdigit():
+            key_a, key_b = int(token_a), int(token_b)
+        else:
+            key_a, key_b = token_a.lower(), token_b.lower()
+        if key_a != key_b:
+            return -1 if key_a < key_b else 1
+    return (len(tokens_a) > len(tokens_b)) - (len(tokens_a) < len(tokens_b))
+
+
+def compare_versions(a, b):
+    """Wie OCUpdater::compareVersions(): Major.Minor.Patch, Release vor Vorabversion, Suffix, alle Zahlen."""
+    (numbers_a, suffix_a), (numbers_b, suffix_b) = _split_version(a), _split_version(b)
+    core_a = tuple(numbers_a[i] if i < len(numbers_a) else 0 for i in range(3))
+    core_b = tuple(numbers_b[i] if i < len(numbers_b) else 0 for i in range(3))
+    if core_a != core_b:
+        return -1 if core_a < core_b else 1
+    if bool(suffix_a) != bool(suffix_b):
+        return -1 if suffix_a else 1
+    return _compare_suffixes(suffix_a, suffix_b) or (numbers_a > numbers_b) - (numbers_a < numbers_b)
+
+
+def read_feed_version(data):
+    """<version> eines vorhandenen Feeds oder None, wenn die Datei nicht lesbar ist."""
+    try:
+        document = minidom.parseString(data)
+    except (ExpatError, ValueError):
+        return None
+    root = document.documentElement
+    if root is None or root.tagName != ROOT_ELEMENT:
+        return None
+    for element in root.getElementsByTagName("version"):
+        text = "".join(node.data for node in element.childNodes if node.nodeType == node.TEXT_NODE).strip()
+        if _split_version(text)[0]:
+            return text
+    return None
+
+
+def drop_older(feeds, current_dir):
+    """Lässt Feeds weg, deren Gegenstück in current_dir neuer ist.
+
+    Gibt (behaltene Feeds, [(Dateiname, neue Version, vorhandene Version)]) zurück.
+    Gleiche Version wird behalten (erneuter Lauf), fehlende oder unlesbare
+    vorhandene Dateien werden ersetzt.
+    """
+    kept, skipped = {}, []
+    for name, text in feeds.items():
+        path = Path(current_dir) / name
+        current = read_feed_version(path.read_bytes()) if path.is_file() else None
+        new = read_feed_version(text.encode("utf-8"))
+        if current is not None and compare_versions(current, new) > 0:
+            skipped.append((name, new, current))
+        else:
+            kept[name] = text
+    return kept, skipped
+
+
 def parse_platform_arguments(values):
     platforms = {}
     for value in values:
@@ -220,6 +302,8 @@ def main(argv=None):
                         help=f"Plattform ({', '.join(PLATFORMS)}), wahlweise mit Download-Adresse; mehrfach")
     parser.add_argument("--version-string", help="Anzeigetext; Vorgabe: 'owncloud.online <Version aus dem Tag>'")
     parser.add_argument("--out", required=True, type=Path, help="Zielverzeichnis")
+    parser.add_argument("--keep-newer", type=Path, metavar="AKTUELL",
+                        help="Verzeichnis mit dem bisherigen Feed; Dateien, für die dort eine neuere Version liegt, nicht schreiben")
     args = parser.parse_args(argv)
 
     try:
@@ -234,6 +318,14 @@ def main(argv=None):
     except FeedError as error:
         print(f"Fehler: {error}", file=sys.stderr)
         return 2
+
+    if args.keep_newer is not None:
+        if not args.keep_newer.is_dir():
+            print(f"Fehler: {args.keep_newer} ist kein Verzeichnis", file=sys.stderr)
+            return 2
+        feeds, skipped = drop_older(feeds, args.keep_newer)
+        for name, new, current in skipped:
+            print(f"übersprungen: {name} ({new} ist älter als der vorhandene Stand {current})", file=sys.stderr)
 
     args.out.mkdir(parents=True, exist_ok=True)
     for name, text in feeds.items():

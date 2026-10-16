@@ -2,13 +2,17 @@
 
 Der Client fragt beim Start und danach regelmäßig eine XML-Datei ab, die die
 neueste Version und – je nach Plattform – den Download nennt. Wir betreiben
-dafür keinen Server: die Feed-Dateien hängen als Assets am GitHub-Release.
+dafür keinen Server: die Feed-Dateien hängen als Assets an einem dauerhaften
+GitHub-Release mit dem Tag `update-feed` (fester Ablageort).
 
 ## Adressen
 
 Je Plattform und Kanal eine Datei:
 
-    https://github.com/BWTECH-github/client/releases/latest/download/owncloud.online-update-<plattform>-<kanal>.xml
+    https://github.com/BWTECH-github/client/releases/download/update-feed/owncloud.online-update-<plattform>-<kanal>.xml
+
+Die Basisadresse steht in `OWNCLOUD.cmake` (`APPLICATION_UPDATE_URL`) und im
+Generator (`FEED_BASE_URL`); der Selbsttest prüft, dass beide übereinstimmen.
 
 | Plattform      | Datei (Kanal stable)                              | `<downloadurl>`                       |
 |----------------|---------------------------------------------------|---------------------------------------|
@@ -16,18 +20,38 @@ Je Plattform und Kanal eine Datei:
 | `linux-x86_64` | `owncloud.online-update-linux-x86_64-stable.xml`  | `…AppImage.zsync`, sonst keiner       |
 | `macos-arm64`  | `owncloud.online-update-macos-arm64-stable.xml`   | keiner (nur Hinweis mit Link)         |
 
-`releases/latest/download/` zeigt immer auf das neueste stabile Release (nicht
-auf Vorabversionen). Die Abfrageparameter, die der Client anhängt
-(`?version=…&platform=…&channel=…&msi=true`), stören nicht: GitHub ignoriert sie
-und leitet trotzdem auf die Datei weiter (geprüft am 14.10.2026, 200 nach 2
-Weiterleitungen).
+Warum nicht `releases/latest/download/`: `latest` ist immer das neueste
+**stabile** Release. Vorabversionen werden nie „Latest“, ihre Beta-Feeds wären
+dort also nie zu finden (so ging es 11.0.0-beta1: `latest` war 7.11.1 ohne
+Feed-Dateien). Das Release `update-feed` ist selbst eine Vorabversion und wird
+deshalb nie „Latest“; `releases/latest` zeigt weiter auf das echte Release.
+Die Abfrageparameter, die der Client anhängt (`?version=…&platform=…&channel=…`),
+stören nicht: GitHub ignoriert sie und leitet auf die Datei weiter.
 
 Kanäle: `stable` und `beta`. Ein Release ohne Suffix (`v11.0.0`) schreibt beide
-Kanäle, ein Tag mit Suffix `rc`/`beta`/`alpha`/`daily`/`nightly` nur `beta` –
-dieselbe Regel wie `updateChannel()` im Client. Weil `latest` keine
-Vorabversionen liefert, bekommt der Beta-Kanal über die feste Adresse nur
-stabile Releases; Beta-Feeds einer Vorabversion liegen unter
-`releases/download/<tag>/…`.
+Kanäle (Beta-Installationen bekommen auch jedes finale Release), ein Tag mit
+Suffix `rc`/`beta`/`alpha`/`daily`/`nightly` nur `beta` – dieselbe Regel wie
+`updateChannel()` im Client.
+
+**Kein Zurücksetzen:** Vor dem Hochladen holt der Workflow den bisherigen Stand
+vom Ablageort und lässt jede Datei weg, für die dort schon eine neuere Version
+liegt (`make-update-feed.py --keep-newer`, Vergleich wie
+`OCUpdater::compareVersions`). Ein nachträglicher Lauf für `v11.0.0` nach
+`v11.0.1` oder eine späte `v11.0.0-beta2` nach dem finalen `v11.0.0` ändert den
+Feed also nicht. Gleiche Version wird ersetzt (erneuter Lauf), eine fehlende
+oder unlesbare Datei ebenfalls. Ein Release bewusst zurückziehen:
+`gh workflow run update-feed.yml -R BWTECH-github/client -f tag=<älterer Tag> -f allow_older=true`.
+
+**Übergang:** Die Dateien hängen zusätzlich wie bisher am jeweiligen Release.
+Clients bis einschließlich 11.0.0-beta1 fragen noch
+`releases/latest/download/…` ab; sie finden darüber das nächste **stabile**
+Release (dessen beta-Datei), aber keine weiteren Betas. Wer beta1 installiert
+hat und beta2 testen will, installiert sie einmal von Hand.
+
+**Ablage-Release:** Fehlt `update-feed`, legt der Workflow es beim ersten Lauf
+an (Vorabversion, `--latest=false`, Tag auf dem Standardzweig); ist es Entwurf
+oder keine Vorabversion mehr, stellt er das zurück. Nicht löschen – sonst
+liefert die Adresse 404, bis der nächste Lauf es neu anlegt.
 
 ## Format
 
@@ -60,21 +84,28 @@ Fälle ab.
 - `admin/release/make-update-feed.py` – Generator (nur Standardbibliothek).
   Prüft https, Dateiendung je Plattform, Version im Dateinamen, Tag-Format,
   Kanalregel und Zeichen, die aus dem Rich-Text des Clients ausbrechen würden.
-- `admin/release/test_make_update_feed.py` – Selbsttest (43 Fälle); parst die
+- `admin/release/test_make_update_feed.py` – Selbsttest (53 Fälle); parst die
   Ausgabe wie der Client und liest dafür `updateinfo.cpp`, `updater.cpp`,
-  `ocupdater.cpp` und `publish-release.yml`, damit Format, Kanalregel,
-  Versionsvergleich und Paketnamen nicht auseinanderlaufen.
-- `.github/workflows/update-feed.yml` – erzeugt die Dateien und hängt sie mit
-  `--clobber` an das Release; prüft anschließend, ob die feste Adresse die neue
-  Datei ausliefert.
+  `ocupdater.cpp`, `OWNCLOUD.cmake`, `update-feed.yml` und
+  `publish-release.yml`, damit Format, Kanalregel, Versionsvergleich,
+  Ablageort und Paketnamen nicht auseinanderlaufen.
+- `.github/workflows/update-feed.yml` – legt bei Bedarf das Ablage-Release an,
+  holt den bisherigen Stand, erzeugt die Dateien, hängt alle an das Release
+  selbst und die nicht veralteten mit `--clobber` an `update-feed`; prüft
+  anschließend, ob die feste Adresse die neuen Dateien ausliefert. Alle Läufe
+  teilen eine Concurrency-Gruppe (`update-feed-ablage`) und laufen
+  nacheinander. GitHub hält je Gruppe nur **einen** wartenden Lauf: Starten
+  drei Läufe fast gleichzeitig, wird der mittlere abgebrochen und ist von Hand
+  nachzuholen (Auslöser 3).
 
 Auslöser:
 
 1. `publish-release.yml` ruft den Workflow als Job `update-feed` auf
-   (`workflow_call`). Nötig, weil ein mit dem `GITHUB_TOKEN` angelegtes Release
-   keinen `release: published`-Lauf startet.
+   (`workflow_call`), bei stabilen Releases und Vorabversionen. Nötig, weil ein
+   mit dem `GITHUB_TOKEN` angelegtes Release keinen `release: published`-Lauf
+   startet.
 2. `release: published` – wenn ein Mensch das Release in der Oberfläche
-   veröffentlicht.
+   veröffentlicht (nicht für `update-feed` selbst).
 3. Von Hand, z. B. für ein älteres Release:
    `gh workflow run update-feed.yml -R BWTECH-github/client -f tag=v11.0.0`
    (geht erst, wenn die Datei auf `master` liegt).
@@ -107,7 +138,7 @@ diese Änderungen bleibt der Feed wirkungslos oder ist auf Windows schädlich.
    eine leere URL und `src/gui/updater/updater.cpp:142-147` legt keinen Updater
    an. Benötigt: eine Basisadresse je Plattform (eine einzige URL reicht nicht,
    weil die Feed-Datei plattform- und kanalabhängig ist), z. B. in
-   `Theme::updateCheckUrl()` aus `…/releases/latest/download/owncloud.online-update-`
+   `Theme::updateCheckUrl()` aus `…/releases/download/update-feed/owncloud.online-update-`
    + Plattform + `-` + `updateChannel()` + `.xml` zusammensetzen.
    `OCC_UPDATE_URL` (`updater.cpp:65`) bleibt als Testschalter.
 2. **Windows installiert nur MSI.** `src/gui/updater/ocupdater.cpp:489`

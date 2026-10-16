@@ -460,5 +460,104 @@ class CommandLine(unittest.TestCase):
             self.assertIn("linux-x86_64", stderr)
 
 
+class FixedLocation(unittest.TestCase):
+    """Fester Ablageort (Release "update-feed") und Schutz vor dem Zurücksetzen."""
+
+    def read_source(self, relative):
+        path = REPO / relative
+        if not path.is_file():
+            self.skipTest(relative + " fehlt (Generator außerhalb des Repositorys?)")
+        return path.read_text(encoding="utf-8")
+
+    def write_current(self, directory, tag, **overrides):
+        arguments = {"tag": tag, "web": RELEASES + "/tag/" + tag, "platforms": {"macos-arm64": None}}
+        arguments.update(overrides)
+        for name, text in feed.build_feeds(**arguments).items():
+            (Path(directory) / name).write_text(text, encoding="utf-8", newline="\n")
+
+    def test_client_default_points_to_the_fixed_release(self):
+        cmake = self.read_source("OWNCLOUD.cmake")
+        self.assertIn('APPLICATION_UPDATE_URL "%s"' % feed.FEED_BASE_URL, cmake)
+        self.assertNotIn("releases/latest", cmake)
+        self.assertTrue(feed.FEED_BASE_URL.endswith("/releases/download/%s/" % feed.FEED_RELEASE_TAG))
+
+    def test_workflow_uploads_to_the_fixed_release_as_prerelease(self):
+        workflow = self.read_source(".github/workflows/update-feed.yml")
+        self.assertIn("FEED_TAG: " + feed.FEED_RELEASE_TAG, workflow)
+        self.assertIn("--keep-newer", workflow)
+        self.assertIn("--prerelease", workflow)
+        self.assertIn("--latest=false", workflow)
+        publish = self.read_source(".github/workflows/publish-release.yml")
+        self.assertIn("uses: ./.github/workflows/update-feed.yml", publish)
+
+    def test_version_order_matches_the_client(self):
+        versions = ["7.11.1", "7.11.1.4711", "11.0.0.0-beta1", "11.0.0-beta1", "11.0.0-beta2",
+                    "11.0.0-beta10", "11.0.0-RC1", "11.0.0-rc01", "11.0.0-rc2", "11.0.0", "11.0.0.5",
+                    "11.0.1-beta1", "11.0.1", "12.0"]
+        for a in versions:
+            for b in versions:
+                self.assertEqual(feed.compare_versions(a, b), compare_versions(a, b), (a, b))
+
+    def test_feed_version_is_read_back(self):
+        text = build()["owncloud.online-update-win-x64-stable.xml"]
+        self.assertEqual(feed.read_feed_version(text.encode("utf-8")), "7.11.1")
+        self.assertIsNone(feed.read_feed_version(b"<html>404</html>"))
+        self.assertIsNone(feed.read_feed_version(b"Not Found"))
+        self.assertIsNone(feed.read_feed_version(b"<owncloudclient><version></version></owncloudclient>"))
+
+    def test_rerun_for_an_older_release_keeps_the_newer_feed(self):
+        with tempfile.TemporaryDirectory() as current:
+            self.write_current(current, "v11.0.1")
+            feeds = feed.build_feeds(tag="v11.0.0", web=RELEASES + "/tag/v11.0.0", platforms={"macos-arm64": None})
+            kept, skipped = feed.drop_older(feeds, current)
+            self.assertEqual(kept, {})
+            self.assertEqual(sorted(name for name, _, _ in skipped), sorted(feeds))
+
+    def test_same_or_newer_version_replaces_the_feed(self):
+        with tempfile.TemporaryDirectory() as current:
+            self.write_current(current, "v11.0.0")
+            for tag in ("v11.0.0", "v11.0.1"):
+                feeds = feed.build_feeds(tag=tag, web=RELEASES + "/tag/" + tag, platforms={"macos-arm64": None})
+                self.assertEqual(feed.drop_older(feeds, current), (feeds, []))
+
+    def test_beta_channel_after_the_final_release(self):
+        with tempfile.TemporaryDirectory() as current:
+            self.write_current(current, "v11.0.0")
+            late_beta = feed.build_feeds(tag="v11.0.0-beta2", web=RELEASES + "/tag/v11.0.0-beta2",
+                                         platforms={"macos-arm64": None})
+            self.assertEqual(feed.drop_older(late_beta, current)[0], {})
+            next_beta = feed.build_feeds(tag="v11.0.1-beta1", web=RELEASES + "/tag/v11.0.1-beta1",
+                                         platforms={"macos-arm64": None})
+            self.assertEqual(list(feed.drop_older(next_beta, current)[0]),
+                             ["owncloud.online-update-macos-arm64-beta.xml"])
+
+    def test_missing_or_broken_current_file_is_replaced(self):
+        with tempfile.TemporaryDirectory() as current:
+            (Path(current) / "owncloud.online-update-macos-arm64-stable.xml").write_bytes(b"kaputt")
+            feeds = feed.build_feeds(tag="v7.11.1", web=WEB, platforms={"macos-arm64": None})
+            self.assertEqual(feed.drop_older(feeds, current), (feeds, []))
+
+    def test_command_line_skips_older_files(self):
+        with tempfile.TemporaryDirectory() as current, tempfile.TemporaryDirectory() as out:
+            self.write_current(current, "v11.0.0", channels=["beta"])
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                code = feed.main(["--tag", "v7.11.1", "--web", WEB, "--out", out, "--platform", "macos-arm64",
+                                  "--keep-newer", current])
+            self.assertEqual(code, 0)
+            self.assertEqual([path.name for path in Path(out).iterdir()],
+                             ["owncloud.online-update-macos-arm64-stable.xml"])
+            self.assertIn("übersprungen", stderr.getvalue())
+
+    def test_command_line_rejects_a_missing_current_directory(self):
+        with tempfile.TemporaryDirectory() as out:
+            stderr = io.StringIO()
+            with redirect_stdout(io.StringIO()), redirect_stderr(stderr):
+                code = feed.main(["--tag", "v7.11.1", "--web", WEB, "--out", out, "--platform", "macos-arm64",
+                                  "--keep-newer", str(Path(out) / "fehlt")])
+            self.assertEqual(code, 2)
+            self.assertEqual(list(Path(out).iterdir()), [])
+
+
 if __name__ == "__main__":
     unittest.main()
