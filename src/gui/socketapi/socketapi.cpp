@@ -22,6 +22,7 @@
 
 #include "accountmanager.h"
 #include "accountstate.h"
+#include "application.h"
 #include "common/asserts.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"
@@ -33,6 +34,7 @@
 #include "syncengine.h"
 #include "syncfileitem.h"
 #include "theme.h"
+#include "traymenucontroller.h"
 
 #include <QApplication>
 #include <QDir>
@@ -423,6 +425,52 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
 
 void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener)
 {
+    processShareRequest(localFile, listener, ShareDialogStartPage::UsersAndGroups);
+}
+
+void SocketApi::command_MANAGE_PUBLIC_LINKS(const QString &localFile, SocketListener *listener)
+{
+    processShareRequest(localFile, listener, ShareDialogStartPage::PublicLinks);
+}
+
+void SocketApi::command_COPY_PUBLIC_LINK(const QString &localFile, SocketListener *)
+{
+    const auto fileData = FileData::get(localFile);
+    // wie beim Menüeintrag: nur, was mit Verbindung schon auf dem Server liegt; die Wurzel lässt sich nicht teilen
+    if (!fileData.isValid() || fileData.isSyncFolder() || !fileData.folder->isConnected() || !fileData.journalRecord().isValid()) {
+        qCWarning(lcSocketApi) << "Cannot create a public link for" << localFile;
+        return;
+    }
+    Account *account = fileData.folder->accountState()->account();
+    const QString remotePath = fileData.serverRelativePath;
+    const QString localPath = fileData.localPath;
+    if (PublicLinkCreator::needsUserInput(account->capabilities())) {
+        // Passwort oder Ablaufdatum vorgeschrieben: das Formular im Dialog kennt die Vorgaben schon
+        Q_EMIT shareCommandReceived(remotePath, localPath, ShareDialogStartPage::PublicLinks, QString());
+        return;
+    }
+    auto *creator = new PublicLinkCreator(account, remotePath, this);
+    connect(creator, &PublicLinkCreator::linkReady, this, [creator, localPath](const QString &url) {
+        creator->deleteLater();
+        copyUrlToClipboard(QUrl(url));
+        // Rückmeldung, weil zwischen Klick und Zwischenablage zwei Serveranfragen liegen
+        if (auto *app = ocAppOrNull()) {
+            app->tray()->slotShowOptionalTrayMessage(
+                tr("Public link copied"), tr("The public link to %1 is in the clipboard.").arg(QFileInfo(localPath).fileName()));
+        }
+    });
+    connect(creator, &PublicLinkCreator::failed, this, [this, creator, remotePath, localPath](const QString &serverMessage) {
+        creator->deleteLater();
+        // z.B. eine Passwort-Richtlinie, die der Server nicht in den Capabilities meldet: im Dialog lässt sich der Link vervollständigen
+        const QString message = tr("The public link could not be created automatically.");
+        Q_EMIT shareCommandReceived(remotePath, localPath, ShareDialogStartPage::PublicLinks,
+            serverMessage.isEmpty() ? message : message + QLatin1Char('\n') + tr("Server message: %1").arg(serverMessage));
+    });
+    creator->start();
+}
+
+void SocketApi::processShareRequest(const QString &localFile, SocketListener *listener, ShareDialogStartPage startPage)
+{
     auto fileData = FileData::get(localFile);
     Folder *shareFolder = fileData.folder;
     if (!shareFolder) {
@@ -457,7 +505,7 @@ void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener
         const QString message = QLatin1String("SHARE:OK:") + QDir::toNativeSeparators(localFile);
         listener->sendMessage(message);
 
-        Q_EMIT shareCommandReceived(remotePath, fileData.localPath);
+        Q_EMIT shareCommandReceived(remotePath, fileData.localPath, startPage, QString());
     }
 }
 
@@ -736,6 +784,14 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
             + (record.isDirectory() ? tr("Resharing this folder is not allowed") : tr("Resharing this file is not allowed")));
     } else {
         listener->sendMessage(QStringLiteral("MENU_ITEM:SHARE") + flagString + tr("Share…"));
+
+        // öffentliche Links wie im Client 6.0.3; verlangt der Server Passwort oder Ablaufdatum, öffnet „Erstellen“ das Formular
+        if (capabilities.sharePublicLink()) {
+            const QString createText =
+                PublicLinkCreator::needsUserInput(capabilities) ? tr("Create public link…") : tr("Create and copy public link to clipboard");
+            listener->sendMessage(QStringLiteral("MENU_ITEM:COPY_PUBLIC_LINK") + flagString + createText);
+            listener->sendMessage(QStringLiteral("MENU_ITEM:MANAGE_PUBLIC_LINKS") + flagString + tr("Manage public links…"));
+        }
     }
 
     if (capabilities.privateLinkPropertyAvailable()) {

@@ -42,6 +42,9 @@ namespace Utility {
     bool openEmailComposer(const QString &subject, const QString &body,
         QWidget *errorWidgetParent);
 
+    /** mailto:-Adresse für openEmailComposer(); Betreff und Text vollständig kodiert (& # % + im Dateinamen) */
+    OWNCLOUDGUI_EXPORT QUrl emailComposerUrl(const QString &subject, const QString &body);
+
     /** Translated text for "making items always available locally" */
     QString vfsPinActionText();
 

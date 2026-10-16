@@ -26,6 +26,7 @@ class QLabel;
 class QLineEdit;
 class QListWidget;
 class QListWidgetItem;
+class QMenu;
 class QPushButton;
 class QRadioButton;
 class QTabWidget;
@@ -53,7 +54,11 @@ class ShareDialog : public QDialog
     Q_OBJECT
 public:
     /// remotePath is the server-relative path of the item ("/Documents/report.odt")
-    ShareDialog(AccountState *accountState, const QUrl &davUrl, const QString &remotePath, const QString &localPath, QWidget *parent = nullptr);
+    ShareDialog(AccountState *accountState, const QUrl &davUrl, const QString &remotePath, const QString &localPath,
+        ShareDialogStartPage startPage = ShareDialogStartPage::UsersAndGroups, QWidget *parent = nullptr);
+
+    /// Meldung unter den Reitern, z.B. warum der Dialog statt einer direkten Aktion erscheint
+    void showError(const QString &message);
 
 private:
     // die eine laufende Schreibanfrage (Anlegen/Ändern/Löschen); der Dialog ist währenddessen gesperrt
@@ -91,10 +96,13 @@ private:
     void setBusy(bool busy);
     void showStatus(const QString &message, bool isError);
     void copyToClipboard(const QString &url);
+    /// Öffnen, Kopieren, Direkt-Download kopieren, per E-Mail senden
+    QMenu *createLinkMenu(const Share &share, QWidget *parent);
 
     QPointer<AccountState> _accountState;
     ShareApi *_api = nullptr;
     QString _remotePath;
+    QString _itemName;
     bool _isFolder = false;
     SharePermissions _maxPermissions = allSharePermissions();
     QList<Share> _shares;

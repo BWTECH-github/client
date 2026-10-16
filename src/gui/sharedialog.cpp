@@ -14,6 +14,7 @@
 #include "sharedialog.h"
 
 #include "accountstate.h"
+#include "guiutility.h"
 #include "libsync/account.h"
 #include "libsync/capabilities.h"
 #include "libsync/theme.h"
@@ -33,6 +34,7 @@
 #include <QListWidget>
 #include <QLocale>
 #include <QLoggingCategory>
+#include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
@@ -98,12 +100,14 @@ namespace {
     }
 }
 
-ShareDialog::ShareDialog(AccountState *accountState, const QUrl &davUrl, const QString &remotePath, const QString &localPath, QWidget *parent)
+ShareDialog::ShareDialog(
+    AccountState *accountState, const QUrl &davUrl, const QString &remotePath, const QString &localPath, ShareDialogStartPage startPage, QWidget *parent)
     : QDialog(parent)
     , _accountState(accountState)
     , _remotePath(remotePath.startsWith(QLatin1Char('/')) ? remotePath : QLatin1Char('/') + remotePath)
+    , _itemName(QFileInfo(localPath.isEmpty() ? remotePath : localPath).fileName())
 {
-    const QString name = QFileInfo(localPath.isEmpty() ? remotePath : localPath).fileName();
+    const QString &name = _itemName;
     setWindowTitle(tr("Share %1").arg(name));
     setAttribute(Qt::WA_DeleteOnClose);
     resize(680, 620);
@@ -127,8 +131,12 @@ ShareDialog::ShareDialog(AccountState *accountState, const QUrl &davUrl, const Q
 
     _tabs = new QTabWidget(this);
     _tabs->addTab(buildUserTab(), tr("Users and groups"));
-    if (account() && account()->capabilities().sharePublicLink())
-        _tabs->addTab(buildLinkTab(), tr("Public links"));
+    if (account() && account()->capabilities().sharePublicLink()) {
+        QWidget *linkTab = buildLinkTab();
+        _tabs->addTab(linkTab, tr("Public links"));
+        if (startPage == ShareDialogStartPage::PublicLinks)
+            _tabs->setCurrentWidget(linkTab);
+    }
     mainLayout->addWidget(_tabs, 1);
 
     _statusLabel = new QLabel(this);
@@ -594,6 +602,15 @@ void ShareDialog::rebuildLinkShares()
         connect(copyButton, &QToolButton::clicked, this, [this, url = share.url] { copyToClipboard(url); });
         bottom->addWidget(copyButton);
 
+        // weitere Wege, den Link weiterzugeben (wie im Client 6.0.3); InstantPopup, damit die Tastatur das Menü öffnet
+        auto *moreButton = new QToolButton(row);
+        moreButton->setText(tr("More"));
+        moreButton->setAccessibleDescription(title);
+        moreButton->setPopupMode(QToolButton::InstantPopup);
+        moreButton->setMenu(createLinkMenu(share, moreButton));
+        moreButton->setEnabled(!share.url.isEmpty());
+        bottom->addWidget(moreButton);
+
         auto *editButton = new QToolButton(row);
         editButton->setText(tr("Edit"));
         editButton->setAccessibleDescription(title);
@@ -851,10 +868,32 @@ void ShareDialog::showStatus(const QString &message, bool isError)
     _statusLabel->setText(message);
 }
 
+void ShareDialog::showError(const QString &message)
+{
+    showStatus(message, true);
+}
+
 void ShareDialog::copyToClipboard(const QString &url)
 {
     QGuiApplication::clipboard()->setText(url);
     showStatus(tr("Link copied to the clipboard: %1").arg(url), false);
+}
+
+QMenu *ShareDialog::createLinkMenu(const Share &share, QWidget *parent)
+{
+    auto *menu = new QMenu(parent);
+    const QString url = share.url;
+    // die Adresse kommt vom Server: nur Webadressen öffnen, nie etwa file: über die Shell
+    const QUrl webUrl(url);
+    if (webUrl.scheme() == QLatin1String("https") || webUrl.scheme() == QLatin1String("http"))
+        menu->addAction(tr("Open in browser"), this, [this, webUrl] { Utility::openBrowser(webUrl, this); });
+    menu->addAction(tr("Copy link"), this, [this, url] { copyToClipboard(url); });
+    // lädt die Datei bzw. den Ordner (als ZIP) ohne Umweg über die Linkseite herunter
+    const QUrl directUrl = ShareApi::directDownloadUrl(share);
+    if (directUrl.isValid())
+        menu->addAction(tr("Copy direct download link"), this, [this, directUrl] { copyToClipboard(directUrl.toString()); });
+    menu->addAction(tr("Send by email…"), this, [this, url] { Utility::openEmailComposer(tr("I shared %1 with you").arg(_itemName), url, this); });
+    return menu;
 }
 
 } // namespace OCC

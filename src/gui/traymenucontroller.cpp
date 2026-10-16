@@ -935,7 +935,7 @@ void TrayMenuController::slotShowShareInBrowser(const QString &sharePath, const 
     }
 }
 
-void TrayMenuController::slotShowShareDialog(const QString &sharePath, const QString &localPath)
+void TrayMenuController::slotShowShareDialog(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage, const QString &errorMessage)
 {
     QString file;
     const auto folder = FolderMan::instance()->folderForPath(localPath, &file);
@@ -962,7 +962,10 @@ void TrayMenuController::slotShowShareDialog(const QString &sharePath, const QSt
     if (_shareDialog) {
         _shareDialog->close();
     }
-    _shareDialog = new ShareDialog(folder->accountState(), folder->webDavUrl(), sharePath, localPath, nullptr);
+    _shareDialog = new ShareDialog(folder->accountState(), folder->webDavUrl(), sharePath, localPath, startPage, nullptr);
+    if (!errorMessage.isEmpty()) {
+        _shareDialog->showError(errorMessage);
+    }
     // eigenständiges Fenster: erbt die Palette des Hauptfensters nicht, den Akzent deshalb selbst setzen
     ColorManager::applyAccent(_shareDialog);
     _shareDialog->show();
