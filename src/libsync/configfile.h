@@ -58,6 +58,14 @@ public:
     static QString excludeFileFromSystem(); // doesn't access config dir
 
     /**
+     * owncloud.online: systemweite Ausschlussliste der Installation wie in 6.0.3 – Windows: sync-exclude.lst neben dem
+     * Programm; Linux: /etc/<app>/, neben dem Programm, ../etc/<app>/; macOS: /Library/Application Support/<app>/,
+     * Resources des Programmpakets. Leer, wenn es keine gibt. Ergänzt die eingebaute Liste, die Benutzerliste bleibt.
+     * applicationDir ersetzt den Programmordner (Tests).
+     */
+    static QString excludeFileFromInstallation(const QString &applicationDir = {});
+
+    /**
      * Creates a backup of the file
      *
      * Returns the path of the new backup.
@@ -195,7 +203,8 @@ public:
     static std::unique_ptr<QSettings> settingsWithGroup(const QString &group);
 
     /// Add the system and user exclude file path to the ExcludedFiles instance.
-    static void setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles);
+    /// owncloud.online: dazu die Liste der Installation (excludeFileFromInstallation, applicationDir für Tests).
+    static void setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles, const QString &applicationDir = {});
 
 protected:
     void storeData(const QString &group, const QString &key, const QVariant &value);

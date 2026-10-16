@@ -269,6 +269,30 @@ QString ConfigFile::excludeFileFromSystem()
     return ":/libsync/sync-exclude.lst";
 }
 
+QString ConfigFile::excludeFileFromInstallation(const QString &applicationDir)
+{
+    // owncloud.online: systemweite Liste für Administratoren an den Orten von 6.0.3; sie ergänzt die eingebaute Liste
+    const QDir appDir(applicationDir.isEmpty() ? QCoreApplication::applicationDirPath() : applicationDir);
+    QStringList candidates;
+#if defined(Q_OS_WIN)
+    candidates << appDir.filePath(excludeFileNameC());
+#elif defined(Q_OS_MAC)
+    // im signierten Programmpaket kann ein Administrator nichts ändern, deshalb zuerst die Systembibliothek
+    candidates << QStringLiteral("/Library/Application Support/%1/%2").arg(Theme::instance()->appName(), excludeFileNameC())
+               << appDir.filePath(QStringLiteral("../Resources/") + excludeFileNameC());
+#else
+    candidates << QStringLiteral("/etc/%1/%2").arg(Theme::instance()->appName(), excludeFileNameC()) << appDir.filePath(excludeFileNameC())
+               << appDir.filePath(QStringLiteral("../etc/%1/%2").arg(Theme::instance()->appName(), excludeFileNameC()));
+#endif
+    for (const auto &candidate : std::as_const(candidates)) {
+        const QFileInfo info(candidate);
+        if (info.isFile() && info.isReadable()) {
+            return QDir::cleanPath(info.absoluteFilePath());
+        }
+    }
+    return {};
+}
+
 QString ConfigFile::backup() const
 {
     QString baseFile = configFile();
@@ -734,12 +758,18 @@ std::unique_ptr<QSettings> ConfigFile::settingsWithGroup(const QString &group)
     return settings;
 }
 
-void ConfigFile::setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles)
+void ConfigFile::setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles, const QString &applicationDir)
 {
     ConfigFile cfg;
     QString systemList = cfg.excludeFile(ConfigFile::SystemScope);
     qCInfo(lcConfigFile) << "Adding system ignore list to csync:" << systemList;
     excludedFiles.addExcludeFilePath(systemList);
+
+    const QString installationList = excludeFileFromInstallation(applicationDir);
+    if (!installationList.isEmpty()) {
+        qCInfo(lcConfigFile) << "Adding system wide ignore list of the installation to csync:" << installationList;
+        excludedFiles.addExcludeFilePath(installationList);
+    }
 
     QString userList = cfg.excludeFile(ConfigFile::UserScope);
     if (QFile::exists(userList)) {

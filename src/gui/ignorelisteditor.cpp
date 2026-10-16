@@ -24,6 +24,8 @@
 #include <QListWidgetItem>
 #include <QMessageBox>
 
+#include <utility>
+
 namespace OCC {
 
 static const int patternCol = 0;
@@ -46,6 +48,16 @@ IgnoreListEditor::IgnoreListEditor(QWidget *parent)
     addPattern(QStringLiteral("._sync_*.db*"), /*deletable=*/false, /*readonly=*/true, /*global=*/true);
     addPattern(QStringLiteral(".sync_*.db*"), /*deletable=*/false, /*readonly=*/true, /*global=*/true);
     readIgnoreFile(cfgFile.excludeFile(ConfigFile::SystemScope), /*global=*/true);
+    // owncloud.online: systemweite Liste der Installation (Administrator), ebenfalls nur lesbar
+    const QString installationList = ConfigFile::excludeFileFromInstallation();
+    if (!installationList.isEmpty()) {
+        const QString systemTooltip = std::exchange(readOnlyTooltip,
+            tr("This entry is provided by the system at '%1' "
+               "and cannot be modified in this view.")
+                .arg(QDir::toNativeSeparators(installationList)));
+        readIgnoreFile(installationList, /*global=*/true);
+        readOnlyTooltip = systemTooltip;
+    }
     readIgnoreFile(cfgFile.excludeFile(ConfigFile::UserScope), /*global=*/false);
 
     connect(this, &QDialog::accepted, this, &IgnoreListEditor::slotUpdateLocalIgnoreList);

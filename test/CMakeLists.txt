@@ -21,6 +21,8 @@ if (NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})
 endif()
 
 owncloud_add_test(ExcludedFiles)
+# owncloud.online: systemweite Ausschlussliste neben dem Programm (wie 6.0.3)
+owncloud_add_test(InstallationExcludes)
 
 owncloud_add_test(Utility)
 owncloud_add_test(AppConfig ../src/libsync/owncloudtheme.cpp)
