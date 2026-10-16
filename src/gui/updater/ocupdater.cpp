@@ -297,7 +297,11 @@ QString OCUpdater::availableVersionString() const
 
 void OCUpdater::checkForUpdate()
 {
-    QNetworkReply *reply = _accessManager->get(QNetworkRequest(_updateUrl));
+    QNetworkRequest request(_updateUrl);
+    // GitHub leitet Release-Downloads per 302 auf release-assets.githubusercontent.com um. Ohne diese Angabe setzt der
+    // AccessManager ManualRedirectPolicy: Die Antwort wäre die leere Weiterleitung, der Feed nie lesbar.
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
+    QNetworkReply *reply = _accessManager->get(request);
     connect(_timeoutWatchdog, &QTimer::timeout, this, &OCUpdater::slotTimedOut);
     _timeoutWatchdog->start(30s);
     connect(reply, &QNetworkReply::finished, this, &OCUpdater::slotVersionInfoArrived);
@@ -337,7 +341,9 @@ void OCUpdater::slotVersionInfoArrived()
     if (ok) {
         versionInfoArrived(_updateInfo);
     } else {
-        qCWarning(lcUpdater) << "Could not parse update information.";
+        // eine nicht befolgte Weiterleitung (etwa von https auf http) kommt ohne Fehler, aber mit leerem Inhalt an
+        qCWarning(lcUpdater) << "Could not parse update information. HTTP status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+                             << "redirect target:" << reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
         setDownloadState(OCUpdater::Unknown);
         Q_EMIT retryUpdateCheckLater();
     }

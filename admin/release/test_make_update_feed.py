@@ -207,6 +207,14 @@ class ClientContract(unittest.TestCase):
         self.assertIn("Version::suffix()", body)
         self.assertIn("Version::versionWithBuildNumber()", body)
 
+    def test_client_follows_the_github_redirect(self):
+        # GitHub beantwortet releases/download/... mit 302; der Workflow prüft den Ablageort mit curl -L,
+        # das verdeckt einen Client, der der Weiterleitung nicht folgt (11.0.0-beta1)
+        source = self.read_source("src/gui/updater/ocupdater.cpp")
+        body = source[source.index("void OCUpdater::checkForUpdate()"):]
+        body = body[:body.index("\n}\n")]
+        self.assertIn("NoLessSafeRedirectPolicy", body)
+
     def test_package_names_match_publish_release(self):
         publish = self.read_source(".github/workflows/publish-release.yml")
         update = self.read_source(".github/workflows/update-feed.yml")

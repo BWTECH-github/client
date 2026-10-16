@@ -13,7 +13,64 @@
 #include "updater/updateinfo.h"
 #include "updater/updater.h"
 
+#include <QTcpServer>
+#include <QTcpSocket>
+
 namespace OCC {
+
+// Antwortet wie GitHub auf einen Release-Download: /feed.xml leitet mit 302 auf /asset.xml um, erst dort liegt der Feed
+class FeedServer : public QTcpServer
+{
+public:
+    QByteArray feed;
+    QStringList requestedPaths;
+
+    FeedServer()
+    {
+        connect(this, &QTcpServer::newConnection, this, [this] {
+            while (QTcpSocket *socket = nextPendingConnection()) {
+                connect(socket, &QTcpSocket::disconnected, socket, &QObject::deleteLater);
+                connect(socket, &QTcpSocket::readyRead, this, [this, socket] { answer(socket); });
+            }
+        });
+    }
+
+private:
+    void answer(QTcpSocket *socket)
+    {
+        const QByteArray request = socket->property("request").toByteArray() + socket->readAll();
+        socket->setProperty("request", request);
+        if (!request.contains("\r\n\r\n")) {
+            return;
+        }
+        // "GET /feed.xml HTTP/1.1"
+        const QByteArray path = request.split(' ').value(1);
+        requestedPaths.append(QString::fromLatin1(path));
+        QByteArray head;
+        QByteArray body;
+        if (path == "/feed.xml") {
+            head = "HTTP/1.1 302 Found\r\nLocation: http://127.0.0.1:" + QByteArray::number(serverPort()) + "/asset.xml\r\n";
+        } else if (path == "/asset.xml") {
+            head = "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\n";
+            body = feed;
+        } else {
+            head = "HTTP/1.1 404 Not Found\r\n";
+        }
+        socket->write(head + "Content-Length: " + QByteArray::number(body.size()) + "\r\nConnection: close\r\n\r\n" + body);
+        socket->disconnectFromHost();
+    }
+};
+
+// nimmt den gelesenen Feed entgegen, statt ein Update anzubieten
+class FeedProbe : public OCUpdater
+{
+public:
+    using OCUpdater::OCUpdater;
+    QList<UpdateInfo> received;
+
+protected:
+    void versionInfoArrived(const UpdateInfo &info) override { received.append(info); }
+};
 
 class TestUpdater : public QObject
 {
@@ -86,6 +143,43 @@ private Q_SLOTS:
         QVERIFY(!ok);
         UpdateInfo::parseString(QStringLiteral("not xml"), &ok);
         QVERIFY(!ok);
+    }
+
+    // GitHub beantwortet jeden Release-Download mit 302 auf release-assets.githubusercontent.com. Bisher kam nur diese
+    // leere Weiterleitung an („Could not parse update information“), kein Client fand je ein Update.
+    void testFeedBehindRedirect()
+    {
+        // Arrange
+        FeedServer server;
+        server.feed = QByteArrayLiteral("<owncloudclient><version>11.0.0-beta3</version><versionstring>owncloud.online 11.0.0-beta3</versionstring>"
+                                        "</owncloudclient>");
+        QVERIFY(server.listen(QHostAddress::LocalHost));
+        FeedProbe updater(QUrl(QStringLiteral("http://127.0.0.1:%1/feed.xml").arg(server.serverPort())));
+
+        // Act
+        updater.checkForUpdate();
+
+        // Assert
+        QTRY_COMPARE(updater.received.size(), 1);
+        QCOMPARE(updater.received.first().version(), QStringLiteral("11.0.0-beta3"));
+        QCOMPARE(server.requestedPaths, QStringList({QStringLiteral("/feed.xml"), QStringLiteral("/asset.xml")}));
+    }
+
+    // Gegenprobe gegen GitHub selbst, nur auf Anforderung, weil sie das Netz braucht, z. B.
+    // OCC_TEST_LIVE_FEED_URL=https://github.com/BWTECH-github/client/releases/download/v11.0.0-beta1/owncloud.online-update-win-x64-beta.xml
+    void testPublishedFeed()
+    {
+        const QUrl url(qEnvironmentVariable("OCC_TEST_LIVE_FEED_URL"));
+        if (url.isEmpty()) {
+            QSKIP("OCC_TEST_LIVE_FEED_URL not set");
+        }
+        FeedProbe updater(url);
+
+        updater.checkForUpdate();
+
+        QTRY_COMPARE_WITH_TIMEOUT(updater.received.size(), 1, 30000);
+        qInfo() << "published feed offers" << updater.received.first().version() << updater.received.first().downloadUrl();
+        QVERIFY(!updater.received.first().version().isEmpty());
     }
 
     void testVersionCompare_data()
