@@ -1004,7 +1004,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+83"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+86"/>
         <source>Server does not support OAuth</source>
         <translation>ເຊີບເວີບໍ່ຮອງຮັບ OAuth</translation>
     </message>
@@ -2087,7 +2087,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+187"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
         <source>Successfully signed in</source>
         <translation>ເຂົ້າສູ່ລະບົບສຳເລັດແລ້ວ</translation>
     </message>
@@ -2148,7 +2148,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+64"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
         <source>Application Name Logo %1</source>
         <translation>ໂລໂກ້ຊື່ແອັບພລິເຄຊັນ %1</translation>
     </message>
@@ -2183,7 +2183,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ໂລໂກ້ເພີ່ມເຕີມທີ່ກຳນົດໂດຍອົງກອນ</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+134"/>
         <source>URL copied</source>
         <translation>ສຳເນົາ URL ແລ້ວ</translation>
     </message>
@@ -2193,13 +2193,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>ສຳເນົາ URL</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+67"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation>ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບບໍລິການເຂົ້າສູ່ລະບົບໄດ້. ຖ້າບັນຫາຍັງສືບຕໍ່, ກະລຸນາຕິດຕໍ່ຝ່າຍຊ່ວຍເຫຼືອ. </translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Please sign in using the browser window that has opened and confirm with &quot;Authorize&quot;.</source>
+        <location line="+18"/>
+        <source>Please sign in using the browser window that has opened and allow access if you are asked to.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2208,7 +2208,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ກະລຸນາສຳເນົາ URL ການຢືນຢັນຕົວຕົນໂດຍໃຊ້ປຸ່ມຂ້າງເທິງ, ແລະ ສົ່ງຂໍ້ມູນນີ້ໃຫ້ກັບຝ່າຍຊ່ວຍເຫຼືອ.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+34"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>ຄົ້ນຫາ WebFinger instances ບໍ່ສຳເລັດ: %1</translation>
     </message>
@@ -2228,7 +2228,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ເຊີບເວີນີ້ບໍ່ຮອງຮັບໂດຍໂປຣແກຣມນີ້.</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດຂະນະພະຍາຍາມເຂົ້າສູ່ລະບົບເຊີບເວີທີ່ເປີດໃຊ້ OAuth2. %1</translation>
     </message>
@@ -2872,12 +2872,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+91"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+132"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
         <translation>ບໍ່ສາມາດດຶງເອົາລິ້ງການອະນຸຍາດໄດ້! ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+18"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation>ບໍ່ສາມາດເຂົ້າເຖິງ IdP ໄດ້. ຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ ຫຼື ລອງໃໝ່ພາຍຫຼັງ.</translation>
     </message>
@@ -2925,7 +2925,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ເພື່ອສຳເນົາ URL ເຂົ້າສູ່ລະບົບໃສ່ຄລິບບອດ, ໃຫ້ໃຊ້ປຸ່ມສຳເນົາ</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Copy sign in URL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2945,12 +2945,12 @@ Note that using any logging command line options will override the settings.</so
         <translation>ຢູ່ໃນສະຖານະອອກຈາກລະບົບ</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Sign in</source>
         <translation>ລອງໃໝ່</translation>
     </message>
     <message>
-        <location line="+88"/>
+        <location line="+102"/>
         <source>URL copied</source>
         <translation>ສຳເນົາ URL ແລ້ວ</translation>
     </message>
@@ -4365,7 +4365,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+435"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ມີໂປຣແກຣມ %1 Client ເວີຊັນໃໝ່ໃຫ້ອັບເດດ.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; ສາມາດດາວໂຫຼດໄດ້ແລ້ວ. ເວີຊັນທີ່ຕິດຕັ້ງຢູ່ແມ່ນ %3.&lt;/p&gt;</translation>
     </message>
@@ -4451,7 +4451,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ServerDiagnostics</name>
     <message>
-        <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+109"/>
+        <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+114"/>
         <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
         <translation type="unfinished"></translation>
     </message>

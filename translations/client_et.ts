@@ -1002,7 +1002,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+83"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+86"/>
         <source>Server does not support OAuth</source>
         <translation>Server ei toeta OAuth protokolli</translation>
     </message>
@@ -2084,7 +2084,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+187"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
         <source>Successfully signed in</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2145,7 +2145,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+64"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
         <source>Application Name Logo %1</source>
         <translation>Rakendus Nimi Logo %1</translation>
     </message>
@@ -2180,7 +2180,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Organisatsiooni poolt defineeritud täiendav logo</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+134"/>
         <source>URL copied</source>
         <translation>URL kopeeritud</translation>
     </message>
@@ -2190,13 +2190,13 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Kopeeri URL</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+67"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Please sign in using the browser window that has opened and confirm with &quot;Authorize&quot;.</source>
+        <location line="+18"/>
+        <source>Please sign in using the browser window that has opened and allow access if you are asked to.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2205,7 +2205,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+34"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2225,7 +2225,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2869,12 +2869,12 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+91"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+132"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+18"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2922,7 +2922,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Copy sign in URL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2942,12 +2942,12 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Jää väljalogituks</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Sign in</source>
         <translation>Logi sisse</translation>
     </message>
     <message>
-        <location line="+88"/>
+        <location line="+102"/>
         <source>URL copied</source>
         <translation>URL kopeeritud</translation>
     </message>
@@ -4362,7 +4362,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+435"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Uus versioon %1 kliendist on saadaval.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; on saadaval allalaadimiseks. Paigaldatud on versioon %3.&lt;p&gt;</translation>
     </message>
@@ -4448,7 +4448,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>ServerDiagnostics</name>
     <message>
-        <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+109"/>
+        <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+114"/>
         <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
         <translation type="unfinished"></translation>
     </message>

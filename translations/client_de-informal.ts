@@ -22,12 +22,12 @@
     <message>
         <location filename="../src/common/checksums.cpp" line="+124"/>
         <source>The checksum header is malformed: %1</source>
-        <translation>Der Prüfsummen-Header hat ein fehlerhaftes Format: %1</translation>
+        <translation>Die Prüfsummen-Kopfzeile hat ein fehlerhaftes Format: %1</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The checksum header contained an unknown checksum type &apos;%1&apos;</source>
-        <translation>Der Prüfsummenkopf beinhaltet eine unbekannte Prüfsumme vom Typ &apos;%1&apos;</translation>
+        <translation>Die Prüfsummen-Kopfzeile enthielt den unbekannten Prüfsummentypen &apos;%1&apos;.</translation>
     </message>
 </context>
 <context>
@@ -43,7 +43,7 @@ Datei Synchronisations-Applikation.</translation>
         <location line="+8"/>
         <source>For more information, see %1</source>
         <comment>link to homepage</comment>
-        <translation>Siehe %1 für mehr Informationen.</translation>
+        <translation>Mehr Informationen unter %1</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -112,7 +112,7 @@ Datei Synchronisations-Applikation.</translation>
         <location line="+5"/>
         <source>%n Filter(s)</source>
         <translation>
-            <numerusform>%1 Filter</numerusform>
+            <numerusform>%n Filter</numerusform>
             <numerusform>%n Filter</numerusform>
         </translation>
     </message>
@@ -152,7 +152,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location filename="../src/libsync/networkjobs/fetchuserinfojobfactory.cpp" line="+63"/>
         <source>Failed to retrieve user info</source>
-        <translation>Die Benutzerinformationen konnten nicht abgerufen werden</translation>
+        <translation>Die Benutzerinformationen konnten nicht abgerufen werden.</translation>
     </message>
 </context>
 <context>
@@ -163,12 +163,12 @@ Datei Synchronisations-Applikation.</translation>
         <location line="+57"/>
         <location line="+5"/>
         <source>Can&apos;t rename %1, the file is currently in use</source>
-        <translation>Kann %1 nicht umbenennen, die Datei wird gerade benutzt</translation>
+        <translation>Kann %1 nicht umbenennen, die Datei wird gerade benutzt.</translation>
     </message>
     <message>
         <location filename="../src/libsync/filesystem.cpp" line="+192"/>
         <source>Could not remove folder</source>
-        <translation>Der Ordner konnte nicht gelöscht weden</translation>
+        <translation>Der Ordner konnte nicht entfernt werden.</translation>
     </message>
 </context>
 <context>
@@ -183,7 +183,8 @@ Datei Synchronisations-Applikation.</translation>
         <location line="-24"/>
         <location line="+16"/>
         <source>Unavailable: the space is no longer available on the server</source>
-        <translation>Nicht verfügbar: Der Speicherplatz ist auf dem Server nicht mehr verfügbar</translation>
+        <translation>Nicht verfügbar: Der Speicherplatz ist auf dem Server nicht mehr verfügbar
+</translation>
     </message>
     <message>
         <location line="-12"/>
@@ -244,7 +245,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location line="+24"/>
         <source>Local folder %1 does not exist.</source>
-        <translation>Das Lokale Verzeichnis %1 existiert nicht</translation>
+        <translation>Das Lokale Verzeichnis %1 existiert nicht.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -295,7 +296,7 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location line="+6"/>
         <source>Pick a local folder on your computer to sync</source>
-        <translation>Wähle einen lokalen Ordner zum Synchronisieren aus</translation>
+        <translation>Wähle einen lokalen Ordner zum Synchronisieren aus.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -386,7 +387,8 @@ Datei Synchronisations-Applikation.</translation>
     <message>
         <location line="-95"/>
         <source>Manage subfolder sync</source>
-        <translation>Synchronisierung von Unterordnern verwalten</translation>
+        <translation>Synchronisierung von Unterordnern verwalten
+</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -985,7 +987,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location line="+35"/>
         <source>The provided credentials are not correct</source>
-        <translation>Die zur Verfügung gestellten Anmeldeinformationen sind nicht korrekt</translation>
+        <translation>Die zur Verfügung gestellten Anmeldeinformationen sind nicht korrekt.</translation>
     </message>
     <message>
         <location line="-187"/>
@@ -1004,14 +1006,14 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+83"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+86"/>
         <source>Server does not support OAuth</source>
         <translation>Der Server unterstützt OAuth nicht</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Server did not ask for authorization</source>
-        <translation>Der Server hat nicht nach einer Autorisierung gefragt</translation>
+        <translation>Der Server hat nicht nach Authentifizierung gefragt.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1051,7 +1053,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location line="+2"/>
         <source>Directory not accessible on client, permission denied</source>
-        <translation>Der Ordner ist auf dem Client nicht erreichbar, Zugriff verweigert</translation>
+        <translation>Der Ordner ist auf dem Client nicht erreichbar, Zugriff verweigert.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1205,17 +1207,17 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location line="+202"/>
         <source>Could not read system exclude file</source>
-        <translation>Die systemeigene Ausschlussdatei kann nicht gelesen werden</translation>
+        <translation>Die systemeigene Ausschlussdatei kann nicht gelesen werden.</translation>
     </message>
     <message>
         <location line="+195"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
-        <translation>Ordner %1 wurde angelegt, aber früher von der Synchronisation ausgeschlossen. Daten im Ordner werden nicht synchronisiert.</translation>
+        <translation>Der Ordner %1 wurde erzeugt, aber von der Synchronisation ausgeschlossen. Daten im Ordner werden nicht synchronisiert.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
-        <translation>Datei %1 wurde angelegt, aber früher von der Synchronisation ausgeschlossen, sie wird nicht synchronisiert.</translation>
+        <translation>Die Datei %1 wurde erzeugt, aber von der Synchronisation ausgeschlossen. Sie wird nicht synchronisiert.</translation>
     </message>
     <message>
         <location line="+117"/>
@@ -1339,7 +1341,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location filename="../src/gui/folderman.cpp" line="+569"/>
         <source>Could not reset folder state</source>
-        <translation>Der Ordnerzustand konnte nicht zurückgesetzt werden</translation>
+        <translation>Der Ordnerzustand konnte nicht zurückgesetzt werden.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1419,7 +1421,8 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location line="+6"/>
         <source>You have no permission to write to the selected folder.</source>
-        <translation>Du hast keine Schreibberechtigung für den ausgewählten Ordner.</translation>
+        <translation>Du hast keine Schreibberechtigung für den ausgewählten Ordner.
+</translation>
     </message>
     <message>
         <location line="-79"/>
@@ -1476,12 +1479,12 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+109"/>
         <source>Virtual files are not available for the selected folder</source>
-        <translation>Virtuelle Dateien sind für den gewählten Ordner nicht verügbar</translation>
+        <translation>Virtuelle Dateien sind für den ausgewählten Ordner nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Add Folder Sync Connection</source>
-        <translation>Synchronisiertes Verzeichnis hinzufügen</translation>
+        <translation>Ordner-Synchronisation hinzufügen</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1525,7 +1528,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location line="+90"/>
         <source>No E-Tag received from server, check Proxy/Gateway</source>
-        <translation>Kein E-Tag vom Server empfangen, bitte Proxy / Gateway überprüfen</translation>
+        <translation>Kein E-Tag vom Server empfangen, bitte Proxy / Gateway überprüfen.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1535,12 +1538,12 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location line="+11"/>
         <source>We received an unexpected download Content-Length.</source>
-        <translation>Unerwartete Daten-Länge beim Herunterladen empfangen.</translation>
+        <translation>Unerwartete Datenlänge beim Herunterladen empfangen.</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>Server returned wrong content-range</source>
-        <translation>Der Server hat einen falschen Bereich für den Inhalt zurück gegeben</translation>
+        <translation>Der Server hat einen falschen Bereich für den Inhalt zurück gegeben.</translation>
     </message>
 </context>
 <context>
@@ -1629,7 +1632,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location line="+6"/>
         <source>Files Ignored by Patterns</source>
-        <translation>Dateien, welche durch Mustererkennung ignoriert werden</translation>
+        <translation>Nach Muster ignorierte Dateien</translation>
     </message>
     <message>
         <location line="+39"/>
@@ -1658,12 +1661,12 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 Items where deletion is allowed will be deleted if they prevent a directory from being removed. This is useful for meta data.</source>
         <translation>Dateien oder Ordner, die einem definierten Muster entsprechen, werden nicht synchronisiert. Änderungen werden bei der nächsten Synchronisation übernommen.
 
-Objekte bei denen das Löschen erlaubt ist werden gelöscht, wenn sie die Löschung eines Ordners verhindern würden. Das ist hilfreich für Metadaten.</translation>
+Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Löschung eines Ordners verhindern würden. Das trifft besonders auf Metadaten zu.</translation>
     </message>
     <message>
         <location filename="../src/gui/ignorelisteditor.cpp" line="+110"/>
         <source>Could not open file</source>
-        <translation>Die Datei konnte nicht geöffnet werden</translation>
+        <translation>Die Datei konnte nicht geöffnet werden.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1762,7 +1765,7 @@ Da diese Protokolldateien sehr groß werden können, erstellt der Client für je
     <message>
         <location line="-32"/>
         <source>If enabled, logs will be written to:</source>
-        <translation>Wenn eingeschaltet, werden Logs hier erstellt:</translation>
+        <translation>Logs werden - wenn eingeschaltet - geschrieben nach:</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1772,7 +1775,7 @@ Da diese Protokolldateien sehr groß werden können, erstellt der Client für je
     <message>
         <location line="+32"/>
         <source>Log Http traffic </source>
-        <translation>HTTP-Kommunikation aufzeichnen</translation>
+        <translation>HTTP Datenverkehr loggen</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -2087,7 +2090,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+187"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
         <source>Successfully signed in</source>
         <translation>Erfolgreich angemeldet</translation>
     </message>
@@ -2114,24 +2117,25 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+2"/>
         <source>Unsupported token type: %1</source>
-        <translation>Nicht unterstützter Token-Typ: %1</translation>
+        <translation>Nicht unterstützter Tokentyp: %1</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The reply from the server did not contain all expected fields
 :%1</source>
-        <translation>Die Server-Antwort hat nicht alle erwarteten Felder enthalten: %1</translation>
+        <translation>Die Antwort des Servers hat nicht alle erwarteten Felder beinhaltet
+:%1</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Unknown Error</source>
-        <translation>Ein unbekannter Fehler ist aufgetreten.</translation>
+        <translation>Unbekannter Fehler</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+23"/>
         <source>Login Error</source>
-        <translation>Log-In Fehler</translation>
+        <translation>Anmeldefehler</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2147,7 +2151,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+64"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
         <source>Application Name Logo %1</source>
         <translation>Anwendungsname Logo %1</translation>
     </message>
@@ -2182,7 +2186,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Zusätzliches, von der Organisation definiertes Logo</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+134"/>
         <source>URL copied</source>
         <translation>Link kopiert</translation>
     </message>
@@ -2192,14 +2196,14 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Link kopieren</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+67"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation>Keine Verbindung zum Anmeldedienst möglich. Wenn das Problem weiterhin besteht, wende dich bitte an den Support.</translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Please sign in using the browser window that has opened and confirm with &quot;Authorize&quot;.</source>
-        <translation>Bitte melde dich im geöffneten Browserfenster an und bestätige mit „Autorisieren“.</translation>
+        <location line="+18"/>
+        <source>Please sign in using the browser window that has opened and allow access if you are asked to.</source>
+        <translation>Bitte melde dich im geöffneten Browserfenster an und bestätige den Zugriff, falls du danach gefragt wirst.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2207,7 +2211,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Bitte kopiere die Authentifizierungs-URL mithilfe der Schaltfläche oben und gib diese Informationen an den Support weiter.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+34"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>Fehler beim Auffinden von WebFinger-Instanzen: %1</translation>
     </message>
@@ -2227,7 +2231,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Dieser Client unterstützt diesen Server nicht.</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation>Fehler beim Versuch sich bei einem OAuth2-fähigen Server anzumelden. %1</translation>
     </message>
@@ -2252,7 +2256,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="+248"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
-        <translation>Aktualisierung kann nicht herunter geladen werden. Bitte klicke &lt;a href=&apos;%1&apos;&gt;hier&lt;/a&gt; um die Aktualisierung manuell herunter zu laden.</translation>
+        <translation>Aktualisierung kann nicht heruntergeladen werden. Bitte klicke &lt;a href=&apos;%1&apos;&gt;hier&lt;/a&gt;, um die Aktualisierung manuell herunterzuladen.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2338,7 +2342,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+3"/>
         <source>File name contains at least one invalid character</source>
-        <translation>Der Dateiname enthält mindestens ein ungültiges Zeichen</translation>
+        <translation>Der Dateiname enthält mindestens ein ungültiges Zeichen.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2427,17 +2431,17 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="-170"/>
         <source>Not allowed because you don&apos;t have permission to add subfolders to that folder</source>
-        <translation>Nicht erlaubt, weil keine Rechte bestehen, diesem Verzeichnis Unterverzeichnisse hinzuzufügen.</translation>
+        <translation>Nicht erlaubt, da du keine Rechte zur Erstellung von Unterordnern hast</translation>
     </message>
     <message>
         <location line="-569"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
-        <translation>Fehler während des Umbenennes, nicht behandelter Status Code: %1</translation>
+        <translation>Fehler beim Umbenennen, nicht behandelter Statuscode: %1</translation>
     </message>
     <message>
         <location line="+574"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
-        <translation>Nicht erlaubt, weil die nötigen Rechte fehlen, Dateien zu dem Verzeichnis hinzuzufügen</translation>
+        <translation>Nicht erlaubt, da du keine Rechte zum Hinzufügen von Dateien in diesen Ordner hast</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -2447,7 +2451,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+178"/>
         <source>This Space is currently unavailable</source>
-        <translation>Dieser Space ist aktuell nicht erreichbar</translation>
+        <translation>Dieser Space ist aktuell nicht erreichbar.</translation>
     </message>
     <message>
         <location line="+21"/>
@@ -2473,18 +2477,18 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="+131"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
-        <translation>Speicherplatz konnte nicht freigegeben werden, die Datei %1 wird derzeit verwendet</translation>
+        <translation>Speicherplatz konnte nicht freigegeben werden, die Datei %1 wird derzeit verwendet.</translation>
     </message>
     <message>
         <location line="+25"/>
         <location line="+81"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
-        <translation>Datei %1 kann nicht heruntergeladen werden, da der lokale Dateiname mit %2 kollidiert!</translation>
+        <translation>Datei %1 kann nicht heruntergeladen werden, da der lokale Dateiname mit %2 kollidiert.</translation>
     </message>
     <message>
         <location line="+58"/>
         <source>The download would reduce free local disk space below the limit</source>
-        <translation>Das Herunterladen würde den lokalen freien Speicherplatz unter das Limit reduzieren</translation>
+        <translation>Das Herunterladen würde den lokalen freien Speicherplatz unter das Limit reduzieren.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2494,17 +2498,17 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+195"/>
         <source>File was deleted from server</source>
-        <translation>Datei wurde vom Server gelöscht</translation>
+        <translation>Die Datei wurde vom Server gelöscht.</translation>
     </message>
     <message>
         <location line="+59"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
-        <translation>Der Webserver hat eine leere Länge bezüglich des Inhalts für eine nicht leere Datei in der Wiederaufnahme zurückgegeben (Defekt)</translation>
+        <translation>Der Webserver hat eine leere Länge bezüglich des Inhalts für eine nicht leere Datei in der Wiederaufnahme zurückgegeben (defekt).</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>The file could not be downloaded completely.</source>
-        <translation>Die Datei konnte nicht vollständig herunter geladen werden.</translation>
+        <translation>Die Datei konnte nicht vollständig heruntergeladen werden.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2514,7 +2518,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+107"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
-        <translation>Datei %1 kann nicht gespeichert werden, da der lokale Dateiname mit %2 kollidiert!</translation>
+        <translation>Datei %1 kann nicht gespeichert werden, da der lokale Dateiname mit %2 kollidiert.</translation>
     </message>
     <message>
         <location line="+88"/>
@@ -2527,13 +2531,13 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
-        <translation>Die Datei %1 wird gerade benutzt</translation>
+        <translation>Die Datei %1 wird gerade benutzt.</translation>
     </message>
     <message>
         <location line="-639"/>
         <location line="+596"/>
         <source>File has changed since discovery</source>
-        <translation>Datei ist seit der Entdeckung geändert worden</translation>
+        <translation>Datei ist seit der Entdeckung geändert worden.</translation>
     </message>
 </context>
 <context>
@@ -2549,12 +2553,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location filename="../src/libsync/propagatorjobs.cpp" line="+161"/>
         <source>could not delete file %1, error: %2</source>
-        <translation>Die Datei %1 konnte nicht gelöscht werden, Fehler: %2</translation>
+        <translation>Konnte Datei %1 nicht löschen. Fehler: %2</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Can not create local folder %1 because of a local file name clash with %2</source>
-        <translation>Der lokale Ordner %1 konnte aufgrund eines Namenkonfliktes mit %2 nicht erstellt werden</translation>
+        <translation>Der lokale Ordner %1 konnte aufgrund eines Namenskonflikts mit %2 nicht erstellt werden.</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -2564,12 +2568,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>Die Datei %1 wird gerade benutzt</translation>
+        <translation>Die Datei %1 wird gerade benutzt.</translation>
     </message>
     <message>
         <location line="-16"/>
         <source>could not create folder %1</source>
-        <translation>Ordner %1 konnte nicht erstellt werden </translation>
+        <translation>Ordner %1 konnte nicht angelegt werden.</translation>
     </message>
 </context>
 <context>
@@ -2582,7 +2586,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+30"/>
         <source>Could not remove %1 because of a local file name clash with %2!</source>
-        <translation>%1 kann aufgrund eines Konfliktes mit dem lokalen Dateinamen von %2 nicht gelöscht werden!</translation>
+        <translation>%1 kann aufgrund eines Konflikts mit dem lokalen Dateinamen von %2 nicht gelöscht werden.</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -2593,7 +2597,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <location line="-36"/>
         <location line="+27"/>
         <source>%1 the file is currently in use</source>
-        <translation>Datei %1 wird gerade benutzt</translation>
+        <translation>Datei %1 wird gerade benutzt.</translation>
     </message>
 </context>
 <context>
@@ -2601,12 +2605,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+121"/>
         <source>File %1 can not be renamed to %2 because of a local file name clash</source>
-        <translation>%1 kann aufgrund eines Konfliktes mit dem lokalen Dateinamen nicht zu %2 umbenannt werden</translation>
+        <translation>%1 kann aufgrund eines Konflikts mit dem lokalen Dateinamen nicht zu %2 umbenannt werden.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Could not rename %1 to %2, the file is currently in use</source>
-        <translation>Konnte %1 nicht in %2 umbenennen, die Datei wird gerade benutzt</translation>
+        <translation>Konnte %1 nicht in %2 umbenennen, die Datei wird gerade benutzt.</translation>
     </message>
     <message>
         <location line="+27"/>
@@ -2616,7 +2620,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>Die Datei %1 wird gerade benutzt</translation>
+        <translation>Die Datei %1 wird gerade benutzt.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2652,7 +2656,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+42"/>
         <source>Setting file status failed due to file lock</source>
-        <translation>Das Festlegen des Dateistatus ist aufgrund einer Dateisperre fehlgeschlagen</translation>
+        <translation>Das Festlegen des Dateistatus ist aufgrund einer Dateisperre fehlgeschlagen.</translation>
     </message>
 </context>
 <context>
@@ -2670,7 +2674,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>Die Datei %1 wird gerade benutzt</translation>
+        <translation>Die Datei %1 wird gerade benutzt.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -2693,7 +2697,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>Die Datei %1 wird gerade benutzt</translation>
+        <translation>Die Datei %1 wird gerade benutzt.</translation>
     </message>
 </context>
 <context>
@@ -2746,7 +2750,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+80"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation>Der Server hat nach einer nicht mehr benutzen Funktion angefragt (Polling)</translation>
+        <translation>Der Server hat nach einer nicht mehr benutzen Funktion gefragt (Polling).</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -2799,7 +2803,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location filename="../src/libsync/propagateuploadtus.cpp" line="+58"/>
         <source>%1 the file is currently in use</source>
-        <translation>Datei %1 wird gerade benutzt</translation>
+        <translation>Datei %1 wird gerade benutzt.</translation>
     </message>
     <message>
         <location line="+56"/>
@@ -2871,12 +2875,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+91"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+132"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
         <translation>Der Autorisierungslink konnte nicht abgerufen werden. Bitte wende dich an deinen Systemadministrator.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+18"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation>Der Identitätsanbieter (IdP) ist nicht erreichbar. Wende dich an deinen Systemadministrator oder versuche es später erneut.</translation>
     </message>
@@ -2924,7 +2928,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Um die Anmelde-URL in die Zwischenablage zu kopieren, verwende die Schaltfläche „Kopieren“.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>Copy URL to sign in</source>
         <translation>URL zum Anmelden kopieren</translation>
     </message>
@@ -2944,12 +2948,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Abgemeldet bleiben</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Sign in</source>
         <translation>Anmelden</translation>
     </message>
     <message>
-        <location line="+88"/>
+        <location line="+102"/>
         <source>URL copied</source>
         <translation>URL kopiert</translation>
     </message>
@@ -2982,7 +2986,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+6"/>
         <source>Deselect remote folders you do not wish to synchronize.</source>
-        <translation>Entfernte Ordner abwählen die nicht synchronisiert werden sollen.</translation>
+        <translation>Entfernte Ordner abwählen, die nicht synchronisiert werden sollen.</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -3124,7 +3128,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+7"/>
         <source>Log Settings</source>
-        <translation>Log-Einstellungen</translation>
+        <translation>Einstellungen für Logging</translation>
     </message>
     <message>
         <location line="+90"/>
@@ -3618,7 +3622,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+63"/>
         <source>I shared something with you</source>
-        <translation>Ich habe etwas mit dir geteilt</translation>
+        <translation>Ich habe etwas mit dir geteilt.</translation>
     </message>
     <message>
         <location line="-74"/>
@@ -3645,7 +3649,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+0"/>
         <source>Resharing this folder is not allowed</source>
-        <translation>Weiterteilen des Ordners ist nicht erlaubt</translation>
+        <translation>Weiteres Teilen des Ordners ist nicht erlaubt.</translation>
     </message>
     <message>
         <location line="+75"/>
@@ -3655,7 +3659,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+11"/>
         <source>Show file versions in web browser</source>
-        <translation>Zeige Dateiversionen im Browser</translation>
+        <translation>Dateiversion im Webbrowser anzeigen.</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -3723,7 +3727,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <location line="+12"/>
         <source>Only %1 are available, need at least %2 to start</source>
         <comment>Placeholders are postfixed with file sizes using Utility::octetsToString()</comment>
-        <translation>Es stehen nur %1 zur Verfügung, es müssen mindestens %2 sein um zu starten</translation>
+        <translation>Es stehen nur %1 zur Verfügung; es müssen mindestens %2 sein, um zu starten.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -3751,7 +3755,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+7"/>
         <source>There is insufficient space available on the server for some uploads.</source>
-        <translation>Auf dem Server ist zum Hochladen für einige Dateien nicht genug Platz.</translation>
+        <translation>Auf dem Server ist nicht genug Platz, um alle Dateien hochzuladen.</translation>
     </message>
     <message>
         <location line="-750"/>
@@ -3790,7 +3794,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="-186"/>
         <source>The file %1 was ignored as its name is reserved by %2</source>
-        <translation>Die Datei %1 wurde ignoriert, da ihr Name von %2 reserviert ist</translation>
+        <translation>Die Datei %1 wurde ignoriert, da ihr Name von %2 reserviert ist.</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -3839,7 +3843,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location filename="../src/gui/tlserrordialog.ui" line="+14"/>
         <source>TLS Certificate Error</source>
-        <translation>TLS Zertifikat Fehler</translation>
+        <translation>TLS-Zertifikatfehler</translation>
     </message>
     <message>
         <location line="+28"/>
@@ -3872,7 +3876,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+1"/>
         <source>The server on account %1 runs an unsupported version %2. Using this client with unsupported server versions is untested and potentially dangerous. Proceed at your own risk.</source>
-        <translation>Der Server für Konto %1 benutzt eine nicht unterstützte Version %2. Die Client Software funktioniert möglicherweise mit nicht unterstützten Versionen, dies ist jedoch nicht getestet. Weiter auf eigenes Risiko.</translation>
+        <translation>Der Server für Konto %1 benutzt eine nicht unterstützte Version %2. Die Client-Software funktioniert möglicherweise mit nicht unterstützten Versionen, dies ist jedoch nicht getestet. Du fährst auf eigenes Risiko fort.</translation>
     </message>
     <message>
         <location line="+170"/>
@@ -4278,7 +4282,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location filename="../src/common/checksums.cpp" line="+260"/>
         <source>The downloaded file does not match the checksum, it will be resumed. &apos;%1&apos; != &apos;%2&apos;</source>
-        <translation>Die heruntergeladene Datei entspricht nicht der Prüfsumme, das Herunterladen wird wiederaufgenommen. &apos;%1&apos; != &apos;%2&apos;</translation>
+        <translation>Die heruntergeladene Datei entspricht nicht der Prüfsumme. Das Herunterladen wird wiederaufgenommen. &apos;%1&apos; != &apos;%2&apos;</translation>
     </message>
 </context>
 <context>
@@ -4286,17 +4290,17 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location filename="../src/common/vfs.cpp" line="+81"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
-        <translation>Das virtuelle Dateisystem Feature unterstützt kein Laufwerk als Synchronisationsordner</translation>
+        <translation>Virtuelle Dateien funktionieren nicht mit einem Laufwerk als Synchronisationspunkt.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The Virtual filesystem feature requires a NTFS file system, %1 is using %2</source>
-        <translation>Das virtuelle Dateisystem Feature benötigt ein NTFS Dateisystem, %1 nutzt %2</translation>
+        <translation>Virtuelle Dateien benötigt ein NTFS Dateisystem. %1 benutzt %2.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The Virtual filesystem feature is not supported on network drives</source>
-        <translation>Die Funktion für das virtuelle Dateisystem wird auf Netzwerklaufwerken nicht unterstützt</translation>
+        <translation>Virtuelle Dateien funktionieren nicht mit Netzwerk-Laufwerken.</translation>
     </message>
 </context>
 <context>
@@ -4353,7 +4357,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
         <source>Failed to retrieve user info</source>
-        <translation>Die Benutzerinformationen konnten nicht abgerufen werden</translation>
+        <translation>Die Benutzerinformationen konnten nicht abgerufen werden.</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -4364,7 +4368,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+435"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Eine neue Version des %1 Clients ist verfügbar.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; steht zum Herunterladen bereit. Die installierte Version ist %3.&lt;/p&gt;</translation>
     </message>
@@ -4450,7 +4454,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>ServerDiagnostics</name>
     <message>
-        <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+109"/>
+        <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+114"/>
         <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
         <translation>Der Server unter %1 ist nicht erreichbar. Bitte prüfe die Adresse und deine Internetverbindung.</translation>
     </message>
@@ -4482,7 +4486,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+6"/>
         <source>Could not detect compatible server at %1</source>
-        <translation>Ein kompatibler Server konnte unter %1 nicht gefunden werden</translation>
+        <translation>Ein kompatibler Server konnte unter %1 nicht gefunden werden.</translation>
     </message>
 </context>
 <context>
@@ -4834,17 +4838,17 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+1"/>
         <source>There was an error when launching the browser to go to URL %1. Maybe no default browser is configured?</source>
-        <translation>Die URL %1 konnte aufgrund eines Fehlers beim Start des Browsers nicht aufgerufen werden. Ist vielleicht kein Standardbrowser konfiguriert?</translation>
+        <translation>Die URL %1 konnte aufgrund eines Fehlers nicht aufgerufen werden. Ist vielleicht kein Standard-Browser konfiguriert?</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Could not open email client</source>
-        <translation>Die E-Mail Anwendung konnte nicht geöffnet werden</translation>
+        <translation>Die E-Mail-Anwendung konnte nicht geöffnet werden.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>There was an error when launching the email client to create a new message. Maybe no default email client is configured?</source>
-        <translation>Es ist ein Fehler beim Öffnen der E-Mail Anwendung, zum Erstellen einer neuen Nachricht, aufgetreten. Vielleicht ist keine standardmäßige E-Mail Anwendung konfiguriert?</translation>
+        <translation>Beim Öffnen einer E-Mail-Anwendung zum Erstellen einer neuen Nachricht ist ein Fehler aufgetreten. Vielleicht ist keine E-Mail-Anwendung konfiguriert?</translation>
     </message>
     <message>
         <location line="+13"/>

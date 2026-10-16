@@ -22,7 +22,7 @@
     <message>
         <location filename="../src/common/checksums.cpp" line="+124"/>
         <source>The checksum header is malformed: %1</source>
-        <translation>Der Prüfsummen-Kopfzeile hat ein fehlerhaftes Format.</translation>
+        <translation>Die Prüfsummen-Kopfzeile hat ein fehlerhaftes Format: %1</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -112,7 +112,7 @@ Anwendung zur Datei-Synchronisation.</translation>
         <location line="+5"/>
         <source>%n Filter(s)</source>
         <translation>
-            <numerusform>%1 Filter</numerusform>
+            <numerusform>%n Filter</numerusform>
             <numerusform>%n Filter</numerusform>
         </translation>
     </message>
@@ -908,7 +908,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
     <message>
         <location line="-17"/>
         <source>You are almost set! The synchronization options are under Advanced. By default the client enables the Virtual File System (VFS) and only downloads files when you open them.</source>
-        <translation>Sie sind fast fertig! Unter den „Erweitert&quot;-Einstellungen finden Sie die Synchronisationsoptionen. Der Client aktiviert standardmäßig VFS (Virtual File System) und lädt Dateien erst dann herunter, wenn Sie diese nutzen.</translation>
+        <translation>Sie sind fast fertig! Unter den „Erweitert“-Einstellungen finden Sie die Synchronisationsoptionen. Der Client aktiviert standardmäßig VFS (Virtual File System) und lädt Dateien erst dann herunter, wenn Sie diese nutzen.</translation>
     </message>
 </context>
 <context>
@@ -1006,7 +1006,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+83"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+86"/>
         <source>Server does not support OAuth</source>
         <translation>Der Server unterstützt OAuth nicht</translation>
     </message>
@@ -2090,7 +2090,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+187"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
         <source>Successfully signed in</source>
         <translation>Erfolgreich angemeldet</translation>
     </message>
@@ -2151,7 +2151,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+64"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
         <source>Application Name Logo %1</source>
         <translation>Anwendungsname Logo %1</translation>
     </message>
@@ -2186,7 +2186,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Zusätzliches, von der Organisation definiertes Logo</translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+134"/>
         <source>URL copied</source>
         <translation>Link kopiert</translation>
     </message>
@@ -2196,14 +2196,14 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Link kopieren</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+67"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
         <translation>Keine Verbindung zum Anmeldedienst möglich. Wenn das Problem weiterhin besteht, wenden Sie sich bitte an den Support.</translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Please sign in using the browser window that has opened and confirm with &quot;Authorize&quot;.</source>
-        <translation>Bitte melden Sie sich im geöffneten Browserfenster an und bestätigen Sie mit „Autorisieren“.</translation>
+        <location line="+18"/>
+        <source>Please sign in using the browser window that has opened and allow access if you are asked to.</source>
+        <translation>Bitte melden Sie sich im geöffneten Browserfenster an und bestätigen Sie den Zugriff, falls Sie danach gefragt werden.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2211,7 +2211,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Bitte kopieren Sie die Authentifizierungs-URL mithilfe der Schaltfläche oben und geben Sie diese Informationen an den Support weiter.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+34"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>Fehler beim Auffinden von WebFinger-Instanzen: %1</translation>
     </message>
@@ -2231,7 +2231,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Dieser Client unterstützt diesen Server nicht.</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+15"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
         <translation>Fehler beim Versuch sich bei einem OAuth2-fähigen Server anzumelden. %1</translation>
     </message>
@@ -2436,7 +2436,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="-569"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
-        <translation>Fehler während des Umbenennes, nicht behandelter Status Code: %1</translation>
+        <translation>Fehler beim Umbenennen, nicht behandelter Statuscode: %1</translation>
     </message>
     <message>
         <location line="+574"/>
@@ -2508,7 +2508,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+7"/>
         <source>The file could not be downloaded completely.</source>
-        <translation>Die Datei konnte nicht vollständig herunter geladen werden.</translation>
+        <translation>Die Datei konnte nicht vollständig heruntergeladen werden.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2875,12 +2875,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::RequestAuthenticationController</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+91"/>
+        <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+132"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
         <translation>Der Autorisierungslink konnte nicht abgerufen werden. Bitte wenden Sie sich an Ihren Systemadministrator.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+18"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
         <translation>Der Identitätsanbieter (IdP) ist nicht erreichbar. Wenden Sie sich an Ihren Systemadministrator oder versuchen Sie es später erneut.</translation>
     </message>
@@ -2928,7 +2928,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Um die Anmelde-URL in die Zwischenablage zu kopieren, verwenden Sie die Schaltfläche „Kopieren“.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>Copy URL to sign in</source>
         <translation>URL zum Anmelden kopieren</translation>
     </message>
@@ -2948,12 +2948,12 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Abgemeldet bleiben</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Sign in</source>
         <translation>Anmelden</translation>
     </message>
     <message>
-        <location line="+88"/>
+        <location line="+102"/>
         <source>URL copied</source>
         <translation>URL kopiert</translation>
     </message>
@@ -4368,7 +4368,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+435"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Eine neue Version des %1 Clients ist verfügbar.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; steht zum Herunterladen bereit. Die installierte Version ist %3.&lt;/p&gt;</translation>
     </message>
@@ -4454,7 +4454,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>ServerDiagnostics</name>
     <message>
-        <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+109"/>
+        <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+114"/>
         <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
         <translation>Der Server unter %1 ist nicht erreichbar. Bitte prüfen Sie die Adresse und Ihre Internetverbindung.</translation>
     </message>
