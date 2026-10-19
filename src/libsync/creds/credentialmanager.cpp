@@ -208,6 +208,8 @@ void CredentialJob::start()
             qCInfo(lcCredentialsManager) << "Backend unavailable (yet?) Retrying in a few seconds." << _job->errorString();
             QTimer::singleShot(10s, this, &CredentialJob::start);
             _retryOnKeyChainError = false;
+            // erst nach dem zweiten Versuch fertig: finished() löschte diesen Auftrag samt Zeitgeber (deleteLater)
+            return;
         }
 #endif
         if (_job->error() == QKeychain::NoError) {
@@ -216,6 +218,8 @@ void CredentialJob::start()
             if (error.error != QCborError::NoError) {
                 _error = QKeychain::OtherError;
                 _errorString = tr("Failed to parse credentials %1").arg(error.errorString());
+                // auch der Fehler ist ein Ergebnis: ohne finished() wartete der Aufrufer für immer
+                Q_EMIT finished();
                 return;
             }
             _data = obj.toVariant();
