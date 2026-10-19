@@ -5,6 +5,8 @@
  *
  */
 
+#include <QAtomicInt>
+#include <QScopeGuard>
 #include <QtTest>
 
 #include "common/chronoelapsedtimer.h"
@@ -304,6 +306,38 @@ private Q_SLOTS:
             watcher.init(parentDir.path());
         }
         QVERIFY(timer.duration() < 30s);
+    }
+
+    // Ein dauerhaft fehlender Ordner (etwa ein getrenntes Netzlaufwerk) schreibt eine Warnung ins Protokoll, nicht alle zwei
+    // Sekunden eine: rund 1800 Zeilen je Stunde füllten sonst das Protokoll
+    void testMissingFolderIsReportedOnce()
+    {
+        auto parentDir = TestUtils::createTempDir();
+        QVERIFY(parentDir.isValid());
+        const QString watched = parentDir.path() + QStringLiteral("/watched");
+        QVERIFY(QDir().mkpath(watched));
+
+        static QAtomicInt warnings;
+        static QtMessageHandler previousHandler = nullptr;
+        warnings.storeRelaxed(0);
+        previousHandler = qInstallMessageHandler([](QtMsgType type, const QMessageLogContext &context, const QString &message) {
+            if (type == QtWarningMsg && qstrcmp(context.category, "gui.folderwatcher") == 0) {
+                warnings.fetchAndAddRelaxed(1);
+            }
+            if (previousHandler) {
+                previousHandler(type, context, message);
+            }
+        });
+        const auto restore = qScopeGuard([] { qInstallMessageHandler(previousHandler); });
+
+        auto watcher = std::make_unique<FolderWatcherForTests>();
+        watcher->init(watched);
+        QVERIFY(QDir(watched).removeRecursively());
+        // länger als vier Versuche im alten Takt von zwei Sekunden
+        QTest::qWait(9000);
+        watcher.reset();
+
+        QVERIFY2(warnings.loadRelaxed() <= 1, qPrintable(QString::number(warnings.loadRelaxed())));
     }
 #endif
 };
