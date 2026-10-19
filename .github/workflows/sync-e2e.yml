@@ -8,7 +8,9 @@ name: Sync E2E
 #
 # auth=oauth: Anmeldung wie der Desktop-Client im Browser (test/e2e/oauth/login.py), dann
 # Sync, Erneuern und Widerruf über owncloudcmd --oauth-token-file – je einmal mit der
-# oauth2-App 0.8.0 und 0.9.0. Sind die Secrets E2E_ONLINE_URL_n, E2E_ONLINE_USER_n und
+# oauth2-App 0.8.0, 0.9.0 und 0.10.0; mit 0.10.0 zusätzlich A8 (Token läuft mitten im Sync
+# ab) und A9 (doppelter Refresh), dafür stellt die Suite den Testserver per occ um. Sind die
+# Secrets E2E_ONLINE_URL_n, E2E_ONLINE_USER_n und
 # E2E_ONLINE_PASS_n (n = 1, 2) gesetzt, laufen dieselben Fälle zusätzlich gegen diese
 # Server, nur im Ordner e2e-<Lauf-ID> des Testkontos, der am Ende gelöscht wird.
 # auth=beide: Basic und OAuth2.
@@ -24,7 +26,7 @@ on:
         required: false
         default: "v11.0.22"
       auth:
-        description: "Anmeldung: basic (Kennwort), oauth (OAuth2 mit oauth2 0.8.0 und 0.9.0, dazu Online-Server aus den Secrets) oder beide"
+        description: "Anmeldung: basic (Kennwort), oauth (OAuth2 mit oauth2 0.8.0, 0.9.0 und 0.10.0, dazu Online-Server aus den Secrets) oder beide"
         type: choice
         options: [basic, oauth, beide]
         default: basic
@@ -61,13 +63,15 @@ jobs:
         run: |
           set -euo pipefail
           basic='{"variant":"basic","target":"local","auth":"basic"}'
-          # oauth2-App: 0.8.0 kennt nur http://localhost:*, 0.9.0 nimmt auch Loopback-Adressen (RFC 8252)
+          # oauth2-App: 0.8.0 kennt nur http://localhost:*, 0.9.0 nimmt auch Loopback-Adressen (RFC 8252),
+          # 0.10.0 tauscht Refresh-Tokens mit Gnadenfrist und lässt die Lebensdauer einstellen (A8, A9)
           o8='{"variant":"oauth2-0.8.0","target":"local","auth":"oauth","oauth2_ref":"f2c74374d419fe976b905f586f57d885490cf6a5","oauth2_version":"0.8.0"}'
           o9='{"variant":"oauth2-0.9.0","target":"local","auth":"oauth","oauth2_ref":"3c1d8cff960db23327b4f9943b4e1717c24305b9","oauth2_version":"0.9.0"}'
+          o10='{"variant":"oauth2-0.10.0","target":"local","auth":"oauth","oauth2_ref":"fb1e6170deb6b2842cf00cf5d18a9a68b0373e8e","oauth2_version":"0.10.0"}'
           case "$AUTH" in
             basic) variants=("$basic") ;;
-            oauth) variants=("$o8" "$o9") ;;
-            beide) variants=("$basic" "$o8" "$o9") ;;
+            oauth) variants=("$o8" "$o9" "$o10") ;;
+            beide) variants=("$basic" "$o8" "$o9" "$o10") ;;
             *) echo "::error::auth muss basic, oauth oder beide sein"; exit 1 ;;
           esac
           skipped=()

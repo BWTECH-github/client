@@ -10,10 +10,12 @@
 # Jeder Fall arbeitet in einem eigenen lokalen Ordner und einem eigenen Serverordner
 # /e2e-<nr>; ein Absturz in einem Fall beeinflusst die anderen nicht.
 #
-# OAuth2 (E2E_AUTH=oauth): Fälle A1–A7 statt 01–14. A1 meldet sich wie der Desktop-Client
+# OAuth2 (E2E_AUTH=oauth): Fälle A1–A9 statt 01–14. A1 meldet sich wie der Desktop-Client
 # im Browser an (test/e2e/oauth/login.py) und legt die Token-Datei an; damit laufen die
 # Sync-Fälle 01–05, 07 und 08 über owncloudcmd --oauth-token-file, danach Erneuern und
 # Widerruf. OC_USER/OC_PASS dienen dann nur noch der Browser-Anmeldung und davtool.
+# A8 (Token läuft mitten im Sync ab) und A9 (doppelter Refresh) stellen den Testserver
+# per occ um (OC_ROOT, nur im Runner) und brauchen oauth2 ab 0.10.0, sonst SKIP.
 #   E2E_OAUTH2_VERSION   Version der oauth2-App, wenn bekannt (Erwartung für 127.0.0.1)
 #   E2E_OAUTH_REVOKE=1   A6: Freigabe in den persönlichen Einstellungen widerrufen
 #                        (trifft alle Desktop-Anmeldungen des Kontos – nur auf Testservern)
@@ -675,6 +677,113 @@ a7() {
 	note "$(sort -u "$SECRETS" | wc -l) Tokens gegen $(find "$OUT" -path "$WORK" -prune -o -type f -print | wc -l) Dateien geprüft"
 }
 
+# ---------------------------------------------------------------- Token-Ablauf mitten im Sync, doppelter Refresh
+# Beide Fälle stellen den Testserver im Runner um (occ, OC_ROOT setzt der Workflow) und brauchen dafür die oauth2-App
+# ab 0.10.0: Lebensdauer per access_token_lifetime, Gnadenfrist beim Austausch. Fremde Server bleiben unberührt.
+TOKEN_LIFETIME=10
+server_occ() { (cd "$OC_ROOT" && php occ --no-interaction "$@"); }
+oauth2_at_least() { [ -n "${E2E_OAUTH2_VERSION:-}" ] && ! version_lt "$E2E_OAUTH2_VERSION" "$1"; }
+skip_because() { STATUS=SKIP; NOTES+=("$*"); echo "  SKIP: $*"; }
+# token_posts_in <log>: Anfragen an den Token-Endpunkt in einem Protokoll
+token_posts_in() { count_req "$1" POST "$TOKEN_PATH_RE"; }
+
+# A8: Das Access-Token lebt 10 s, der Sync dauert ein Vielfaches davon und überträgt dabei viele Dateien parallel (ohne
+# Bulk: einzelne PUT und GET). Erwartet: keine neue Anmeldung, alles übertragen, Erneuerungen während des Laufs.
+a8() {
+	local tf=$WORK/oauth/token-a8.json i posts unauth started dur old
+	if [ -z "${OC_ROOT:-}" ]; then
+		skip_because "nur auf dem Testserver im Runner (Lebensdauer per occ)"
+		return
+	fi
+	if ! oauth2_at_least 0.10.0; then
+		skip_because "oauth2 ${E2E_OAUTH2_VERSION:-unbekannt} kennt access_token_lifetime nicht (ab 0.10.0)"
+		return
+	fi
+	server_occ config:app:set oauth2 access_token_lifetime --value "$TOKEN_LIFETIME" >/dev/null || { case_error "occ config:app:set gescheitert"; return; }
+	token_copy "$TOKEN_FILE" "$tf" || { case_error "Token-Datei nicht kopierbar"; return; }
+	# abgelaufen: Der Lauf erneuert zuerst und bekommt ein Token mit 10 s Lebensdauer
+	token_edit "$tf" '.access_token = "abgelaufen" | .expires_at = (now | floor) - 60'
+	old=$(jq -r .refresh_token "$tf")
+	for i in $(seq 1 100); do rnd "$L/hoch/datei-$i.bin"; done
+	for i in $(seq 1 30); do seed "runter/datei-$i.bin" || { case_error "Serverdateien nicht anlegbar"; break; }; done
+	TOKEN_FILE=$tf
+	started=$SECONDS
+	ocmd lauf1 env OWNCLOUD_BULK_UPLOAD=0
+	dur=$((SECONDS - started))
+	server_occ config:app:delete oauth2 access_token_lifetime >/dev/null
+	check_run lauf1
+	grep -q 'Authentication failed' "$LOG" && fail "lauf1: neue Anmeldung verlangt: $(grep -m1 -ao 'Authentication failed:.*' "$LOG" | cut -c1-160)"
+	compare "$L" "$R"
+	[ "$(server_files "$R")" -eq 130 ] || fail "auf dem Server $(server_files "$R") statt 130 Dateien"
+	posts=$(token_posts) unauth=$(unauthorized)
+	# die erste Erneuerung kommt vor dem Lauf, jede weitere mitten im Sync
+	if [ "$posts" -lt 2 ]; then
+		if [ "$dur" -le "$TOKEN_LIFETIME" ]; then
+			case_error "Lauf dauerte nur ${dur}s, nicht länger als die Lebensdauer – Ablauf mitten im Sync nicht geprüft"
+		else
+			fail "keine Erneuerung während des Laufs (${dur}s, Lebensdauer ${TOKEN_LIFETIME}s, Token-Endpunkt ${posts}×)"
+		fi
+	fi
+	[ "$(jq -r .refresh_token "$tf")" != "$old" ] || fail "neue Tokens nicht in die Token-Datei geschrieben"
+	[ "$(jq -r '.expires_in // 0' "$tf")" -eq "$TOKEN_LIFETIME" ] || fail "expires_in in der Token-Datei ist nicht ${TOKEN_LIFETIME}"
+	note "Lauf ${dur}s, Lebensdauer ${TOKEN_LIFETIME}s, Token-Endpunkt ${posts}×, 401: ${unauth}, $(upload_paths "$LOG")"
+}
+
+# A9: Doppelter Refresh. (1) Zwei Läufe gleichzeitig mit derselben Token-Datei: Die Sperre der Datei lässt genau einen
+# erneuern, der andere übernimmt dessen Tokens. (2) Zwei Läufe gleichzeitig mit zwei Kopien desselben Refresh-Tokens
+# (oauth2 ab 0.10.0): Der Server tauscht einmal aus und liefert der Wiederholung dasselbe Paar statt invalid_grant.
+a9() {
+	local tf=$WORK/oauth/token-a9.json tfa=$WORK/oauth/token-a9a.json tfb=$WORK/oauth/token-a9b.json
+	local la=$WORK/$ID-a lb=$WORK/$ID-b loga=$LOGS/$ID-lauf1a.log logb=$LOGS/$ID-lauf1b.log pa pb rca rcb posts
+	seed "geteilt.txt" || { case_error "Serverdatei nicht anlegbar"; return; }
+
+	# (1) dieselbe Datei
+	token_copy "$TOKEN_FILE" "$tf" || { case_error "Token-Datei nicht kopierbar"; return; }
+	token_edit "$tf" '.access_token = "abgelaufen" | .expires_at = (now | floor) - 60'
+	rm -rf "$la" "$lb" && mkdir -p "$la" "$lb"
+	timeout -s KILL "$RUN_TIMEOUT" "$OCMD" "$la" "$OC_URL" --oauth-token-file "$tf" --path "/$R" </dev/null >"$loga" 2>&1 &
+	pa=$!
+	timeout -s KILL "$RUN_TIMEOUT" "$OCMD" "$lb" "$OC_URL" --oauth-token-file "$tf" --path "/$R" </dev/null >"$logb" 2>&1 &
+	pb=$!
+	wait "$pa"; rca=$?
+	wait "$pb"; rcb=$?
+	remember_tokens "$tf"
+	echo "  gleiche Datei: exit $rca / $rcb"
+	[ "$rca" -eq 0 ] || fail "gleiche Datei, Lauf a: Exit $rca$(grep -m1 -ao 'Authentication failed:.*' "$loga" | cut -c1-120 | sed 's/^/ – /')"
+	[ "$rcb" -eq 0 ] || fail "gleiche Datei, Lauf b: Exit $rcb$(grep -m1 -ao 'Authentication failed:.*' "$logb" | cut -c1-120 | sed 's/^/ – /')"
+	posts=$(($(token_posts_in "$loga") + $(token_posts_in "$logb")))
+	[ "$posts" -eq 1 ] || fail "gleiche Datei: $posts Anfragen an den Token-Endpunkt statt einer"
+	[ -f "$la/geteilt.txt" ] && [ -f "$lb/geteilt.txt" ] || fail "gleiche Datei: nicht beide Läufe haben synchronisiert"
+	note "gleiche Datei: beide Exit 0, Token-Endpunkt ${posts}×"
+	TOKEN_FILE=$tf
+
+	# (2) zwei Kopien desselben Refresh-Tokens
+	if ! oauth2_at_least 0.10.0; then
+		note "zwei Kopien übersprungen: oauth2 ${E2E_OAUTH2_VERSION:-unbekannt} tauscht ohne Gnadenfrist (ab 0.10.0)"
+		return
+	fi
+	token_copy "$TOKEN_FILE" "$tfa" && token_copy "$TOKEN_FILE" "$tfb" || { case_error "Token-Datei nicht kopierbar"; return; }
+	token_edit "$tfa" '.access_token = "abgelaufen" | .expires_at = (now | floor) - 60'
+	token_edit "$tfb" '.access_token = "abgelaufen" | .expires_at = (now | floor) - 60'
+	rm -rf "$la" "$lb" && mkdir -p "$la" "$lb"
+	loga=$LOGS/$ID-lauf2a.log logb=$LOGS/$ID-lauf2b.log
+	timeout -s KILL "$RUN_TIMEOUT" "$OCMD" "$la" "$OC_URL" --oauth-token-file "$tfa" --path "/$R" </dev/null >"$loga" 2>&1 &
+	pa=$!
+	timeout -s KILL "$RUN_TIMEOUT" "$OCMD" "$lb" "$OC_URL" --oauth-token-file "$tfb" --path "/$R" </dev/null >"$logb" 2>&1 &
+	pb=$!
+	wait "$pa"; rca=$?
+	wait "$pb"; rcb=$?
+	remember_tokens "$tfa"
+	remember_tokens "$tfb"
+	echo "  zwei Kopien: exit $rca / $rcb"
+	[ "$rca" -eq 0 ] || fail "zwei Kopien, Lauf a: Exit $rca$(grep -m1 -ao 'Authentication failed:.*' "$loga" | cut -c1-120 | sed 's/^/ – /')"
+	[ "$rcb" -eq 0 ] || fail "zwei Kopien, Lauf b: Exit $rcb$(grep -m1 -ao 'Authentication failed:.*' "$logb" | cut -c1-120 | sed 's/^/ – /')"
+	[ "$(jq -r .refresh_token "$tfa")" = "$(jq -r .refresh_token "$tfb")" ] || fail "zwei Kopien: verschiedene neue Refresh-Tokens (Gabelung)"
+	[ "$(jq -r .refresh_token "$tfa")" != "$(jq -r .refresh_token "$TOKEN_FILE")" ] || fail "zwei Kopien: Refresh-Token nicht erneuert"
+	note "zwei Kopien: beide Exit 0, dasselbe neue Paar (Token-Endpunkt $(($(token_posts_in "$loga") + $(token_posts_in "$logb")))×)"
+	TOKEN_FILE=$tfa
+}
+
 # ---------------------------------------------------------------- Optionen aus 6.0.3 und Löschschutz
 # Lokaler Ordner leer (wie ein nicht eingehängtes Laufwerk): ohne Rückfrage nichts löschen, Exit 3;
 # mit „y“ auf der Standardeingabe löschen
@@ -821,6 +930,8 @@ if [ "$AUTH" = oauth ]; then
 	CASES+=(
 		"A3|Access-Token abgelaufen: vor dem Lauf erneuert|a3"
 		"A4|Access-Token abgelehnt (401): erneuert und wiederholt|a4"
+		"A8|Access-Token läuft während des Syncs mehrfach ab (parallele Übertragungen)|a8"
+		"A9|Doppelter Refresh: gleiche Token-Datei und zwei Kopien gleichzeitig|a9"
 		"A5|Refresh-Token verbraucht: Abbruch mit Exit 2|a5"
 	)
 	[ "${E2E_OAUTH_REVOKE:-}" != 1 ] || CASES+=("A6|Freigabe in den Einstellungen widerrufen: Abbruch mit Exit 2|a6")
