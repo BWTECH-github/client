@@ -229,6 +229,24 @@ private Q_SLOTS:
             QVERIFY(warningLabel->text().contains(QDir::toNativeSeparators(rootFolder->cleanPath()).toHtmlEscaped()));
         }
 
+        // „Ordner anlegen…“ in einem schon gespiegelten Bereich legt nichts an: der neue Ordner wäre gleich gesperrt
+        FakeAM *fakeAm = fakeAccessManager(account);
+        QVERIFY(fakeAm);
+        int mkcols = 0;
+        fakeAm->setOverride([&mkcols](QNetworkAccessManager::Operation, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            if (request.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray() == "MKCOL") {
+                ++mkcols;
+            }
+            return nullptr;
+        });
+        QSignalSpy created(page, &FolderWizardRemotePath::remoteFolderCreated);
+        page->createRemoteFolder(QStringLiteral("Neu"));
+        QCOMPARE(created.size(), 1);
+        QCOMPARE(created.first().first().toBool(), false);
+        QCOMPARE(mkcols, 0);
+        QVERIFY(!fakeAm->currentRemoteState().find(QStringLiteral("C/Neu")));
+        QVERIFY(warningLabel->text().contains(QDir::toNativeSeparators(rootFolder->cleanPath()).toHtmlEscaped()));
+
         // ohne das Paar für die Wurzel ist der Ordner frei
         FolderMan::instance()->removeFolderFromGui(rootFolder);
         QVERIFY(page->selectByPath(QStringLiteral("/B")));

@@ -231,6 +231,15 @@ void FolderWizardRemotePath::createRemoteFolder(const QString &name)
 
     const QString parentPath = targetPath().isEmpty() ? QStringLiteral("/") : targetPath();
     const QString fullPath = childPath(parentPath, name.trimmed());
+    // in einem schon gespiegelten Bereich wäre der neue Ordner gleich wieder gesperrt: dann gar nicht erst anlegen
+    const QString validityError = FolderMan::instance()->checkRemotePathValidity(_account->uuid(), fullPath);
+    if (!validityError.isEmpty()) {
+        // wie bei der Auswahl: die Meldung verschwindet mit der nächsten Auswahl
+        _validityError = validityError;
+        updateMessage();
+        Q_EMIT remoteFolderCreated(false);
+        return;
+    }
 
     auto *job = new MkColJob(_account, _davUrl, fullPath, {}, this);
     connect(job, &MkColJob::finishedWithoutError, this, [fullPath, this] {
