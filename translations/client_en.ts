@@ -368,7 +368,7 @@ File synchronization desktop utility.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+54"/>
+        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+53"/>
         <source>Stable</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3314,30 +3314,30 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+5"/>
-        <location line="+592"/>
+        <location line="+596"/>
         <source>Download / View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-591"/>
-        <location line="+590"/>
+        <location line="-595"/>
+        <location line="+594"/>
         <source>Download / View / Upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-589"/>
-        <location line="+587"/>
+        <location line="-593"/>
+        <location line="+591"/>
         <source>Download / View / Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-586"/>
-        <location line="+584"/>
+        <location line="-590"/>
+        <location line="+588"/>
         <source>Upload only (File Drop)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-576"/>
+        <location line="-580"/>
         <source>Recipients can:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3510,12 +3510,12 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+5"/>
-        <location line="+287"/>
+        <location line="+294"/>
         <source>Copy link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-280"/>
+        <location line="-287"/>
         <source>More</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3560,7 +3560,12 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+25"/>
+        <source>You are not allowed to create public links on this server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The server requires a password for this kind of link.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3585,7 +3590,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+90"/>
+        <location line="+93"/>
         <source>Open in browser</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3605,7 +3610,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-473"/>
+        <location line="-480"/>
         <source>Creating the public link failed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3620,7 +3625,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+488"/>
+        <location line="+492"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
         <translation type="unfinished"></translation>
@@ -3644,7 +3649,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+519"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation type="unfinished"></translation>
@@ -3714,12 +3719,12 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="-28"/>
-        <location line="+40"/>
+        <location line="+43"/>
         <source>Copy private link to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-14"/>
+        <location line="-17"/>
         <source>Resharing this file is not allowed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3729,7 +3734,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+9"/>
         <source>Create public link…</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3739,7 +3744,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Manage public links…</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4461,7 +4466,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+473"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4934,7 +4939,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+26"/>
         <source>Could not open email client</source>
         <translation type="unfinished"></translation>
     </message>

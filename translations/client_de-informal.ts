@@ -370,7 +370,7 @@ Datei Synchronisations-Applikation.</translation>
         <translation>Versionen</translation>
     </message>
     <message>
-        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+54"/>
+        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+53"/>
         <source>Stable</source>
         <translation>Stabil</translation>
     </message>
@@ -3258,7 +3258,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::ShareDialog</name>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="+844"/>
+        <location filename="../src/gui/sharedialog.cpp" line="+848"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
         <translation>%1 (%2)</translation>
@@ -3274,7 +3274,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>%1 (Gruppe)</translation>
     </message>
     <message>
-        <location line="-565"/>
+        <location line="-569"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
@@ -3290,12 +3290,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
     <message>
         <location line="+452"/>
-        <location line="+287"/>
+        <location line="+294"/>
         <source>Copy link</source>
         <translation>Link kopieren</translation>
     </message>
     <message>
-        <location line="-478"/>
+        <location line="-485"/>
         <source>Could not load the existing shares.</source>
         <translation>Die vorhandenen Freigaben konnten nicht geladen werden.</translation>
     </message>
@@ -3326,24 +3326,24 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
     <message>
         <location line="-184"/>
-        <location line="+587"/>
+        <location line="+591"/>
         <source>Download / View / Edit</source>
         <translation>Herunterladen / Ansehen / Bearbeiten</translation>
     </message>
     <message>
-        <location line="-588"/>
-        <location line="+590"/>
+        <location line="-592"/>
+        <location line="+594"/>
         <source>Download / View / Upload</source>
         <translation>Herunterladen / Ansehen / Hochladen</translation>
     </message>
     <message>
-        <location line="-591"/>
-        <location line="+592"/>
+        <location line="-595"/>
+        <location line="+596"/>
         <source>Download / View</source>
         <translation>Herunterladen / Ansehen</translation>
     </message>
     <message>
-        <location line="-167"/>
+        <location line="-171"/>
         <source>Edit public link</source>
         <translation>Öffentlichen Link bearbeiten</translation>
     </message>
@@ -3373,12 +3373,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Linkadresse von %1</translation>
     </message>
     <message>
-        <location line="+284"/>
+        <location line="+288"/>
         <source>Link copied to the clipboard: %1</source>
         <translation>Link in die Zwischenablage kopiert: %1</translation>
     </message>
     <message>
-        <location line="-374"/>
+        <location line="-378"/>
         <location line="+62"/>
         <source>Loading shares …</source>
         <translation>Freigaben werden geladen …</translation>
@@ -3429,12 +3429,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Passwort</translation>
     </message>
     <message>
-        <location line="+531"/>
+        <location line="+535"/>
         <source>Please enter a password, or uncheck the password option.</source>
         <translation>Bitte ein Passwort eingeben oder die Passwort-Option abwählen.</translation>
     </message>
     <message>
-        <location line="-534"/>
+        <location line="-538"/>
         <source>Protect with a password</source>
         <translation>Mit Passwort schützen</translation>
     </message>
@@ -3571,12 +3571,17 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Teilen mit %1 beenden?</translation>
     </message>
     <message>
-        <location line="+114"/>
+        <location line="+112"/>
+        <source>You are not allowed to create public links on this server.</source>
+        <translation>Du darfst auf diesem Server keine öffentlichen Links anlegen.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>The server allows only one public link per item.</source>
         <translation>Der Server erlaubt nur einen öffentlichen Link pro Element.</translation>
     </message>
     <message>
-        <location line="+120"/>
+        <location line="+123"/>
         <source>Open in browser</source>
         <translation>Im Browser öffnen</translation>
     </message>
@@ -3596,7 +3601,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Ich habe %1 mit dir geteilt</translation>
     </message>
     <message>
-        <location line="-130"/>
+        <location line="-133"/>
         <source>The server requires a password for this kind of link.</source>
         <translation>Der Server verlangt für diese Art von Link ein Passwort.</translation>
     </message>
@@ -3611,13 +3616,13 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Der Server verlangt ein Ablaufdatum.</translation>
     </message>
     <message>
-        <location line="-514"/>
-        <location line="+584"/>
+        <location line="-518"/>
+        <location line="+588"/>
         <source>Upload only (File Drop)</source>
         <translation>Nur hochladen (Dateiablage)</translation>
     </message>
     <message>
-        <location line="-701"/>
+        <location line="-705"/>
         <source>Users and groups</source>
         <translation>Nutzer und Gruppen</translation>
     </message>
@@ -3665,7 +3670,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+519"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>Mit %1 teilen</translation>
@@ -3737,12 +3742,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
     <message>
         <location line="-28"/>
-        <location line="+40"/>
+        <location line="+43"/>
         <source>Copy private link to clipboard</source>
         <translation>Privaten Link in die Zwischenablage kopieren</translation>
     </message>
     <message>
-        <location line="-14"/>
+        <location line="-17"/>
         <source>Resharing this file is not allowed</source>
         <translation>Weiteres Teilen ist nicht erlaubt.</translation>
     </message>
@@ -3752,7 +3757,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Weiteres Teilen des Ordners ist nicht erlaubt.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+9"/>
         <source>Create public link…</source>
         <translation>Öffentlichen Link erstellen…</translation>
     </message>
@@ -3762,7 +3767,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Öffentlichen Link erstellen und in die Zwischenablage kopieren</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Manage public links…</source>
         <translation>Öffentliche Links verwalten…</translation>
     </message>
@@ -4484,7 +4489,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+473"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Eine neue Version des %1 Clients ist verfügbar.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; steht zum Herunterladen bereit. Die installierte Version ist %3.&lt;/p&gt;</translation>
     </message>
@@ -4957,7 +4962,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Die URL %1 konnte aufgrund eines Fehlers nicht aufgerufen werden. Ist vielleicht kein Standard-Browser konfiguriert?</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+26"/>
         <source>Could not open email client</source>
         <translation>Die E-Mail-Anwendung konnte nicht geöffnet werden.</translation>
     </message>
