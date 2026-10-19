@@ -29,6 +29,7 @@
 #include "filesystem.h"
 #include "folderman.h"
 #include "folderwatcher.h"
+#include "legacyclient/legacyclientconfig.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
 #include "scheduling/syncscheduler.h"
@@ -858,6 +859,16 @@ void Folder::startSync()
 
     if (!reloadExcludes()) {
         slotSyncError(tr("Could not read system exclude file"));
+        QMetaObject::invokeMethod(
+            this, [this] { slotSyncFinished(false); }, Qt::QueuedConnection);
+        return;
+    }
+
+    // owncloud.online: nie zugleich mit dem offiziellen Client, der denselben Ordner synchronisiert (etwa nach dem
+    // Umstieg, wenn er per Autostart wieder läuft); der Ordner wartet, bis er beendet ist
+    const QString doubleSync = LegacyClient::doubleSyncReason(path());
+    if (!doubleSync.isEmpty()) {
+        slotSyncError(doubleSync);
         QMetaObject::invokeMethod(
             this, [this] { slotSyncFinished(false); }, Qt::QueuedConnection);
         return;

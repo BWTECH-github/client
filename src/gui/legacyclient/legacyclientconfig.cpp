@@ -16,11 +16,16 @@
 
 #include "common/ownsql.h"
 #include "common/syncjournaldb.h"
+#include "common/utility.h"
 
+#include <QCoreApplication>
+#include <QDateTime>
 #include <QDir>
 #include <QDirIterator>
+#include <QElapsedTimer>
 #include <QFile>
 #include <QFileInfo>
+#include <QHash>
 #include <QLoggingCategory>
 #include <QProcess>
 #include <QSettings>
@@ -82,6 +87,70 @@ namespace LegacyClient {
             for (const auto &suffix : {QString(), QStringLiteral("-wal"), QStringLiteral("-shm"), QStringLiteral("-journal")}) {
                 QFile::remove(path + suffix);
             }
+        }
+
+        int defaultPort(const QUrl &url)
+        {
+            return url.scheme().compare(QLatin1String("https"), Qt::CaseInsensitive) == 0 ? 443 : 80;
+        }
+
+        // absoluter Ordnerpfad mit „/“ am Ende, Verknüpfungen aufgelöst, soweit der Ordner existiert
+        QString normalizedFolder(const QString &path)
+        {
+            const QFileInfo info(QDir::fromNativeSeparators(path));
+            const QString canonical = info.exists() ? info.canonicalFilePath() : QString();
+            return withTrailingSlash(canonical.isEmpty() ? QDir::cleanPath(info.absoluteFilePath()) : canonical);
+        }
+
+        // Ersatz für Tests (setOfficialClientForTesting)
+        std::function<bool()> &runningProbeForTesting()
+        {
+            static std::function<bool()> probe;
+            return probe;
+        }
+
+        QStringList &configCandidatesForTesting()
+        {
+            static QStringList candidates;
+            return candidates;
+        }
+
+        bool officialClientRunningCached()
+        {
+            if (runningProbeForTesting()) {
+                return runningProbeForTesting()();
+            }
+            // jeder Ordner fragt vor seinem Lauf; die Prozessliste genügt alle paar Sekunden (macOS startet dafür pgrep)
+            static QElapsedTimer checked;
+            static bool running = false;
+            if (!checked.isValid() || checked.hasExpired(5000)) {
+                running = isOfficialClientRunning();
+                checked.start();
+            }
+            return running;
+        }
+
+        struct ConfigFolders
+        {
+            QDateTime modified;
+            QStringList folders;
+        };
+
+        // lokale Ordner einer Konfiguration, neu gelesen nur, wenn die Datei sich geändert hat
+        QStringList cachedLocalFolders(const QString &path)
+        {
+            static QHash<QString, ConfigFolders> cache;
+            const QFileInfo info(path);
+            if (!info.isFile()) {
+                cache.remove(path);
+                return {};
+            }
+            auto it = cache.find(path);
+            if (it == cache.end() || it->modified != info.lastModified()) {
+                const auto config = readConfig(path);
+                it = cache.insert(path, {info.lastModified(), config ? localFolders(*config) : QStringList()});
+            }
+            return it->folders;
         }
 
     } // namespace
@@ -233,6 +302,71 @@ namespace LegacyClient {
         pgrep.start(QStringLiteral("pgrep"), {QStringLiteral("-x"), QStringLiteral("owncloud")});
         return pgrep.waitForFinished(3000) && pgrep.exitStatus() == QProcess::NormalExit && pgrep.exitCode() == 0;
 #endif
+    }
+
+    bool sameServer(const QUrl &a, const QUrl &b)
+    {
+        const auto port = [](const QUrl &url) {
+            const int port = url.port(defaultPort(url));
+            return port == defaultPort(url) ? -1 : port;
+        };
+        const auto path = [](const QUrl &url) {
+            QString path = QDir::cleanPath(url.path());
+            while (path.endsWith(QLatin1Char('/'))) {
+                path.chop(1);
+            }
+            return path;
+        };
+        return !a.host().isEmpty() && a.host().compare(b.host(), Qt::CaseInsensitive) == 0 && port(a) == port(b) && path(a) == path(b);
+    }
+
+    bool pathsOverlap(const QString &a, const QString &b)
+    {
+        if (a.isEmpty() || b.isEmpty()) {
+            return false;
+        }
+        const QString first = normalizedFolder(a);
+        const QString second = normalizedFolder(b);
+        const auto sensitivity = Utility::fsCaseSensitivity();
+        return first.startsWith(second, sensitivity) || second.startsWith(first, sensitivity);
+    }
+
+    QStringList localFolders(const Config &config)
+    {
+        QStringList folders;
+        for (const auto &account : config.accounts) {
+            for (const auto &folder : account.folders) {
+                folders.append(folder.localPath);
+            }
+        }
+        return folders;
+    }
+
+    QString doubleSyncReason(const QString &localPath)
+    {
+        if (!officialClientRunningCached()) {
+            return {};
+        }
+        // alle Orte: nach einem Umstieg von 2.x auf 3.x+ liegt die alte Konfiguration noch daneben
+        const QStringList candidates = configCandidatesForTesting().isEmpty() ? candidateConfigFiles() : configCandidatesForTesting();
+        for (const auto &candidate : candidates) {
+            for (const auto &folder : cachedLocalFolders(candidate)) {
+                if (pathsOverlap(localPath, folder)) {
+                    qCWarning(lcLegacyClient) << "Not syncing" << localPath << "while the official client is running, it also syncs" << folder;
+                    return QCoreApplication::translate("OCC::LegacyClient",
+                        "The official ownCloud client is running and also synchronizes the folder %1. Quit it, so that the folder is not "
+                        "synchronized by two programs at the same time.")
+                        .arg(QDir::toNativeSeparators(folder));
+                }
+            }
+        }
+        return {};
+    }
+
+    void setOfficialClientForTesting(const std::function<bool()> &isRunning, const QStringList &configCandidates)
+    {
+        runningProbeForTesting() = isRunning;
+        configCandidatesForTesting() = configCandidates;
     }
 
     JournalCopy copyJournal(const QString &source, const QString &target, QString *error)

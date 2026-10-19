@@ -67,12 +67,8 @@ namespace LegacyClient {
         // owncloud.online synchronisiert den Ordner (oder einen darin bzw. darüber) schon?
         bool alreadySynchronized(FolderMan *folderMan, const QString &localPath)
         {
-            const auto sensitivity = Utility::fsCaseSensitivity();
             const auto folders = folderMan->folders();
-            return std::any_of(folders.cbegin(), folders.cend(), [&](const OCC::Folder *f) {
-                const QString path = f->path();
-                return path.startsWith(localPath, sensitivity) || localPath.startsWith(path, sensitivity);
-            });
+            return std::any_of(folders.cbegin(), folders.cend(), [&](const OCC::Folder *f) { return pathsOverlap(f->path(), localPath); });
         }
 
     } // namespace
@@ -82,7 +78,12 @@ namespace LegacyClient {
         return QStringLiteral("online");
     }
 
-    FolderImport importFolder(FolderMan *folderMan, AccountState *accountState, const Folder &folder)
+    bool isSameAccount(const Account &legacy, const OCC::Account *account)
+    {
+        return account && account->davUser().compare(legacy.davUser, Qt::CaseInsensitive) == 0 && sameServer(account->url(), legacy.url);
+    }
+
+    FolderImport importFolder(FolderMan *folderMan, AccountState *accountState, const Folder &folder, const QStringList &officialFolders)
     {
         OCC::Account *account = accountState->account();
         if (!folder.spaceId.isEmpty() || account->capabilities().spacesSupport().enabled) {
@@ -108,6 +109,18 @@ namespace LegacyClient {
             const bool isRoot = folder.targetPath == QLatin1String("/") || folder.targetPath.isEmpty();
             const QString localPath = isRoot ? syncRoot
                                              : folderMan->findGoodPathForNewSyncFolder(syncRoot, displayName, FolderMan::NewFolderType::SpacesFolder, account->uuid());
+            // nie in einem Ordner des Fremd-Clients oder um ihn herum: dessen Platzhalter und Synchronisationswurzel bleiben,
+            // wie sie sind, und kein Ordner wird von beiden Programmen synchronisiert
+            for (const auto &officialFolder : officialFolders) {
+                if (pathsOverlap(localPath, officialFolder)) {
+                    return skipped(folder,
+                        QCoreApplication::translate("OCC::LegacyClient", "The new folder %1 would overlap the folder %2 of the official client.")
+                            .arg(QDir::toNativeSeparators(localPath), QDir::toNativeSeparators(officialFolder)));
+                }
+            }
+            if (alreadySynchronized(folderMan, localPath)) {
+                return skipped(folder, QCoreApplication::translate("OCC::LegacyClient", "The folder is already synchronized."));
+            }
             FolderMan::SyncConnectionDescription description;
             description.davUrl = account->davUrl();
             description.localPath = localPath;
@@ -250,13 +263,27 @@ void LegacyClientImportController::importNextAccount()
 
     // wie AccountsGuiController::runAccountWizard, statt der Standard-Ordner aber die des Fremd-Clients
     auto *builder = new NewAccountBuilder(model, this);
-    connect(builder, &NewAccountBuilder::requestSetUpSyncFoldersForAccount, this, &LegacyClientImportController::importFolders);
-    connect(builder, &NewAccountBuilder::requestLoadSpacesOnly, this, [this](AccountState *accountState) { importFolders(accountState, false); });
+    connect(builder, &NewAccountBuilder::requestSetUpSyncFoldersForAccount, this,
+        [this](AccountState *accountState, bool useVfs) { importFolders(accountState, useVfs ? SyncChoice::VirtualFiles : SyncChoice::SyncAll); });
+    // „Ordner selbst wählen“: den Ordner-Assistenten öffnet importFolders() nur, wenn nichts übernommen wurde
+    connect(builder, &NewAccountBuilder::requestLoadSpacesOnly, this, [this](AccountState *accountState) { importFolders(accountState, SyncChoice::Selective); });
     connect(builder, &NewAccountBuilder::unableToCompleteAccountCreation, this, &LegacyClientImportController::accountFailed);
     builder->buildAccount();
 }
 
-void LegacyClientImportController::importFolders(AccountState *accountState, bool useVfs)
+void LegacyClientImportController::setUpLikeNewAccount(AccountState *accountState, SyncChoice choice)
+{
+    FolderMan *folderMan = FolderMan::instance();
+    if (choice == SyncChoice::Selective) {
+        // nichts ungefragt synchronisieren: Spaces laden, die Ordner wählt der Nutzer im Ordner-Assistenten
+        folderMan->setUpInitialSpaces(accountState);
+        _folderWizardAccounts.append(accountState->account()->uuid());
+    } else {
+        folderMan->setUpInitialSyncFolders(accountState, choice == SyncChoice::VirtualFiles);
+    }
+}
+
+void LegacyClientImportController::importFolders(AccountState *accountState, SyncChoice choice)
 {
     if (!_current || !accountState || !accountState->account()) {
         return;
@@ -265,17 +292,18 @@ void LegacyClientImportController::importFolders(AccountState *accountState, boo
     Account *account = accountState->account();
     FolderMan *folderMan = FolderMan::instance();
 
-    if (account->davUser().compare(legacy.davUser, Qt::CaseInsensitive) != 0 || account->url().host().compare(legacy.url.host(), Qt::CaseInsensitive) != 0) {
+    if (!LegacyClient::isSameAccount(legacy, account)) {
         _report.append(tr("%1: signed in as %2, the folders of the official client were not taken over.")
                            .arg(legacy.displayString(), account->displayNameWithHost()));
-        folderMan->setUpInitialSyncFolders(accountState, useVfs);
+        setUpLikeNewAccount(accountState, choice);
     } else {
         // zuerst klassisch synchronisierte Ordner: ihre Dateien liegen lokal und sollen nicht erneut herunterkommen
         QList<LegacyClient::Folder> folders = legacy.folders;
         std::stable_partition(folders.begin(), folders.end(), [](const LegacyClient::Folder &folder) { return !folder.usesVirtualFiles(); });
+        const QStringList officialFolders = LegacyClient::localFolders(_config);
         int imported = 0;
         for (const auto &folder : std::as_const(folders)) {
-            const auto result = LegacyClient::importFolder(folderMan, accountState, folder);
+            const auto result = LegacyClient::importFolder(folderMan, accountState, folder, officialFolders);
             const QString source = QDir::toNativeSeparators(folder.localPath);
             switch (result.result) {
             case LegacyClient::FolderImport::Result::Adopted:
@@ -297,8 +325,8 @@ void LegacyClientImportController::importFolders(AccountState *accountState, boo
             }
         }
         if (imported == 0) {
-            // wie ein neu eingerichtetes Konto, damit es nicht ohne Ordner bleibt
-            folderMan->setUpInitialSyncFolders(accountState, useVfs);
+            // wie ein neu eingerichtetes Konto, damit es nicht ohne Ordner bleibt, und mit der Wahl aus dem Assistenten
+            setUpLikeNewAccount(accountState, choice);
         }
     }
     QTimer::singleShot(0, this, &LegacyClientImportController::importNextAccount);

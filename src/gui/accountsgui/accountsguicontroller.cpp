@@ -206,6 +206,13 @@ void AccountsGuiController::runLegacyImport()
 
 bool AccountsGuiController::startLegacyImport(bool firstStart)
 {
+    if (_legacyImport) {
+        // läuft schon (zwischen zwei Anmeldungen ist kein Fenster offen): kein zweiter Import derselben Konten
+        if (_window) {
+            _window->ensureVisible();
+        }
+        return true;
+    }
     const auto config = LegacyClient::findConfig();
     if (!_window || !config) {
         return false;
@@ -215,8 +222,13 @@ bool AccountsGuiController::startLegacyImport(bool firstStart)
         delete import;
         return false;
     }
+    _legacyImport = import;
     connect(import, &LegacyClientImportController::finished, this, [this, import] {
         import->deleteLater();
+        // „Ordner selbst wählen“ ohne übernommene Ordner: wie nach dem Assistenten den Ordner-Assistenten öffnen
+        for (const auto &accountId : import->folderWizardAccounts()) {
+            runFolderWizard(accountId);
+        }
         // wie nach einem abgebrochenen Assistenten
         setupAccountPlaceholder();
     });

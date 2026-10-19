@@ -21,6 +21,7 @@
 #include <QStringList>
 #include <QUrl>
 
+#include <functional>
 #include <optional>
 
 namespace OCC {
@@ -89,6 +90,28 @@ namespace LegacyClient {
 
     /** Läuft der offizielle Client gerade? Dann synchronisierten zwei Programme dieselben Ordner. */
     OWNCLOUDGUI_EXPORT bool isOfficialClientRunning();
+
+    /**
+     * Derselbe Server: Host, Port und Pfad stimmen überein. Ein „/“ am Ende zählt nicht, und http und https auf ihren
+     * Standardports gelten als gleich (ein Server, der später auf https umgestellt wurde).
+     */
+    OWNCLOUDGUI_EXPORT bool sameServer(const QUrl &a, const QUrl &b);
+
+    /** Sind die lokalen Ordner a und b gleich oder liegt einer im anderen? Groß-/Kleinschreibung wie das Dateisystem. */
+    OWNCLOUDGUI_EXPORT bool pathsOverlap(const QString &a, const QString &b);
+
+    /** Die lokalen Ordner aller Konten der Konfiguration */
+    OWNCLOUDGUI_EXPORT QStringList localFolders(const Config &config);
+
+    /**
+     * Grund, den Ordner localPath gerade nicht zu synchronisieren: Der offizielle Client läuft und hat denselben Ordner,
+     * einen darin oder einen darüber eingerichtet, sonst synchronisierten zwei Programme dieselben Dateien. Leer, wenn
+     * nichts dagegen spricht. Seine Konfiguration wird nur gelesen, solange er läuft, und nie verändert.
+     */
+    OWNCLOUDGUI_EXPORT QString doubleSyncReason(const QString &localPath);
+
+    /** Für Tests: ersetzt isOfficialClientRunning() und die Orte der Konfiguration; ohne Angaben gelten wieder die echten. */
+    OWNCLOUDGUI_EXPORT void setOfficialClientForTesting(const std::function<bool()> &isRunning = {}, const QStringList &configCandidates = {});
 
     enum class JournalCopy {
         /** Journal kopiert und geprüft */

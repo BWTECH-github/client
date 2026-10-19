@@ -32,6 +32,7 @@ class Account;
 class MainWindow;
 class AccountViewController;
 class ColorManager;
+class LegacyClientImportController;
 
 class AccountsGuiController : public QObject
 {
@@ -71,5 +72,7 @@ private:
     void runFirstStart();
     /** false, wenn nichts übernommen wird */
     bool startLegacyImport(bool firstStart);
+    // laufender Umstieg; höchstens einer zugleich
+    QPointer<LegacyClientImportController> _legacyImport;
 };
 }

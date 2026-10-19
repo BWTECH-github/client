@@ -12,6 +12,7 @@
 #include "common/ownsql.h"
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
+#include "common/utility.h"
 #include "folder.h"
 #include "folderman.h"
 #include "legacyclient/legacyclientconfig.h"
@@ -20,6 +21,7 @@
 #include "testutils/testutils.h"
 
 #include <QCryptographicHash>
+#include <QScopeGuard>
 #include <QSignalSpy>
 #include <QtTest>
 
@@ -439,6 +441,158 @@ private Q_SLOTS:
         otherUser.virtualFilesMode = QStringLiteral("off");
         QCOMPARE(LegacyClient::importFolder(folderMan, accountState.get(), otherUser).result, LegacyClient::FolderImport::Result::Skipped);
         QVERIFY(!folderMan->folder(accountState->account()->uuid(), QString()));
+    }
+
+    void testSameServer_data()
+    {
+        QTest::addColumn<QString>("a");
+        QTest::addColumn<QString>("b");
+        QTest::addColumn<bool>("same");
+
+        QTest::newRow("trailing slash") << "https://cloud.example.com/" << "https://cloud.example.com" << true;
+        QTest::newRow("host case") << "https://CLOUD.example.com/oc/" << "https://cloud.example.com/oc" << true;
+        QTest::newRow("explicit default port") << "https://cloud.example.com:443/oc" << "https://cloud.example.com/oc" << true;
+        // später auf https umgestellt: derselbe Server
+        QTest::newRow("http to https") << "http://cloud.example.com/oc" << "https://cloud.example.com/oc" << true;
+        // ein anderer Pfad auf demselben Host kann eine andere Installation sein (2.x-Konfigurationen haben keine davUrl)
+        QTest::newRow("other path") << "https://cloud.example.com/owncloud" << "https://cloud.example.com" << false;
+        QTest::newRow("other port") << "https://cloud.example.com:8443" << "https://cloud.example.com" << false;
+        QTest::newRow("other host") << "https://cloud.example.org" << "https://cloud.example.com" << false;
+        QTest::newRow("empty") << "" << "" << false;
+    }
+
+    void testSameServer()
+    {
+        QFETCH(QString, a);
+        QFETCH(QString, b);
+        QFETCH(bool, same);
+        QCOMPARE(LegacyClient::sameServer(QUrl(a), QUrl(b)), same);
+        QCOMPARE(LegacyClient::sameServer(QUrl(b), QUrl(a)), same);
+    }
+
+    // Ordner nur übernehmen, wenn derselbe Benutzer auf demselben Server angemeldet ist; bisher genügte derselbe Host
+    void testIsSameAccount()
+    {
+        auto accountState = oc10Account();
+        const OCC::Account *account = accountState->account();
+        LegacyClient::Account legacy;
+        legacy.url = account->url();
+        legacy.davUser = account->davUser().toUpper();
+        QVERIFY(LegacyClient::isSameAccount(legacy, account));
+
+        legacy.url = account->url().resolved(QUrl(QStringLiteral("/andere-installation")));
+        QCOMPARE(legacy.url.host(), account->url().host());
+        QVERIFY(!LegacyClient::isSameAccount(legacy, account));
+
+        legacy.url = account->url();
+        legacy.davUser = QStringLiteral("jemand-anders");
+        QVERIFY(!LegacyClient::isSameAccount(legacy, account));
+        QVERIFY(!LegacyClient::isSameAccount(legacy, nullptr));
+    }
+
+    void testPathsOverlap()
+    {
+        const auto dir = TestUtils::createTempDir();
+        const QString base = QDir(dir.path()).canonicalPath();
+        QVERIFY(QDir().mkpath(base + QStringLiteral("/Daten/Fotos")));
+        QVERIFY(LegacyClient::pathsOverlap(base + QStringLiteral("/Daten"), base + QStringLiteral("/Daten/")));
+        QVERIFY(LegacyClient::pathsOverlap(base + QStringLiteral("/Daten/Fotos/"), base + QStringLiteral("/Daten/")));
+        QVERIFY(LegacyClient::pathsOverlap(base + QStringLiteral("/Daten/"), base + QStringLiteral("/Daten/Fotos")));
+        // gleicher Anfang, aber ein anderer Ordner
+        QVERIFY(!LegacyClient::pathsOverlap(base + QStringLiteral("/Daten2/"), base + QStringLiteral("/Daten/")));
+        QVERIFY(!LegacyClient::pathsOverlap(base + QStringLiteral("/Daten/"), QString()));
+        if (Utility::fsCaseSensitivity() == Qt::CaseInsensitive) {
+            QVERIFY(LegacyClient::pathsOverlap(base + QStringLiteral("/DATEN/fotos/"), base + QStringLiteral("/Daten/")));
+        }
+        QVERIFY(LegacyClient::pathsOverlap(QDir::toNativeSeparators(base + QStringLiteral("/Daten/Fotos")), base + QStringLiteral("/Daten/")));
+    }
+
+    // Läuft der offizielle Client wieder (etwa per Autostart), synchronisiert owncloud.online seine Ordner nicht zugleich
+    void testDoubleSyncReason()
+    {
+        const auto dir = TestUtils::createTempDir();
+        const QString base = QDir(dir.path()).canonicalPath();
+        const QString documents = base + QStringLiteral("/Rechnungen");
+        const QString root = base + QStringLiteral("/ownCloud");
+        QVERIFY(QDir().mkpath(documents + QStringLiteral("/2026")));
+        const QString cfg = base + QStringLiteral("/owncloud.cfg");
+        writeFile(cfg, sampleConfig603(documents, root + QLatin1Char('/')));
+        const QByteArray hash = fileHash(cfg);
+
+        bool running = true;
+        LegacyClient::setOfficialClientForTesting([&running] { return running; }, {cfg});
+        const auto reset = qScopeGuard([] { LegacyClient::setOfficialClientForTesting(); });
+
+        QVERIFY(!LegacyClient::doubleSyncReason(documents + QLatin1Char('/')).isEmpty());
+        QVERIFY(LegacyClient::doubleSyncReason(documents + QLatin1Char('/')).contains(QDir::toNativeSeparators(documents)));
+        // darin und darüber ebenso
+        QVERIFY(!LegacyClient::doubleSyncReason(documents + QStringLiteral("/2026/")).isEmpty());
+        QVERIFY(!LegacyClient::doubleSyncReason(base + QLatin1Char('/')).isEmpty());
+        QVERIFY(LegacyClient::doubleSyncReason(base + QStringLiteral("/Anderes/")).isEmpty());
+
+        // beendet: nichts dagegen
+        running = false;
+        QVERIFY(LegacyClient::doubleSyncReason(documents + QLatin1Char('/')).isEmpty());
+        // die Konfiguration des Fremd-Clients ist unverändert
+        QCOMPARE(fileHash(cfg), hash);
+    }
+
+    // Ordner mit virtuellen Dateien werden neu eingerichtet, aber nie in oder um einen Ordner des Fremd-Clients
+    void testVirtualFilesFolderAvoidsOfficialFolders()
+    {
+        if (!VfsPluginManager::instance().isVirtualFilesAvailable()) {
+            QSKIP("no virtual files plugin");
+        }
+        const auto dir = TestUtils::createTempDir();
+        const QString official = QDir(dir.path()).canonicalPath() + QStringLiteral("/ownCloud/");
+        auto accountState = oc10Account();
+        accountState->account()->setDefaultSyncRoot(official + QStringLiteral("owncloud.online"));
+        FolderMan *folderMan = TestUtils::folderMan();
+
+        LegacyClient::Folder folder;
+        folder.localPath = official;
+        folder.virtualFilesMode = QStringLiteral("wincfapi");
+        const auto result = LegacyClient::importFolder(folderMan, accountState.get(), folder, {official});
+        QCOMPARE(result.result, LegacyClient::FolderImport::Result::Skipped);
+        QVERIFY(result.reason.contains(QDir::toNativeSeparators(official)));
+        QVERIFY(!folderMan->folder(accountState->account()->uuid(), QString()));
+    }
+
+    // Eine beschädigte Kopie (etwa mitten in einem Schreibvorgang des Fremd-Clients entstanden) wird nicht übernommen:
+    // SqlDatabase prüft beim Öffnen mit quick_check und ersetzt sie durch eine leere, der der Inhalt fehlt
+    void testCopyJournalRejectsDamagedCopy()
+    {
+        const auto dir = TestUtils::createTempDir();
+        const QString source = dir.filePath(QStringLiteral(".sync_journal.db"));
+        {
+            SyncJournalDb journal(source, nullptr);
+            for (int i = 0; i < 2000; ++i) {
+                SyncJournalFileRecord record;
+                record._path = QStringLiteral("Ordner/Datei-%1.txt").arg(i).toUtf8();
+                record._type = ItemTypeFile;
+                record._etag = "etag";
+                record._fileId = QByteArray::number(100000 + i).rightJustified(8, '0') + "ocinstance";
+                record._fileSize = i;
+                record._modtime = 1700000000 + i;
+                record._inode = 1000 + i;
+                record._remotePerm = RemotePermissions::fromDbValue("WDNVCKR");
+                QVERIFY(journal.setFileRecord(record));
+            }
+            journal.close();
+        }
+        {
+            // eine Seite mitten in der Datei überschreiben, Kopf und Schema bleiben lesbar
+            QFile file(source);
+            QVERIFY(file.open(QIODevice::ReadWrite));
+            QVERIFY(file.size() > 64 * 1024);
+            QVERIFY(file.seek(file.size() / 2 / 4096 * 4096));
+            file.write(QByteArray(4096, char(0x5a)));
+        }
+        const QString target = dir.filePath(QStringLiteral(".sync_online.db"));
+        QString error;
+        QCOMPARE(LegacyClient::copyJournal(source, target, &error), LegacyClient::JournalCopy::Failed);
+        QVERIFY(!error.isEmpty());
+        QVERIFY(!QFileInfo::exists(target));
     }
 };
 
