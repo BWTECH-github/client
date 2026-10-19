@@ -390,8 +390,9 @@ private Q_SLOTS:
 
         const auto result = LegacyClient::importFolder(folderMan, accountState.get(), folder);
         QCOMPARE(result.result, LegacyClient::FolderImport::Result::Adopted);
-        Folder *adopted = folderMan->folder(accountState->account()->uuid(), QString());
+        Folder *adopted = folderMan->folderForPath(local);
         QVERIFY(adopted);
+        QCOMPARE(folderMan->foldersForAccount(accountState->account()->uuid()), QList<Folder *>{adopted});
         QCOMPARE(adopted->path(), local);
         QCOMPARE(adopted->remotePath(), QStringLiteral("/Rechnungen"));
         QCOMPARE(adopted->definition().journalPath(), QStringLiteral(".sync_online.db"));
@@ -401,14 +402,26 @@ private Q_SLOTS:
         // das Journal des Fremd-Clients ist unberührt
         QCOMPARE(fileHash(legacyJournal), legacyHash);
 
-        // ein zweiter Ordner desselben Kontos geht derzeit nicht
+        // derselbe Serverordner kein zweites Mal, auch nicht ein Unterordner davon: jeder Serverordner nur einmal
         const QString second = QDir(dir.path()).canonicalPath() + QStringLiteral("/Fotos/");
         QVERIFY(QDir().mkpath(second));
         folder.localPath = second;
         const auto secondResult = LegacyClient::importFolder(folderMan, accountState.get(), folder);
         QCOMPARE(secondResult.result, LegacyClient::FolderImport::Result::Skipped);
         QVERIFY(!secondResult.reason.isEmpty());
+        folder.targetPath = QStringLiteral("/Rechnungen/2026");
+        QCOMPARE(LegacyClient::importFolder(folderMan, accountState.get(), folder).result, LegacyClient::FolderImport::Result::Skipped);
         QVERIFY(!QFileInfo::exists(second + QStringLiteral(".sync_online.db")));
+
+        // ein anderer Serverordner desselben Kontos wird wie im offiziellen Client ein weiteres Ordnerpaar
+        folder.targetPath = QStringLiteral("/Fotos");
+        folder.displayName = QStringLiteral("Fotos");
+        QCOMPARE(LegacyClient::importFolder(folderMan, accountState.get(), folder).result, LegacyClient::FolderImport::Result::AdoptedWithoutJournal);
+        Folder *photos = folderMan->folderForPath(second);
+        QVERIFY(photos);
+        QVERIFY(photos != adopted);
+        QCOMPARE(photos->remotePath(), QStringLiteral("/Fotos"));
+        QCOMPARE(folderMan->foldersForAccount(accountState->account()->uuid()).size(), 2);
     }
 
     void testImportFolderWithoutJournal()
@@ -440,7 +453,7 @@ private Q_SLOTS:
         otherUser.davUrl = QUrl(QStringLiteral("https://cloud.example.com/remote.php/dav/files/jemand-anders/"));
         otherUser.virtualFilesMode = QStringLiteral("off");
         QCOMPARE(LegacyClient::importFolder(folderMan, accountState.get(), otherUser).result, LegacyClient::FolderImport::Result::Skipped);
-        QVERIFY(!folderMan->folder(accountState->account()->uuid(), QString()));
+        QVERIFY(folderMan->foldersForAccount(accountState->account()->uuid()).isEmpty());
     }
 
     void testSameServer_data()
@@ -555,7 +568,7 @@ private Q_SLOTS:
         const auto result = LegacyClient::importFolder(folderMan, accountState.get(), folder, {official});
         QCOMPARE(result.result, LegacyClient::FolderImport::Result::Skipped);
         QVERIFY(result.reason.contains(QDir::toNativeSeparators(official)));
-        QVERIFY(!folderMan->folder(accountState->account()->uuid(), QString()));
+        QVERIFY(folderMan->foldersForAccount(accountState->account()->uuid()).isEmpty());
     }
 
     // Eine beschädigte Kopie (etwa mitten in einem Schreibvorgang des Fremd-Clients entstanden) wird nicht übernommen:

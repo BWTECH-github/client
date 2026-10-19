@@ -92,9 +92,11 @@ namespace LegacyClient {
         if (folder.davUrl.isValid() && !sameDavUrl(folder.davUrl, account->davUrl())) {
             return skipped(folder, QCoreApplication::translate("OCC::LegacyClient", "The folder belongs to a different user or server."));
         }
-        // Konten ohne Spaces haben derzeit genau einen Ordner
-        if (folderMan->folder(account->uuid(), QString())) {
-            return skipped(folder, QCoreApplication::translate("OCC::LegacyClient", "Only one sync folder per account is possible at the moment."));
+        // mehrere Ordnerpaare je Konto, aber jeden Serverordner (samt Ober- und Unterordnern) nur einmal, wie im
+        // Ordner-Assistenten; geprüft vor dem Kopieren des Journals
+        const QString remotePathError = folderMan->checkRemotePathValidity(account->uuid(), folder.targetPath);
+        if (!remotePathError.isEmpty()) {
+            return skipped(folder, remotePathError);
         }
         const QString displayName = folder.displayName.isEmpty() ? QDir(folder.localPath).dirName() : folder.displayName;
 
@@ -128,10 +130,11 @@ namespace LegacyClient {
             description.displayName = isRoot ? Theme::instance()->appNameGUI() : displayName;
             description.useVirtualFiles = true;
             description.sortPriority = 0;
-            folderMan->addFolderFromGui(accountState, description);
-            const OCC::Folder *created = folderMan->folder(account->uuid(), QString());
+            const QString setupError = folderMan->addFolderFromGui(accountState, description);
+            // das Konto kann schon weitere Ordnerpaare haben: den neuen Ordner über seinen Pfad finden
+            const OCC::Folder *created = setupError.isEmpty() ? folderMan->folderForPath(localPath) : nullptr;
             if (!created) {
-                return skipped(folder, QCoreApplication::translate("OCC::LegacyClient", "The folder could not be set up."));
+                return skipped(folder, setupError.isEmpty() ? QCoreApplication::translate("OCC::LegacyClient", "The folder could not be set up.") : setupError);
             }
             return {FolderImport::Result::NewVirtualFilesFolder, created->path(), {}};
         }

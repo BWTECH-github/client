@@ -1523,8 +1523,15 @@ Folder *FolderMan::adoptExistingFolder(AccountState *accountState, const FolderD
         return nullptr;
     }
     const QUuid accountId = accountState->account()->uuid();
-    // addFolder gäbe sonst den vorhandenen Ordner zurück
-    if (folder(accountId, definition.spaceId())) {
+    if (definition.spaceId().isEmpty()) {
+        // ohne Spaces wie addFolderFromGui: jeden Serverordner (samt Ober- und Unterordnern) nur einmal spiegeln
+        const QString remoteError = checkRemotePathValidity(accountId, definition.targetPath());
+        if (!remoteError.isEmpty()) {
+            qCWarning(lcFolderMan) << "Cannot adopt" << definition.localPath() << ":" << remoteError;
+            return nullptr;
+        }
+    } else if (folder(accountId, definition.spaceId())) {
+        // addFolder gäbe sonst den vorhandenen Ordner zurück
         qCWarning(lcFolderMan) << "Cannot adopt" << definition.localPath() << "- the account already has a folder for space" << definition.spaceId();
         return nullptr;
     }
