@@ -338,13 +338,30 @@ QString PublicLinkCreator::linkName(const Capabilities &capabilities, const QDat
     return tr("Context menu link");
 }
 
+QDate PublicLinkCreator::defaultExpireDate(const Capabilities &capabilities, const QDate &today)
+{
+    // ein nicht erzwungenes Ablaufdatum setzt der Server nicht selbst: wie 6.0.3 und der Teilen-Dialog mitschicken
+    const int days = capabilities.sharePublicLinkDefaultExpire() ? capabilities.sharePublicLinkDefaultExpireDateDays() : 0;
+    return days > 0 ? today.addDays(days) : QDate();
+}
+
+bool PublicLinkCreator::isReusable(const Share &share, const QDate &expireDate)
+{
+    // nur lesen, ohne Passwort, und nie einer, der früher abläuft als ein neuer (ohne Vorgabe: nur ein unbefristeter)
+    if (!share.isLink() || share.url.isEmpty() || share.permissions != SharePermissions(SharePermission::Read) || share.hasPassword)
+        return false;
+    return !share.expireDate.isValid() || (expireDate.isValid() && share.expireDate >= expireDate);
+}
+
 void PublicLinkCreator::start()
 {
     if (!_account) {
         Q_EMIT failed(QString());
         return;
     }
-    _name = linkName(_account->capabilities(), QDate::currentDate());
+    const QDate today = QDate::currentDate();
+    _name = linkName(_account->capabilities(), today);
+    _expireDate = defaultExpireDate(_account->capabilities(), today);
     _api->fetchShares(_path);
 }
 
@@ -358,8 +375,9 @@ void PublicLinkCreator::onSharesFetched(const QList<Share> &shares)
     for (const auto &share : shares) {
         if (!share.isLink() || share.url.isEmpty())
             continue;
-        // nur einen unveränderten Link wiederverwenden: wer ihn im Dialog auf Bearbeiten gestellt oder mit Passwort versehen hat, bekommt einen neuen
-        if (share.name == _name && share.permissions == SharePermissions(SharePermission::Read) && !share.hasPassword) {
+        // nur einen unveränderten Link wiederverwenden: wer ihn im Dialog auf Bearbeiten gestellt, mit Passwort versehen
+        // oder verkürzt hat, bekommt einen neuen
+        if (share.name == _name && isReusable(share, _expireDate)) {
             Q_EMIT linkReady(share.url);
             return;
         }
@@ -367,11 +385,18 @@ void PublicLinkCreator::onSharesFetched(const QList<Share> &shares)
             firstLink = &share;
     }
     if (firstLink && !_account->capabilities().sharePublicLinkMultiple()) {
-        Q_EMIT linkReady(firstLink->url);
+        // nur ein Link je Element: den vorhandenen nur still kopieren, wenn er nicht mehr erlaubt als ein neuer, sonst zeigt
+        // der Teilen-Dialog ihn mit seinen Rechten
+        if (isReusable(*firstLink, _expireDate)) {
+            Q_EMIT linkReady(firstLink->url);
+        } else {
+            Q_EMIT failed(QString());
+        }
         return;
     }
     LinkSettings settings;
     settings.name = _name;
+    settings.expireDate = _expireDate;
     _api->createLinkShare(_path, settings);
 }
 

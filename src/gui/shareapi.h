@@ -162,9 +162,10 @@ private:
 /**
  * @brief „Öffentlichen Link erstellen und kopieren“ aus dem Explorer-Kontextmenü.
  *
- * Nimmt einen früher so angelegten, unveränderten Link wieder (gleicher Name, nur lesen, ohne Passwort) oder
- * legt einen mit den Standardrechten an: nur lesen, ohne Passwort. Ein Ablaufdatum setzt der Server selbst,
- * wenn er eines vorgibt. Erlaubt der Server nur einen Link je Element, gilt der vorhandene. Erzwingt er
+ * Nimmt einen früher so angelegten, unveränderten Link wieder (gleicher Name, nur lesen, ohne Passwort, läuft nicht
+ * früher ab als ein neuer) oder legt einen mit den Standardrechten an: nur lesen, ohne Passwort, mit dem Ablaufdatum,
+ * das der Server vorgibt (defaultExpireDate()). Erlaubt der Server nur einen Link je Element, gilt der vorhandene,
+ * sofern er nicht mehr erlaubt als ein neuer; sonst entscheidet der Nutzer im Teilen-Dialog. Erzwingt der Server
  * Passwort oder Ablaufdatum, geht es nur über den Teilen-Dialog (needsUserInput()).
  *
  * @ingroup gui
@@ -180,6 +181,10 @@ public:
     static bool needsUserInput(const Capabilities &capabilities);
     /// Name der so angelegten Links; gibt der Server ein Ablaufdatum vor, je Tag ein eigener, damit nie ein fast abgelaufener Link weitergegeben wird
     static QString linkName(const Capabilities &capabilities, const QDate &today);
+    /// Ablaufdatum eines neuen Links: heute plus die vorgegebenen Tage, ungültig ohne Vorgabe
+    static QDate defaultExpireDate(const Capabilities &capabilities, const QDate &today);
+    /// darf share statt eines neuen Links (Ablaufdatum expireDate) kopiert werden?
+    static bool isReusable(const Share &share, const QDate &expireDate);
 
     /// genau eines von linkReady() und failed() folgt
     void start();
@@ -196,6 +201,7 @@ private:
     ShareApi *_api;
     QString _path;
     QString _name;
+    QDate _expireDate;
 };
 
 } // namespace OCC
