@@ -267,7 +267,7 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+49"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+50"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Błąd:&lt;/b&gt; %1</translation>
     </message>
@@ -314,13 +314,15 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>Select a remote destination folder</source>
-        <translation>Wybierz zdalny folder docelowy</translation>
+        <source>Choose the folder on the server</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wybierz folder na serwerze</translation>
     </message>
     <message>
         <location line="+29"/>
-        <source>Create Folder</source>
-        <translation>Utwórz katalog</translation>
+        <source>Create folder…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Utwórz folder…</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -341,15 +343,57 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
         <translation>O aplikacji</translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+72"/>
+        <source>Updates</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aktualizacje</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Update channel:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kanał aktualizacji:</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Check for updates now</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sprawdź aktualizacje teraz</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Restart and update</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Uruchom ponownie i zaktualizuj</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Beta versions bring new features earlier but are less tested. There are no downgrades: after switching back to Stable, the next stable version that is newer than the installed one is offered.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wersje beta wprowadzają nowe funkcje wcześniej, ale są mniej przetestowane. Starsza wersja nigdy nie jest instalowana: po powrocie do kanału Stabilna proponowana jest następna stabilna wersja nowsza od zainstalowanej.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Versions</source>
         <translation>Wersje</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+53"/>
+        <source>Stable</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Stabilna</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Beta</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Beta</translation>
     </message>
 </context>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+254"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
         <source>Connection timed out</source>
         <translation>Przekroczono czas odpowiedzi</translation>
     </message>
@@ -585,7 +629,7 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+248"/>
+        <location filename="../src/gui/accountstate.cpp" line="+249"/>
         <source>The server is not supported by this client.</source>
         <translation>Serwer nie jest obsługiwany przez tego klienta.</translation>
     </message>
@@ -647,13 +691,13 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+108"/>
-        <location line="+42"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location line="+54"/>
         <source>Log in</source>
         <translation>Zaloguj</translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="-49"/>
         <source>Reconnect</source>
         <translation>Połącz ponownie</translation>
     </message>
@@ -669,7 +713,13 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
         <translation>Zmień alias...</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+8"/>
+        <source>Change server address…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zmień adres serwera…</translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>Log out</source>
         <translation>Wyloguj</translation>
     </message>
@@ -706,7 +756,13 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
         <translation>Alias konta:</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+18"/>
+        <source>Change server address</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zmień adres serwera</translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>Wersja %1 serwera nie jest obsługiwana! Wchodzisz na własne ryzyko.</translation>
     </message>
@@ -774,22 +830,40 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Nieprawidłowy stan połączenia</translation>
     </message>
+    <message>
+        <location line="+92"/>
+        <source>Folder not added</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Folder nie został dodany</translation>
+    </message>
 </context>
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+170"/>
-        <location line="+61"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location line="+113"/>
         <source>New account failure</source>
         <translation>Błąd nowego konta</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-113"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
         <translation>Informacje wymagane do utworzenia nowego konta są niekompletne. Uruchom kreatora ponownie.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
+        <source>Import from the official client</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Importuj z oficjalnego klienta</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No configuration of the official desktop client was found on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Na tym komputerze nie znaleziono konfiguracji oficjalnego klienta desktopowego.</translation>
+    </message>
+    <message>
+        <location line="+48"/>
         <source>Accounts</source>
         <translation>Konta</translation>
     </message>
@@ -993,12 +1067,12 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="+171"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="+188"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation>Błąd autentykacji: nazwa użytkownika lub hasło są nieprawidłowe.</translation>
     </message>
     <message>
-        <location line="-18"/>
+        <location line="-34"/>
         <source>timeout</source>
         <translation>wygaśnięcie</translation>
     </message>
@@ -1009,7 +1083,13 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
         <translation>Nie skonfigurowano konta owncloud.online</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+103"/>
+        <source>The server reports a new address: %1. If your server has moved, choose “Change server address…” in the account menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer podaje nowy adres: %1. Jeśli twój serwer został przeniesiony, wybierz „Zmień adres serwera…” w menu konta.</translation>
+    </message>
+    <message>
+        <location line="+65"/>
         <source>No account configured</source>
         <translation>Brak skonfigurowanego konta</translation>
     </message>
@@ -1022,7 +1102,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+218"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
         <source>Failed to parse credentials %1</source>
         <translation>Nie udało się przeanalizować danych uwierzytelniających %1</translation>
     </message>
@@ -1119,7 +1199,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+402"/>
+        <location filename="../src/gui/folder.cpp" line="+407"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 został usunięty.</translation>
@@ -1243,12 +1323,12 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
         <translation>Przełączanie trybu VFS w folderze &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+204"/>
         <source>Could not read system exclude file</source>
         <translation>Nie można przeczytać pliku wyłączeń</translation>
     </message>
     <message>
-        <location line="+195"/>
+        <location line="+205"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Folder %1 został utworzony ale poprzednio został wykluczony z synchronizacji. Dane wewnątrz folderu nie będą zsynchronizowane.</translation>
     </message>
@@ -1300,7 +1380,79 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
         <translation>Nie synchronizuj</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+63"/>
+        <source>All files in the sync folder &apos;%1&apos; were deleted on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wszystkie pliki w folderze synchronizacji „%1” zostały usunięte na serwerze.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in the sync folder &apos;%3&apos; were deleted on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 z %2 plików w folderze synchronizacji „%3” zostało usuniętych na serwerze.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them here as well, they will be removed from this computer. If you keep them, they will be uploaded to the server again, provided you have the permission to do so.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Jeśli usuniesz je także tutaj, zostaną usunięte z tego komputera. Jeśli je zachowasz, zostaną ponownie wysłane na serwer, o ile masz do tego uprawnienia.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>All files in your local sync folder &apos;%1&apos; were deleted.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wszystkie pliki w twoim lokalnym folderze synchronizacji „%1” zostały usunięte.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in your local sync folder &apos;%3&apos; were deleted.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 z %2 plików w twoim lokalnym folderze synchronizacji „%3” zostało usuniętych.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them on the server as well, they will only be available from the server&apos;s deleted files. If this was an accident, choose &quot;Keep files&quot;: they will be downloaded from the server again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Jeśli usuniesz je także na serwerze, będą dostępne już tylko w usuniętych plikach serwera. Jeśli to była pomyłka, wybierz „Zachowaj pliki”: zostaną ponownie pobrane z serwera.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The synchronization of this folder is paused until you decide.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronizacja tego folderu jest wstrzymana, dopóki nie podejmiesz decyzji.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Remove all files?</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usunąć wszystkie pliki?</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Remove many files?</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usunąć wiele plików?</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Keep files</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zachowaj pliki</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Delete files</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usuń pliki</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Decide later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zdecyduj później</translation>
+    </message>
+    <message>
+        <location line="+38"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1393,7 +1545,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+569"/>
+        <location filename="../src/gui/folderman.cpp" line="+571"/>
         <source>Could not reset folder state</source>
         <translation>Nie udało się zresetować stanu folderu</translation>
     </message>
@@ -1414,11 +1566,12 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
     </message>
     <message>
         <location line="+35"/>
+        <location line="+20"/>
         <source>Sync paused by user</source>
         <translation>Synchronizacja wstrzymana przez użytkownika</translation>
     </message>
     <message>
-        <location line="+278"/>
+        <location line="+341"/>
         <source>User triggered force sync</source>
         <translation>Wymuszona synchronizacja uruchamiana przez użytkownika</translation>
     </message>
@@ -1428,7 +1581,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
         <translation>Folder zostanie wkrótce usunięty</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source> (backup)</source>
         <translation> (kopia zapasowa)</translation>
     </message>
@@ -1468,7 +1621,31 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
         <translation>Folder lokalny %1 znajduje się już w folderze używanym w połączeniu synchronizacji folderów.</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+35"/>
+        <source>This server folder is already synced with the local folder %1. Each server folder can only be synced once.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ten folder serwera jest już synchronizowany z folderem lokalnym %1. Każdy folder serwera można synchronizować tylko raz.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The whole account is already synced with the local folder %1. Each server folder can only be synced once. To sync this server folder to a different local folder, remove the existing folder sync connection first.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Całe konto jest już synchronizowane z folderem lokalnym %1. Każdy folder serwera można synchronizować tylko raz. Aby synchronizować ten folder serwera z innym folderem lokalnym, najpierw usuń istniejące połączenie synchronizacji folderu.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder contains the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. Choose a folder outside of it, or remove the existing folder sync connection first.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ten folder serwera zawiera folder %1, który jest już synchronizowany z folderem lokalnym %2. Każdy folder serwera można synchronizować tylko raz. Wybierz folder poza nim lub najpierw usuń istniejące połączenie synchronizacji folderu.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder is inside the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. To sync it to a different local folder, remove the existing folder sync connection first.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ten folder serwera znajduje się w folderze %1, który jest już synchronizowany z folderem lokalnym %2. Każdy folder serwera można synchronizować tylko raz. Aby synchronizować go z innym folderem lokalnym, najpierw usuń istniejące połączenie synchronizacji folderu.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>No valid folder selected.</source>
         <translation>Nie wybrano prawidłowego folderu.</translation>
     </message>
@@ -1483,12 +1660,24 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
         <translation>Nie masz uprawnień do zapisu w wybranym folderze.</translation>
     </message>
     <message>
-        <location line="-79"/>
+        <location line="+139"/>
+        <source>The account no longer exists.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Konto już nie istnieje.</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The local folder %1 could not be set up for synchronization.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można skonfigurować folderu lokalnego %1 do synchronizacji.</translation>
+    </message>
+    <message>
+        <location line="-303"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>Folder &apos;%1&apos; jest już używany przez inne konto.</translation>
     </message>
     <message>
-        <location line="-945"/>
+        <location line="-1029"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Zamykanie aplikacji</translation>
@@ -1502,7 +1691,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::FolderModelController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+117"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+120"/>
         <source>%1 options</source>
         <translation>%1 opcji</translation>
     </message>
@@ -1531,7 +1720,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+109"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+129"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>Pliki wirtualne nie są dostępne dla wybranego folderu</translation>
     </message>
@@ -1562,6 +1751,124 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
         <location line="+64"/>
         <source>Select the local folder</source>
         <translation>Wybierz folder lokalny</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::FolderWizardRemotePath</name>
+    <message>
+        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="+100"/>
+        <source>Folders on the server</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Foldery na serwerze</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path on the server, for example /Documents</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ścieżka na serwerze, na przykład /Dokumenty</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path of the server folder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ścieżka folderu serwera</translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Please enter a name for the new folder.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wpisz nazwę nowego folderu.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder name %1 is not allowed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nazwa folderu %1 jest niedozwolona.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The folder name must not contain any of these characters: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nazwa folderu nie może zawierać żadnego z tych znaków: %1</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The folder name must not end with a dot.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nazwa folderu nie może kończyć się kropką.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The folder name %1 is reserved by Windows.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nazwa folderu %1 jest zarezerwowana przez system Windows.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Folders named %1 are excluded from synchronization.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Foldery o nazwie %1 są wykluczone z synchronizacji.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 - %2</source>
+        <extracomment>Name eines weiteren lokalen Ordners: %1 ist der Sync-Ordner des Kontos, %2 der Serverordner</extracomment>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Create folder on the server</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Utwórz folder na serwerze</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Name of the new folder in %1:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nazwa nowego folderu w %1:</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>The folder %1 was created on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Folder %1 został utworzony na serwerze.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Authentication failed while accessing the server. Please sign in again and retry.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Uwierzytelnianie podczas dostępu do serwera nie powiodło się. Zaloguj się ponownie i spróbuj jeszcze raz.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You are not allowed to create a folder here.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie masz uprawnień do tworzenia folderu w tym miejscu.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>A folder or file with this name already exists on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Na serwerze istnieje już folder lub plik o tej nazwie.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder could not be created on the server: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można utworzyć folderu na serwerze: %1</translation>
+    </message>
+    <message>
+        <location line="+65"/>
+        <source>The folder list could not be loaded: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można wczytać listy folderów: %1</translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>Choose this to sync the entire account</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wybierz tę opcję, aby synchronizować całe konto</translation>
     </message>
 </context>
 <context>
@@ -1616,7 +1923,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
-        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
+        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Token dostępu wygasł, a plik tokenu nie zawiera tokenu odświeżania. Zaloguj się ponownie, aby utworzyć nowy plik tokenu.</translation>
@@ -1628,7 +1935,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
         <translation>owncloudcmd nie może zalogować się interaktywnie. Zaloguj się ponownie, aby utworzyć nowy plik tokenu.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+22"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Serwer odrzucił token dostępu, który właśnie wydał (HTTP 401). Sprawdź, czy serwer WWW przekazuje nagłówek Authorization do owncloud.online.</translation>
@@ -1640,13 +1947,13 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
         <translation>Serwer odrzucił token dostępu (HTTP 401), a plik tokenu nie zawiera tokenu odświeżania. Zaloguj się ponownie, aby utworzyć nowy plik tokenu.</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+43"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Plik tokenu %1 jest zablokowany przez inne uruchomienie owncloudcmd.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+12"/>
         <source>Could not read the token file again: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Nie można ponownie odczytać pliku tokenu: %1</translation>
@@ -1658,31 +1965,33 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
         <translation>Nie można odświeżyć tokenu dostępu bez konta.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+48"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Serwer nie akceptuje już tokenu odświeżania (%1). Logowanie wygasło lub zostało cofnięte; zaloguj się ponownie, aby utworzyć nowy plik tokenu.</translation>
     </message>
     <message>
         <location line="+5"/>
+        <location line="+4"/>
         <source>The server refused to refresh the access token (%1).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Serwer odmówił odświeżenia tokenu dostępu (%1).</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+18"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Odświeżanie tokenu dostępu nie powiodło się: %1 (HTTP %2).</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Punkt końcowy tokenu odpowiedział bez użytecznego tokenu dostępu (HTTP %1).</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="-239"/>
+        <location line="+252"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Nie można zapisać odświeżonych tokenów w %1: %2</translation>
@@ -1730,7 +2039,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 Elementy, których usunięcie jest dozwolone, zostaną usunięte, jeśli uniemożliwią usunięcie katalogu. Jest to przydatne w przypadku metadanych.</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="+110"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="+122"/>
         <source>Could not open file</source>
         <translation>Nie można otworzyć plików</translation>
     </message>
@@ -1750,9 +2059,204 @@ Elementy, których usunięcie jest dozwolone, zostaną usunięte, jeśli uniemo�
         <translation>Dodaj nowy ignorowany:</translation>
     </message>
     <message>
-        <location line="-93"/>
+        <location line="-103"/>
+        <location line="+12"/>
         <source>This entry is provided by the system at &apos;%1&apos; and cannot be modified in this view.</source>
         <translation>Ten wpis jest podawany przez system w &apos;%1&apos; i nie może być zmieniony w tym widoku.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClient</name>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Oficjalny klient jest uruchomiony i również synchronizuje folder %1. Zamknij go, aby folder nie był synchronizowany jednocześnie przez dwa programy.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <source>Spaces are not taken over; add them after signing in.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Przestrzenie nie są przejmowane; dodaj je po zalogowaniu.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder belongs to a different user or server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Folder należy do innego użytkownika lub serwera.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The folder uses virtual files, which are not available on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Folder używa plików wirtualnych, które nie są dostępne na tym komputerze.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>The new folder %1 would overlap the folder %2 of the official client.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nowy folder %1 nakładałby się na folder %2 oficjalnego klienta.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <location line="+23"/>
+        <source>The folder is already synchronized.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Folder jest już synchronizowany.</translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <location line="+26"/>
+        <source>The folder could not be set up.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można skonfigurować folderu.</translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>The local folder does not exist.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Folder lokalny nie istnieje.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClientImportController</name>
+    <message>
+        <location line="+41"/>
+        <source>%1: already set up.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: już skonfigurowane.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>• %1 – %n sync folder(s)</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>• %1 – %n folder synchronizacji</numerusform>
+            <numerusform>• %1 – %n foldery synchronizacji</numerusform>
+            <numerusform>• %1 – %n folderów synchronizacji</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+20"/>
+        <source>Import from the official client</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Importuj z oficjalnego klienta</translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <source>All accounts of the official client are already set up.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wszystkie konta oficjalnego klienta są już skonfigurowane.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Na tym komputerze skonfigurowano oficjalnego klienta desktopowego. Czy chcesz przejąć jego konta i foldery synchronizacji?</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Logujesz się raz na każde konto w przeglądarce. Już synchronizowane foldery zostaną rozpoznane i nie będą pobierane ponownie. W oficjalnym kliencie nic nie zostanie zmienione.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Import</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Importuj</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set up a new account</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Skonfiguruj nowe konto</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Cancel</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Anuluj</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Oficjalny klient nadal działa. Zamknij go i wyłącz jego autostart przed importem, w przeciwnym razie oba programy będą synchronizować te same foldery.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Check again</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sprawdź ponownie</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Import anyway</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Importuj mimo to</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Sign in: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Logowanie: %1</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: sign-in cancelled, not taken over.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: logowanie anulowane, nie przejęto.</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>%1: signed in as %2, the folders of the official client were not taken over.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: zalogowano jako %2, foldery oficjalnego klienta nie zostały przejęte.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>%1: taken over, the files are recognized without downloading them again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: przejęto, pliki zostaną rozpoznane bez ponownego pobierania.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: taken over; the synchronization state could not be read, the files are compared with the server once.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: przejęto; nie można odczytać stanu synchronizacji, pliki zostaną jednorazowo porównane z serwerem.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: set up again with virtual files at %2; only placeholders are created.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: skonfigurowano ponownie z plikami wirtualnymi w %2; tworzone są tylko symbole zastępcze.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1: not taken over. %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: nie przejęto. %2</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1: the account could not be created: %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: nie można utworzyć konta: %2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Import finished</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Import zakończony</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zamknij oficjalnego klienta na stałe (wyłącz jego autostart lub odinstaluj go), aby foldery nie były synchronizowane podwójnie.</translation>
     </message>
 </context>
 <context>
@@ -1884,13 +2388,19 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::MainWindowController</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+87"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+88"/>
         <source>Add account...</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Dodaj konto...</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
+        <source>Import from official client...</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Importuj z oficjalnego klienta...</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Settings...</source>
         <translation>Ustawienia...</translation>
     </message>
@@ -2036,7 +2546,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Typ serwera proxy</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.cpp" line="+54"/>
+        <location filename="../src/gui/networksettings.cpp" line="+55"/>
         <location line="+1"/>
         <source>Hostname of proxy server</source>
         <translation>Nazwa hosta serwera proxy</translation>
@@ -2070,20 +2580,26 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Przepustowość</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
+        <source>The automatic limit of an earlier version is no longer supported. Currently not limited.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Automatyczny limit z wcześniejszej wersji nie jest już obsługiwany. Obecnie bez limitu.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Limit upload speed to</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ogranicz prędkość wysyłania do</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+8"/>
+        <location line="+5"/>
+        <location line="+12"/>
         <source> kB/s</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation> kB/s</translation>
     </message>
     <message>
-        <location line="-3"/>
+        <location line="-5"/>
         <source>Limit download speed to</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ogranicz prędkość pobierania do</translation>
@@ -2118,7 +2634,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+56"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
         <source>Add account…</source>
         <translation>Dodaj konto…</translation>
     </message>
@@ -2133,7 +2649,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Zaawansowane</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+150"/>
         <source>Sign in</source>
         <translation>Zaloguj</translation>
     </message>
@@ -2164,7 +2680,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
         <source>Successfully signed in</source>
         <translation>Pomyślnie zalogowano</translation>
     </message>
@@ -2385,7 +2901,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+829"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
         <source>File %1 is currently in use</source>
         <translation>Plik %1 jest obecnie używany</translation>
     </message>
@@ -2621,7 +3137,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-958"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
         <source>; Restoration Failed: %1</source>
         <translation>; Przywracanie nie powiodło się: %1</translation>
     </message>
@@ -2768,7 +3284,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1139"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
         <source>Could not update file : %1</source>
         <translation>Nie można zaktualizować pliku: %1</translation>
     </message>
@@ -2938,6 +3454,21 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <location line="+2"/>
         <source>Status</source>
         <translation>Status</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::PublicLinkCreator</name>
+    <message>
+        <location filename="../src/gui/shareapi.cpp" line="+337"/>
+        <source>Context menu link %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link z menu kontekstowego %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Context menu link</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link z menu kontekstowego</translation>
     </message>
 </context>
 <context>
@@ -3161,6 +3692,201 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
 </context>
 <context>
+    <name>OCC::ServerAddressDialog</name>
+    <message>
+        <location filename="../src/gui/accountsgui/serveraddressdialog.cpp" line="+37"/>
+        <source>Change server address</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zmień adres serwera</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>If your server has moved to a new address, enter the new address here. The account and its folders, files and settings are kept. To make sure that it is the same server and the same user, you sign in again at the new address.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Jeśli twój serwer został przeniesiony pod nowy adres, wpisz tutaj nowy adres. Konto wraz z jego folderami, plikami i ustawieniami zostanie zachowane. Aby mieć pewność, że to ten sam serwer i ten sam użytkownik, zalogujesz się ponownie pod nowym adresem.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Current address:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Obecny adres:</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nowy adres</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nowy adres:</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Open browser again</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Otwórz ponownie przeglądarkę</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Check and sign in</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sprawdź i zaloguj</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Sign-in link: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link logowania: %1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerMoveController</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="+489"/>
+        <source>Checking %1…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sprawdzanie %1…</translation>
+    </message>
+    <message>
+        <location line="+56"/>
+        <source>Another account already uses this address with the same user.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Inne konto używa już tego adresu z tym samym użytkownikiem.</translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Checking that this is the same server and the same user…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sprawdzanie, czy to ten sam serwer i ten sam użytkownik…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The browser could not be opened. Copy the sign-in link and open it in your browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można otworzyć przeglądarki. Skopiuj link logowania i otwórz go w swojej przeglądarce.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in page of the new address does not use a secure connection (HTTPS).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Strona logowania pod nowym adresem nie używa bezpiecznego połączenia (HTTPS).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the new address cannot be reached. Please try again later.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usługa logowania pod nowym adresem jest nieosiągalna. Spróbuj ponownie później.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Signing in at the new address failed. Please sign in with the same user as before: %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Logowanie pod nowym adresem nie powiodło się. Zaloguj się jako ten sam użytkownik co wcześniej: %1.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Please sign in at the new address in your browser, with the same user as before: %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zaloguj się w przeglądarce pod nowym adresem jako ten sam użytkownik co wcześniej: %1.</translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>The new address did not accept the sign-in. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nowy adres nie zaakceptował logowania. Adres nie został zmieniony.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The user %1 does not exist at the new address. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Użytkownik %1 nie istnieje pod nowym adresem. Adres nie został zmieniony.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address redirected the check to another address. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nowy adres przekierował sprawdzanie pod inny adres. Adres nie został zmieniony.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address could not be checked: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można sprawdzić nowego adresu: %1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The new address does not report which installation it belongs to, so it cannot be confirmed that it is the same server. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nowy adres nie podaje, do której instalacji należy, więc nie można potwierdzić, że to ten sam serwer. Adres nie został zmieniony.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The server at %1 is a different installation than the one this account was set up with. To protect your files, the address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer pod adresem %1 to inna instalacja niż ta, z którą skonfigurowano to konto. Aby chronić twoje pliki, adres nie został zmieniony.</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>The synchronization of the account could not be stopped. The address was not changed, please try again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można zatrzymać synchronizacji konta. Adres nie został zmieniony, spróbuj ponownie.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerStatusCheck</name>
+    <message>
+        <location line="-402"/>
+        <source>No server could be reached at %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pod adresem %1 nie udało się połączyć z żadnym serwerem.</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>The address %1 redirects to another server (%2). For your security, this redirect is not followed automatically. If you trust that server, enter its address directly.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Adres %1 przekierowuje na inny serwer (%2). Ze względów bezpieczeństwa to przekierowanie nie jest wykonywane automatycznie. Jeśli ufasz temu serwerowi, wpisz bezpośrednio jego adres.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The address %1 redirects to %2, which is not the address of a server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Adres %1 przekierowuje do %2, który nie jest adresem serwera.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address %1 redirects too often.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Adres %1 przekierowuje zbyt wiele razy.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>No server could be reached at %1: %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pod adresem %1 nie udało się połączyć z żadnym serwerem: %2</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>No server was found at %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pod adresem %1 nie znaleziono serwera.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The server at %1 is not set up yet.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer pod adresem %1 nie jest jeszcze skonfigurowany.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The server at %1 is in maintenance mode. Please try again later.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer pod adresem %1 jest w trybie konserwacji. Spróbuj ponownie później.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::SettingsView</name>
     <message>
         <location filename="../src/gui/mainwindow/settingsview.ui" line="+14"/>
@@ -3225,15 +3951,15 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
     <message>
         <location line="+7"/>
-        <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
+        <source>HTTP/2 reuses a single connection for many requests, which can speed up syncing on high-latency links and with many small files. Off by default, because transfers can stall with some servers and proxies; turn it on only if your server handles HTTP/2 reliably. Takes effect after a restart.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>HTTP/2 używa jednego połączenia dla wielu żądań, co przyspiesza synchronizację na łączach o dużych opóźnieniach i przy wielu małych plikach. Domyślnie włączone; odznacz tylko wtedy, gdy Twój serwer lub serwer proxy ma problemy z HTTP/2. Zmiana zacznie obowiązywać po ponownym uruchomieniu.</translation>
+        <translation>HTTP/2 używa jednego połączenia dla wielu żądań, co może przyspieszyć synchronizację przy łączach o dużym opóźnieniu i wielu małych plikach. Domyślnie wyłączone, ponieważ z niektórymi serwerami i serwerami proxy transfery mogą się zawieszać; włącz tylko wtedy, gdy twój serwer niezawodnie obsługuje HTTP/2. Działa po ponownym uruchomieniu.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Use HTTP/2 (recommended, requires restart)</source>
+        <source>Use HTTP/2 (optional, requires restart)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Używaj HTTP/2 (zalecane, wymaga ponownego uruchomienia)</translation>
+        <translation>Użyj HTTP/2 (opcjonalne, wymaga ponownego uruchomienia)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3307,7 +4033,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::ShareDialog</name>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="+107"/>
+        <location filename="../src/gui/sharedialog.cpp" line="+111"/>
         <source>Share %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Udostępnij %1</translation>
@@ -3325,13 +4051,13 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Użytkownicy i grupy</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Public links</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Linki publiczne</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Close</source>
         <translation>Zamknij</translation>
     </message>
@@ -3372,31 +4098,31 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
     <message>
         <location line="+5"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <source>Download / View</source>
         <translation>Pobierz / Podgląd</translation>
     </message>
     <message>
-        <location line="-582"/>
-        <location line="+581"/>
+        <location line="-595"/>
+        <location line="+594"/>
         <source>Download / View / Upload</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Pobieranie / Podgląd / Wysyłanie</translation>
     </message>
     <message>
-        <location line="-580"/>
-        <location line="+578"/>
+        <location line="-593"/>
+        <location line="+591"/>
         <source>Download / View / Edit</source>
         <translation>Pobieranie / Przeglądanie / Edycja</translation>
     </message>
     <message>
-        <location line="-577"/>
-        <location line="+575"/>
+        <location line="-590"/>
+        <location line="+588"/>
         <source>Upload only (File Drop)</source>
         <translation>Tylko wysyłanie (upuszczanie pliku)</translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-580"/>
         <source>Recipients can:</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Odbiorcy mogą:</translation>
@@ -3609,13 +4335,13 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
     <message>
         <location line="+6"/>
-        <location line="+69"/>
+        <location line="+78"/>
         <location line="+45"/>
         <source>Public link</source>
         <translation>Link publiczny</translation>
     </message>
     <message>
-        <location line="-109"/>
+        <location line="-118"/>
         <source>password protected</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>chroniony hasłem</translation>
@@ -3634,12 +4360,19 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
     <message>
         <location line="+5"/>
+        <location line="+294"/>
         <source>Copy link</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kopiuj link</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="-287"/>
+        <source>More</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Więcej</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Edit</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Edytuj</translation>
@@ -3692,7 +4425,13 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Pozostaw puste, aby zachować obecne hasło</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+25"/>
+        <source>You are not allowed to create public links on this server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie masz uprawnień do tworzenia linków publicznych na tym serwerze.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The server requires a password for this kind of link.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Serwer wymaga hasła dla tego typu linku.</translation>
@@ -3741,16 +4480,40 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>%1 (federacyjny)</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+30"/>
         <source>Link copied to the clipboard: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Link skopiowany do schowka: %1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Open in browser</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Otwórz w przeglądarce</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copy direct download link</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kopiuj link do bezpośredniego pobierania</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send by email…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wyślij e-mailem…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>I shared %1 with you</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Udostępniam ci %1</translation>
     </message>
 </context>
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+471"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>Współdzielone z %1</translation>
@@ -3795,19 +4558,43 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Wybierz nową lokalizację…</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="-210"/>
+        <source>Public link copied</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link publiczny skopiowany</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>The public link to %1 is in the clipboard.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link publiczny do %1 jest w schowku.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The public link could not be created automatically.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie można automatycznie utworzyć linku publicznego.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Server message: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Komunikat serwera: %1</translation>
+    </message>
+    <message>
+        <location line="+289"/>
         <location line="+30"/>
         <source>Share…</source>
         <translation>Współdzielić</translation>
     </message>
     <message>
         <location line="-28"/>
-        <location line="+32"/>
+        <location line="+43"/>
         <source>Copy private link to clipboard</source>
         <translation>Kopiuj link prywatny do schowka</translation>
     </message>
     <message>
-        <location line="-6"/>
+        <location line="-17"/>
         <source>Resharing this file is not allowed</source>
         <translation>Współdzielenie tego pliku nie jest możliwe</translation>
     </message>
@@ -3817,7 +4604,25 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Udostępnianie tego folderu jest niedozwolone</translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+9"/>
+        <source>Create public link…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Utwórz link publiczny…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Create and copy public link to clipboard</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Utwórz i skopiuj link publiczny do schowka</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Manage public links…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zarządzaj linkami publicznymi…</translation>
+    </message>
+    <message>
+        <location line="+74"/>
         <source>Open in %1</source>
         <translation>Otwórz w %1</translation>
     </message>
@@ -3879,12 +4684,12 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::SyncEngine</name>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="+143"/>
+        <location filename="../src/libsync/syncengine.cpp" line="+145"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
         <translation>%1 (pominięto z powodu wcześniejszego błędu, próba ponowna w %2)</translation>
     </message>
     <message>
-        <location line="+188"/>
+        <location line="+201"/>
         <source>Unable to sync: the local folder is missing.</source>
         <translation>Nie można zsynchronizować: brakuje folderu lokalnego.</translation>
     </message>
@@ -3902,7 +4707,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+11"/>
         <location line="+83"/>
-        <location line="+31"/>
+        <location line="+140"/>
         <location line="+65"/>
         <source>Cannot open the sync journal.</source>
         <translation>Nie można otworzyć dziennika synchronizacji.</translation>
@@ -3923,13 +4728,13 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Na serwerze jest za mało miejsca na niektóre pliki.</translation>
     </message>
     <message>
-        <location line="-750"/>
+        <location line="-872"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translation>wyjście z aplikacji</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+325"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>Nie można odczytać czarnej listy z lokalnej bazy danych</translation>
     </message>
@@ -4037,19 +4842,19 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
         <location line="+22"/>
-        <location line="+650"/>
+        <location line="+653"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location line="-668"/>
-        <location line="+675"/>
+        <location line="-671"/>
+        <location line="+678"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Synchronizowanie</translation>
     </message>
     <message>
-        <location line="-673"/>
+        <location line="-676"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Przerywanie synchronizacji</translation>
@@ -4073,21 +4878,21 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
     <message>
         <location line="+2"/>
-        <location line="+580"/>
+        <location line="+583"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>Synchronizacja wstrzymana</translation>
     </message>
     <message>
-        <location line="-649"/>
-        <location line="+655"/>
+        <location line="-652"/>
+        <location line="+658"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Niedostępne</translation>
     </message>
     <message numerus="yes">
-        <location line="-543"/>
+        <location line="-546"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -4145,13 +4950,13 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
     <message>
         <location line="+33"/>
-        <location line="+92"/>
+        <location line="+95"/>
         <source>Open in browser</source>
         <translation>Otwórz w przeglądarce</translation>
     </message>
     <message>
-        <location line="-88"/>
-        <location line="+105"/>
+        <location line="-90"/>
+        <location line="+107"/>
         <source>Resume synchronization</source>
         <translation>Wznów synchronizację</translation>
     </message>
@@ -4218,7 +5023,8 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Wznów synchronizację (wstrzymana do %1)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-104"/>
+        <location line="+109"/>
         <source>Pause synchronization</source>
         <translation>Wstrzymaj synchronizację</translation>
     </message>
@@ -4440,7 +5246,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Dodatkowe logo zdefiniowane przez organizację</translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+113"/>
         <source>Invalid server URL: %1</source>
         <translation>Nieprawidłowy adres URL serwera: %1</translation>
     </message>
@@ -4569,7 +5375,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Nowa wersja klienta %1 jest dostępna.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt;jest dostępna do pobrania. Zainstalowana wersja to %3.&lt;/p&gt;</translation>
     </message>
@@ -4707,6 +5513,77 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <location line="+6"/>
         <source>Could not detect compatible server at %1</source>
         <translation>Nie można wykryć zgodnego serwera w %1</translation>
+    </message>
+</context>
+<context>
+    <name>ServerMove</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="-297"/>
+        <source>Please enter the new address of your server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wpisz nowy adres swojego serwera.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 is not a valid address.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 nie jest prawidłowym adresem.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address must start with https://.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Adres musi zaczynać się od https://.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain a user name or password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Adres nie może zawierać nazwy użytkownika ani hasła.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain “?” or “#”.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Adres nie może zawierać „?” ani „#”.</translation>
+    </message>
+    <message>
+        <location line="+138"/>
+        <location line="+221"/>
+        <location line="+71"/>
+        <location line="+78"/>
+        <location line="+25"/>
+        <location line="+65"/>
+        <source>The account no longer exists.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Konto już nie istnieje.</translation>
+    </message>
+    <message>
+        <location line="-456"/>
+        <location line="+222"/>
+        <source>The server address can only be changed for accounts without Spaces.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Adres serwera można zmienić tylko dla kont bez przestrzeni.</translation>
+    </message>
+    <message>
+        <location line="-218"/>
+        <location line="+229"/>
+        <location line="+60"/>
+        <source>This is already the address of the account.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>To już jest adres tego konta.</translation>
+    </message>
+    <message>
+        <location line="-284"/>
+        <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronizacja konta nadal trwa. Adres nie został zmieniony, spróbuj ponownie.</translation>
+    </message>
+    <message>
+        <location line="+432"/>
+        <source>change of the account&apos;s server address</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>zmiana adresu serwera konta</translation>
     </message>
 </context>
 <context>
@@ -5073,7 +5950,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Podczas uruchamiania przeglądarki aby przejść do adresu URL %1 wystąpił problem. Czy skonfigurowano domyślną przeglądarkę?</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+26"/>
         <source>Could not open email client</source>
         <translation>Nie można uruchomić klienta email</translation>
     </message>

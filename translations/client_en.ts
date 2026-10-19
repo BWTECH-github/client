@@ -363,7 +363,7 @@ File synchronization desktop utility.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+14"/>
         <source>Versions</source>
         <translation type="unfinished"></translation>
     </message>
@@ -381,7 +381,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+254"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
         <source>Connection timed out</source>
         <translation type="unfinished"></translation>
     </message>
@@ -606,7 +606,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+248"/>
+        <location filename="../src/gui/accountstate.cpp" line="+249"/>
         <source>The server is not supported by this client.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -803,18 +803,28 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+174"/>
-        <location line="+61"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location line="+113"/>
         <source>New account failure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-113"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
+        <source>Import from the official client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No configuration of the official desktop client was found on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+48"/>
         <source>Accounts</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1042,7 +1052,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+222"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
         <source>Failed to parse credentials %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1139,7 +1149,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+402"/>
+        <location filename="../src/gui/folder.cpp" line="+407"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation type="unfinished"></translation>
@@ -1249,12 +1259,12 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+204"/>
         <source>Could not read system exclude file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+195"/>
+        <location line="+205"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1299,7 +1309,67 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+63"/>
+        <source>All files in the sync folder &apos;%1&apos; were deleted on the server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in the sync folder &apos;%3&apos; were deleted on the server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them here as well, they will be removed from this computer. If you keep them, they will be uploaded to the server again, provided you have the permission to do so.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>All files in your local sync folder &apos;%1&apos; were deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in your local sync folder &apos;%3&apos; were deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them on the server as well, they will only be available from the server&apos;s deleted files. If this was an accident, choose &quot;Keep files&quot;: they will be downloaded from the server again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The synchronization of this folder is paused until you decide.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Remove all files?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Remove many files?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Keep files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Delete files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Decide later</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1400,11 +1470,12 @@ This means that the synchronization client might not upload local changes immedi
     </message>
     <message>
         <location line="+35"/>
+        <location line="+20"/>
         <source>Sync paused by user</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+345"/>
+        <location line="+341"/>
         <source>User triggered force sync</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1504,7 +1575,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1013"/>
+        <location line="-1029"/>
         <source>Application shutting down</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1643,7 +1714,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+32"/>
         <source>The folder %1 was created on the server.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1730,7 +1801,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
-        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
+        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1740,7 +1811,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+22"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1750,12 +1821,12 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+43"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+12"/>
         <source>Could not read the token file again: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1765,27 +1836,29 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+48"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+5"/>
+        <location line="+4"/>
         <source>The server refused to refresh the access token (%1).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+18"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="-239"/>
+        <location line="+252"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1830,7 +1903,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="+110"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="+122"/>
         <source>Could not open file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1850,8 +1923,172 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-93"/>
+        <location line="-103"/>
+        <location line="+12"/>
         <source>This entry is provided by the system at &apos;%1&apos; and cannot be modified in this view.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClient</name>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <source>Spaces are not taken over; add them after signing in.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder belongs to a different user or server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The folder uses virtual files, which are not available on this computer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>The new folder %1 would overlap the folder %2 of the official client.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <location line="+23"/>
+        <source>The folder is already synchronized.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <location line="+26"/>
+        <source>The folder could not be set up.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>The local folder does not exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClientImportController</name>
+    <message>
+        <location line="+41"/>
+        <source>%1: already set up.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>• %1 – %n sync folder(s)</source>
+        <translation>
+            <numerusform>• %1 – %n sync folder</numerusform>
+            <numerusform>• %1 – %n sync folders</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+20"/>
+        <source>Import from the official client</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <source>All accounts of the official client are already set up.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Import</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set up a new account</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Check again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Import anyway</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Sign in: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: sign-in cancelled, not taken over.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>%1: signed in as %2, the folders of the official client were not taken over.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>%1: taken over, the files are recognized without downloading them again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: taken over; the synchronization state could not be read, the files are compared with the server once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: set up again with virtual files at %2; only placeholders are created.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1: not taken over. %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1: the account could not be created: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Import finished</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1980,12 +2217,17 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::MainWindowController</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+87"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+88"/>
         <source>Add account...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
+        <source>Import from official client...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Settings...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2130,7 +2372,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.cpp" line="+54"/>
+        <location filename="../src/gui/networksettings.cpp" line="+55"/>
         <location line="+1"/>
         <source>Hostname of proxy server</source>
         <translation type="unfinished"></translation>
@@ -2168,18 +2410,18 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Limit upload speed to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+8"/>
+        <location line="+5"/>
+        <location line="+12"/>
         <source> kB/s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-3"/>
+        <location line="-5"/>
         <source>Limit download speed to</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2213,7 +2455,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+56"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
         <source>Add account…</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2228,7 +2470,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+150"/>
         <source>Sign in</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2259,7 +2501,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
         <source>Successfully signed in</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2475,7 +2717,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+829"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
         <source>File %1 is currently in use</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2711,7 +2953,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-958"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
         <source>; Restoration Failed: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2858,7 +3100,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1139"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
         <source>Could not update file : %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3247,7 +3489,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerAddressDialog</name>
     <message>
-        <location filename="../src/gui/accountsgui/serveraddressdialog.cpp" line="+35"/>
+        <location filename="../src/gui/accountsgui/serveraddressdialog.cpp" line="+37"/>
         <source>Change server address</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3282,7 +3524,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+20"/>
         <source>Sign-in link: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3290,12 +3532,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+450"/>
+        <location filename="../src/gui/servermove.cpp" line="+489"/>
         <source>Checking %1…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+56"/>
         <source>Another account already uses this address with the same user.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3368,7 +3610,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-339"/>
+        <location line="-402"/>
         <source>No server could be reached at %1.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3549,12 +3791,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ShareDialog</name>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="+107"/>
+        <location filename="../src/gui/sharedialog.cpp" line="+111"/>
         <source>Share %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+390"/>
+        <location line="+394"/>
         <location line="+62"/>
         <source>Loading shares …</source>
         <translation type="unfinished"></translation>
@@ -3570,17 +3812,17 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+428"/>
+        <location line="+437"/>
         <source>Create public link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-552"/>
+        <location line="-561"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-16"/>
+        <location line="-20"/>
         <source>Share &lt;b&gt;%1&lt;/b&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3590,12 +3832,12 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Public links</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>Not connected to the server. Please check the connection and reopen the dialog.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3626,30 +3868,30 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+5"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <source>Download / View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-582"/>
-        <location line="+581"/>
+        <location line="-595"/>
+        <location line="+594"/>
         <source>Download / View / Upload</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-580"/>
-        <location line="+578"/>
+        <location line="-593"/>
+        <location line="+591"/>
         <source>Download / View / Edit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-577"/>
-        <location line="+575"/>
+        <location line="-590"/>
+        <location line="+588"/>
         <source>Upload only (File Drop)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-580"/>
         <source>Recipients can:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3800,13 +4042,13 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+6"/>
-        <location line="+69"/>
+        <location line="+78"/>
         <location line="+45"/>
         <source>Public link</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-109"/>
+        <location line="-118"/>
         <source>password protected</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3822,6 +4064,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+5"/>
+        <location line="+294"/>
         <source>Copy link</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3831,7 +4074,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+8"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3876,7 +4119,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+2"/>
         <source>The server requires a password for this kind of link.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3921,7 +4164,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-368"/>
+        <location line="-480"/>
         <source>Creating the public link failed.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3936,7 +4179,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+479"/>
+        <location line="+492"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
         <translation type="unfinished"></translation>
@@ -3952,7 +4195,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+30"/>
         <source>Link copied to the clipboard: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3960,7 +4203,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+471"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation type="unfinished"></translation>
@@ -4023,19 +4266,19 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+289"/>
         <location line="+30"/>
         <source>Share…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-28"/>
-        <location line="+32"/>
+        <location line="+43"/>
         <source>Copy private link to clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-6"/>
+        <location line="-17"/>
         <source>Resharing this file is not allowed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4060,7 +4303,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+74"/>
         <source>Open in %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4122,12 +4365,12 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncEngine</name>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="+143"/>
+        <location filename="../src/libsync/syncengine.cpp" line="+145"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+188"/>
+        <location line="+201"/>
         <source>Unable to sync: the local folder is missing.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4145,7 +4388,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+11"/>
         <location line="+83"/>
-        <location line="+31"/>
+        <location line="+140"/>
         <location line="+65"/>
         <source>Cannot open the sync journal.</source>
         <translation type="unfinished"></translation>
@@ -4166,13 +4409,13 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-750"/>
+        <location line="-872"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+325"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4241,7 +4484,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="+178"/>
+        <location filename="../src/libsync/theme.cpp" line="+180"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4279,18 +4522,18 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
         <location line="+22"/>
-        <location line="+650"/>
+        <location line="+653"/>
         <source>Offline</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-668"/>
-        <location line="+675"/>
+        <location line="-671"/>
+        <location line="+678"/>
         <source>Syncing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-673"/>
+        <location line="-676"/>
         <source>Aborting sync</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4311,20 +4554,20 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+580"/>
+        <location line="+583"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-649"/>
-        <location line="+655"/>
+        <location line="-652"/>
+        <location line="+658"/>
         <source>Unavailable</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location line="-543"/>
+        <location line="-546"/>
         <source>%n new notification(s)</source>
         <translation>
             <numerusform>%n new notification</numerusform>
@@ -4363,7 +4606,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+40"/>
-        <location line="+92"/>
+        <location line="+95"/>
         <source>Open in browser</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4416,7 +4659,8 @@ Note that using any logging command line options will override the settings.</so
         </translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="-97"/>
+        <location line="+109"/>
         <source>Pause synchronization</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4562,13 +4806,13 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-114"/>
-        <location line="+105"/>
+        <location line="-116"/>
+        <location line="+107"/>
         <source>Resume synchronization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-150"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4583,7 +4827,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+141"/>
+        <location line="+144"/>
         <source>Resume synchronization (paused until %1)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4647,7 +4891,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+113"/>
         <source>Invalid server URL: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4776,7 +5020,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4909,7 +5153,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-294"/>
+        <location filename="../src/gui/servermove.cpp" line="-297"/>
         <source>Please enter the new address of your server.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4935,8 +5179,8 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+138"/>
-        <location line="+189"/>
-        <location line="+37"/>
+        <location line="+221"/>
+        <location line="+71"/>
         <location line="+78"/>
         <location line="+25"/>
         <location line="+65"/>
@@ -4944,25 +5188,25 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-390"/>
-        <location line="+190"/>
+        <location line="-456"/>
+        <location line="+222"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-186"/>
-        <location line="+197"/>
-        <location line="+26"/>
+        <location line="-218"/>
+        <location line="+229"/>
+        <location line="+60"/>
         <source>This is already the address of the account.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-218"/>
+        <location line="-284"/>
         <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+366"/>
+        <location line="+432"/>
         <source>change of the account&apos;s server address</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5319,7 +5563,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+26"/>
         <source>Could not open email client</source>
         <translation type="unfinished"></translation>
     </message>

@@ -297,7 +297,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+49"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+50"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>&lt;b&gt;错误：&lt;/b&gt;%1</translation>
@@ -350,15 +350,15 @@ File synchronization desktop utility.</source>
     </message>
     <message>
         <location line="+6"/>
-        <source>Select a remote destination folder</source>
+        <source>Choose the folder on the server</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
-        <translation>选择远端目标文件夹</translation>
+        <translation>选择服务器上的文件夹</translation>
     </message>
     <message>
         <location line="+29"/>
-        <source>Create Folder</source>
+        <source>Create folder…</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
-        <translation>创建文件夹</translation>
+        <translation>创建文件夹…</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -381,15 +381,57 @@ File synchronization desktop utility.</source>
         <translation>关于</translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+72"/>
+        <source>Updates</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>更新</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Update channel:</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>更新通道:</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Check for updates now</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>立即检查更新</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Restart and update</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>重新启动并更新</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Beta versions bring new features earlier but are less tested. There are no downgrades: after switching back to Stable, the next stable version that is newer than the installed one is offered.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>测试版可以更早带来新功能,但测试较少。不会安装更旧的版本:切换回稳定版后,将提供比已安装版本更新的下一个稳定版本。</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Versions</source>
         <translation>版本</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+53"/>
+        <source>Stable</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>稳定版</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Beta</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>测试版</translation>
     </message>
 </context>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+254"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
         <source>Connection timed out</source>
         <translation>连接超时</translation>
     </message>
@@ -648,7 +690,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+248"/>
+        <location filename="../src/gui/accountstate.cpp" line="+249"/>
         <source>The server is not supported by this client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>此客户端不支持该服务器。</translation>
@@ -716,13 +758,13 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+108"/>
-        <location line="+42"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location line="+54"/>
         <source>Log in</source>
         <translation>登录</translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="-49"/>
         <source>Reconnect</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>重新连接</translation>
@@ -739,7 +781,13 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>更改别名...</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+8"/>
+        <source>Change server address…</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>更改服务器地址…</translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>Log out</source>
         <translation>登出</translation>
     </message>
@@ -779,7 +827,13 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>账户别名：</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+18"/>
+        <source>Change server address</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>更改服务器地址</translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>不支持服务器版本 %1！继续操作将自行承担风险。</translation>
@@ -854,24 +908,42 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无效的连接状态</translation>
     </message>
+    <message>
+        <location line="+92"/>
+        <source>Folder not added</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>未添加文件夹</translation>
+    </message>
 </context>
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+170"/>
-        <location line="+61"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location line="+113"/>
         <source>New account failure</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>新账户出错</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-113"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>创建新账户所需的信息不完整。请重新运行向导。</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
+        <source>Import from the official client</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>从官方客户端导入</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No configuration of the official desktop client was found on this computer.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>在此计算机上未找到官方桌面客户端的配置。</translation>
+    </message>
+    <message>
+        <location line="+48"/>
         <source>Accounts</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>账户</translation>
@@ -1100,13 +1172,13 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="+171"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="+188"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>认证失败：用户名或密码错误</translation>
     </message>
     <message>
-        <location line="-18"/>
+        <location line="-34"/>
         <source>timeout</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>超时</translation>
@@ -1118,7 +1190,13 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>未配置 owncloud.online 账户</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+103"/>
+        <source>The server reports a new address: %1. If your server has moved, choose “Change server address…” in the account menu.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>服务器报告了新地址:%1。如果您的服务器已迁移,请在账户菜单中选择“更改服务器地址…”。</translation>
+    </message>
+    <message>
+        <location line="+65"/>
         <source>No account configured</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>未配置账户</translation>
@@ -1133,7 +1211,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+218"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
         <source>Failed to parse credentials %1</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>解析凭证 %1 失败</translation>
@@ -1245,7 +1323,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+402"/>
+        <location filename="../src/gui/folder.cpp" line="+407"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 已被移除。</translation>
@@ -1361,13 +1439,13 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>正在切换文件夹“%1”的 VFS 模式</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+204"/>
         <source>Could not read system exclude file</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>无法读取系统排除的文件</translation>
     </message>
     <message>
-        <location line="+195"/>
+        <location line="+205"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>文件夹 %1 已创建，但之前已从同步中排除。 里面的数据不会同步。</translation>
     </message>
@@ -1420,7 +1498,79 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>不同步</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+63"/>
+        <source>All files in the sync folder &apos;%1&apos; were deleted on the server.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>服务器上已删除同步文件夹“%1”中的所有文件。</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in the sync folder &apos;%3&apos; were deleted on the server.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>服务器上已删除同步文件夹“%3”中 %2 个文件中的 %1 个。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them here as well, they will be removed from this computer. If you keep them, they will be uploaded to the server again, provided you have the permission to do so.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>如果您也在此处删除它们,它们将从此计算机中移除。如果您保留它们,只要您有相应权限,它们将再次上传到服务器。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>All files in your local sync folder &apos;%1&apos; were deleted.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>您的本地同步文件夹“%1”中的所有文件已被删除。</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in your local sync folder &apos;%3&apos; were deleted.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>您的本地同步文件夹“%3”中 %2 个文件中的 %1 个已被删除。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them on the server as well, they will only be available from the server&apos;s deleted files. If this was an accident, choose &quot;Keep files&quot;: they will be downloaded from the server again.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>如果您也在服务器上删除它们,它们将只能从服务器的已删除文件中找回。如果这是误操作,请选择“保留文件”:它们将从服务器重新下载。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The synchronization of this folder is paused until you decide.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>在您做出决定之前,此文件夹的同步已暂停。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Remove all files?</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>删除所有文件?</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Remove many files?</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>删除大量文件?</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Keep files</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>保留文件</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Delete files</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>删除文件</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Decide later</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>稍后决定</translation>
+    </message>
+    <message>
+        <location line="+38"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1516,7 +1666,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+183"/>
+        <location filename="../src/gui/folderman.cpp" line="+185"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>应用程序正在关闭</translation>
@@ -1546,12 +1696,13 @@ This means that the synchronization client might not upload local changes immedi
     </message>
     <message>
         <location line="+35"/>
+        <location line="+20"/>
         <source>Sync paused by user</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>用户已暂停同步</translation>
     </message>
     <message>
-        <location line="+278"/>
+        <location line="+341"/>
         <source>User triggered force sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>用户触发了强制同步</translation>
@@ -1563,7 +1714,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>文件夹即将被移除</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source> (backup)</source>
         <translation> (备份)</translation>
     </message>
@@ -1609,7 +1760,31 @@ This means that the synchronization client might not upload local changes immedi
         <translation>本地文件夹 %1 已位于用于文件夹同步连接的文件夹中。</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+35"/>
+        <source>This server folder is already synced with the local folder %1. Each server folder can only be synced once.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>此服务器文件夹已与本地文件夹 %1 同步。每个服务器文件夹只能同步一次。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The whole account is already synced with the local folder %1. Each server folder can only be synced once. To sync this server folder to a different local folder, remove the existing folder sync connection first.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>整个账户已与本地文件夹 %1 同步。每个服务器文件夹只能同步一次。要将此服务器文件夹同步到其他本地文件夹,请先移除现有的文件夹同步连接。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder contains the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. Choose a folder outside of it, or remove the existing folder sync connection first.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>此服务器文件夹包含文件夹 %1,该文件夹已与本地文件夹 %2 同步。每个服务器文件夹只能同步一次。请选择其外部的文件夹,或先移除现有的文件夹同步连接。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder is inside the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. To sync it to a different local folder, remove the existing folder sync connection first.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>此服务器文件夹位于文件夹 %1 内,该文件夹已与本地文件夹 %2 同步。每个服务器文件夹只能同步一次。要将其同步到其他本地文件夹,请先移除现有的文件夹同步连接。</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>No valid folder selected.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>未选择有效的文件夹。</translation>
@@ -1627,13 +1802,25 @@ This means that the synchronization client might not upload local changes immedi
         <translation>您没有写入所选文件夹的权限。</translation>
     </message>
     <message>
-        <location line="-79"/>
+        <location line="+139"/>
+        <source>The account no longer exists.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>该账户已不存在。</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The local folder %1 could not be set up for synchronization.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法将本地文件夹 %1 设置为同步。</translation>
+    </message>
+    <message>
+        <location line="-303"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>文件夹“%1”已被其他账户使用。</translation>
     </message>
     <message>
-        <location line="-541"/>
+        <location line="-625"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>在 macOS 上，仅支持 Apple 文件系统（APFS）。</translation>
@@ -1642,7 +1829,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderModelController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+117"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+120"/>
         <source>%1 options</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1选项</translation>
@@ -1673,7 +1860,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+109"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+129"/>
         <source>Virtual files are not available for the selected folder</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>所选文件夹没有虚拟文件</translation>
@@ -1708,6 +1895,124 @@ This means that the synchronization client might not upload local changes immedi
         <source>Select the local folder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>选择本地文件夹</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::FolderWizardRemotePath</name>
+    <message>
+        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="+100"/>
+        <source>Folders on the server</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>服务器上的文件夹</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path on the server, for example /Documents</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>服务器上的路径,例如 /Documents</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path of the server folder</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>服务器文件夹的路径</translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Please enter a name for the new folder.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>请输入新文件夹的名称。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder name %1 is not allowed.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>不允许使用文件夹名称 %1。</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The folder name must not contain any of these characters: %1</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>文件夹名称不能包含以下任何字符:%1</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The folder name must not end with a dot.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>文件夹名称不能以句点结尾。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The folder name %1 is reserved by Windows.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>文件夹名称 %1 被 Windows 保留。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Folders named %1 are excluded from synchronization.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>名为 %1 的文件夹已从同步中排除。</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 - %2</source>
+        <extracomment>Name eines weiteren lokalen Ordners: %1 ist der Sync-Ordner des Kontos, %2 der Serverordner</extracomment>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Create folder on the server</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>在服务器上创建文件夹</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Name of the new folder in %1:</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1 中新文件夹的名称:</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>The folder %1 was created on the server.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>已在服务器上创建文件夹 %1。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Authentication failed while accessing the server. Please sign in again and retry.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>访问服务器时身份验证失败。请重新登录后重试。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You are not allowed to create a folder here.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>您无权在此处创建文件夹。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>A folder or file with this name already exists on the server.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>服务器上已存在同名的文件夹或文件。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder could not be created on the server: %1</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法在服务器上创建文件夹:%1</translation>
+    </message>
+    <message>
+        <location line="+65"/>
+        <source>The folder list could not be loaded: %1</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法加载文件夹列表:%1</translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>Choose this to sync the entire account</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>选择此项以同步整个账户</translation>
     </message>
 </context>
 <context>
@@ -1767,7 +2072,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
-        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
+        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>访问令牌已过期，且令牌文件中没有刷新令牌。请重新登录以创建新的令牌文件。</translation>
@@ -1779,7 +2084,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>owncloudcmd 无法以交互方式登录。请重新登录以创建新的令牌文件。</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+22"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>服务器拒绝了它刚刚签发的访问令牌（HTTP 401）。请检查 Web 服务器是否将 Authorization 标头转发给 owncloud.online。</translation>
@@ -1791,13 +2096,13 @@ This means that the synchronization client might not upload local changes immedi
         <translation>服务器拒绝了访问令牌（HTTP 401），且令牌文件中没有刷新令牌。请重新登录以创建新的令牌文件。</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+43"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>令牌文件 %1 被另一个 owncloudcmd 运行锁定。</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+12"/>
         <source>Could not read the token file again: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无法再次读取令牌文件：%1</translation>
@@ -1809,31 +2114,33 @@ This means that the synchronization client might not upload local changes immedi
         <translation>没有账户时无法刷新访问令牌。</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+48"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>服务器不再接受刷新令牌（%1）。登录已过期或已被撤销；请重新登录以创建新的令牌文件。</translation>
     </message>
     <message>
         <location line="+5"/>
+        <location line="+4"/>
         <source>The server refused to refresh the access token (%1).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>服务器拒绝刷新访问令牌（%1）。</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+18"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>刷新访问令牌失败：%1（HTTP %2）。</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>令牌端点的响应中没有可用的访问令牌（HTTP %1）。</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="-239"/>
+        <location line="+252"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无法将刷新后的令牌保存到 %1：%2</translation>
@@ -1884,7 +2191,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 如果允许删除的项目阻止删除目录，则将删除它们。 这对元数据很有用。</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="+110"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="+122"/>
         <source>Could not open file</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>不能打开文件</translation>
@@ -1907,10 +2214,203 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>增加新的忽略模式：</translation>
     </message>
     <message>
-        <location line="-93"/>
+        <location line="-103"/>
+        <location line="+12"/>
         <source>This entry is provided by the system at &apos;%1&apos; and cannot be modified in this view.</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>此项目由系统在 %1 处提供，不能在这里被修改。</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClient</name>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>官方客户端正在运行,并且也在同步文件夹 %1。请退出官方客户端,以免两个程序同时同步该文件夹。</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <source>Spaces are not taken over; add them after signing in.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>不会迁移空间;请在登录后添加。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder belongs to a different user or server.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>该文件夹属于其他用户或服务器。</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The folder uses virtual files, which are not available on this computer.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>该文件夹使用虚拟文件,但此计算机上无法使用虚拟文件。</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>The new folder %1 would overlap the folder %2 of the official client.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>新文件夹 %1 将与官方客户端的文件夹 %2 重叠。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <location line="+23"/>
+        <source>The folder is already synchronized.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>该文件夹已在同步。</translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <location line="+26"/>
+        <source>The folder could not be set up.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法设置该文件夹。</translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>The local folder does not exist.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>本地文件夹不存在。</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClientImportController</name>
+    <message>
+        <location line="+41"/>
+        <source>%1: already set up.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已设置。</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>• %1 – %n sync folder(s)</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>• %1 – %n 个同步文件夹</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+20"/>
+        <source>Import from the official client</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>从官方客户端导入</translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <source>All accounts of the official client are already set up.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>官方客户端的所有账户均已设置。</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>此计算机上已设置官方桌面客户端。是否迁移其账户和同步文件夹?</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>每个账户需在浏览器中登录一次。已同步的文件夹会被识别,不会重新下载。官方客户端中不会做任何更改。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Import</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>导入</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set up a new account</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>设置新账户</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Cancel</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>官方客户端仍在运行。导入前请退出它并关闭其自动启动,否则两个程序会同步相同的文件夹。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Check again</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>再次检查</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Import anyway</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>仍然导入</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Sign in: %1</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>登录:%1</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: sign-in cancelled, not taken over.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1:登录已取消,未迁移。</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>%1: signed in as %2, the folders of the official client were not taken over.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已以 %2 身份登录,未迁移官方客户端的文件夹。</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>%1: taken over, the files are recognized without downloading them again.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已迁移,无需重新下载即可识别文件。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: taken over; the synchronization state could not be read, the files are compared with the server once.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已迁移;无法读取同步状态,文件将与服务器比较一次。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: set up again with virtual files at %2; only placeholders are created.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已在 %2 使用虚拟文件重新设置;只会创建占位符。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1: not taken over. %2</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1:未迁移。%2</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1: the account could not be created: %2</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1:无法创建账户:%2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Import finished</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>导入完成</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>请彻底退出官方客户端(关闭其自动启动或将其卸载),以免文件夹被同步两次。</translation>
     </message>
 </context>
 <context>
@@ -2055,13 +2555,19 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::MainWindowController</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+87"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+88"/>
         <source>Add account...</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>添加账户...</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
+        <source>Import from official client...</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>从官方客户端导入...</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Settings...</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>设置...</translation>
@@ -2222,7 +2728,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>代理类型</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.cpp" line="+54"/>
+        <location filename="../src/gui/networksettings.cpp" line="+55"/>
         <location line="+1"/>
         <source>Hostname of proxy server</source>
         <translation>代理服务器主机名</translation>
@@ -2257,20 +2763,26 @@ Note that using any logging command line options will override the settings.</so
         <translation>带宽</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
+        <source>The automatic limit of an earlier version is no longer supported. Currently not limited.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>不再支持旧版本的自动限制。当前未限制。</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Limit upload speed to</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>将上传速度限制为</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+8"/>
+        <location line="+5"/>
+        <location line="+12"/>
         <source> kB/s</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation> kB/s</translation>
     </message>
     <message>
-        <location line="-3"/>
+        <location line="-5"/>
         <source>Limit download speed to</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>将下载速度限制为</translation>
@@ -2309,7 +2821,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+56"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
         <source>Add account…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>添加账户…</translation>
@@ -2325,7 +2837,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>高级</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+150"/>
         <source>Sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登录</translation>
@@ -2360,7 +2872,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登录成功</translation>
@@ -2613,7 +3125,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+829"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
         <source>File %1 is currently in use</source>
         <translation>文件 %1 当前正在使用中</translation>
     </message>
@@ -2872,7 +3384,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-958"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
         <source>; Restoration Failed: %1</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>；恢复失败：%1</translation>
@@ -3027,7 +3539,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1139"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
         <source>Could not update file : %1</source>
         <translation>无法更新文件 : %1</translation>
     </message>
@@ -3205,6 +3717,21 @@ Note that using any logging command line options will override the settings.</so
         <location line="+2"/>
         <source>Status</source>
         <translation>状态</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::PublicLinkCreator</name>
+    <message>
+        <location filename="../src/gui/shareapi.cpp" line="+337"/>
+        <source>Context menu link %1</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>上下文菜单链接 %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Context menu link</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>上下文菜单链接</translation>
     </message>
 </context>
 <context>
@@ -3447,6 +3974,201 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::ServerAddressDialog</name>
+    <message>
+        <location filename="../src/gui/accountsgui/serveraddressdialog.cpp" line="+37"/>
+        <source>Change server address</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>更改服务器地址</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>If your server has moved to a new address, enter the new address here. The account and its folders, files and settings are kept. To make sure that it is the same server and the same user, you sign in again at the new address.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>如果您的服务器已迁移到新地址,请在此处输入新地址。账户及其文件夹、文件和设置都会保留。为确保是同一服务器和同一用户,您需要在新地址重新登录。</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Current address:</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>当前地址:</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>新地址</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address:</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>新地址:</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Open browser again</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>重新打开浏览器</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Check and sign in</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>检查并登录</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Sign-in link: %1</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>登录链接:%1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerMoveController</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="+489"/>
+        <source>Checking %1…</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>正在检查 %1…</translation>
+    </message>
+    <message>
+        <location line="+56"/>
+        <source>Another account already uses this address with the same user.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>另一个账户已使用此地址和同一用户。</translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Checking that this is the same server and the same user…</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>正在检查是否为同一服务器和同一用户…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The browser could not be opened. Copy the sign-in link and open it in your browser.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法打开浏览器。请复制登录链接并在浏览器中打开。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in page of the new address does not use a secure connection (HTTPS).</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>新地址的登录页面未使用安全连接(HTTPS)。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the new address cannot be reached. Please try again later.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法访问新地址的登录服务。请稍后重试。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Signing in at the new address failed. Please sign in with the same user as before: %1.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>在新地址登录失败。请使用与之前相同的用户登录:%1。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Please sign in at the new address in your browser, with the same user as before: %1.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>请在浏览器中使用与之前相同的用户登录新地址:%1。</translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>The new address did not accept the sign-in. The address was not changed.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>新地址未接受登录。地址未更改。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The user %1 does not exist at the new address. The address was not changed.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>用户 %1 在新地址不存在。地址未更改。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address redirected the check to another address. The address was not changed.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>新地址将检查重定向到了另一个地址。地址未更改。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address could not be checked: %1</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法检查新地址:%1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The new address does not report which installation it belongs to, so it cannot be confirmed that it is the same server. The address was not changed.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>新地址未报告其所属的安装,因此无法确认是同一服务器。地址未更改。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The server at %1 is a different installation than the one this account was set up with. To protect your files, the address was not changed.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1 处的服务器与设置此账户时的安装不同。为保护您的文件,地址未更改。</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>The synchronization of the account could not be stopped. The address was not changed, please try again.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法停止账户的同步。地址未更改,请重试。</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerStatusCheck</name>
+    <message>
+        <location line="-402"/>
+        <source>No server could be reached at %1.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法访问 %1 处的任何服务器。</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>The address %1 redirects to another server (%2). For your security, this redirect is not followed automatically. If you trust that server, enter its address directly.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>地址 %1 重定向到另一个服务器(%2)。为了您的安全,不会自动跟随此重定向。如果您信任该服务器,请直接输入其地址。</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The address %1 redirects to %2, which is not the address of a server.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>地址 %1 重定向到 %2,而它不是服务器地址。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address %1 redirects too often.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>地址 %1 重定向次数过多。</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>No server could be reached at %1: %2</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法访问 %1 处的任何服务器:%2</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>No server was found at %1.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>在 %1 处未找到服务器。</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The server at %1 is not set up yet.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1 处的服务器尚未设置。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The server at %1 is in maintenance mode. Please try again later.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1 处的服务器处于维护模式。请稍后重试。</translation>
+    </message>
+</context>
+<context>
     <name>OCC::SettingsView</name>
     <message>
         <location filename="../src/gui/mainwindow/settingsview.ui" line="+14"/>
@@ -3519,15 +4241,15 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+7"/>
-        <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>HTTP/2 通过单个连接处理多个请求，可在高延迟线路和大量小文件的情况下加快同步。默认启用；仅当您的服务器或代理存在 HTTP/2 问题时才取消勾选。重新启动后生效。</translation>
+        <source>HTTP/2 reuses a single connection for many requests, which can speed up syncing on high-latency links and with many small files. Off by default, because transfers can stall with some servers and proxies; turn it on only if your server handles HTTP/2 reliably. Takes effect after a restart.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>HTTP/2 对多个请求复用同一个连接,在高延迟链路和大量小文件的情况下可以加快同步。默认关闭,因为在某些服务器和代理上传输可能会卡住;仅当您的服务器能可靠地处理 HTTP/2 时才开启。重新启动后生效。</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Use HTTP/2 (recommended, requires restart)</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>使用 HTTP/2（推荐，需要重新启动）</translation>
+        <source>Use HTTP/2 (optional, requires restart)</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>使用 HTTP/2(可选,需要重新启动)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3605,7 +4327,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ShareDialog</name>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="+107"/>
+        <location filename="../src/gui/sharedialog.cpp" line="+111"/>
         <source>Share %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>共享 %1</translation>
@@ -3623,13 +4345,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>用户和群组</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Public links</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>公开链接</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Close</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>关闭</translation>
@@ -3672,34 +4394,34 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+5"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <source>Download / View</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>下载 / 查看</translation>
     </message>
     <message>
-        <location line="-582"/>
-        <location line="+581"/>
+        <location line="-595"/>
+        <location line="+594"/>
         <source>Download / View / Upload</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>下载 / 查看 / 上传</translation>
     </message>
     <message>
-        <location line="-580"/>
-        <location line="+578"/>
+        <location line="-593"/>
+        <location line="+591"/>
         <source>Download / View / Edit</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>下载 / 查看 / 编辑</translation>
     </message>
     <message>
-        <location line="-577"/>
-        <location line="+575"/>
+        <location line="-590"/>
+        <location line="+588"/>
         <source>Upload only (File Drop)</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>仅上传 (File Drop)</translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-580"/>
         <source>Recipients can:</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>接收者可以：</translation>
@@ -3913,14 +4635,14 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+6"/>
-        <location line="+69"/>
+        <location line="+78"/>
         <location line="+45"/>
         <source>Public link</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>公开链接</translation>
     </message>
     <message>
-        <location line="-109"/>
+        <location line="-118"/>
         <source>password protected</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>受密码保护</translation>
@@ -3939,12 +4661,19 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+5"/>
+        <location line="+294"/>
         <source>Copy link</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>复制链接</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="-287"/>
+        <source>More</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>更多</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Edit</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>编辑</translation>
@@ -3997,7 +4726,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>留空以保留当前密码</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+25"/>
+        <source>You are not allowed to create public links on this server.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>您无权在此服务器上创建公开链接。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The server requires a password for this kind of link.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>服务器要求此类链接设置密码。</translation>
@@ -4046,16 +4781,40 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1（联合）</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+30"/>
         <source>Link copied to the clipboard: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>链接已复制到剪贴板：%1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Open in browser</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>在浏览器中打开</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copy direct download link</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>复制直接下载链接</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send by email…</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>通过电子邮件发送…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>I shared %1 with you</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>我与您共享了 %1</translation>
     </message>
 </context>
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+471"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -4090,7 +4849,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>共享…</translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+117"/>
         <source>Rename…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>重命名…</translation>
@@ -4121,12 +4880,36 @@ Note that using any logging command line options will override the settings.</so
         <translation>移动并上传…</translation>
     </message>
     <message>
-        <location line="-236"/>
+        <location line="-247"/>
         <source>Error</source>
         <translation>错误</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-220"/>
+        <source>Public link copied</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>公开链接已复制</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>The public link to %1 is in the clipboard.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>指向 %1 的公开链接已在剪贴板中。</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The public link could not be created automatically.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>无法自动创建公开链接。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Server message: %1</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>服务器消息:%1</translation>
+    </message>
+    <message>
+        <location line="+213"/>
         <source>Moving file failed:
 
 %1</source>
@@ -4143,13 +4926,13 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+15"/>
-        <location line="+32"/>
+        <location line="+43"/>
         <source>Copy private link to clipboard</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>将私有链接复制到剪切板</translation>
     </message>
     <message>
-        <location line="-6"/>
+        <location line="-17"/>
         <source>Resharing this file is not allowed</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>再次分享这个文件是不被允许的</translation>
@@ -4161,7 +4944,25 @@ Note that using any logging command line options will override the settings.</so
         <translation>再次分享这个文件夹是不被允许的</translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+9"/>
+        <source>Create public link…</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>创建公开链接…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Create and copy public link to clipboard</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>创建公开链接并复制到剪贴板</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Manage public links…</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>管理公开链接…</translation>
+    </message>
+    <message>
+        <location line="+74"/>
         <source>Open in %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>在 %1 中打开</translation>
@@ -4203,13 +5004,13 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncEngine</name>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="+143"/>
+        <location filename="../src/libsync/syncengine.cpp" line="+145"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>%1 (因早先的错误而跳过，将在 %2 后重试)</translation>
     </message>
     <message>
-        <location line="+188"/>
+        <location line="+201"/>
         <source>Unable to sync: the local folder is missing.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无法同步：本地文件夹不存在。</translation>
@@ -4229,7 +5030,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+11"/>
         <location line="+83"/>
-        <location line="+31"/>
+        <location line="+140"/>
         <location line="+65"/>
         <source>Cannot open the sync journal.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -4253,14 +5054,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>该文件在服务器上不可用</translation>
     </message>
     <message>
-        <location line="-750"/>
+        <location line="-872"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>应用程序退出</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+325"/>
         <source>Unable to read the blacklist from the local database</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>无法从本地数据库读取黑名单</translation>
@@ -4381,20 +5182,20 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
         <location line="+22"/>
-        <location line="+650"/>
+        <location line="+653"/>
         <source>Offline</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>离线</translation>
     </message>
     <message>
-        <location line="-668"/>
-        <location line="+675"/>
+        <location line="-671"/>
+        <location line="+678"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在同步</translation>
     </message>
     <message>
-        <location line="-673"/>
+        <location line="-676"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在中止同步</translation>
@@ -4418,7 +5219,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+580"/>
+        <location line="+583"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
@@ -4426,14 +5227,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>同步已暂停</translation>
     </message>
     <message>
-        <location line="-649"/>
-        <location line="+655"/>
+        <location line="-652"/>
+        <location line="+658"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>不可用</translation>
     </message>
     <message numerus="yes">
-        <location line="-543"/>
+        <location line="-546"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -4494,14 +5295,14 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+33"/>
-        <location line="+92"/>
+        <location line="+95"/>
         <source>Open in browser</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>在浏览器中打开</translation>
     </message>
     <message>
-        <location line="-88"/>
-        <location line="+105"/>
+        <location line="-90"/>
+        <location line="+107"/>
         <source>Resume synchronization</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>恢复同步</translation>
@@ -4567,7 +5368,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>恢复同步（暂停至 %1）</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-104"/>
+        <location line="+109"/>
         <source>Pause synchronization</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>暂停同步</translation>
@@ -4804,7 +5606,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>组织定义的附加徽标</translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+113"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无效的服务器 URL：%1</translation>
@@ -4950,7 +5752,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;新版本的 %1 客户端可用。&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; 已经开放下载。已安装的版本是 %3。&lt;/p&gt;</translation>
     </message>
@@ -5090,6 +5892,77 @@ Note that using any logging command line options will override the settings.</so
         <source>Could not detect compatible server at %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无法在 %1 检测到兼容的服务器</translation>
+    </message>
+</context>
+<context>
+    <name>ServerMove</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="-297"/>
+        <source>Please enter the new address of your server.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>请输入服务器的新地址。</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 is not a valid address.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>%1 不是有效的地址。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address must start with https://.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>地址必须以 https:// 开头。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain a user name or password.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>地址不能包含用户名或密码。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain “?” or “#”.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>地址不能包含“?”或“#”。</translation>
+    </message>
+    <message>
+        <location line="+138"/>
+        <location line="+221"/>
+        <location line="+71"/>
+        <location line="+78"/>
+        <location line="+25"/>
+        <location line="+65"/>
+        <source>The account no longer exists.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>该账户已不存在。</translation>
+    </message>
+    <message>
+        <location line="-456"/>
+        <location line="+222"/>
+        <source>The server address can only be changed for accounts without Spaces.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>只有不含空间的账户才能更改服务器地址。</translation>
+    </message>
+    <message>
+        <location line="-218"/>
+        <location line="+229"/>
+        <location line="+60"/>
+        <source>This is already the address of the account.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>这已经是该账户的地址。</translation>
+    </message>
+    <message>
+        <location line="-284"/>
+        <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>账户的同步仍在进行中。地址未更改,请重试。</translation>
+    </message>
+    <message>
+        <location line="+432"/>
+        <source>change of the account&apos;s server address</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>更改账户的服务器地址</translation>
     </message>
 </context>
 <context>
@@ -5468,7 +6341,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>打开链接 %1 时发生错误，是不是默认浏览器没有配置？</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+26"/>
         <source>Could not open email client</source>
         <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>无法打开邮件客户端</translation>

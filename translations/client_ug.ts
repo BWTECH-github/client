@@ -290,7 +290,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+49"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+50"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>&lt;b&gt;خاتالىق:&lt;/b&gt; %1</translation>
@@ -342,13 +342,15 @@ File synchronization desktop utility.</source>
     </message>
     <message>
         <location line="+6"/>
-        <source>Select a remote destination folder</source>
-        <translation>يىراقتىكى نىشان ھۆججەت قىسقۇچىنى تاللاڭ</translation>
+        <source>Choose the folder on the server</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىردىكى قىسقۇچنى تاللاڭ</translation>
     </message>
     <message>
         <location line="+29"/>
-        <source>Create Folder</source>
-        <translation>ھۆججەت قىسقۇچ قۇرۇش</translation>
+        <source>Create folder…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچ قۇرۇش…</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -369,15 +371,57 @@ File synchronization desktop utility.</source>
         <translation>ھەققىدە</translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+72"/>
+        <source>Updates</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭىلانمىلار</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Update channel:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭىلاش قانىلى:</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Check for updates now</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھازىر يېڭىلانمىلارنى تەكشۈرۈش</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Restart and update</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قايتا قوزغىتىپ يېڭىلاش</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Beta versions bring new features earlier but are less tested. There are no downgrades: after switching back to Stable, the next stable version that is newer than the installed one is offered.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>سىناق نەشرى يېڭى ئىقتىدارلارنى بالدۇرراق ئېلىپ كېلىدۇ، ئەمما ئازراق سىنالغان. ھەرگىز كونا نەشرى ئورنىتىلمايدۇ: مۇقىم قانالغا قايتقاندىن كېيىن، ئورنىتىلغان نەشرىدىن يېڭى بولغان كېيىنكى مۇقىم نەشرى تەۋسىيە قىلىنىدۇ.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Versions</source>
         <translation>نەشرى</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+53"/>
+        <source>Stable</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇقىم</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Beta</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>سىناق</translation>
     </message>
 </context>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+254"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
         <source>Connection timed out</source>
         <translation>ئۇلىنىش ۋاقتى توشتى</translation>
     </message>
@@ -628,7 +672,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+248"/>
+        <location filename="../src/gui/accountstate.cpp" line="+249"/>
         <source>The server is not supported by this client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>بۇ خېرىدار بۇ مۇلازىمېتىرنى قوللىمايدۇ.</translation>
@@ -691,13 +735,13 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+108"/>
-        <location line="+42"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location line="+54"/>
         <source>Log in</source>
         <translation>كىرىڭ</translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="-49"/>
         <source>Reconnect</source>
         <translation>قايتا ئۇلاڭ</translation>
     </message>
@@ -713,7 +757,13 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>تەخەللۇسنى ئۆزگەرتىش...</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+8"/>
+        <source>Change server address…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىر ئادرېسىنى ئۆزگەرتىش…</translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>Log out</source>
         <translation>تىزىمدىن چىق</translation>
     </message>
@@ -751,7 +801,13 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>ھېسابات تەخەللۇسى:</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+18"/>
+        <source>Change server address</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىر ئادرېسىنى ئۆزگەرتىش</translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىر نەشرى %1 قوللانمايدۇ! داۋاملاشتۇرسىڭىز خەتىرىنى ئۆزىڭىز ئۈستىگە ئالىسىز.</translation>
@@ -821,24 +877,42 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىناۋەتسىز ئۇلىنىش ھالىتى</translation>
     </message>
+    <message>
+        <location line="+92"/>
+        <source>Folder not added</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچ قوشۇلمىدى</translation>
+    </message>
 </context>
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+170"/>
-        <location line="+61"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location line="+113"/>
         <source>New account failure</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>يېڭى ھېسابات خاتالىقى</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-113"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>يېڭى ھېسابات قۇرۇش ئۈچۈن زۆرۈر ئۇچۇرلار تولۇق ئەمەس. يېتەكچىنى قايتا ئىجرا قىلىڭ.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
+        <source>Import from the official client</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>رەسمىي خېرىداردىن ئەكىرىش</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No configuration of the official desktop client was found on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بۇ كومپيۇتېردا رەسمىي ئۈستەلئۈستى خېرىدارىنىڭ سەپلىمىسى تېپىلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+48"/>
         <source>Accounts</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھېساباتلار</translation>
@@ -1068,12 +1142,12 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="+171"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="+188"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation>دەلىللەش خاتالىقى: ئىشلەتكۈچى ئىسمى ياكى پارول خاتا.</translation>
     </message>
     <message>
-        <location line="-18"/>
+        <location line="-34"/>
         <source>timeout</source>
         <translation>ۋاقىت</translation>
     </message>
@@ -1084,7 +1158,13 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>owncloud.online ھېساباتى سەپلەنمىگەن</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+103"/>
+        <source>The server reports a new address: %1. If your server has moved, choose “Change server address…” in the account menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىر يېڭى ئادرېس ئۇقتۇردى: %1. ئەگەر مۇلازىمېتىرىڭىز يۆتكەلگەن بولسا، ھېسابات تىزىملىكىدىن «مۇلازىمېتىر ئادرېسىنى ئۆزگەرتىش…» نى تاللاڭ.</translation>
+    </message>
+    <message>
+        <location line="+65"/>
         <source>No account configured</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھېسابات سەپلەنمىگەن</translation>
@@ -1098,7 +1178,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+218"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
         <source>Failed to parse credentials %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>كىملىك ئۇچۇرى %1 نى تەھلىل قىلالمىدى</translation>
@@ -1206,7 +1286,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+402"/>
+        <location filename="../src/gui/folder.cpp" line="+407"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -1332,12 +1412,12 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>&apos;%1&apos; قىسقۇچىدا VFS ھالىتى ئالماشتۇرۇلۇۋاتىدۇ</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+204"/>
         <source>Could not read system exclude file</source>
         <translation>ھۆججەتنى چىقىرىۋېتىش سىستېمىسىنى ئوقۇيالمىدى</translation>
     </message>
     <message>
-        <location line="+195"/>
+        <location line="+205"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 قىسقۇچى قۇرۇلدى، ئەمما ئىلگىرى ماس قەدەملەشتىن چىقىرىۋېتىلگەن. ئۇنىڭ ئىچىدىكى سانلىق مەلۇماتلار ماس قەدەملەنمەيدۇ.</translation>
@@ -1391,7 +1471,79 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ماس قەدەملىمەسلىك</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+63"/>
+        <source>All files in the sync folder &apos;%1&apos; were deleted on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>«%1» ماس قەدەملەش قىسقۇچىدىكى بارلىق ھۆججەتلەر مۇلازىمېتىردا ئۆچۈرۈلدى.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in the sync folder &apos;%3&apos; were deleted on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>«%3» ماس قەدەملەش قىسقۇچىدىكى %2 ھۆججەتتىن %1 ى مۇلازىمېتىردا ئۆچۈرۈلدى.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them here as well, they will be removed from this computer. If you keep them, they will be uploaded to the server again, provided you have the permission to do so.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئەگەر ئۇلارنى بۇ يەردىمۇ ئۆچۈرسىڭىز، بۇ كومپيۇتېردىن چىقىرىۋېتىلىدۇ. ئەگەر ساقلاپ قالسىڭىز، ھوقۇقىڭىز بولسىلا، ئۇلار مۇلازىمېتىرغا قايتا يۈكلىنىدۇ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>All files in your local sync folder &apos;%1&apos; were deleted.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>«%1» يەرلىك ماس قەدەملەش قىسقۇچىڭىزدىكى بارلىق ھۆججەتلەر ئۆچۈرۈلدى.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in your local sync folder &apos;%3&apos; were deleted.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>«%3» يەرلىك ماس قەدەملەش قىسقۇچىڭىزدىكى %2 ھۆججەتتىن %1 ى ئۆچۈرۈلدى.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them on the server as well, they will only be available from the server&apos;s deleted files. If this was an accident, choose &quot;Keep files&quot;: they will be downloaded from the server again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئەگەر ئۇلارنى مۇلازىمېتىردىمۇ ئۆچۈرسىڭىز، ئۇلارغا پەقەت مۇلازىمېتىرنىڭ ئۆچۈرۈلگەن ھۆججەتلىرىدىنلا ئېرىشكىلى بولىدۇ. ئەگەر بۇ خاتالىق بولسا، «ھۆججەتلەرنى ساقلاش» نى تاللاڭ: ئۇلار مۇلازىمېتىردىن قايتا چۈشۈرۈلىدۇ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The synchronization of this folder is paused until you decide.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>سىز قارار قىلغۇچە بۇ قىسقۇچنىڭ ماس قەدەملىشى ۋاقىتلىق توختىتىلدى.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Remove all files?</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بارلىق ھۆججەتلەرنى چىقىرىۋېتەمسىز؟</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Remove many files?</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>نۇرغۇن ھۆججەتلەرنى چىقىرىۋېتەمسىز؟</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Keep files</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھۆججەتلەرنى ساقلاش</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Delete files</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھۆججەتلەرنى ئۆچۈرۈش</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Decide later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>كېيىن قارار قىلىش</translation>
+    </message>
+    <message>
+        <location line="+38"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1487,7 +1639,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+569"/>
+        <location filename="../src/gui/folderman.cpp" line="+571"/>
         <source>Could not reset folder state</source>
         <translation>ھۆججەت قىسقۇچ ھالىتىنى ئەسلىگە كەلتۈرەلمىدى</translation>
     </message>
@@ -1510,11 +1662,12 @@ This means that the synchronization client might not upload local changes immedi
     </message>
     <message>
         <location line="+35"/>
+        <location line="+20"/>
         <source>Sync paused by user</source>
         <translation>ئىشلەتكۈچى ماسقەدەملەش</translation>
     </message>
     <message>
-        <location line="+278"/>
+        <location line="+341"/>
         <source>User triggered force sync</source>
         <translation>ئىشلەتكۈچى كۈچ ماسقەدەملەشنى قوزغىدى</translation>
     </message>
@@ -1524,7 +1677,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ھۆججەت قىسقۇچ ئۆچۈرۈلمەكچى</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source> (backup)</source>
         <translation> (زاپاسلاش)</translation>
     </message>
@@ -1571,7 +1724,31 @@ This means that the synchronization client might not upload local changes immedi
         <translation>يەرلىك قىسقۇچ %1 قىسقۇچ ماس قەدەملەش ئۇلىنىشىدا ئىشلىتىلىۋاتقان بىر قىسقۇچنىڭ ئىچىدە.</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+35"/>
+        <source>This server folder is already synced with the local folder %1. Each server folder can only be synced once.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بۇ مۇلازىمېتىر قىسقۇچى ئاللىبۇرۇن %1 يەرلىك قىسقۇچى بىلەن ماس قەدەملەنمەكتە. ھەر بىر مۇلازىمېتىر قىسقۇچىنى پەقەت بىر قېتىملا ماس قەدەملىگىلى بولىدۇ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The whole account is already synced with the local folder %1. Each server folder can only be synced once. To sync this server folder to a different local folder, remove the existing folder sync connection first.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>پۈتۈن ھېسابات ئاللىبۇرۇن %1 يەرلىك قىسقۇچى بىلەن ماس قەدەملەنمەكتە. ھەر بىر مۇلازىمېتىر قىسقۇچىنى پەقەت بىر قېتىملا ماس قەدەملىگىلى بولىدۇ. بۇ مۇلازىمېتىر قىسقۇچىنى باشقا يەرلىك قىسقۇچ بىلەن ماس قەدەملەش ئۈچۈن، ئالدى بىلەن مەۋجۇت قىسقۇچ ماس قەدەملەش ئۇلىنىشىنى چىقىرىۋېتىڭ.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder contains the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. Choose a folder outside of it, or remove the existing folder sync connection first.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بۇ مۇلازىمېتىر قىسقۇچىدا %1 قىسقۇچى بار، ئۇ ئاللىبۇرۇن %2 يەرلىك قىسقۇچى بىلەن ماس قەدەملەنمەكتە. ھەر بىر مۇلازىمېتىر قىسقۇچىنى پەقەت بىر قېتىملا ماس قەدەملىگىلى بولىدۇ. ئۇنىڭ سىرتىدىكى بىر قىسقۇچنى تاللاڭ ياكى ئالدى بىلەن مەۋجۇت قىسقۇچ ماس قەدەملەش ئۇلىنىشىنى چىقىرىۋېتىڭ.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder is inside the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. To sync it to a different local folder, remove the existing folder sync connection first.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بۇ مۇلازىمېتىر قىسقۇچى %1 قىسقۇچىنىڭ ئىچىدە، ئۇ ئاللىبۇرۇن %2 يەرلىك قىسقۇچى بىلەن ماس قەدەملەنمەكتە. ھەر بىر مۇلازىمېتىر قىسقۇچىنى پەقەت بىر قېتىملا ماس قەدەملىگىلى بولىدۇ. ئۇنى باشقا يەرلىك قىسقۇچ بىلەن ماس قەدەملەش ئۈچۈن، ئالدى بىلەن مەۋجۇت قىسقۇچ ماس قەدەملەش ئۇلىنىشىنى چىقىرىۋېتىڭ.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>No valid folder selected.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىناۋەتلىك قىسقۇچ تاللانمىدى.</translation>
@@ -1589,13 +1766,25 @@ This means that the synchronization client might not upload local changes immedi
         <translation>تاللانغان قىسقۇچقا يېزىش ھوقۇقىڭىز يوق.</translation>
     </message>
     <message>
-        <location line="-79"/>
+        <location line="+139"/>
+        <source>The account no longer exists.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھېسابات ئەمدى مەۋجۇت ئەمەس.</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The local folder %1 could not be set up for synchronization.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 يەرلىك قىسقۇچىنى ماس قەدەملەش ئۈچۈن تەڭشىگىلى بولمىدى.</translation>
+    </message>
+    <message>
+        <location line="-303"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>&apos;%1&apos; قىسقۇچىنى باشقا بىر ھېسابات ئاللىقاچان ئىشلىتىۋاتىدۇ.</translation>
     </message>
     <message>
-        <location line="-945"/>
+        <location line="-1029"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئەپ تاقىلىۋاتىدۇ</translation>
@@ -1610,7 +1799,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderModelController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+117"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+120"/>
         <source>%1 options</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 تاللانمىلىرى</translation>
@@ -1641,7 +1830,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+109"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+129"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>تاللانغان ھۆججەت قىسقۇچقا مەۋھۇم ھۆججەتلەرنى ئىشلەتكىلى بولمايدۇ</translation>
     </message>
@@ -1672,6 +1861,124 @@ This means that the synchronization client might not upload local changes immedi
         <location line="+64"/>
         <source>Select the local folder</source>
         <translation>يەرلىك ھۆججەت قىسقۇچنى تاللاڭ</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::FolderWizardRemotePath</name>
+    <message>
+        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="+100"/>
+        <source>Folders on the server</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىردىكى قىسقۇچلار</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path on the server, for example /Documents</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىردىكى يول، مەسىلەن /Documents</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path of the server folder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىر قىسقۇچىنىڭ يولى</translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Please enter a name for the new folder.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى قىسقۇچقا ئىسىم كىرگۈزۈڭ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder name %1 is not allowed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 قىسقۇچ ئىسمىغا يول قويۇلمايدۇ.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The folder name must not contain any of these characters: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچ ئىسمىدا بۇ ھەرپلەرنىڭ ھېچقايسىسى بولماسلىقى كېرەك: %1</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The folder name must not end with a dot.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچ ئىسمى چېكىت بىلەن ئاخىرلاشماسلىقى كېرەك.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The folder name %1 is reserved by Windows.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 قىسقۇچ ئىسمىنى Windows ساقلاپ قويغان.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Folders named %1 are excluded from synchronization.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 ناملىق قىسقۇچلار ماس قەدەملەشتىن چىقىرىۋېتىلگەن.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 - %2</source>
+        <extracomment>Name eines weiteren lokalen Ordners: %1 ist der Sync-Ordner des Kontos, %2 der Serverordner</extracomment>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Create folder on the server</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىردا قىسقۇچ قۇرۇش</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Name of the new folder in %1:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 دىكى يېڭى قىسقۇچنىڭ ئىسمى:</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>The folder %1 was created on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 قىسقۇچى مۇلازىمېتىردا قۇرۇلدى.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Authentication failed while accessing the server. Please sign in again and retry.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىرنى زىيارەت قىلغاندا دەلىللەش مەغلۇپ بولدى. قايتا كىرىپ قايتا سىناڭ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You are not allowed to create a folder here.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بۇ يەردە قىسقۇچ قۇرۇش ھوقۇقىڭىز يوق.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>A folder or file with this name already exists on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىردا بۇ ئىسىمدىكى قىسقۇچ ياكى ھۆججەت ئاللىبۇرۇن بار.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder could not be created on the server: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچنى مۇلازىمېتىردا قۇرغىلى بولمىدى: %1</translation>
+    </message>
+    <message>
+        <location line="+65"/>
+        <source>The folder list could not be loaded: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچ تىزىملىكىنى يۈكلىگىلى بولمىدى: %1</translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>Choose this to sync the entire account</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>پۈتۈن ھېساباتنى ماس قەدەملەش ئۈچۈن بۇنى تاللاڭ</translation>
     </message>
 </context>
 <context>
@@ -1726,7 +2033,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
-        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
+        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>زىيارەت توكېنىنىڭ ۋاقتى ئۆتتى، توكېن ھۆججىتىدە يېڭىلاش توكېنى يوق. يېڭى توكېن ھۆججىتى قۇرۇش ئۈچۈن قايتا كىرىڭ.</translation>
@@ -1738,7 +2045,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>owncloudcmd ئۆز-ئارا تەسىرلىشىش شەكلىدە كىرەلمەيدۇ. يېڭى توكېن ھۆججىتى قۇرۇش ئۈچۈن قايتا كىرىڭ.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+22"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىر ئۆزى ھازىرلا تارقاتقان زىيارەت توكېنىنى رەت قىلدى (HTTP 401). تور مۇلازىمېتىرىنىڭ Authorization ماۋزۇسىنى owncloud.online غا يەتكۈزىدىغان-يەتكۈزمەيدىغانلىقىنى تەكشۈرۈڭ.</translation>
@@ -1750,13 +2057,13 @@ This means that the synchronization client might not upload local changes immedi
         <translation>مۇلازىمېتىر زىيارەت توكېنىنى رەت قىلدى (HTTP 401)، توكېن ھۆججىتىدە يېڭىلاش توكېنى يوق. يېڭى توكېن ھۆججىتى قۇرۇش ئۈچۈن قايتا كىرىڭ.</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+43"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>توكېن ھۆججىتى %1 نى owncloudcmd نىڭ باشقا بىر ئىجراسى قۇلۇپلىدى.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+12"/>
         <source>Could not read the token file again: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>توكېن ھۆججىتىنى قايتا ئوقۇيالمىدى: %1</translation>
@@ -1768,31 +2075,33 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ھېسابات بولمىسا زىيارەت توكېنىنى يېڭىلىغىلى بولمايدۇ.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+48"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىر يېڭىلاش توكېنىنى ئەمدى قوبۇل قىلمايدۇ (%1). كىرىشنىڭ ۋاقتى ئۆتتى ياكى بىكار قىلىندى؛ يېڭى توكېن ھۆججىتى قۇرۇش ئۈچۈن قايتا كىرىڭ.</translation>
     </message>
     <message>
         <location line="+5"/>
+        <location line="+4"/>
         <source>The server refused to refresh the access token (%1).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىر زىيارەت توكېنىنى يېڭىلاشنى رەت قىلدى (%1).</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+18"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>زىيارەت توكېنىنى يېڭىلاش مەغلۇپ بولدى: %1 (HTTP %2).</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>توكېن ئاخىرقى نۇقتىسى ئىشلەتكىلى بولىدىغان زىيارەت توكېنىسىز جاۋاب قايتۇردى (HTTP %1).</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="-239"/>
+        <location line="+252"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>يېڭىلانغان توكېنلارنى %1 غا ساقلىيالمىدى: %2</translation>
@@ -1841,7 +2150,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 ئەگەر مۇندەرىجە ئۆچۈرۈلسە ، ئۆچۈرۈشكە رۇخسەت قىلىنغان تۈرلەر ئۆچۈرۈلىدۇ. بۇ مېتا سانلىق مەلۇماتلىرىغا پايدىلىق.</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="+110"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="+122"/>
         <source>Could not open file</source>
         <translation>ھۆججەت ئاچالمىدى</translation>
     </message>
@@ -1862,10 +2171,204 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>يېڭى سەل قاراش ئەندىزىسىنى قوشۇڭ:</translation>
     </message>
     <message>
-        <location line="-93"/>
+        <location line="-103"/>
+        <location line="+12"/>
         <source>This entry is provided by the system at &apos;%1&apos; and cannot be modified in this view.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>بۇ تۈرنى سىستېما &apos;%1&apos; دا تەمىنلىگەن، ئۇنى بۇ كۆرۈنۈشتە ئۆزگەرتكىلى بولمايدۇ.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClient</name>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>رەسمىي خېرىدار ئىجرا بولۇۋاتىدۇ ھەمدە %1 قىسقۇچىنىمۇ ماس قەدەملەۋاتىدۇ. قىسقۇچنى ئىككى پروگرامما بىرلا ۋاقىتتا ماس قەدەملىمەسلىكى ئۈچۈن ئۇنى تاقاڭ.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <source>Spaces are not taken over; add them after signing in.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بوشلۇقلار يۆتكەلمەيدۇ؛ كىرگەندىن كېيىن ئۇلارنى قوشۇڭ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder belongs to a different user or server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچ باشقا ئىشلەتكۈچى ياكى مۇلازىمېتىرغا تەۋە.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The folder uses virtual files, which are not available on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچ مەۋھۇم ھۆججەتلەرنى ئىشلىتىدۇ، ئۇلار بۇ كومپيۇتېردا يوق.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>The new folder %1 would overlap the folder %2 of the official client.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى %1 قىسقۇچى رەسمىي خېرىدارنىڭ %2 قىسقۇچى بىلەن ئۈستىمۇئۈست چۈشىدۇ.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <location line="+23"/>
+        <source>The folder is already synchronized.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچ ئاللىبۇرۇن ماس قەدەملەنمەكتە.</translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <location line="+26"/>
+        <source>The folder could not be set up.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچنى تەڭشىگىلى بولمىدى.</translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>The local folder does not exist.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يەرلىك قىسقۇچ مەۋجۇت ئەمەس.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClientImportController</name>
+    <message>
+        <location line="+41"/>
+        <source>%1: already set up.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: ئاللىبۇرۇن تەڭشەلگەن.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>• %1 – %n sync folder(s)</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>• %1 – %n ماس قەدەملەش قىسقۇچى</numerusform>
+            <numerusform>• %1 – %n ماس قەدەملەش قىسقۇچى</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+20"/>
+        <source>Import from the official client</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>رەسمىي خېرىداردىن ئەكىرىش</translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <source>All accounts of the official client are already set up.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>رەسمىي خېرىدارنىڭ بارلىق ھېساباتلىرى ئاللىبۇرۇن تەڭشەلگەن.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بۇ كومپيۇتېردا رەسمىي ئۈستەلئۈستى خېرىدارى تەڭشەلگەن. ئۇنىڭ ھېساباتلىرى ۋە ماس قەدەملەش قىسقۇچلىرىنى ئۆتكۈزۈۋالامسىز؟</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھەر بىر ھېسابات ئۈچۈن توركۆرگۈدە بىر قېتىم كىرىسىز. ئاللىبۇرۇن ماس قەدەملەنگەن قىسقۇچلار تونۇلىدۇ ۋە قايتا چۈشۈرۈلمەيدۇ. رەسمىي خېرىداردا ھېچنېمە ئۆزگەرتىلمەيدۇ.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Import</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئەكىرىش</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set up a new account</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ھېسابات تەڭشەش</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Cancel</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئەمەلدىن قالدۇرۇش</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>رەسمىي خېرىدار يەنىلا ئىجرا بولۇۋاتىدۇ. ئەكىرىشتىن بۇرۇن ئۇنى تاقاپ، ئۆزلۈكىدىن قوزغىلىشىنى ئېتىۋېتىڭ، بولمىسا ئىككى پروگرامما ئوخشاش قىسقۇچلارنى ماس قەدەملەيدۇ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Check again</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قايتا تەكشۈرۈش</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Import anyway</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يەنىلا ئەكىرىش</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Sign in: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>كىرىش: %1</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: sign-in cancelled, not taken over.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: كىرىش ئەمەلدىن قالدۇرۇلدى، ئۆتكۈزۈلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>%1: signed in as %2, the folders of the official client were not taken over.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: %2 سۈپىتىدە كىرىلدى، رەسمىي خېرىدارنىڭ قىسقۇچلىرى ئۆتكۈزۈلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>%1: taken over, the files are recognized without downloading them again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: ئۆتكۈزۈلدى، ھۆججەتلەر قايتا چۈشۈرۈلمەيلا تونۇلىدۇ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: taken over; the synchronization state could not be read, the files are compared with the server once.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: ئۆتكۈزۈلدى؛ ماس قەدەملەش ھالىتىنى ئوقۇغىلى بولمىدى، ھۆججەتلەر مۇلازىمېتىر بىلەن بىر قېتىم سېلىشتۇرۇلىدۇ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: set up again with virtual files at %2; only placeholders are created.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: %2 دا مەۋھۇم ھۆججەتلەر بىلەن قايتا تەڭشەلدى؛ پەقەت ئورۇن ئىگىلىگۈچىلەرلا قۇرۇلىدۇ.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1: not taken over. %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: ئۆتكۈزۈلمىدى. %2</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1: the account could not be created: %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: ھېساباتنى قۇرغىلى بولمىدى: %2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Import finished</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئەكىرىش تاماملاندى</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>قىسقۇچلار ئىككى قېتىم ماس قەدەملەنمەسلىكى ئۈچۈن رەسمىي خېرىدارنى مەڭگۈلۈك تاقاڭ (ئۆزلۈكىدىن قوزغىلىشىنى ئېتىۋېتىڭ ياكى ئۇنى چىقىرىۋېتىڭ).</translation>
     </message>
 </context>
 <context>
@@ -2002,13 +2505,19 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::MainWindowController</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+87"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+88"/>
         <source>Add account...</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھېسابات قوشۇش...</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
+        <source>Import from official client...</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>رەسمىي خېرىداردىن ئەكىرىش...</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Settings...</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تەڭشەكلەر...</translation>
@@ -2161,7 +2670,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ۋاكالەتچى تىپى</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.cpp" line="+54"/>
+        <location filename="../src/gui/networksettings.cpp" line="+55"/>
         <location line="+1"/>
         <source>Hostname of proxy server</source>
         <translation>ۋاكالەتچى مۇلازىمېتىرنىڭ باش ئىسمى</translation>
@@ -2195,20 +2704,26 @@ Note that using any logging command line options will override the settings.</so
         <translation>بەلۋاغ كەڭلىكى</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
+        <source>The automatic limit of an earlier version is no longer supported. Currently not limited.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بۇرۇنقى نەشرىنىڭ ئاپتوماتىك چەكلىمىسى ئەمدى قوللانمايدۇ. ھازىر چەكلەنمىگەن.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Limit upload speed to</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>يوللاش سۈرئىتىنى چەكلەش:</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+8"/>
+        <location line="+5"/>
+        <location line="+12"/>
         <source> kB/s</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation> kB/s</translation>
     </message>
     <message>
-        <location line="-3"/>
+        <location line="-5"/>
         <source>Limit download speed to</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>چۈشۈرۈش سۈرئىتىنى چەكلەش:</translation>
@@ -2245,7 +2760,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+56"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
         <source>Add account…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھېسابات قوشۇش…</translation>
@@ -2261,7 +2776,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ئىلغار</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+150"/>
         <source>Sign in</source>
         <translation>تىزىملىتىڭ</translation>
     </message>
@@ -2293,7 +2808,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇۋەپپەقىيەتلىك كىردى</translation>
@@ -2545,7 +3060,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+829"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
         <source>File %1 is currently in use</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 ھۆججىتى ھازىر ئىشلىتىلىۋاتىدۇ</translation>
@@ -2800,7 +3315,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-958"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
         <source>; Restoration Failed: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>؛ ئەسلىگە كەلتۈرۈش مەغلۇپ بولدى: %1</translation>
@@ -2967,7 +3482,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1139"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
         <source>Could not update file : %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھۆججەتنى يېڭىلىيالمىدى: %1</translation>
@@ -3145,6 +3660,21 @@ Note that using any logging command line options will override the settings.</so
         <location line="+2"/>
         <source>Status</source>
         <translation>ھالەت</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::PublicLinkCreator</name>
+    <message>
+        <location filename="../src/gui/shareapi.cpp" line="+337"/>
+        <source>Context menu link %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مەزمۇن تىزىملىكى ئۇلىنىشى %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Context menu link</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مەزمۇن تىزىملىكى ئۇلىنىشى</translation>
     </message>
 </context>
 <context>
@@ -3381,6 +3911,201 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::ServerAddressDialog</name>
+    <message>
+        <location filename="../src/gui/accountsgui/serveraddressdialog.cpp" line="+37"/>
+        <source>Change server address</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىر ئادرېسىنى ئۆزگەرتىش</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>If your server has moved to a new address, enter the new address here. The account and its folders, files and settings are kept. To make sure that it is the same server and the same user, you sign in again at the new address.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئەگەر مۇلازىمېتىرىڭىز يېڭى ئادرېسقا يۆتكەلگەن بولسا، يېڭى ئادرېسنى بۇ يەرگە كىرگۈزۈڭ. ھېسابات ۋە ئۇنىڭ قىسقۇچلىرى، ھۆججەتلىرى ۋە تەڭشەكلىرى ساقلىنىدۇ. ئوخشاش مۇلازىمېتىر ۋە ئوخشاش ئىشلەتكۈچى ئىكەنلىكىگە كاپالەتلىك قىلىش ئۈچۈن، يېڭى ئادرېستا قايتا كىرىسىز.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Current address:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھازىرقى ئادرېس:</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېس</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېس:</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Open browser again</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>توركۆرگۈنى قايتا ئېچىش</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Check and sign in</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>تەكشۈرۈپ كىرىش</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Sign-in link: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>كىرىش ئۇلىنىشى: %1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerMoveController</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="+489"/>
+        <source>Checking %1…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 تەكشۈرۈلۈۋاتىدۇ…</translation>
+    </message>
+    <message>
+        <location line="+56"/>
+        <source>Another account already uses this address with the same user.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>باشقا بىر ھېسابات بۇ ئادرېسنى ئاللىبۇرۇن ئوخشاش ئىشلەتكۈچى بىلەن ئىشلىتىۋاتىدۇ.</translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Checking that this is the same server and the same user…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئوخشاش مۇلازىمېتىر ۋە ئوخشاش ئىشلەتكۈچى ئىكەنلىكى تەكشۈرۈلۈۋاتىدۇ…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The browser could not be opened. Copy the sign-in link and open it in your browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>توركۆرگۈنى ئاچقىلى بولمىدى. كىرىش ئۇلىنىشىنى كۆچۈرۈپ، توركۆرگۈڭىزدە ئېچىڭ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in page of the new address does not use a secure connection (HTTPS).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېسنىڭ كىرىش بېتى بىخەتەر ئۇلىنىش (HTTPS) ئىشلەتمەيدۇ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the new address cannot be reached. Please try again later.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېسنىڭ كىرىش مۇلازىمىتىگە ئۇلانغىلى بولمايدۇ. كېيىن قايتا سىناڭ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Signing in at the new address failed. Please sign in with the same user as before: %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېستا كىرىش مەغلۇپ بولدى. ئىلگىرىكى ئوخشاش ئىشلەتكۈچى بىلەن كىرىڭ: %1.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Please sign in at the new address in your browser, with the same user as before: %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>توركۆرگۈڭىزدە يېڭى ئادرېستا ئىلگىرىكى ئوخشاش ئىشلەتكۈچى بىلەن كىرىڭ: %1.</translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>The new address did not accept the sign-in. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېس كىرىشنى قوبۇل قىلمىدى. ئادرېس ئۆزگەرتىلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The user %1 does not exist at the new address. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 ئىشلەتكۈچى يېڭى ئادرېستا مەۋجۇت ئەمەس. ئادرېس ئۆزگەرتىلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address redirected the check to another address. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېس تەكشۈرۈشنى باشقا ئادرېسقا قايتا يۆنىلىشلىدى. ئادرېس ئۆزگەرتىلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address could not be checked: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېسنى تەكشۈرگىلى بولمىدى: %1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The new address does not report which installation it belongs to, so it cannot be confirmed that it is the same server. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېس قايسى ئورنىتىشقا تەۋە ئىكەنلىكىنى ئۇقتۇرمايدۇ، شۇڭا ئوخشاش مۇلازىمېتىر ئىكەنلىكىنى جەزملەشتۈرگىلى بولمايدۇ. ئادرېس ئۆزگەرتىلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The server at %1 is a different installation than the one this account was set up with. To protect your files, the address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 دىكى مۇلازىمېتىر بۇ ھېسابات تەڭشەلگەن ئورنىتىشتىن باشقا ئورنىتىش. ھۆججەتلىرىڭىزنى قوغداش ئۈچۈن ئادرېس ئۆزگەرتىلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>The synchronization of the account could not be stopped. The address was not changed, please try again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھېساباتنىڭ ماس قەدەملىشىنى توختاتقىلى بولمىدى. ئادرېس ئۆزگەرتىلمىدى، قايتا سىناڭ.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerStatusCheck</name>
+    <message>
+        <location line="-402"/>
+        <source>No server could be reached at %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 دا ھېچقانداق مۇلازىمېتىرغا ئۇلانغىلى بولمىدى.</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>The address %1 redirects to another server (%2). For your security, this redirect is not followed automatically. If you trust that server, enter its address directly.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 ئادرېسى باشقا مۇلازىمېتىرغا (%2) قايتا يۆنىلىشلەيدۇ. بىخەتەرلىكىڭىز ئۈچۈن بۇ قايتا يۆنىلىشكە ئاپتوماتىك ئەگەشمەيدۇ. ئەگەر ئۇ مۇلازىمېتىرغا ئىشەنسىڭىز، ئۇنىڭ ئادرېسىنى بىۋاسىتە كىرگۈزۈڭ.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The address %1 redirects to %2, which is not the address of a server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 ئادرېسى %2 گە قايتا يۆنىلىشلەيدۇ، ئۇ مۇلازىمېتىر ئادرېسى ئەمەس.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address %1 redirects too often.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 ئادرېسى بەك كۆپ قايتا يۆنىلىشلەيدۇ.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>No server could be reached at %1: %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 دا ھېچقانداق مۇلازىمېتىرغا ئۇلانغىلى بولمىدى: %2</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>No server was found at %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 دا مۇلازىمېتىر تېپىلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The server at %1 is not set up yet.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 دىكى مۇلازىمېتىر تېخى تەڭشەلمىگەن.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The server at %1 is in maintenance mode. Please try again later.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 دىكى مۇلازىمېتىر ئاسراش ھالىتىدە. كېيىن قايتا سىناڭ.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::SettingsView</name>
     <message>
         <location filename="../src/gui/mainwindow/settingsview.ui" line="+14"/>
@@ -3445,15 +4170,15 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+7"/>
-        <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
+        <source>HTTP/2 reuses a single connection for many requests, which can speed up syncing on high-latency links and with many small files. Off by default, because transfers can stall with some servers and proxies; turn it on only if your server handles HTTP/2 reliably. Takes effect after a restart.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>HTTP/2 نۇرغۇن تەلەپ ئۈچۈن بىرلا ئۇلىنىشنى ئىشلىتىدۇ، بۇ كېچىكىشى يۇقىرى ئۇلىنىشلاردا ۋە كىچىك ھۆججەتلەر كۆپ بولغاندا ماس قەدەملەشنى تېزلىتىدۇ. كۆڭۈلدىكى ئەھۋالدا ئوچۇق؛ مۇلازىمېتىرىڭىز ياكى ۋاكالەتچىڭىزدە HTTP/2 مەسىلىسى بولغاندىلا تاللاشنى بىكار قىلىڭ. قايتا قوزغاتقاندىن كېيىن كۈچكە ئىگە بولىدۇ.</translation>
+        <translation>HTTP/2 نۇرغۇن تەلەپلەر ئۈچۈن بىرلا ئۇلىنىشنى قايتا ئىشلىتىدۇ، بۇ يۇقىرى كېچىكىشلىك ئۇلىنىشلاردا ۋە نۇرغۇن كىچىك ھۆججەتلەر بولغاندا ماس قەدەملەشنى تېزلىتەلەيدۇ. كۆڭۈلدىكى ھالەتتە تاقاق، چۈنكى بەزى مۇلازىمېتىر ۋە ۋاكالەتچىلەر بىلەن يوللاش توختاپ قېلىشى مۇمكىن؛ پەقەت مۇلازىمېتىرىڭىز HTTP/2 نى ئىشەنچلىك بىر تەرەپ قىلالىسىلا ئېچىڭ. قايتا قوزغاتقاندىن كېيىن كۈچكە ئىگە بولىدۇ.</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Use HTTP/2 (recommended, requires restart)</source>
+        <source>Use HTTP/2 (optional, requires restart)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>HTTP/2 ئىشلىتىش (تەۋسىيە، قايتا قوزغىتىش كېرەك)</translation>
+        <translation>HTTP/2 ئىشلىتىش (ئىختىيارى، قايتا قوزغىتىش كېرەك)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3530,7 +4255,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ShareDialog</name>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="+107"/>
+        <location filename="../src/gui/sharedialog.cpp" line="+111"/>
         <source>Share %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 نى ھەمبەھىرلەش</translation>
@@ -3548,13 +4273,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>ئىشلەتكۈچى ۋە گۇرۇپپىلار</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Public links</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئاممىۋى ئۇلانمىلار</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Close</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تاقاش</translation>
@@ -3596,31 +4321,31 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+5"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <source>Download / View</source>
         <translation>چۈشۈرۈش / كۆرۈش</translation>
     </message>
     <message>
-        <location line="-582"/>
-        <location line="+581"/>
+        <location line="-595"/>
+        <location line="+594"/>
         <source>Download / View / Upload</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>چۈشۈرۈش / كۆرۈش / يوللاش</translation>
     </message>
     <message>
-        <location line="-580"/>
-        <location line="+578"/>
+        <location line="-593"/>
+        <location line="+591"/>
         <source>Download / View / Edit</source>
         <translation>چۈشۈرۈش / كۆرۈش / تەھرىرلەش</translation>
     </message>
     <message>
-        <location line="-577"/>
-        <location line="+575"/>
+        <location line="-590"/>
+        <location line="+588"/>
         <source>Upload only (File Drop)</source>
         <translation>پەقەت يۈكلەڭ (ھۆججەت تامچىسى)</translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-580"/>
         <source>Recipients can:</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تاپشۇرۇۋالغۇچىلار قىلالايدۇ:</translation>
@@ -3833,13 +4558,13 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+6"/>
-        <location line="+69"/>
+        <location line="+78"/>
         <location line="+45"/>
         <source>Public link</source>
         <translation>ئاممىۋى ئۇلىنىش</translation>
     </message>
     <message>
-        <location line="-109"/>
+        <location line="-118"/>
         <source>password protected</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىم بىلەن قوغدالغان</translation>
@@ -3858,12 +4583,19 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+5"/>
+        <location line="+294"/>
         <source>Copy link</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئۇلانمىنى كۆچۈرۈش</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="-287"/>
+        <source>More</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>تېخىمۇ كۆپ</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Edit</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تەھرىرلەش</translation>
@@ -3916,7 +4648,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>نۆۋەتتىكى ئىمنى ساقلاپ قېلىش ئۈچۈن بوش قالدۇرۇڭ</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+25"/>
+        <source>You are not allowed to create public links on this server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بۇ مۇلازىمېتىردا ئاممىۋى ئۇلىنىش قۇرۇش ھوقۇقىڭىز يوق.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The server requires a password for this kind of link.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىر بۇ خىل ئۇلانما ئۈچۈن ئىم تەلەپ قىلىدۇ.</translation>
@@ -3965,16 +4703,40 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1 (فېدېراتسىيە)</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+30"/>
         <source>Link copied to the clipboard: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئۇلانما چاپلاش تاختىسىغا كۆچۈرۈلدى: %1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Open in browser</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>توركۆرگۈدە ئېچىش</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copy direct download link</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بىۋاسىتە چۈشۈرۈش ئۇلىنىشىنى كۆچۈرۈش</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send by email…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئېلخەت ئارقىلىق ئەۋەتىش…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>I shared %1 with you</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مەن %1 نى سىز بىلەن ھەمبەھىرلىدىم</translation>
     </message>
 </context>
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+471"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -4024,7 +4786,31 @@ Note that using any logging command line options will override the settings.</so
         <translation>يېڭى ئورۇن تاللاش…</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="-210"/>
+        <source>Public link copied</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئاممىۋى ئۇلىنىش كۆچۈرۈلدى</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>The public link to %1 is in the clipboard.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 نىڭ ئاممىۋى ئۇلىنىشى چاپلاش تاختىسىدا.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The public link could not be created automatically.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئاممىۋى ئۇلىنىشنى ئاپتوماتىك قۇرغىلى بولمىدى.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Server message: %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىر ئۇچۇرى: %1</translation>
+    </message>
+    <message>
+        <location line="+289"/>
         <location line="+30"/>
         <source>Share…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -4032,12 +4818,12 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="-28"/>
-        <location line="+32"/>
+        <location line="+43"/>
         <source>Copy private link to clipboard</source>
         <translation>شەخسىي ئۇلىنىشنى چاپلاش تاختىسىغا كۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location line="-6"/>
+        <location line="-17"/>
         <source>Resharing this file is not allowed</source>
         <translation>بۇ ھۆججەتنى قايتا ئىشلىتىشكە بولمايدۇ</translation>
     </message>
@@ -4047,7 +4833,25 @@ Note that using any logging command line options will override the settings.</so
         <translation>بۇ ھۆججەت قىسقۇچنى قايتا ئىشلىتىشكە بولمايدۇ</translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+9"/>
+        <source>Create public link…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئاممىۋى ئۇلىنىش قۇرۇش…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Create and copy public link to clipboard</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئاممىۋى ئۇلىنىش قۇرۇپ چاپلاش تاختىسىغا كۆچۈرۈش</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Manage public links…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئاممىۋى ئۇلىنىشلارنى باشقۇرۇش…</translation>
+    </message>
+    <message>
+        <location line="+74"/>
         <source>Open in %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 دا ئېچىش</translation>
@@ -4117,13 +4921,13 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncEngine</name>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="+143"/>
+        <location filename="../src/libsync/syncengine.cpp" line="+145"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 (ئىلگىرىكى خاتالىق سەۋەبىدىن ئاتلاپ ئۆتۈلدى، %2 دىن كېيىن قايتا سىنايدۇ)</translation>
     </message>
     <message>
-        <location line="+188"/>
+        <location line="+201"/>
         <source>Unable to sync: the local folder is missing.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ماس قەدەملىگىلى بولمايدۇ: يەرلىك قىسقۇچ يوق.</translation>
@@ -4143,7 +4947,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+11"/>
         <location line="+83"/>
-        <location line="+31"/>
+        <location line="+140"/>
         <location line="+65"/>
         <source>Cannot open the sync journal.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -4167,13 +4971,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>مۇلازىمېتىردا بەزى يۈكلەشلەر ئۈچۈن يېتەرلىك بوشلۇق يوق.</translation>
     </message>
     <message>
-        <location line="-750"/>
+        <location line="-872"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translation>ئىلتىماس چېكىنىش</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+325"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>يەرلىك سانداندىن قارا تىزىملىكنى ئوقۇيالمىدى</translation>
     </message>
@@ -4285,19 +5089,19 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
         <location line="+22"/>
-        <location line="+650"/>
+        <location line="+653"/>
         <source>Offline</source>
         <translation>تورسىز</translation>
     </message>
     <message>
-        <location line="-668"/>
-        <location line="+675"/>
+        <location line="-671"/>
+        <location line="+678"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ماس قەدەملىنىۋاتىدۇ</translation>
     </message>
     <message>
-        <location line="-673"/>
+        <location line="-676"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ماس قەدەملەش توختىتىلىۋاتىدۇ</translation>
@@ -4321,7 +5125,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+580"/>
+        <location line="+583"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
@@ -4329,14 +5133,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>ماس قەدەملەش ۋاقىتلىق توختىتىلدى</translation>
     </message>
     <message>
-        <location line="-649"/>
-        <location line="+655"/>
+        <location line="-652"/>
+        <location line="+658"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىشلەتكىلى بولمايدۇ</translation>
     </message>
     <message numerus="yes">
-        <location line="-543"/>
+        <location line="-546"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -4398,14 +5202,14 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+33"/>
-        <location line="+92"/>
+        <location line="+95"/>
         <source>Open in browser</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>توركۆرگۈدە ئېچىش</translation>
     </message>
     <message>
-        <location line="-88"/>
-        <location line="+105"/>
+        <location line="-90"/>
+        <location line="+107"/>
         <source>Resume synchronization</source>
         <translation>ماس قەدەمنى ئەسلىگە كەلتۈرۈش</translation>
     </message>
@@ -4471,7 +5275,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>ماس قەدەملەشنى داۋاملاشتۇرۇش (%1 غىچە توختىتىلغان)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-104"/>
+        <location line="+109"/>
         <source>Pause synchronization</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ماس قەدەملەشنى ۋاقىتلىق توختىتىش</translation>
@@ -4704,7 +5509,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>تەشكىلات بەلگىلىگەن قوشۇمچە تامغا</translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+113"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىناۋەتسىز مۇلازىمېتىر URL: %1</translation>
@@ -4852,7 +5657,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>&lt;p&gt;%1 خېرىدارىنىڭ يېڭى نەشرى بار.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; نى چۈشۈرگىلى بولىدۇ. ئورنىتىلغان نەشرى %3.&lt;/p&gt;</translation>
@@ -4993,6 +5798,77 @@ Note that using any logging command line options will override the settings.</so
         <source>Could not detect compatible server at %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 دا ماس كېلىدىغان مۇلازىمېتىر بايقالمىدى</translation>
+    </message>
+</context>
+<context>
+    <name>ServerMove</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="-297"/>
+        <source>Please enter the new address of your server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىرىڭىزنىڭ يېڭى ئادرېسىنى كىرگۈزۈڭ.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 is not a valid address.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 ئىناۋەتلىك ئادرېس ئەمەس.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address must start with https://.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئادرېس https:// بىلەن باشلىنىشى كېرەك.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain a user name or password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئادرېستا ئىشلەتكۈچى ئىسمى ياكى ئىم بولماسلىقى كېرەك.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain “?” or “#”.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئادرېستا «?» ياكى «#» بولماسلىقى كېرەك.</translation>
+    </message>
+    <message>
+        <location line="+138"/>
+        <location line="+221"/>
+        <location line="+71"/>
+        <location line="+78"/>
+        <location line="+25"/>
+        <location line="+65"/>
+        <source>The account no longer exists.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھېسابات ئەمدى مەۋجۇت ئەمەس.</translation>
+    </message>
+    <message>
+        <location line="-456"/>
+        <location line="+222"/>
+        <source>The server address can only be changed for accounts without Spaces.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىر ئادرېسىنى پەقەت بوشلۇقى يوق ھېساباتلاردىلا ئۆزگەرتكىلى بولىدۇ.</translation>
+    </message>
+    <message>
+        <location line="-218"/>
+        <location line="+229"/>
+        <location line="+60"/>
+        <source>This is already the address of the account.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بۇ ئاللىبۇرۇن ھېساباتنىڭ ئادرېسى.</translation>
+    </message>
+    <message>
+        <location line="-284"/>
+        <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھېساباتنىڭ بىر ماس قەدەملىشى يەنىلا ئىجرا بولۇۋاتىدۇ. ئادرېس ئۆزگەرتىلمىدى، قايتا سىناڭ.</translation>
+    </message>
+    <message>
+        <location line="+432"/>
+        <source>change of the account&apos;s server address</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھېساباتنىڭ مۇلازىمېتىر ئادرېسىنى ئۆزگەرتىش</translation>
     </message>
 </context>
 <context>
@@ -5365,7 +6241,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>URL %1 نى ئېچىش ئۈچۈن توركۆرگۈنى قوزغاتقاندا خاتالىق كۆرۈلدى. كۆڭۈلدىكى توركۆرگۈ سەپلەنمىگەن بولۇشى مۇمكىن؟</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+26"/>
         <source>Could not open email client</source>
         <translation>ئېلېكترونلۇق خەت خېرىدارنى ئاچالمىدى</translation>
     </message>

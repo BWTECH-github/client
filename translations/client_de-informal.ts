@@ -364,7 +364,7 @@ Datei Synchronisations-Applikation.</translation>
         <translation>Beta-Versionen bringen neue Funktionen früher, sind aber weniger getestet. Eine ältere Version wird nie installiert: Nach dem Wechsel zurück auf „Stabil“ kommt die nächste stabile Version, die neuer ist als die installierte.</translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+14"/>
         <source>Versions</source>
         <translation>Versionen</translation>
     </message>
@@ -382,7 +382,7 @@ Datei Synchronisations-Applikation.</translation>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+254"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
         <source>Connection timed out</source>
         <translation>Zeitüberschreitung beim Verbindungsaufbau</translation>
     </message>
@@ -611,7 +611,7 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+248"/>
+        <location filename="../src/gui/accountstate.cpp" line="+249"/>
         <source>The server is not supported by this client.</source>
         <translation>Dieser Client unterstützt diesen Server nicht.</translation>
     </message>
@@ -808,13 +808,13 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+174"/>
-        <location line="+61"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location line="+113"/>
         <source>New account failure</source>
         <translation>Fehler bei neuem Konto</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-113"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
         <translation>Die für die Erstellung eines neuen Kontos erforderlichen Informationen sind unvollständig. Bitte führe den Assistenten erneut aus.</translation>
     </message>
@@ -829,7 +829,7 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
         <translation>Auf diesem Computer wurde keine Konfiguration des offiziellen Desktop-Clients gefunden.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+48"/>
         <source>Accounts</source>
         <translation>Konten</translation>
     </message>
@@ -1061,7 +1061,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+222"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
         <source>Failed to parse credentials %1</source>
         <translation>Fehler beim Verarbeiten der Zugangsdaten %1</translation>
     </message>
@@ -1158,7 +1158,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+402"/>
+        <location filename="../src/gui/folder.cpp" line="+407"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 wurde gelöscht.</translation>
@@ -1268,12 +1268,12 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <translation>Wechseln des VFS-Modus im Ordner &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+204"/>
         <source>Could not read system exclude file</source>
         <translation>Die systemeigene Ausschlussdatei kann nicht gelesen werden.</translation>
     </message>
     <message>
-        <location line="+195"/>
+        <location line="+205"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Der Ordner %1 wurde erzeugt, aber von der Synchronisation ausgeschlossen. Daten im Ordner werden nicht synchronisiert.</translation>
     </message>
@@ -1343,7 +1343,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <translation>Später entscheiden</translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+38"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1356,7 +1356,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 %1</translation>
     </message>
     <message>
-        <location line="-79"/>
+        <location line="-150"/>
         <source>A folder from an external storage has been added: %1</source>
         <translation>Ein Ordner von einem externen Speicher wurde hinzugefügt: %1</translation>
     </message>
@@ -1482,7 +1482,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Konto getrennt oder pausiert</translation>
     </message>
     <message>
-        <location line="+380"/>
+        <location line="+396"/>
         <source>User triggered force sync</source>
         <translation>Benutzer hat die Synchronisierung erzwungen</translation>
     </message>
@@ -1582,7 +1582,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Der Ordner &apos;%1&apos; wird bereits von einem anderen Konto verwendet.</translation>
     </message>
     <message>
-        <location line="-1013"/>
+        <location line="-1029"/>
         <source>Application shutting down</source>
         <translation>Anwendung wird beendet</translation>
     </message>
@@ -1593,6 +1593,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     </message>
     <message>
         <location line="+129"/>
+        <location line="+20"/>
         <source>Sync paused by user</source>
         <translation>Synchronisation vom Benutzer pausiert</translation>
     </message>
@@ -1726,7 +1727,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Name des neuen Ordners in %1:</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+32"/>
         <source>The folder %1 was created on the server.</source>
         <translation>Der Ordner %1 wurde auf dem Server angelegt.</translation>
     </message>
@@ -1813,7 +1814,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
-        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
+        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
         <translation>Das Zugriffstoken ist abgelaufen und die Token-Datei enthält kein Aktualisierungstoken. Melde dich erneut an, um eine neue Token-Datei zu erstellen.</translation>
     </message>
@@ -1823,7 +1824,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>owncloudcmd kann sich nicht interaktiv anmelden. Melde dich erneut an, um eine neue Token-Datei zu erstellen.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+22"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
         <translation>Der Server hat das gerade ausgestellte Zugriffstoken abgelehnt (HTTP 401). Prüfe, ob der Webserver den Authorization-Header an owncloud.online weitergibt.</translation>
     </message>
@@ -1833,12 +1834,12 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Der Server hat das Zugriffstoken abgelehnt (HTTP 401) und die Token-Datei enthält kein Aktualisierungstoken. Melde dich erneut an, um eine neue Token-Datei zu erstellen.</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+43"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
         <translation>Die Token-Datei %1 ist durch einen anderen owncloudcmd-Lauf gesperrt.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+12"/>
         <source>Could not read the token file again: %1</source>
         <translation>Die Token-Datei konnte nicht erneut gelesen werden: %1</translation>
     </message>
@@ -1848,27 +1849,29 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Ohne Konto lässt sich das Zugriffstoken nicht erneuern.</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+48"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
         <translation>Der Server nimmt das Aktualisierungstoken nicht mehr an (%1). Die Anmeldung ist abgelaufen oder wurde widerrufen; melde dich erneut an, um eine neue Token-Datei zu erstellen.</translation>
     </message>
     <message>
         <location line="+5"/>
+        <location line="+4"/>
         <source>The server refused to refresh the access token (%1).</source>
         <translation>Der Server hat das Erneuern des Zugriffstokens abgelehnt (%1).</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+18"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
         <translation>Das Erneuern des Zugriffstokens ist fehlgeschlagen: %1 (HTTP %2).</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
         <translation>Der Token-Endpunkt hat ohne verwendbares Zugriffstoken geantwortet (HTTP %1).</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="-239"/>
+        <location line="+252"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
         <translation>Die erneuerten Tokens konnten nicht in %1 gespeichert werden: %2</translation>
     </message>
@@ -1915,7 +1918,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Löschung eines Ordners verhindern würden. Das trifft besonders auf Metadaten zu.</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="+110"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="+122"/>
         <source>Could not open file</source>
         <translation>Die Datei konnte nicht geöffnet werden.</translation>
     </message>
@@ -1935,7 +1938,8 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>Neues Ignoriermuster hinzufügen:</translation>
     </message>
     <message>
-        <location line="-93"/>
+        <location line="-103"/>
+        <location line="+12"/>
         <source>This entry is provided by the system at &apos;%1&apos; and cannot be modified in this view.</source>
         <translation>Dieser Eintrag wird vom System auf &apos;%1&apos; bereitgestellt und kann in dieser Ansicht nicht geändert werden.</translation>
     </message>
@@ -1953,12 +1957,7 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>Der Ordner gehört zu einem anderen Benutzer oder Server.</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <source>Only one sync folder per account is possible at the moment.</source>
-        <translation>Derzeit ist nur ein Sync-Ordner je Konto möglich.</translation>
-    </message>
-    <message>
-        <location line="+8"/>
+        <location line="+14"/>
         <source>The folder uses virtual files, which are not available on this computer.</source>
         <translation>Der Ordner nutzt virtuelle Dateien, die auf diesem Computer nicht verfügbar sind.</translation>
     </message>
@@ -1968,7 +1967,7 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>Der neue Ordner %1 würde sich mit dem Ordner %2 des offiziellen Clients überschneiden.</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+18"/>
         <location line="+26"/>
         <source>The folder could not be set up.</source>
         <translation>Der Ordner konnte nicht eingerichtet werden.</translation>
@@ -1979,8 +1978,8 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>Der lokale Ordner existiert nicht.</translation>
     </message>
     <message>
-        <location line="-19"/>
-        <location line="+22"/>
+        <location line="-20"/>
+        <location line="+23"/>
         <source>The folder is already synchronized.</source>
         <translation>Der Ordner wird bereits synchronisiert.</translation>
     </message>
@@ -2235,7 +2234,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::MainWindowController</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+87"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+88"/>
         <source>Add account...</source>
         <translation>Konto hinzufügen…</translation>
     </message>
@@ -2245,7 +2244,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Vom offiziellen Client übernehmen…</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Settings...</source>
         <translation>Einstellungen …</translation>
     </message>
@@ -2390,7 +2389,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Proxy-Typ</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.cpp" line="+54"/>
+        <location filename="../src/gui/networksettings.cpp" line="+55"/>
         <location line="+1"/>
         <source>Hostname of proxy server</source>
         <translation>Hostname des Proxy-Servers</translation>
@@ -2428,18 +2427,18 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Die automatische Begrenzung einer früheren Version wird nicht mehr unterstützt. Derzeit nicht begrenzt.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+9"/>
         <source>Limit upload speed to</source>
         <translation>Upload-Geschwindigkeit begrenzen auf</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+8"/>
+        <location line="+5"/>
+        <location line="+12"/>
         <source> kB/s</source>
         <translation> kB/s</translation>
     </message>
     <message>
-        <location line="-3"/>
+        <location line="-5"/>
         <source>Limit download speed to</source>
         <translation>Download-Geschwindigkeit begrenzen auf</translation>
     </message>
@@ -2473,7 +2472,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+56"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
         <source>Add account…</source>
         <translation>Konto hinzufügen…</translation>
     </message>
@@ -2488,7 +2487,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Erweitert</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+150"/>
         <source>Sign in</source>
         <translation>Anmelden</translation>
     </message>
@@ -2519,7 +2518,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
         <source>Successfully signed in</source>
         <translation>Erfolgreich angemeldet</translation>
     </message>
@@ -2736,7 +2735,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+829"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
         <source>File %1 is currently in use</source>
         <translation>Datei %1 wird gerade benutzt</translation>
     </message>
@@ -2972,7 +2971,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-958"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
         <source>; Restoration Failed: %1</source>
         <translation>; Wiederherstellung fehlgeschlagen: %1</translation>
     </message>
@@ -3119,7 +3118,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1139"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
         <source>Could not update file : %1</source>
         <translation>Die Datei konnte nicht aktualisiert werden: %1</translation>
     </message>
@@ -3508,7 +3507,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::ServerAddressDialog</name>
     <message>
-        <location filename="../src/gui/accountsgui/serveraddressdialog.cpp" line="+35"/>
+        <location filename="../src/gui/accountsgui/serveraddressdialog.cpp" line="+37"/>
         <source>Change server address</source>
         <translation>Serveradresse ändern</translation>
     </message>
@@ -3543,7 +3542,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Prüfen und anmelden</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+20"/>
         <source>Sign-in link: %1</source>
         <translation>Anmeldelink: %1</translation>
     </message>
@@ -3551,12 +3550,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+450"/>
+        <location filename="../src/gui/servermove.cpp" line="+489"/>
         <source>Checking %1…</source>
         <translation>Prüfe %1…</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+56"/>
         <source>Another account already uses this address with the same user.</source>
         <translation>Ein anderes Konto nutzt diese Adresse bereits mit demselben Benutzer.</translation>
     </message>
@@ -3629,7 +3628,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-339"/>
+        <location line="-402"/>
         <source>No server could be reached at %1.</source>
         <translation>Unter %1 ist kein Server erreichbar.</translation>
     </message>
@@ -3737,7 +3736,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>HTTP/2 verwenden (optional, erfordert Neustart)</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+9"/>
         <source>Edit Ignored Files</source>
         <translation>Ignorierte Dateien bearbeiten</translation>
     </message>
@@ -3782,7 +3781,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Fenster beim Start anzeigen</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+130"/>
         <source>Show sync folders in the Explorer navigation pane</source>
         <translation>Sync-Ordner im Navigationsbereich des Explorers anzeigen</translation>
     </message>
@@ -3810,7 +3809,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::ShareDialog</name>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="+827"/>
+        <location filename="../src/gui/sharedialog.cpp" line="+848"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
         <translation>%1 (%2)</translation>
@@ -3826,7 +3825,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>%1 (Gruppe)</translation>
     </message>
     <message>
-        <location line="-556"/>
+        <location line="-569"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
@@ -3842,26 +3841,27 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
     <message>
         <location line="+452"/>
+        <location line="+294"/>
         <source>Copy link</source>
         <translation>Link kopieren</translation>
     </message>
     <message>
-        <location line="-191"/>
+        <location line="-485"/>
         <source>Could not load the existing shares.</source>
         <translation>Die vorhandenen Freigaben konnten nicht geladen werden.</translation>
     </message>
     <message>
-        <location line="+291"/>
+        <location line="+300"/>
         <source>Create public link</source>
         <translation>Öffentlichen Link erstellen</translation>
     </message>
     <message>
-        <location line="-281"/>
+        <location line="-290"/>
         <source>Creating the public link failed.</source>
         <translation>Der öffentliche Link konnte nicht erstellt werden.</translation>
     </message>
     <message>
-        <location line="+223"/>
+        <location line="+232"/>
         <source>Delete the public link &quot;%1&quot;? Everyone who has the link loses access.</source>
         <translation>Den öffentlichen Link „%1“ löschen? Alle, die den Link haben, verlieren den Zugriff.</translation>
     </message>
@@ -3871,30 +3871,30 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-179"/>
+        <location line="-188"/>
         <source>Deleting the public link failed.</source>
         <translation>Der öffentliche Link konnte nicht gelöscht werden.</translation>
     </message>
     <message>
         <location line="-184"/>
-        <location line="+578"/>
+        <location line="+591"/>
         <source>Download / View / Edit</source>
         <translation>Herunterladen / Ansehen / Bearbeiten</translation>
     </message>
     <message>
-        <location line="-579"/>
-        <location line="+581"/>
+        <location line="-592"/>
+        <location line="+594"/>
         <source>Download / View / Upload</source>
         <translation>Herunterladen / Ansehen / Hochladen</translation>
     </message>
     <message>
-        <location line="-582"/>
-        <location line="+583"/>
+        <location line="-595"/>
+        <location line="+596"/>
         <source>Download / View</source>
         <translation>Herunterladen / Ansehen</translation>
     </message>
     <message>
-        <location line="-167"/>
+        <location line="-171"/>
         <source>Edit public link</source>
         <translation>Öffentlichen Link bearbeiten</translation>
     </message>
@@ -3904,7 +3904,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-156"/>
         <source>Enter at least %1 characters to search.</source>
         <translation>Für die Suche mindestens %1 Zeichen eingeben.</translation>
     </message>
@@ -3914,22 +3914,22 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Ablaufdatum</translation>
     </message>
     <message>
-        <location line="+455"/>
+        <location line="+464"/>
         <source>Leave empty to keep the current password</source>
         <translation>Leer lassen, um das bisherige Passwort zu behalten</translation>
     </message>
     <message>
-        <location line="-135"/>
+        <location line="-144"/>
         <source>Link address of %1</source>
         <translation>Linkadresse von %1</translation>
     </message>
     <message>
-        <location line="+270"/>
+        <location line="+288"/>
         <source>Link copied to the clipboard: %1</source>
         <translation>Link in die Zwischenablage kopiert: %1</translation>
     </message>
     <message>
-        <location line="-360"/>
+        <location line="-378"/>
         <location line="+62"/>
         <source>Loading shares …</source>
         <translation>Freigaben werden geladen …</translation>
@@ -3950,12 +3950,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Name:</translation>
     </message>
     <message>
-        <location line="+444"/>
+        <location line="+453"/>
         <source>New public link</source>
         <translation>Neuer öffentlicher Link</translation>
     </message>
     <message>
-        <location line="-119"/>
+        <location line="-128"/>
         <source>No public links yet.</source>
         <translation>Noch keine öffentlichen Links.</translation>
     </message>
@@ -3980,12 +3980,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Passwort</translation>
     </message>
     <message>
-        <location line="+522"/>
+        <location line="+535"/>
         <source>Please enter a password, or uncheck the password option.</source>
         <translation>Bitte ein Passwort eingeben oder die Passwort-Option abwählen.</translation>
     </message>
     <message>
-        <location line="-525"/>
+        <location line="-538"/>
         <source>Protect with a password</source>
         <translation>Mit Passwort schützen</translation>
     </message>
@@ -4006,18 +4006,18 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
     <message>
         <location line="+220"/>
-        <location line="+69"/>
+        <location line="+78"/>
         <location line="+45"/>
         <source>Public link</source>
         <translation>Öffentlicher Link</translation>
     </message>
     <message>
-        <location line="-548"/>
+        <location line="-560"/>
         <source>Public links</source>
         <translation>Öffentliche Links</translation>
     </message>
     <message>
-        <location line="+119"/>
+        <location line="+122"/>
         <source>Recipients can:</source>
         <translation>Empfänger können:</translation>
     </message>
@@ -4032,12 +4032,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Die Freigabe konnte nicht entfernt werden.</translation>
     </message>
     <message>
-        <location line="+239"/>
+        <location line="+248"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
     <message>
-        <location line="-250"/>
+        <location line="-259"/>
         <source>Saving the public link failed.</source>
         <translation>Der öffentliche Link konnte nicht gespeichert werden.</translation>
     </message>
@@ -4067,7 +4067,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Ablaufdatum setzen</translation>
     </message>
     <message>
-        <location line="-157"/>
+        <location line="-161"/>
         <source>Share %1</source>
         <translation>%1 teilen</translation>
     </message>
@@ -4077,7 +4077,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>&lt;b&gt;%1&lt;/b&gt; teilen</translation>
     </message>
     <message>
-        <location line="+227"/>
+        <location line="+231"/>
         <source>Share removed.</source>
         <translation>Freigabe entfernt.</translation>
     </message>
@@ -4117,7 +4117,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Mehr</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+45"/>
         <source>Stop sharing with %1?</source>
         <translation>Teilen mit %1 beenden?</translation>
     </message>
@@ -4127,7 +4127,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Du darfst auf diesem Server keine öffentlichen Links anlegen.</translation>
     </message>
     <message>
-        <location line="+114"/>
+        <location line="+6"/>
         <source>The server allows only one public link per item.</source>
         <translation>Der Server erlaubt nur einen öffentlichen Link pro Element.</translation>
     </message>
@@ -4152,7 +4152,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Ich habe %1 mit dir geteilt</translation>
     </message>
     <message>
-        <location line="-4"/>
+        <location line="-133"/>
         <source>The server requires a password for this kind of link.</source>
         <translation>Der Server verlangt für diese Art von Link ein Passwort.</translation>
     </message>
@@ -4167,18 +4167,18 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Der Server verlangt ein Ablaufdatum.</translation>
     </message>
     <message>
-        <location line="-505"/>
-        <location line="+575"/>
+        <location line="-518"/>
+        <location line="+588"/>
         <source>Upload only (File Drop)</source>
         <translation>Nur hochladen (Dateiablage)</translation>
     </message>
     <message>
-        <location line="-688"/>
+        <location line="-705"/>
         <source>Users and groups</source>
         <translation>Nutzer und Gruppen</translation>
     </message>
     <message>
-        <location line="+174"/>
+        <location line="+178"/>
         <source>You are not allowed to share this item.</source>
         <translation>Dieses Element darf nicht weitergeteilt werden.</translation>
     </message>
@@ -4221,7 +4221,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+471"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>Mit %1 teilen</translation>
@@ -4286,19 +4286,19 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Meldung des Servers: %1</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+289"/>
         <location line="+30"/>
         <source>Share…</source>
         <translation>Teilen…</translation>
     </message>
     <message>
         <location line="-28"/>
-        <location line="+32"/>
+        <location line="+43"/>
         <source>Copy private link to clipboard</source>
         <translation>Privaten Link in die Zwischenablage kopieren</translation>
     </message>
     <message>
-        <location line="-6"/>
+        <location line="-17"/>
         <source>Resharing this file is not allowed</source>
         <translation>Weiteres Teilen ist nicht erlaubt.</translation>
     </message>
@@ -4323,7 +4323,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Öffentliche Links verwalten…</translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+74"/>
         <source>Open in %1</source>
         <translation>In %1 öffnen</translation>
     </message>
@@ -4385,12 +4385,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::SyncEngine</name>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="+143"/>
+        <location filename="../src/libsync/syncengine.cpp" line="+145"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
         <translation>%1 (Übersprungen aufgrund des früheren Fehlers, erneuter Versuch in %2)</translation>
     </message>
     <message>
-        <location line="+188"/>
+        <location line="+201"/>
         <source>Unable to sync: the local folder is missing.</source>
         <translation>Synchronisierung nicht möglich: Der lokale Ordner fehlt.</translation>
     </message>
@@ -4408,7 +4408,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     <message>
         <location line="+11"/>
         <location line="+83"/>
-        <location line="+31"/>
+        <location line="+140"/>
         <location line="+65"/>
         <source>Cannot open the sync journal.</source>
         <translation>Das Synchronisierungsprotokoll kann nicht geöffnet werden.</translation>
@@ -4429,13 +4429,13 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Auf dem Server ist nicht genug Platz, um alle Dateien hochzuladen.</translation>
     </message>
     <message>
-        <location line="-750"/>
+        <location line="-872"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translation>Anwendung beendet</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+325"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>Fehler beim Einlesen der Blacklist aus der lokalen Datenbank</translation>
     </message>
@@ -4504,7 +4504,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="+178"/>
+        <location filename="../src/libsync/theme.cpp" line="+180"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</source>
         <translation>&lt;p&gt;Version %1. Weitere Informationen findest du unter &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Von Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller und anderen.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;Der owncloud.online Desktop-Client wird von %4 vertrieben und steht unter der GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
@@ -4570,7 +4570,8 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>%1 beenden</translation>
     </message>
     <message>
-        <location line="+146"/>
+        <location line="+40"/>
+        <location line="+109"/>
         <source>Pause synchronization</source>
         <translation>Synchronisation pausieren</translation>
     </message>
@@ -4585,8 +4586,8 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Bis zum Fortsetzen</translation>
     </message>
     <message>
-        <location line="-114"/>
-        <location line="+105"/>
+        <location line="-116"/>
+        <location line="+107"/>
         <source>Resume synchronization</source>
         <translation>Synchronisation fortsetzen</translation>
     </message>
@@ -4596,20 +4597,20 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Synchronisation fortsetzen (pausiert bis %1)</translation>
     </message>
     <message>
-        <location line="-522"/>
+        <location line="-525"/>
         <location line="+22"/>
-        <location line="+650"/>
+        <location line="+653"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location line="-668"/>
-        <location line="+675"/>
+        <location line="-671"/>
+        <location line="+678"/>
         <source>Syncing</source>
         <translation>Synchronisation läuft</translation>
     </message>
     <message>
-        <location line="-673"/>
+        <location line="-676"/>
         <source>Aborting sync</source>
         <translation>Synchronisation wird abgebrochen</translation>
     </message>
@@ -4630,20 +4631,20 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
     <message>
         <location line="+2"/>
-        <location line="+580"/>
+        <location line="+583"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>Synchronisation pausiert</translation>
     </message>
     <message>
-        <location line="-649"/>
-        <location line="+655"/>
+        <location line="-652"/>
+        <location line="+658"/>
         <source>Unavailable</source>
         <translation>Nicht verfügbar</translation>
     </message>
     <message numerus="yes">
-        <location line="-543"/>
+        <location line="-546"/>
         <source>%n new notification(s)</source>
         <translation>
             <numerusform>%n neue Benachrichtigung</numerusform>
@@ -4667,7 +4668,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
     <message>
         <location line="+40"/>
-        <location line="+92"/>
+        <location line="+95"/>
         <source>Open in browser</source>
         <translation>Im Browser öffnen</translation>
     </message>
@@ -4910,7 +4911,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Zusätzliches, von der Organisation definiertes Logo</translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+113"/>
         <source>Invalid server URL: %1</source>
         <translation>Ungültige Server-URL: %1</translation>
     </message>
@@ -5039,7 +5040,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Eine neue Version des %1 Clients ist verfügbar.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; steht zum Herunterladen bereit. Die installierte Version ist %3.&lt;/p&gt;</translation>
     </message>
@@ -5172,7 +5173,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-294"/>
+        <location filename="../src/gui/servermove.cpp" line="-297"/>
         <source>Please enter the new address of your server.</source>
         <translation>Bitte gib die neue Adresse deines Servers ein.</translation>
     </message>
@@ -5198,8 +5199,8 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
     <message>
         <location line="+138"/>
-        <location line="+189"/>
-        <location line="+37"/>
+        <location line="+221"/>
+        <location line="+71"/>
         <location line="+78"/>
         <location line="+25"/>
         <location line="+65"/>
@@ -5207,25 +5208,25 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Das Konto gibt es nicht mehr.</translation>
     </message>
     <message>
-        <location line="-390"/>
-        <location line="+190"/>
+        <location line="-456"/>
+        <location line="+222"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translation>Die Serveradresse lässt sich nur bei Konten ohne Spaces ändern.</translation>
     </message>
     <message>
-        <location line="-186"/>
-        <location line="+197"/>
-        <location line="+26"/>
+        <location line="-218"/>
+        <location line="+229"/>
+        <location line="+60"/>
         <source>This is already the address of the account.</source>
         <translation>Das ist bereits die Adresse des Kontos.</translation>
     </message>
     <message>
-        <location line="-218"/>
+        <location line="-284"/>
         <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
         <translation>Eine Synchronisation des Kontos läuft noch. Die Adresse wurde nicht geändert, bitte versuche es erneut.</translation>
     </message>
     <message>
-        <location line="+366"/>
+        <location line="+432"/>
         <source>change of the account&apos;s server address</source>
         <translation>Änderung der Serveradresse des Kontos</translation>
     </message>
@@ -5582,7 +5583,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Die URL %1 konnte aufgrund eines Fehlers nicht aufgerufen werden. Ist vielleicht kein Standard-Browser konfiguriert?</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+26"/>
         <source>Could not open email client</source>
         <translation>Die E-Mail-Anwendung konnte nicht geöffnet werden.</translation>
     </message>

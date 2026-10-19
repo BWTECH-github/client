@@ -295,7 +295,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+49"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+50"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;錯誤:&lt;/b&gt; %1</translation>
     </message>
@@ -343,13 +343,15 @@ File synchronization desktop utility.</source>
     </message>
     <message>
         <location line="+6"/>
-        <source>Select a remote destination folder</source>
-        <translation>選擇一個遠端的目標資料夾</translation>
+        <source>Choose the folder on the server</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>選擇伺服器上的資料夾</translation>
     </message>
     <message>
         <location line="+29"/>
-        <source>Create Folder</source>
-        <translation>建立資料夾</translation>
+        <source>Create folder…</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>建立資料夾…</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -370,15 +372,57 @@ File synchronization desktop utility.</source>
         <translation>關於</translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+72"/>
+        <source>Updates</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>更新</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Update channel:</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>更新頻道:</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Check for updates now</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>立即檢查更新</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Restart and update</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>重新啟動並更新</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Beta versions bring new features earlier but are less tested. There are no downgrades: after switching back to Stable, the next stable version that is newer than the installed one is offered.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>測試版能更早提供新功能,但測試較少。絕不會安裝較舊的版本:切換回穩定版後,將提供比已安裝版本更新的下一個穩定版本。</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Versions</source>
         <translation>版本</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+53"/>
+        <source>Stable</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>穩定版</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Beta</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>測試版</translation>
     </message>
 </context>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+254"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
         <source>Connection timed out</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>連線逾時</translation>
@@ -636,7 +680,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+248"/>
+        <location filename="../src/gui/accountstate.cpp" line="+249"/>
         <source>The server is not supported by this client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>此用戶端不支援該伺服器。</translation>
@@ -702,13 +746,13 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+108"/>
-        <location line="+42"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location line="+54"/>
         <source>Log in</source>
         <translation>登入</translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="-49"/>
         <source>Reconnect</source>
         <translation>重新連接</translation>
     </message>
@@ -724,7 +768,13 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>變更別名...</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+8"/>
+        <source>Change server address…</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>變更伺服器位址…</translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>Log out</source>
         <translation>登出</translation>
     </message>
@@ -761,7 +811,13 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>帳號別名：</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+18"/>
+        <source>Change server address</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>變更伺服器位址</translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>不支援伺服器版本 %1！繼續操作的風險由您自行承擔。</translation>
@@ -836,24 +892,42 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無效的連線狀態</translation>
     </message>
+    <message>
+        <location line="+92"/>
+        <source>Folder not added</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>未新增資料夾</translation>
+    </message>
 </context>
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+170"/>
-        <location line="+61"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location line="+113"/>
         <source>New account failure</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>新帳號發生錯誤</translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-113"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>建立新帳號所需的資訊不完整。請重新執行精靈。</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+29"/>
+        <source>Import from the official client</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>從官方用戶端匯入</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No configuration of the official desktop client was found on this computer.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>在此電腦上找不到官方桌面用戶端的設定。</translation>
+    </message>
+    <message>
+        <location line="+48"/>
         <source>Accounts</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>帳號</translation>
@@ -1082,12 +1156,12 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="+171"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="+188"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation>驗證錯誤︰使用者名稱或是密碼錯誤</translation>
     </message>
     <message>
-        <location line="-18"/>
+        <location line="-34"/>
         <source>timeout</source>
         <translation>逾時</translation>
     </message>
@@ -1098,7 +1172,13 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>未設定 owncloud.online 帳號</translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+103"/>
+        <source>The server reports a new address: %1. If your server has moved, choose “Change server address…” in the account menu.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>伺服器回報了新位址:%1。如果您的伺服器已搬遷,請在帳號選單中選擇「變更伺服器位址…」。</translation>
+    </message>
+    <message>
+        <location line="+65"/>
         <source>No account configured</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>未設定帳號</translation>
@@ -1112,7 +1192,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+218"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
         <source>Failed to parse credentials %1</source>
         <translation>無法解析憑證 %1</translation>
     </message>
@@ -1219,7 +1299,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+402"/>
+        <location filename="../src/gui/folder.cpp" line="+407"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 已被移除。</translation>
@@ -1331,12 +1411,12 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>正在切換資料夾「%1」的 VFS 模式</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+204"/>
         <source>Could not read system exclude file</source>
         <translation>無法讀取系統的排除檔案</translation>
     </message>
     <message>
-        <location line="+195"/>
+        <location line="+205"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>資料夾 %1 已建立，但先前已被排除在同步之外，其中的資料不會同步。</translation>
@@ -1390,7 +1470,79 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>不同步</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+63"/>
+        <source>All files in the sync folder &apos;%1&apos; were deleted on the server.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>同步資料夾「%1」中的所有檔案已在伺服器上刪除。</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in the sync folder &apos;%3&apos; were deleted on the server.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>同步資料夾「%3」中 %2 個檔案中的 %1 個已在伺服器上刪除。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them here as well, they will be removed from this computer. If you keep them, they will be uploaded to the server again, provided you have the permission to do so.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>如果您也在此處刪除它們,它們將從這台電腦中移除。如果您保留它們,只要您有權限,它們就會再次上傳到伺服器。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>All files in your local sync folder &apos;%1&apos; were deleted.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>您的本機同步資料夾「%1」中的所有檔案已被刪除。</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in your local sync folder &apos;%3&apos; were deleted.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>您的本機同步資料夾「%3」中 %2 個檔案中的 %1 個已被刪除。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them on the server as well, they will only be available from the server&apos;s deleted files. If this was an accident, choose &quot;Keep files&quot;: they will be downloaded from the server again.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>如果您也在伺服器上刪除它們,就只能從伺服器的已刪除檔案中取得。如果這是誤操作,請選擇「保留檔案」:它們將從伺服器重新下載。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The synchronization of this folder is paused until you decide.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>在您做出決定之前,此資料夾的同步已暫停。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Remove all files?</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>要移除所有檔案嗎?</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Remove many files?</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>要移除大量檔案嗎?</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Keep files</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>保留檔案</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Delete files</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>刪除檔案</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Decide later</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>稍後決定</translation>
+    </message>
+    <message>
+        <location line="+38"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1487,7 +1639,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+183"/>
+        <location filename="../src/gui/folderman.cpp" line="+185"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>應用程式正在關閉</translation>
@@ -1517,12 +1669,13 @@ This means that the synchronization client might not upload local changes immedi
     </message>
     <message>
         <location line="+35"/>
+        <location line="+20"/>
         <source>Sync paused by user</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>使用者已暫停同步</translation>
     </message>
     <message>
-        <location line="+278"/>
+        <location line="+341"/>
         <source>User triggered force sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>使用者觸發了強制同步</translation>
@@ -1534,7 +1687,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>資料夾即將被移除</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source> (backup)</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation> （備份）</translation>
@@ -1582,7 +1735,31 @@ This means that the synchronization client might not upload local changes immedi
         <translation>本機資料夾 %1 已位於用於資料夾同步連線的資料夾中。</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+35"/>
+        <source>This server folder is already synced with the local folder %1. Each server folder can only be synced once.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>此伺服器資料夾已與本機資料夾 %1 同步。每個伺服器資料夾只能同步一次。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The whole account is already synced with the local folder %1. Each server folder can only be synced once. To sync this server folder to a different local folder, remove the existing folder sync connection first.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>整個帳號已與本機資料夾 %1 同步。每個伺服器資料夾只能同步一次。若要將此伺服器資料夾同步到其他本機資料夾,請先移除現有的資料夾同步連線。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder contains the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. Choose a folder outside of it, or remove the existing folder sync connection first.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>此伺服器資料夾包含資料夾 %1,該資料夾已與本機資料夾 %2 同步。每個伺服器資料夾只能同步一次。請選擇其外部的資料夾,或先移除現有的資料夾同步連線。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder is inside the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. To sync it to a different local folder, remove the existing folder sync connection first.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>此伺服器資料夾位於資料夾 %1 內,該資料夾已與本機資料夾 %2 同步。每個伺服器資料夾只能同步一次。若要將其同步到其他本機資料夾,請先移除現有的資料夾同步連線。</translation>
+    </message>
+    <message>
+        <location line="+11"/>
         <source>No valid folder selected.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>未選擇有效的資料夾。</translation>
@@ -1600,13 +1777,25 @@ This means that the synchronization client might not upload local changes immedi
         <translation>您沒有寫入所選資料夾的權限。</translation>
     </message>
     <message>
-        <location line="-79"/>
+        <location line="+139"/>
+        <source>The account no longer exists.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>該帳號已不存在。</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The local folder %1 could not be set up for synchronization.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法將本機資料夾 %1 設定為同步。</translation>
+    </message>
+    <message>
+        <location line="-303"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>資料夾「%1」已被其他帳號使用。</translation>
     </message>
     <message>
-        <location line="-541"/>
+        <location line="-625"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>在 macOS 上僅支援 Apple 檔案系統（APFS）。</translation>
@@ -1615,7 +1804,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderModelController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+117"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+120"/>
         <source>%1 options</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1選項</translation>
@@ -1648,7 +1837,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+109"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+129"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>虛擬文件不可用的於所選目錄</translation>
     </message>
@@ -1681,6 +1870,124 @@ This means that the synchronization client might not upload local changes immedi
         <location line="+64"/>
         <source>Select the local folder</source>
         <translation>選擇本地端目錄</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::FolderWizardRemotePath</name>
+    <message>
+        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="+100"/>
+        <source>Folders on the server</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>伺服器上的資料夾</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path on the server, for example /Documents</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>伺服器上的路徑,例如 /Documents</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path of the server folder</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>伺服器資料夾的路徑</translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Please enter a name for the new folder.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>請輸入新資料夾的名稱。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder name %1 is not allowed.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>不允許使用資料夾名稱 %1。</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The folder name must not contain any of these characters: %1</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>資料夾名稱不能包含以下任何字元:%1</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The folder name must not end with a dot.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>資料夾名稱不能以句點結尾。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The folder name %1 is reserved by Windows.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>資料夾名稱 %1 已被 Windows 保留。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Folders named %1 are excluded from synchronization.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>名為 %1 的資料夾已排除在同步之外。</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 - %2</source>
+        <extracomment>Name eines weiteren lokalen Ordners: %1 ist der Sync-Ordner des Kontos, %2 der Serverordner</extracomment>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Create folder on the server</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>在伺服器上建立資料夾</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Name of the new folder in %1:</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1 中新資料夾的名稱:</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>The folder %1 was created on the server.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>已在伺服器上建立資料夾 %1。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Authentication failed while accessing the server. Please sign in again and retry.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>存取伺服器時驗證失敗。請重新登入後再試一次。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You are not allowed to create a folder here.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>您沒有在此處建立資料夾的權限。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>A folder or file with this name already exists on the server.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>伺服器上已存在同名的資料夾或檔案。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder could not be created on the server: %1</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法在伺服器上建立資料夾:%1</translation>
+    </message>
+    <message>
+        <location line="+65"/>
+        <source>The folder list could not be loaded: %1</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法載入資料夾清單:%1</translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>Choose this to sync the entire account</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>選擇此項以同步整個帳號</translation>
     </message>
 </context>
 <context>
@@ -1737,7 +2044,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
-        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
+        <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>存取權杖已過期，且權杖檔案中沒有重新整理權杖。請重新登入以建立新的權杖檔案。</translation>
@@ -1749,7 +2056,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>owncloudcmd 無法以互動方式登入。請重新登入以建立新的權杖檔案。</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+22"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>伺服器拒絕了它剛核發的存取權杖（HTTP 401）。請檢查網頁伺服器是否將 Authorization 標頭轉送給 owncloud.online。</translation>
@@ -1761,13 +2068,13 @@ This means that the synchronization client might not upload local changes immedi
         <translation>伺服器拒絕了存取權杖（HTTP 401），且權杖檔案中沒有重新整理權杖。請重新登入以建立新的權杖檔案。</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+43"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>權杖檔案 %1 被另一個 owncloudcmd 執行鎖定。</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+12"/>
         <source>Could not read the token file again: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無法再次讀取權杖檔案：%1</translation>
@@ -1779,31 +2086,33 @@ This means that the synchronization client might not upload local changes immedi
         <translation>沒有帳號時無法重新整理存取權杖。</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+48"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>伺服器不再接受重新整理權杖（%1）。登入已過期或已被撤銷；請重新登入以建立新的權杖檔案。</translation>
     </message>
     <message>
         <location line="+5"/>
+        <location line="+4"/>
         <source>The server refused to refresh the access token (%1).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>伺服器拒絕重新整理存取權杖（%1）。</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+18"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>重新整理存取權杖失敗：%1（HTTP %2）。</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+2"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>權杖端點的回應中沒有可用的存取權杖（HTTP %1）。</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="-239"/>
+        <location line="+252"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無法將重新整理後的權杖儲存到 %1：%2</translation>
@@ -1852,7 +2161,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 如果允許刪除的項目阻止資料夾被刪除，則會被刪除。 這對於元數據很有用。</translation>
     </message>
     <message>
-        <location filename="../src/gui/ignorelisteditor.cpp" line="+110"/>
+        <location filename="../src/gui/ignorelisteditor.cpp" line="+122"/>
         <source>Could not open file</source>
         <translation>無法開啟檔案</translation>
     </message>
@@ -1872,9 +2181,202 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>增加一個新的忽略格式:</translation>
     </message>
     <message>
-        <location line="-93"/>
+        <location line="-103"/>
+        <location line="+12"/>
         <source>This entry is provided by the system at &apos;%1&apos; and cannot be modified in this view.</source>
         <translation>這個項目是由系統提供在 &apos;%1&apos; 且不能在這個頁面被修改</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClient</name>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>官方用戶端正在執行,並且也在同步資料夾 %1。請結束官方用戶端,以免兩個程式同時同步該資料夾。</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <source>Spaces are not taken over; add them after signing in.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>不會轉移空間;請在登入後新增。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder belongs to a different user or server.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>該資料夾屬於其他使用者或伺服器。</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The folder uses virtual files, which are not available on this computer.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>該資料夾使用虛擬檔案,但此電腦上無法使用虛擬檔案。</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>The new folder %1 would overlap the folder %2 of the official client.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>新資料夾 %1 會與官方用戶端的資料夾 %2 重疊。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <location line="+23"/>
+        <source>The folder is already synchronized.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>該資料夾已在同步中。</translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <location line="+26"/>
+        <source>The folder could not be set up.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法設定該資料夾。</translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>The local folder does not exist.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>本機資料夾不存在。</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClientImportController</name>
+    <message>
+        <location line="+41"/>
+        <source>%1: already set up.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已設定。</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>• %1 – %n sync folder(s)</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>• %1 – %n 個同步資料夾</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+20"/>
+        <source>Import from the official client</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>從官方用戶端匯入</translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <source>All accounts of the official client are already set up.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>官方用戶端的所有帳號皆已設定。</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>此電腦上已設定官方桌面用戶端。是否要轉移其帳號和同步資料夾?</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>每個帳號需在瀏覽器中登入一次。已同步的資料夾會被辨識,不會重新下載。官方用戶端中不會做任何變更。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Import</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>匯入</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set up a new account</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>設定新帳號</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Cancel</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>取消</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>官方用戶端仍在執行。匯入前請結束它並關閉其自動啟動,否則兩個程式會同步相同的資料夾。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Check again</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>再次檢查</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Import anyway</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>仍要匯入</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Sign in: %1</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>登入:%1</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: sign-in cancelled, not taken over.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已取消登入,未轉移。</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>%1: signed in as %2, the folders of the official client were not taken over.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已以 %2 身分登入,未轉移官方用戶端的資料夾。</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>%1: taken over, the files are recognized without downloading them again.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已轉移,無需重新下載即可辨識檔案。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: taken over; the synchronization state could not be read, the files are compared with the server once.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已轉移;無法讀取同步狀態,檔案將與伺服器比對一次。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: set up again with virtual files at %2; only placeholders are created.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1:已在 %2 以虛擬檔案重新設定;只會建立預留位置。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1: not taken over. %2</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1:未轉移。%2</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1: the account could not be created: %2</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1:無法建立帳號:%2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Import finished</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>匯入完成</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>請徹底結束官方用戶端(關閉其自動啟動或將其解除安裝),以免資料夾被同步兩次。</translation>
     </message>
 </context>
 <context>
@@ -2021,13 +2523,19 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::MainWindowController</name>
     <message>
-        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+87"/>
+        <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+88"/>
         <source>Add account...</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>新增帳號...</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
+        <source>Import from official client...</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>從官方用戶端匯入...</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Settings...</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>設定…</translation>
@@ -2189,7 +2697,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>代理伺服器類型</translation>
     </message>
     <message>
-        <location filename="../src/gui/networksettings.cpp" line="+54"/>
+        <location filename="../src/gui/networksettings.cpp" line="+55"/>
         <location line="+1"/>
         <source>Hostname of proxy server</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
@@ -2227,20 +2735,26 @@ Note that using any logging command line options will override the settings.</so
         <translation>頻寬</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
+        <source>The automatic limit of an earlier version is no longer supported. Currently not limited.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>不再支援舊版本的自動限制。目前未限制。</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Limit upload speed to</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>將上傳速度限制為</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <location line="+8"/>
+        <location line="+5"/>
+        <location line="+12"/>
         <source> kB/s</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation> kB/s</translation>
     </message>
     <message>
-        <location line="-3"/>
+        <location line="-5"/>
         <source>Limit download speed to</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>將下載速度限制為</translation>
@@ -2279,7 +2793,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+56"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
         <source>Add account…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>新增帳號…</translation>
@@ -2295,7 +2809,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>進階</translation>
     </message>
     <message>
-        <location line="+149"/>
+        <location line="+150"/>
         <source>Sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登入</translation>
@@ -2329,7 +2843,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登入成功</translation>
@@ -2579,7 +3093,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+829"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
         <source>File %1 is currently in use</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>檔案 %1 目前正在使用中</translation>
@@ -2843,7 +3357,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-958"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
         <source>; Restoration Failed: %1</source>
         <translation>; 重新儲存失敗 %1</translation>
     </message>
@@ -3008,7 +3522,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1139"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
         <source>Could not update file : %1</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>無法更新檔案：%1</translation>
@@ -3193,6 +3707,21 @@ Note that using any logging command line options will override the settings.</so
         <source>Status</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>狀態</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::PublicLinkCreator</name>
+    <message>
+        <location filename="../src/gui/shareapi.cpp" line="+337"/>
+        <source>Context menu link %1</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>右鍵選單連結 %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Context menu link</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>右鍵選單連結</translation>
     </message>
 </context>
 <context>
@@ -3434,6 +3963,201 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::ServerAddressDialog</name>
+    <message>
+        <location filename="../src/gui/accountsgui/serveraddressdialog.cpp" line="+37"/>
+        <source>Change server address</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>變更伺服器位址</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>If your server has moved to a new address, enter the new address here. The account and its folders, files and settings are kept. To make sure that it is the same server and the same user, you sign in again at the new address.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>如果您的伺服器已搬遷到新位址,請在此輸入新位址。帳號及其資料夾、檔案和設定都會保留。為確保是同一台伺服器和同一位使用者,您需要在新位址重新登入。</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Current address:</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>目前位址:</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>新位址</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address:</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>新位址:</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Open browser again</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>重新開啟瀏覽器</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Check and sign in</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>檢查並登入</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Sign-in link: %1</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>登入連結:%1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerMoveController</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="+489"/>
+        <source>Checking %1…</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>正在檢查 %1…</translation>
+    </message>
+    <message>
+        <location line="+56"/>
+        <source>Another account already uses this address with the same user.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>另一個帳號已使用此位址和同一位使用者。</translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Checking that this is the same server and the same user…</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>正在檢查是否為同一台伺服器和同一位使用者…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The browser could not be opened. Copy the sign-in link and open it in your browser.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法開啟瀏覽器。請複製登入連結並在您的瀏覽器中開啟。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in page of the new address does not use a secure connection (HTTPS).</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>新位址的登入頁面未使用安全連線(HTTPS)。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the new address cannot be reached. Please try again later.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法連線至新位址的登入服務。請稍後再試。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Signing in at the new address failed. Please sign in with the same user as before: %1.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>在新位址登入失敗。請使用與先前相同的使用者登入:%1。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Please sign in at the new address in your browser, with the same user as before: %1.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>請在瀏覽器中使用與先前相同的使用者登入新位址:%1。</translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>The new address did not accept the sign-in. The address was not changed.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>新位址未接受登入。位址未變更。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The user %1 does not exist at the new address. The address was not changed.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>使用者 %1 在新位址不存在。位址未變更。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address redirected the check to another address. The address was not changed.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>新位址將檢查重新導向到另一個位址。位址未變更。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address could not be checked: %1</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法檢查新位址:%1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The new address does not report which installation it belongs to, so it cannot be confirmed that it is the same server. The address was not changed.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>新位址未回報其所屬的安裝,因此無法確認是同一台伺服器。位址未變更。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The server at %1 is a different installation than the one this account was set up with. To protect your files, the address was not changed.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1 的伺服器與設定此帳號時的安裝不同。為保護您的檔案,位址未變更。</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>The synchronization of the account could not be stopped. The address was not changed, please try again.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法停止帳號的同步。位址未變更,請再試一次。</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerStatusCheck</name>
+    <message>
+        <location line="-402"/>
+        <source>No server could be reached at %1.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法連線至 %1 的任何伺服器。</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>The address %1 redirects to another server (%2). For your security, this redirect is not followed automatically. If you trust that server, enter its address directly.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>位址 %1 重新導向到另一台伺服器(%2)。為了您的安全,不會自動跟隨此重新導向。如果您信任該伺服器,請直接輸入其位址。</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The address %1 redirects to %2, which is not the address of a server.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>位址 %1 重新導向到 %2,而它不是伺服器位址。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address %1 redirects too often.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>位址 %1 重新導向次數過多。</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>No server could be reached at %1: %2</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法連線至 %1 的任何伺服器:%2</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>No server was found at %1.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>在 %1 找不到伺服器。</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The server at %1 is not set up yet.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1 的伺服器尚未設定。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The server at %1 is in maintenance mode. Please try again later.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1 的伺服器處於維護模式。請稍後再試。</translation>
+    </message>
+</context>
+<context>
     <name>OCC::SettingsView</name>
     <message>
         <location filename="../src/gui/mainwindow/settingsview.ui" line="+14"/>
@@ -3504,15 +4228,15 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+7"/>
-        <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>HTTP/2 會以單一連線處理多個要求，可在高延遲連線及大量小檔案的情況下加快同步。預設啟用；只有在您的伺服器或代理伺服器有 HTTP/2 問題時才取消勾選。重新啟動後生效。</translation>
+        <source>HTTP/2 reuses a single connection for many requests, which can speed up syncing on high-latency links and with many small files. Off by default, because transfers can stall with some servers and proxies; turn it on only if your server handles HTTP/2 reliably. Takes effect after a restart.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>HTTP/2 會對多個請求重複使用同一個連線,在高延遲連線和大量小檔案的情況下可以加快同步。預設為關閉,因為在某些伺服器和代理伺服器上傳輸可能會停滯;僅當您的伺服器能可靠地處理 HTTP/2 時才開啟。重新啟動後生效。</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Use HTTP/2 (recommended, requires restart)</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>使用 HTTP/2（建議，需要重新啟動）</translation>
+        <source>Use HTTP/2 (optional, requires restart)</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>使用 HTTP/2(選用,需要重新啟動)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3591,7 +4315,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ShareDialog</name>
     <message>
-        <location filename="../src/gui/sharedialog.cpp" line="+107"/>
+        <location filename="../src/gui/sharedialog.cpp" line="+111"/>
         <source>Share %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>分享 %1</translation>
@@ -3609,13 +4333,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>使用者與群組</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>Public links</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>公開連結</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+12"/>
         <source>Close</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>關閉</translation>
@@ -3657,31 +4381,31 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+5"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <source>Download / View</source>
         <translation>下載 / 檢視</translation>
     </message>
     <message>
-        <location line="-582"/>
-        <location line="+581"/>
+        <location line="-595"/>
+        <location line="+594"/>
         <source>Download / View / Upload</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>下載 / 檢視 / 上傳</translation>
     </message>
     <message>
-        <location line="-580"/>
-        <location line="+578"/>
+        <location line="-593"/>
+        <location line="+591"/>
         <source>Download / View / Edit</source>
         <translation>下載 / 查看 / 編輯</translation>
     </message>
     <message>
-        <location line="-577"/>
-        <location line="+575"/>
+        <location line="-590"/>
+        <location line="+588"/>
         <source>Upload only (File Drop)</source>
         <translation>僅上傳（檔案刪除）</translation>
     </message>
     <message>
-        <location line="-567"/>
+        <location line="-580"/>
         <source>Recipients can:</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>收件者可以：</translation>
@@ -3894,13 +4618,13 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+6"/>
-        <location line="+69"/>
+        <location line="+78"/>
         <location line="+45"/>
         <source>Public link</source>
         <translation>公開的連結</translation>
     </message>
     <message>
-        <location line="-109"/>
+        <location line="-118"/>
         <source>password protected</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>受密碼保護</translation>
@@ -3919,12 +4643,19 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+5"/>
+        <location line="+294"/>
         <source>Copy link</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>複製連結</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="-287"/>
+        <source>More</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>更多</translation>
+    </message>
+    <message>
+        <location line="+8"/>
         <source>Edit</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>編輯</translation>
@@ -3977,7 +4708,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>留空以保留目前的密碼</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+25"/>
+        <source>You are not allowed to create public links on this server.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>您沒有在此伺服器上建立公開連結的權限。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The server requires a password for this kind of link.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>伺服器要求此類連結設定密碼。</translation>
@@ -4026,16 +4763,40 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1（聯盟）</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+30"/>
         <source>Link copied to the clipboard: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>連結已複製到剪貼簿：%1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Open in browser</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>用瀏覽器開啟</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copy direct download link</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>複製直接下載連結</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send by email…</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>透過電子郵件傳送…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>I shared %1 with you</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>我與您分享了 %1</translation>
     </message>
 </context>
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+471"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -4073,7 +4834,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>分享…</translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+117"/>
         <source>Rename…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>重新命名…</translation>
@@ -4104,12 +4865,36 @@ Note that using any logging command line options will override the settings.</so
         <translation>移動並上傳…</translation>
     </message>
     <message>
-        <location line="-236"/>
+        <location line="-247"/>
         <source>Error</source>
         <translation>錯誤</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-220"/>
+        <source>Public link copied</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>已複製公開連結</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>The public link to %1 is in the clipboard.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>指向 %1 的公開連結已在剪貼簿中。</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The public link could not be created automatically.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>無法自動建立公開連結。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Server message: %1</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>伺服器訊息:%1</translation>
+    </message>
+    <message>
+        <location line="+213"/>
         <source>Moving file failed:
 
 %1</source>
@@ -4124,12 +4909,12 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+15"/>
-        <location line="+32"/>
+        <location line="+43"/>
         <source>Copy private link to clipboard</source>
         <translation>將私人連結複製到剪貼簿</translation>
     </message>
     <message>
-        <location line="-6"/>
+        <location line="-17"/>
         <source>Resharing this file is not allowed</source>
         <translation>不允許重新共享此檔案</translation>
     </message>
@@ -4139,7 +4924,25 @@ Note that using any logging command line options will override the settings.</so
         <translation>不允許重新共享此目錄</translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+9"/>
+        <source>Create public link…</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>建立公開連結…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Create and copy public link to clipboard</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>建立公開連結並複製到剪貼簿</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Manage public links…</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>管理公開連結…</translation>
+    </message>
+    <message>
+        <location line="+74"/>
         <source>Open in %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>在 %1 中開啟</translation>
@@ -4179,13 +4982,13 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncEngine</name>
     <message>
-        <location filename="../src/libsync/syncengine.cpp" line="+143"/>
+        <location filename="../src/libsync/syncengine.cpp" line="+145"/>
         <source>%1 (skipped due to earlier error, trying again in %2)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1（因先前的錯誤而略過，將於 %2 後重試）</translation>
     </message>
     <message>
-        <location line="+188"/>
+        <location line="+201"/>
         <source>Unable to sync: the local folder is missing.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無法同步：本機資料夾不存在。</translation>
@@ -4205,7 +5008,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+11"/>
         <location line="+83"/>
-        <location line="+31"/>
+        <location line="+140"/>
         <location line="+65"/>
         <source>Cannot open the sync journal.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -4229,14 +5032,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>伺服器上沒有可用的空間用於某些上載。</translation>
     </message>
     <message>
-        <location line="-750"/>
+        <location line="-872"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>應用程式結束</translation>
     </message>
     <message>
-        <location line="+312"/>
+        <location line="+325"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>無法從本地端資料庫讀取黑名單</translation>
     </message>
@@ -4352,20 +5155,20 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
         <location line="+22"/>
-        <location line="+650"/>
+        <location line="+653"/>
         <source>Offline</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>下線</translation>
     </message>
     <message>
-        <location line="-668"/>
-        <location line="+675"/>
+        <location line="-671"/>
+        <location line="+678"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在同步</translation>
     </message>
     <message>
-        <location line="-673"/>
+        <location line="-676"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在中止同步</translation>
@@ -4389,7 +5192,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+580"/>
+        <location line="+583"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
@@ -4397,14 +5200,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>同步已暫停</translation>
     </message>
     <message>
-        <location line="-649"/>
-        <location line="+655"/>
+        <location line="-652"/>
+        <location line="+658"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無法使用</translation>
     </message>
     <message numerus="yes">
-        <location line="-543"/>
+        <location line="-546"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -4463,14 +5266,14 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+33"/>
-        <location line="+92"/>
+        <location line="+95"/>
         <source>Open in browser</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>用瀏覽器開啟</translation>
     </message>
     <message>
-        <location line="-88"/>
-        <location line="+105"/>
+        <location line="-90"/>
+        <location line="+107"/>
         <source>Resume synchronization</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>繼續同步</translation>
@@ -4536,7 +5339,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>繼續同步（暫停至 %1）</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-104"/>
+        <location line="+109"/>
         <source>Pause synchronization</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>暫停同步</translation>
@@ -4772,7 +5576,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>組織指定的附加標誌</translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+113"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無效的伺服器網址：%1</translation>
@@ -4921,7 +5725,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>&lt;p&gt;%1  客戶端有新版本了。&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; 可供下載， 目前安裝的版本是 %3.&lt;/p&gt;</translation>
@@ -5057,6 +5861,77 @@ Note that using any logging command line options will override the settings.</so
         <source>Could not detect compatible server at %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無法在 %1 偵測到相容的伺服器</translation>
+    </message>
+</context>
+<context>
+    <name>ServerMove</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="-297"/>
+        <source>Please enter the new address of your server.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>請輸入伺服器的新位址。</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 is not a valid address.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1 不是有效的位址。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address must start with https://.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>位址必須以 https:// 開頭。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain a user name or password.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>位址不能包含使用者名稱或密碼。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain “?” or “#”.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>位址不能包含「?」或「#」。</translation>
+    </message>
+    <message>
+        <location line="+138"/>
+        <location line="+221"/>
+        <location line="+71"/>
+        <location line="+78"/>
+        <location line="+25"/>
+        <location line="+65"/>
+        <source>The account no longer exists.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>該帳號已不存在。</translation>
+    </message>
+    <message>
+        <location line="-456"/>
+        <location line="+222"/>
+        <source>The server address can only be changed for accounts without Spaces.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>只有沒有空間的帳號才能變更伺服器位址。</translation>
+    </message>
+    <message>
+        <location line="-218"/>
+        <location line="+229"/>
+        <location line="+60"/>
+        <source>This is already the address of the account.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>這已經是該帳號的位址。</translation>
+    </message>
+    <message>
+        <location line="-284"/>
+        <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>帳號的同步仍在進行中。位址未變更,請再試一次。</translation>
+    </message>
+    <message>
+        <location line="+432"/>
+        <source>change of the account&apos;s server address</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>變更帳號的伺服器位址</translation>
     </message>
 </context>
 <context>
@@ -5435,7 +6310,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>啟動瀏覽器以開啟網址 %1 時發生錯誤。可能尚未設定預設瀏覽器？</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+26"/>
         <source>Could not open email client</source>
         <translation>不能開啟電子郵件客戶端</translation>
     </message>
