@@ -590,7 +590,10 @@ void Credentials::waitForStoredRefreshToken()
     if (_refreshToken.isEmpty() || _refreshToken == _storedRefreshToken) {
         return;
     }
-    // Das Programm endet: ein noch nicht gespeichertes Refresh-Token wäre beim nächsten Start verloren
+    // Das Programm endet: ein noch nicht gespeichertes Refresh-Token wäre beim nächsten Start verloren. Während des Wartens
+    // keine neue Erneuerung mehr beginnen.
+    _proactiveRefreshTimer.stop();
+    _refreshRetryTimer.stop();
     writeRefreshToken();
     if (!_storeRunning) {
         return;
@@ -615,7 +618,8 @@ bool Credentials::networkAvailable()
     auto qni = QNetworkInformation::instance();
     if (!qni)
         return true; // this can allegedly happen on Linux
-    if (qni->reachability() == QNetworkInformation::Reachability::Disconnected || qni->reachability() == QNetworkInformation::Reachability::Unknown)
+    // nur ein sicher fehlendes Netz zählt: Unknown melden manche Systeme dauerhaft, dann käme auch keine Rückkehr ins Netz
+    if (qni->reachability() == QNetworkInformation::Reachability::Disconnected)
         return false;
     if (qni->isBehindCaptivePortal())
         return false;

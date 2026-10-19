@@ -257,6 +257,7 @@ public:
     using Credentials::_proactiveRefreshTimer;
     using Credentials::_refreshToken;
     using Credentials::_sinceAccessToken;
+    using Credentials::waitForStoredRefreshToken;
 
     QString accessToken() const { return _accessToken; }
 
@@ -282,6 +283,7 @@ public:
     int keychainRemovals = 0;
     std::chrono::milliseconds keychainDelay = 1ms;
     std::chrono::milliseconds retryDelay = 50ms;
+    std::chrono::milliseconds keychainRetry = 10ms;
     int askedUser = 0;
 
 protected:
@@ -320,7 +322,7 @@ protected:
     }
 
     std::chrono::milliseconds refreshRetryDelay(int) const override { return retryDelay; }
-    std::chrono::milliseconds keychainRetryDelay(int) const override { return 10ms; }
+    std::chrono::milliseconds keychainRetryDelay(int) const override { return keychainRetry; }
 
 private:
     TokenServer *_server;
@@ -726,6 +728,28 @@ private Q_SLOTS:
         QCOMPARE(f->server.unauthorized, 0);
         QCOMPARE(f->server.tokenRequests, 1);
         QCOMPARE(f->server.usedRefreshTokens, QStringList{QStringLiteral("refresh-1")});
+    }
+
+    // Beim Beenden wartet das Programm, bis der Schlüsselbund ein noch nicht gespeichertes Refresh-Token hat
+    void testShutdownWaitsForTheKeychain()
+    {
+        // Arrange: der Schlüsselbund scheitert zweimal, das neue Access-Token ist schon in Gebrauch (nach drei Fehlschlägen)
+        Fixture f;
+        QObject scope;
+        f.server.expireAccessToken();
+        f.credentials->keychainStoreFailures = 3;
+        f.credentials->keychainDelay = 100ms;
+        f.credentials->keychainRetry = 2s;
+        const auto request = f.get(&scope);
+        QTRY_VERIFY_WITH_TIMEOUT(request->finished, 10000);
+        QCOMPARE(f.credentials->_refreshToken, QStringLiteral("refresh-2"));
+        QVERIFY(f.credentials->keychain != QStringLiteral("refresh-2"));
+
+        // Act
+        f.credentials->waitForStoredRefreshToken();
+
+        // Assert
+        QCOMPARE(f.credentials->keychain, QStringLiteral("refresh-2"));
     }
 
     // Ohne Eintrag im Schlüsselbund: fetched() ohne Token, das Konto fragt dann den Nutzer
