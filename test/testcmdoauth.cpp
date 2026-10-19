@@ -20,6 +20,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QScopeGuard>
 #include <QSignalSpy>
 #include <QTest>
 #include <QUrlQuery>
@@ -76,12 +77,15 @@ public:
     int tokenStatus = 200;
     QJsonObject tokenAnswer{{QStringLiteral("access_token"), QStringLiteral("access-2")}, {QStringLiteral("refresh_token"), QStringLiteral("refresh-2")},
         {QStringLiteral("token_type"), QStringLiteral("Bearer")}, {QStringLiteral("expires_in"), 3600}, {QStringLiteral("user_id"), QStringLiteral("admin")}};
+    // die nächsten Antworten des Token-Endpunkts davor: HTTP-Status und Inhalt; 0 = Verbindung abgebrochen, -1 = Zeitüberschreitung
+    QList<std::pair<int, QByteArray>> tokenFailures;
 
     int tokenRequests = 0;
     int apiRequests = 0;
     int unauthorizedAnswers = 0;
     QByteArray tokenAuthorization;
     QUrlQuery tokenForm;
+    QList<QNetworkRequest> tokenRequestList;
 
     FakeAM::Override override(QObject *replyParent)
     {
@@ -96,22 +100,52 @@ public:
             }
             if (path.endsWith(QLatin1String("/index.php/apps/oauth2/api/v1/token"))) {
                 ++tokenRequests;
+                tokenRequestList.append(request);
                 tokenAuthorization = request.rawHeader(QByteArrayLiteral("Authorization"));
                 // nur ansehen: der HTTP-Logger liest den Körper beim Abschluss noch ab Position 0
                 tokenForm = QUrlQuery(QString::fromUtf8(device ? device->peek(device->size()) : QByteArray()));
+                if (!tokenFailures.isEmpty()) {
+                    const auto [status, body] = tokenFailures.takeFirst();
+                    if (status <= 0) {
+                        auto *reply = new FakeErrorReply(op, request, replyParent, 500);
+                        if (status == 0) {
+                            reply->setError(QNetworkReply::RemoteHostClosedError, QStringLiteral("Connection closed"));
+                        } else {
+                            reply->setError(QNetworkReply::TimeoutError, QStringLiteral("Operation timed out"));
+                        }
+                        reply->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, QVariant());
+                        return reply;
+                    }
+                    if (status < 400) {
+                        // HTML statt JSON oder eine Weiterleitung auf die Anmeldeseite (oauth2-App aus)
+                        auto *reply = new FakePayloadReply(op, request, body, replyParent);
+                        reply->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, status);
+                        return reply;
+                    }
+                    return new FakeErrorReply(op, request, replyParent, status, body);
+                }
                 if (tokenStatus == 200) {
                     return new FakePayloadReply(op, request, toJson(tokenAnswer), replyParent);
                 }
                 return new FakeErrorReply(op, request, replyParent, tokenStatus, toJson(tokenAnswer));
             }
-            if (path.contains(QLatin1String("/ocs/v2.php/cloud/"))) {
+            if (path.contains(QLatin1String("/ocs/v2.php/cloud/")) || path.contains(QLatin1String("/remote.php/"))) {
                 ++apiRequests;
                 if (request.rawHeader(QByteArrayLiteral("Authorization")) != acceptedAuthorization) {
                     ++unauthorizedAnswers;
                     return new FakeErrorReply(op, request, replyParent, 401);
                 }
+                if (path.contains(QLatin1String("/remote.php/"))) {
+                    // WebDAV beantwortet der FakeAM (leerer Ordner)
+                    return nullptr;
+                }
+                const QJsonObject capabilities{{QStringLiteral("core"),
+                                                   QJsonObject{{QStringLiteral("status"),
+                                                       QJsonObject{{QStringLiteral("version"), QStringLiteral("11.0.0.0")},
+                                                           {QStringLiteral("versionstring"), QStringLiteral("11.0.0")}}}}},
+                    {QStringLiteral("dav"), QJsonObject{{QStringLiteral("chunking"), QStringLiteral("1.0")}}}};
                 const QJsonObject data = path.endsWith(QLatin1String("/user")) ? QJsonObject{{QStringLiteral("id"), QStringLiteral("admin")}}
-                                                                                : QJsonObject{{QStringLiteral("capabilities"), QJsonObject{}}};
+                                                                                : QJsonObject{{QStringLiteral("capabilities"), capabilities}};
                 const QJsonObject meta{{QStringLiteral("status"), QStringLiteral("ok")}, {QStringLiteral("statuscode"), 200}};
                 const QJsonObject ocs{{QStringLiteral("ocs"), QJsonObject{{QStringLiteral("meta"), meta}, {QStringLiteral("data"), data}}}};
                 return new FakePayloadReply(op, request, toJson(ocs), replyParent);
@@ -143,9 +177,42 @@ public:
         return accessManager;
     }
 
+protected:
+    std::chrono::milliseconds refreshRetryDelay(int) const override { return std::chrono::milliseconds(20); }
+
 private:
     OverrideFactory _overrides;
 };
+
+// ein Lauf von owncloudcmd mit einer Token-Datei gegen den FakeOAuthServer, in einen leeren Ordner
+struct CmdRun
+{
+    int exitCode = -1;
+    QString errorString;
+    bool signInRequired = false;
+};
+
+CmdRun runSession(const std::shared_ptr<OAuthTokenFile> &tokens, FakeOAuthServer &server)
+{
+    CmdRun result;
+    const QTemporaryDir local = TestUtils::createTempDir();
+    const QString localDir = local.path() + QLatin1Char('/');
+    HttpOAuthCredentials *credentials = nullptr;
+    CmdSession session(serverUrlC, QStringLiteral("admin"), localDir, QStringLiteral("/"), [&credentials, &server, &tokens](Account *account) -> AbstractCredentials * {
+        credentials = new TestOAuthCredentials(account, tokens, server.overrides());
+        return credentials;
+    });
+    QSignalSpy finishedSpy(&session, &CmdSession::finished);
+    session.start();
+    if (finishedSpy.wait(30000)) {
+        result.exitCode = finishedSpy.first().first().toInt();
+    }
+    if (credentials) {
+        result.errorString = credentials->errorString();
+        result.signInRequired = credentials->signInRequired();
+    }
+    return result;
+}
 
 } // namespace
 
@@ -346,6 +413,197 @@ private Q_SLOTS:
         QVERIFY(credentials);
         QVERIFY(!credentials->signInRequired());
         QVERIFY2(credentials->errorString().contains(QLatin1String("Authorization header")), qPrintable(credentials->errorString()));
+        QCOMPARE(server.tokenRequests, 1);
+    }
+
+    // Netz- und Serverfehler beim Erneuern: nach Pausen erneut versuchen, das Refresh-Token bleibt, der Lauf geht durch
+    void testTemporaryRefreshFailuresAreRetried_data()
+    {
+        QTest::addColumn<int>("status");
+        QTest::addColumn<QByteArray>("body");
+
+        const QByteArray html = QByteArrayLiteral("<!DOCTYPE html><html><body>Wartung</body></html>");
+        QTest::newRow("connection closed") << 0 << QByteArray();
+        QTest::newRow("timeout") << -1 << QByteArray();
+        QTest::newRow("503 html") << 503 << html;
+        QTest::newRow("502 proxy") << 502 << QByteArray();
+        QTest::newRow("500 server_error") << 500 << toJson({{QStringLiteral("error"), QStringLiteral("server_error")}});
+        QTest::newRow("302 to the login page") << 302 << html;
+        QTest::newRow("200 html") << 200 << html;
+    }
+
+    void testTemporaryRefreshFailuresAreRetried()
+    {
+        // Arrange: das Access-Token ist abgelaufen, der Token-Endpunkt scheitert dreimal
+        QFETCH(int, status);
+        QFETCH(QByteArray, body);
+        const QTemporaryDir dir = TestUtils::createTempDir();
+        const QString path = writeTokenFile(dir, tokenFileContent(QStringLiteral("expired"), QStringLiteral("refresh-1"), QDateTime::currentSecsSinceEpoch() - 10));
+        const auto tokens = loadTokens(path);
+        QVERIFY(tokens);
+        FakeOAuthServer server;
+        for (int i = 0; i < 3; ++i) {
+            server.tokenFailures.append({status, body});
+        }
+
+        // Act
+        const CmdRun run = runSession(tokens, server);
+
+        // Assert
+        QCOMPARE(run.exitCode, static_cast<int>(CmdSession::ExitSuccess));
+        QVERIFY2(run.errorString.isEmpty(), qPrintable(run.errorString));
+        QCOMPARE(server.tokenRequests, 4);
+        QCOMPARE(server.tokenForm.queryItemValue(QStringLiteral("refresh_token")), QStringLiteral("refresh-1"));
+        QCOMPARE(readTokenFile(path).value(QStringLiteral("refresh_token")).toString(), QStringLiteral("refresh-2"));
+        QVERIFY(!QFile::exists(path + QStringLiteral(".lock")));
+    }
+
+    // Scheitert auch der letzte Versuch, endet der Lauf mit Exit 1 statt 2: das Refresh-Token gilt weiter, die Datei bleibt
+    void testGivesUpAfterRepeatedFailures()
+    {
+        const QTemporaryDir dir = TestUtils::createTempDir();
+        const QString path = writeTokenFile(dir, tokenFileContent(QStringLiteral("expired"), QStringLiteral("refresh-1"), QDateTime::currentSecsSinceEpoch() - 10));
+        const auto tokens = loadTokens(path);
+        QVERIFY(tokens);
+        FakeOAuthServer server;
+        for (int i = 0; i < 10; ++i) {
+            server.tokenFailures.append({503, QByteArrayLiteral("<html>Service Unavailable</html>")});
+        }
+
+        const CmdRun run = runSession(tokens, server);
+
+        QCOMPARE(run.exitCode, static_cast<int>(CmdSession::ExitFailure));
+        QVERIFY(!run.signInRequired);
+        QCOMPARE(server.tokenRequests, HttpOAuthCredentials::refreshAttempts);
+        QCOMPARE(readTokenFile(path).value(QStringLiteral("refresh_token")).toString(), QStringLiteral("refresh-1"));
+        QVERIFY(!QFile::exists(path + QStringLiteral(".lock")));
+    }
+
+    // Nur invalid_grant verlangt eine neue Anmeldung (Exit 2). Andere Fehler des Token-Endpunkts (Einrichtung, gesperrtes
+    // Konto) enden mit Exit 1 ohne weitere Versuche, das Refresh-Token bleibt.
+    void testOtherTokenErrorsDoNotRequireSignIn_data()
+    {
+        QTest::addColumn<int>("status");
+        QTest::addColumn<QString>("error");
+        QTest::newRow("invalid_request") << 400 << QStringLiteral("invalid_request");
+        QTest::newRow("unauthorized_client") << 400 << QStringLiteral("unauthorized_client");
+        QTest::newRow("invalid_client") << 401 << QStringLiteral("invalid_client");
+    }
+
+    void testOtherTokenErrorsDoNotRequireSignIn()
+    {
+        QFETCH(int, status);
+        QFETCH(QString, error);
+        const QTemporaryDir dir = TestUtils::createTempDir();
+        const QString path = writeTokenFile(dir, tokenFileContent(QStringLiteral("expired"), QStringLiteral("refresh-1"), QDateTime::currentSecsSinceEpoch() - 10));
+        const auto tokens = loadTokens(path);
+        QVERIFY(tokens);
+        FakeOAuthServer server;
+        server.tokenFailures.append({status, toJson({{QStringLiteral("error"), error}})});
+
+        const CmdRun run = runSession(tokens, server);
+
+        QCOMPARE(run.exitCode, static_cast<int>(CmdSession::ExitFailure));
+        QVERIFY(!run.signInRequired);
+        QVERIFY2(run.errorString.contains(error), qPrintable(run.errorString));
+        QCOMPARE(server.tokenRequests, 1);
+        QCOMPARE(readTokenFile(path).value(QStringLiteral("refresh_token")).toString(), QStringLiteral("refresh-1"));
+    }
+
+    // Läuft das Access-Token während des Laufs ab, wird es vor der nächsten Anfrage erneuert, ohne Ablehnung (401)
+    void testTokenExpiringDuringTheRunIsRefreshedFirst()
+    {
+        // Arrange: noch 7 s gültig, Lebensdauer 30 s, erneuert wird 6 s vor dem Ablauf
+        const QTemporaryDir dir = TestUtils::createTempDir();
+        QJsonObject content = tokenFileContent(QStringLiteral("access-1"), QStringLiteral("refresh-1"), QDateTime::currentSecsSinceEpoch() + 7);
+        content.insert(QStringLiteral("expires_in"), 30);
+        const auto tokens = loadTokens(writeTokenFile(dir, content));
+        QVERIFY(tokens);
+        FakeOAuthServer server;
+        auto account = std::make_unique<Account>(QUuid::createUuid(), QStringLiteral("admin"), serverUrlC);
+        auto *credentials = new TestOAuthCredentials(account.get(), tokens, server.overrides());
+        account->setCredentials(credentials);
+        QSignalSpy fetchedSpy(credentials, &AbstractCredentials::fetched);
+        credentials->fetchFromKeychain();
+        QCOMPARE(fetchedSpy.count(), 1);
+        QCOMPARE(server.tokenRequests, 0);
+
+        // Act: nach 1,5 s liegt der Ablauf innerhalb des Vorlaufs
+        QTest::qWait(1500);
+        auto *job = new JsonApiJob(account.get(), QStringLiteral("ocs/v2.php/cloud/capabilities"), {}, {}, this);
+        bool done = false;
+        QNetworkReply::NetworkError result = QNetworkReply::UnknownNetworkError;
+        connect(job, &JsonApiJob::finishedSignal, this, [&done, &result, job] {
+            result = job->reply()->error();
+            done = true;
+        });
+        job->start();
+
+        // Assert
+        QTRY_VERIFY_WITH_TIMEOUT(done, 10000);
+        QCOMPARE(result, QNetworkReply::NoError);
+        QCOMPARE(server.tokenRequests, 1);
+        QCOMPARE(server.unauthorizedAnswers, 0);
+    }
+
+    // Mehrere Anfragen werden gleichzeitig abgelehnt: eine Erneuerung, alle wiederholt; Token-Anfrage ohne Cookies, ohne
+    // Weiterleitung, mit langer Frist
+    void testParallelUnauthorizedRefreshOnce()
+    {
+        const QTemporaryDir dir = TestUtils::createTempDir();
+        const auto tokens = loadTokens(writeTokenFile(dir, tokenFileContent(QStringLiteral("access-1"), QStringLiteral("refresh-1"), QDateTime::currentSecsSinceEpoch() + 3600)));
+        QVERIFY(tokens);
+        FakeOAuthServer server;
+        auto account = std::make_unique<Account>(QUuid::createUuid(), QStringLiteral("admin"), serverUrlC);
+        account->setCredentials(new TestOAuthCredentials(account.get(), tokens, server.overrides()));
+
+        int done = 0;
+        int ok = 0;
+        for (int i = 0; i < 5; ++i) {
+            auto *job = new JsonApiJob(account.get(), QStringLiteral("ocs/v2.php/cloud/user"), {}, {}, this);
+            connect(job, &JsonApiJob::finishedSignal, this, [&done, &ok, job] {
+                ++done;
+                ok += job->reply()->error() == QNetworkReply::NoError ? 1 : 0;
+            });
+            job->start();
+        }
+
+        QTRY_COMPARE_WITH_TIMEOUT(done, 5, 10000);
+        QCOMPARE(ok, 5);
+        QCOMPARE(server.tokenRequests, 1);
+        QCOMPARE(server.unauthorizedAnswers, 5);
+        const QNetworkRequest token = server.tokenRequestList.first();
+        QCOMPARE(token.attribute(QNetworkRequest::CookieLoadControlAttribute).toInt(), static_cast<int>(QNetworkRequest::Manual));
+        QCOMPARE(token.attribute(QNetworkRequest::CookieSaveControlAttribute).toInt(), static_cast<int>(QNetworkRequest::Manual));
+        QCOMPARE(token.attribute(QNetworkRequest::RedirectPolicyAttribute).toInt(), static_cast<int>(QNetworkRequest::ManualRedirectPolicy));
+        QVERIFY(token.transferTimeout() >= 120000);
+    }
+
+    // Lässt sich die Token-Datei nicht schreiben, endet der Lauf nicht: das neue Refresh-Token bleibt im Speicher (das alte hat
+    // der Server verworfen), die Datei wird später erneut geschrieben
+    void testUnwritableTokenFileDoesNotEndTheRun()
+    {
+        // Arrange
+        const QTemporaryDir dir = TestUtils::createTempDir();
+        const QString path = writeTokenFile(dir, tokenFileContent(QStringLiteral("expired"), QStringLiteral("refresh-1"), QDateTime::currentSecsSinceEpoch() - 10));
+        const auto tokens = loadTokens(path);
+        QVERIFY(tokens);
+        // schreibgeschützt: QSaveFile ersetzt die Datei dann nicht, die Sperrdatei daneben geht weiter
+        const auto filePermissions = QFile::permissions(path);
+        QFile::setPermissions(path, QFileDevice::ReadOwner);
+        const auto restore = qScopeGuard([&] { QFile::setPermissions(path, filePermissions); });
+        QString probeError;
+        if (tokens->save(&probeError)) {
+            QSKIP("the token file stays writable here (running as root?)");
+        }
+        FakeOAuthServer server;
+
+        // Act
+        const CmdRun run = runSession(tokens, server);
+
+        // Assert
+        QCOMPARE(run.exitCode, static_cast<int>(CmdSession::ExitSuccess));
+        QCOMPARE(tokens->refreshToken(), QStringLiteral("refresh-2"));
         QCOMPARE(server.tokenRequests, 1);
     }
 };

@@ -182,6 +182,12 @@ QDateTime OAuthTokenFile::expiresAt() const
     return {};
 }
 
+std::chrono::seconds OAuthTokenFile::lifetime() const
+{
+    const auto in = secondsValue(_json.value(expiresInC));
+    return std::chrono::seconds(in && *in > 0 ? *in : 0);
+}
+
 bool OAuthTokenFile::needsRefresh(std::chrono::seconds margin) const
 {
     if (accessToken().isEmpty()) {
