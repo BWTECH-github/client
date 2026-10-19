@@ -73,6 +73,64 @@ void addSyncedFile(Folder *folder, const QByteArray &path, const QByteArray &ins
     record._remotePerm = RemotePermissions::fromDbValue("RW");
     QVERIFY(folder->journalDb()->setFileRecord(record));
 }
+
+// selbst signiert, nur für die Tests (CN=neu.example.org)
+QSslCertificate selfSignedCertificate()
+{
+    static const QByteArray pem = "-----BEGIN CERTIFICATE-----\n"
+                                  "MIIBijCCATGgAwIBAgIUYrW52114yWEhmgWAYPFQAY8YTYgwCgYIKoZIzj0EAwIw\n"
+                                  "GjEYMBYGA1UEAwwPbmV1LmV4YW1wbGUub3JnMCAXDTI2MTAxOTE4NTc0MVoYDzIx\n"
+                                  "MjYwOTI1MTg1NzQxWjAaMRgwFgYDVQQDDA9uZXUuZXhhbXBsZS5vcmcwWTATBgcq\n"
+                                  "hkjOPQIBBggqhkjOPQMBBwNCAATW8SeLnHVWLUb7UK5oMQVgHYInOErX0gXkfNWh\n"
+                                  "72JFrXCT8xmOH/CcHOs20l2wtk+HGVbbgOiQAq+ubc/S/s0Io1MwUTAdBgNVHQ4E\n"
+                                  "FgQUiCKejgIlpAic1cgKOkfEN6lYjOswHwYDVR0jBBgwFoAUiCKejgIlpAic1cgK\n"
+                                  "OkfEN6lYjOswDwYDVR0TAQH/BAUwAwEB/zAKBggqhkjOPQQDAgNHADBEAiB+OXim\n"
+                                  "bL7QTMkKD+U1KIC0qsZ4v1In6909TD5N5w14OwIgGO9Nw7FNLc2uQ/MWKF0EIsVj\n"
+                                  "OZBe8yMJ3vRWj9t5sxo=\n"
+                                  "-----END CERTIFICATE-----\n";
+    return QSslCertificate(pem, QSsl::Pem);
+}
+
+// zeigt, welche TLS-Fehler die Handler am Netzwerkzugang zulassen
+class TlsProbeReply : public QNetworkReply
+{
+public:
+    explicit TlsProbeReply(const QUrl &url) { setUrl(url); }
+    void abort() override { }
+
+    QList<QSslError> ignored;
+
+protected:
+    qint64 readData(char *, qint64) override { return 0; }
+    void ignoreSslErrorsImplementation(const QList<QSslError> &errors) override { ignored = errors; }
+};
+
+// Netzwerkzugang einer neuen Adresse mit dem Zertifikatsfehler @p tlsErrors: Jede Anfrage scheitert wie ein echter
+// Verbindungsaufbau, solange niemand die Fehler zulässt. status.php antwortet, PROPFIND beantwortet FakeAM mit der
+// Datei-ID von @p server, die Anmeldung im Browser bleibt hängen.
+FakeAM *serverWithTlsErrors(const FileInfo &server, const QList<QSslError> &tlsErrors, int *statusRequests)
+{
+    auto *accessManager = new FakeAM(server, nullptr);
+    accessManager->setOverride([accessManager, tlsErrors, statusRequests](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+        const bool status = request.url().path().endsWith(QLatin1String("/status.php"));
+        if (status) {
+            ++*statusRequests;
+        }
+        TlsProbeReply probe(request.url());
+        Q_EMIT accessManager->sslErrors(&probe, tlsErrors);
+        if (probe.ignored != tlsErrors) {
+            return new FakeErrorReply(op, request, accessManager, 0);
+        }
+        if (status) {
+            return new FakePayloadReply(op, request, statusOk, accessManager);
+        }
+        if (request.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray() == "PROPFIND") {
+            return nullptr;
+        }
+        return new FakeHangingReply(op, request, accessManager);
+    });
+    return accessManager;
+}
 }
 
 class TestServerMove : public QObject
@@ -564,6 +622,97 @@ private Q_SLOTS:
         QVERIFY(read.wait());
         QCOMPARE(job->data().toString(), QStringLiteral("new-refresh"));
 #endif
+    }
+
+    // Ein unbekanntes Zertifikat der neuen Adresse lässt sich bestätigen wie bei der Kontoeinrichtung: Danach prüft der
+    // Controller dieselbe Adresse noch einmal, fragt nicht erneut, und nach dem Umzug vertraut das Konto dem Zertifikat.
+    void testUnknownCertificateCanBeConfirmed()
+    {
+        auto accountState = createDummyAccountWithFileSupport(FileInfo::A12_B12_C12_S12());
+        Account *account = accountState->account();
+        account->setCapabilities({account->url(), oc10Capabilities()});
+        const QSslCertificate certificate = selfSignedCertificate();
+        QVERIFY(!certificate.isNull());
+        QVERIFY(!account->approvedCerts().contains(certificate));
+
+        FileInfo sameServer = FileInfo::A12_B12_C12_S12();
+        sameServer.fileId = "00000001ocinstance01";
+        int statusRequests = 0;
+        FakeAM *accessManager = serverWithTlsErrors(sameServer, {QSslError(QSslError::SelfSignedCertificate, certificate)}, &statusRequests);
+        ServerMoveController controller(accountState.get(), nullptr);
+        controller.setAccessManagerFactory([accessManager](QObject *parent) -> QNetworkAccessManager * {
+            accessManager->setParent(parent);
+            return accessManager;
+        });
+        QStringList prompts;
+        controller.setTlsPrompt([&prompts](const QList<QSslError> &, const QString &host) {
+            prompts.append(host);
+            return true;
+        });
+        QSignalSpy failed(&controller, &ServerMoveController::failed);
+        QSignalSpy succeeded(&controller, &ServerMoveController::succeeded);
+        QSignalSpy progress(&controller, &ServerMoveController::progress);
+
+        const QUrl newUrl(QStringLiteral("https://selbst.example.org/owncloud"));
+        controller.start(newUrl.toString());
+        // nach der Bestätigung noch einmal geprüft, dann geht es zur Anmeldung (die einzige Meldung mit dem Benutzer)
+        QTRY_VERIFY(!progress.isEmpty() && progress.last().first().toString().contains(account->davUser()));
+        QCOMPARE(statusRequests, 2);
+        QCOMPARE(prompts, QStringList{QStringLiteral("selbst.example.org")});
+        QCOMPARE(failed.size(), 0);
+        QVERIFY(!account->approvedCerts().contains(certificate));
+
+        // die Anmeldung im Browser überspringen: Prüfung mit demselben Netzwerkzugang, dann umstellen
+        controller.cancel();
+        controller.verifyAndApply(newUrl, QStringLiteral("new-token"), QStringLiteral("new-refresh"));
+        QVERIFY(succeeded.wait());
+        QCOMPARE(failed.size(), 0);
+        QCOMPARE(prompts.size(), 1);
+        QCOMPARE(account->url(), newUrl);
+        QVERIFY(account->approvedCerts().contains(certificate));
+    }
+
+    // Abgelehnt oder nicht bestätigbar (Fehler ohne Zertifikat): Die Prüfung scheitert, und das Konto vertraut nichts Neuem
+    void testUnconfirmedCertificateStopsTheMove_data()
+    {
+        QTest::addColumn<bool>("withCertificate");
+
+        QTest::newRow("rejected") << true;
+        QTest::newRow("error without certificate") << false;
+    }
+
+    void testUnconfirmedCertificateStopsTheMove()
+    {
+        QFETCH(bool, withCertificate);
+
+        auto accountState = createDummyAccountWithFileSupport(FileInfo::A12_B12_C12_S12());
+        Account *account = accountState->account();
+        account->setCapabilities({account->url(), oc10Capabilities()});
+        const QUrl oldUrl = account->url();
+        const QSslCertificate certificate = selfSignedCertificate();
+        QVERIFY(!certificate.isNull());
+        const QSslError tlsError = withCertificate ? QSslError(QSslError::SelfSignedCertificate, certificate) : QSslError(QSslError::UnspecifiedError);
+
+        int statusRequests = 0;
+        FakeAM *accessManager = serverWithTlsErrors(FileInfo::A12_B12_C12_S12(), {tlsError}, &statusRequests);
+        ServerMoveController controller(accountState.get(), nullptr);
+        controller.setAccessManagerFactory([accessManager](QObject *parent) -> QNetworkAccessManager * {
+            accessManager->setParent(parent);
+            return accessManager;
+        });
+        int prompts = 0;
+        controller.setTlsPrompt([&prompts](const QList<QSslError> &, const QString &) {
+            ++prompts;
+            return false;
+        });
+        QSignalSpy failed(&controller, &ServerMoveController::failed);
+        controller.start(QStringLiteral("https://selbst.example.org/owncloud"));
+        QVERIFY(failed.wait());
+        QCOMPARE(prompts, withCertificate ? 1 : 0);
+        QCOMPARE(statusRequests, 1);
+        QVERIFY(!controller.isBusy());
+        QCOMPARE(account->url(), oldUrl);
+        QVERIFY(!account->approvedCerts().contains(certificate));
     }
 };
 

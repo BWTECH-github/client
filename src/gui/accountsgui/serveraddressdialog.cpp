@@ -16,11 +16,13 @@
 #include "accountstate.h"
 #include "libsync/account.h"
 #include "servermove.h"
+#include "tlserrordialog.h"
 
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QPointer>
 #include <QPushButton>
 #include <QVBoxLayout>
 
@@ -94,6 +96,14 @@ ServerAddressDialog::ServerAddressDialog(AccountState *accountState, QWidget *pa
     connect(_browserButton, &QPushButton::clicked, _controller, &ServerMoveController::openBrowserAgain);
     connect(_cancelButton, &QPushButton::clicked, this, &ServerAddressDialog::reject);
 
+    // ein unbekanntes Zertifikat der neuen Adresse lässt sich wie bei der Kontoeinrichtung bestätigen
+    _controller->setTlsPrompt([this](const QList<QSslError> &errors, const QString &host) {
+        // auf dem Heap: wird dieser Dialog während der Rückfrage gelöscht, löscht er sie mit (QPointer wird null)
+        QPointer<TlsErrorDialog> dialog = new TlsErrorDialog(errors, host, this);
+        const bool trusted = dialog->exec() == QDialog::Accepted;
+        delete dialog;
+        return trusted;
+    });
     connect(_controller, &ServerMoveController::progress, this, [this](const QString &message) { showMessage(message, false); });
     connect(_controller, &ServerMoveController::signInLinkChanged, this, [this](const QUrl &link) {
         _linkLabel->setText(tr("Sign-in link: %1").arg(link.toString(QUrl::FullyEncoded)));

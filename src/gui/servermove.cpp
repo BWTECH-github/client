@@ -397,6 +397,9 @@ ServerMoveController::ServerMoveController(AccountState *accountState, QObject *
         }
         return accessManager;
     };
+    if (accountState && accountState->account()) {
+        _trustedCertificates = accountState->account()->approvedCerts();
+    }
 }
 
 ServerMoveController::~ServerMoveController()
@@ -409,12 +412,38 @@ void ServerMoveController::setAccessManagerFactory(const AccessManagerFactory &f
     _accessManagerFactory = factory;
 }
 
+void ServerMoveController::setTlsPrompt(const TlsPrompt &prompt)
+{
+    _tlsPrompt = prompt;
+}
+
 QNetworkAccessManager *ServerMoveController::accessManager()
 {
     if (!_accessManager) {
         _accessManager = _accessManagerFactory(this);
+        connect(_accessManager, &QNetworkAccessManager::sslErrors, this, &ServerMoveController::onSslErrors);
     }
     return _accessManager;
+}
+
+void ServerMoveController::onSslErrors(QNetworkReply *reply, const QList<QSslError> &errors)
+{
+    // bestätigen lassen sich nur Fehler mit Zertifikat (wie bei der Kontoeinrichtung); alles andere scheitert wie bisher
+    bool allTrusted = true;
+    for (const QSslError &error : errors) {
+        if (error.certificate().isNull()) {
+            return;
+        }
+        allTrusted = allTrusted && _trustedCertificates.contains(error.certificate());
+    }
+    if (allTrusted) {
+        reply->ignoreSslErrors(errors);
+        return;
+    }
+    // nicht hier fragen: ein Dialog mitten im Verbindungsaufbau bräuchte eine verschachtelte Ereignisschleife. Die Prüfung
+    // scheitert, onStatusChecked() fragt danach und prüft dieselbe Adresse noch einmal.
+    _pendingTlsErrors = errors;
+    _pendingTlsHost = reply->url().host();
 }
 
 bool ServerMoveController::isBusy() const
@@ -448,6 +477,13 @@ void ServerMoveController::start(const QString &input)
         return;
     }
 
+    startStatusCheck(url);
+}
+
+void ServerMoveController::startStatusCheck(const QUrl &url)
+{
+    _statusTarget = url;
+    _pendingTlsErrors.clear();
     _statusCheck = new ServerStatusCheck(accessManager(), this);
     connect(_statusCheck, &ServerStatusCheck::finished, this, &ServerMoveController::onStatusChecked);
     Q_EMIT progress(tr("Checking %1…").arg(displayUrl(url)));
@@ -459,6 +495,33 @@ void ServerMoveController::onStatusChecked(const ServerStatusCheck::Result &resu
     if (_statusCheck) {
         _statusCheck->deleteLater();
         _statusCheck = nullptr;
+    }
+    const QList<QSslError> tlsErrors = std::exchange(_pendingTlsErrors, {});
+    if (!result.ok && !tlsErrors.isEmpty() && _tlsPrompt) {
+        // unbekanntes Zertifikat (selbst signiert, eigene CA): wie bei der Kontoeinrichtung nachfragen. Die Rückfrage ist
+        // modal; schließt sich dabei der Dialog samt Controller, darf danach nichts mehr auf Mitglieder zugreifen.
+        QPointer<ServerMoveController> self(this);
+        const TlsPrompt prompt = _tlsPrompt;
+        const QString host = _pendingTlsHost;
+        const bool trusted = prompt(tlsErrors, host);
+        if (!self) {
+            return;
+        }
+        if (trusted) {
+            QSet<QSslCertificate> certificates;
+            for (const QSslError &error : tlsErrors) {
+                certificates.insert(error.certificate());
+            }
+            _trustedCertificates.unite(certificates);
+            _confirmedCertificates.unite(certificates);
+            // Anmeldung und Prüfung laufen über denselben Netzwerkzugang
+            if (auto *ocAccessManager = qobject_cast<AccessManager *>(accessManager())) {
+                ocAccessManager->addCustomTrustedCaCertificates(certificates);
+            }
+            qCInfo(lcServerMove) << "certificate of" << host << "confirmed, checking again";
+            startStatusCheck(_statusTarget);
+            return;
+        }
     }
     if (!result.ok) {
         fail(result.error);
@@ -651,6 +714,11 @@ void ServerMoveController::applyWhenSyncsStopped(const QUrl &newUrl, const QStri
         fail(error);
         return;
     }
+    // im Dialog bestätigte Zertifikate gelten danach für das Konto, sonst fragte dessen erste Verbindung gleich noch einmal
+    // (die Verbindung startet erst in der Ereignisschleife, also nach diesem Aufruf)
+    if (!_confirmedCertificates.isEmpty() && _accountState && _accountState->account()) {
+        _accountState->account()->addApprovedCerts(_confirmedCertificates);
+    }
     reset();
     Q_EMIT succeeded(newUrl);
 }
@@ -703,6 +771,8 @@ void ServerMoveController::reset()
     }
     releaseSyncs();
     _newUrl.clear();
+    // bestätigte Zertifikate bleiben bis zum Schließen des Dialogs: ein neuer Versuch fragt nicht noch einmal
+    _pendingTlsErrors.clear();
 }
 
 }

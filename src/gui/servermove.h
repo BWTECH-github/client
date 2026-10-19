@@ -17,8 +17,12 @@
 
 #include <QCoreApplication>
 #include <QElapsedTimer>
+#include <QList>
 #include <QObject>
 #include <QPointer>
+#include <QSet>
+#include <QSslCertificate>
+#include <QSslError>
 #include <QTimer>
 #include <QUrl>
 
@@ -131,11 +135,15 @@ class OWNCLOUDGUI_EXPORT ServerMoveController : public QObject
 public:
     /// liefert einen Netzwerkzugang ohne die Zugangsdaten des Kontos (in Tests einen gefälschten)
     using AccessManagerFactory = std::function<QNetworkAccessManager *(QObject *parent)>;
+    /// fragt, ob den Zertifikaten aus @p errors für @p host vertraut werden soll (im Dialog: TlsErrorDialog)
+    using TlsPrompt = std::function<bool(const QList<QSslError> &errors, const QString &host)>;
 
     ServerMoveController(AccountState *accountState, QObject *parent);
     ~ServerMoveController() override;
 
     void setAccessManagerFactory(const AccessManagerFactory &factory);
+    /// ohne Rückfrage scheitert die Prüfung einer Adresse mit unbekanntem Zertifikat
+    void setTlsPrompt(const TlsPrompt &prompt);
 
     /// prüft @p input und meldet den Nutzer danach im Browser an der neuen Adresse an
     void start(const QString &input);
@@ -167,7 +175,10 @@ public:
     static constexpr int syncStopTimeoutMs = 30 * 1000;
 
 private:
+    void startStatusCheck(const QUrl &url);
     void onStatusChecked(const ServerStatusCheck::Result &result);
+    /// merkt sich unbekannte Zertifikate für die Rückfrage nach der gescheiterten Prüfung, bekannte lässt es zu
+    void onSslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
     void startSignIn(const QUrl &newUrl);
     void finishVerification(QNetworkReply *reply, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
     /// stellt um, sobald kein Lauf des Kontos mehr läuft (geprüft alle 100 ms, ohne verschachtelte Ereignisschleife)
@@ -180,7 +191,16 @@ private:
 
     QPointer<AccountState> _accountState;
     AccessManagerFactory _accessManagerFactory;
+    TlsPrompt _tlsPrompt;
     QPointer<QNetworkAccessManager> _accessManager;
+    /// Zertifikate, denen das Konto schon vertraut, und die in diesem Dialog bestätigten
+    QSet<QSslCertificate> _trustedCertificates;
+    /// in diesem Dialog bestätigt; nach dem Umzug gelten sie für das Konto
+    QSet<QSslCertificate> _confirmedCertificates;
+    /// unbekannte Zertifikate der laufenden Prüfung
+    QList<QSslError> _pendingTlsErrors;
+    QString _pendingTlsHost;
+    QUrl _statusTarget;
     QPointer<ServerStatusCheck> _statusCheck;
     QPointer<OAuth> _oauth;
     QPointer<QNetworkReply> _verificationReply;
