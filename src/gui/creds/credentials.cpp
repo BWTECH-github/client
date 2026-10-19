@@ -13,30 +13,52 @@
  */
 #include "credentials.h"
 
+#include "abstractnetworkjob.h"
 #include "accessmanager.h"
 #include "account.h"
 #include "config/appconfig.h"
 #include "creds/credentialmanager.h"
+#include "gui/networkinformation.h"
 #include "oauth.h"
 #include "requestauthenticationcontroller.h"
 #include "requestauthenticationwidget.h"
 
 #include <QAuthenticator>
+#include <QCoreApplication>
+#include <QDateTime>
+#include <QEventLoop>
 #include <QJsonObject>
 #include <QLoggingCategory>
 #include <QNetworkInformation>
 #include <QNetworkReply>
+#include <QRandomGenerator>
 
+#include <algorithm>
 #include <chrono>
 
+using namespace std::chrono;
 using namespace std::chrono_literals;
 
 Q_LOGGING_CATEGORY(lcCredentials, "gui.credentials", QtInfoMsg)
 
 namespace {
-constexpr int TokenRefreshMaxRetries = 3;
-constexpr std::chrono::seconds TokenRefreshDefaultTimeout = 30s;
 const char authenticationFailedC[] = "owncloud-authentication-failed";
+
+// ein eben ausgestelltes Access-Token, das der Server gleich ablehnt (etwa ein Webserver, der den Authorization-Header
+// nicht weitergibt): nicht in einer Schleife erneuern, sondern wie einen Fehlschlag mit Pause behandeln
+constexpr auto freshAccessTokenGrace = 30s;
+// ausdrücklicher Wunsch des Kontos während einer Pause: frühestens so lange nach dem letzten Versuch
+constexpr auto explicitRetryInterval = 10s;
+// wieder im Netz: der nächste Versuch nach dieser Pause statt nach der vollen
+constexpr auto networkBackRetryDelay = 2s;
+// so lange wartet das neue Access-Token höchstens auf den Schlüsselbund
+constexpr auto pendingTokensTimeout = 10s;
+// nach so vielen gescheiterten Versuchen, das Refresh-Token zu speichern, gilt das neue Access-Token trotzdem
+constexpr int storeAttemptsBeforeUse = 3;
+// Lesen beim Start: so oft, wenn der Schlüsselbund noch nicht bereit ist (Autostart, gesperrt), dann neu anmelden
+constexpr int keychainReadAttempts = 6;
+// beim Beenden: so lange auf das Speichern des Refresh-Tokens warten
+constexpr auto shutdownStoreTimeout = 5s;
 
 // when creating new keys we should probably stick with this idea related to a creds "type" in case we need to add or remove
 // other cred types in future. all of the updates to transition to oauth only would have been so much easier if the last round had actually implmented
@@ -44,6 +66,11 @@ const char authenticationFailedC[] = "owncloud-authentication-failed";
 QString refreshTokenKeyC()
 {
     return QString("http/oauthtoken");
+}
+
+QByteArray bearer(const QString &accessToken)
+{
+    return QByteArrayLiteral("Bearer ") + accessToken.toUtf8();
 }
 }
 
@@ -66,7 +93,7 @@ protected:
         QNetworkRequest req(request);
         if (!req.attribute(DontAddCredentialsAttribute).toBool()) {
             if (_cred && !_cred->_accessToken.isEmpty()) {
-                req.setRawHeader("Authorization", "Bearer " + _cred->_accessToken.toUtf8());
+                req.setRawHeader("Authorization", bearer(_cred->_accessToken));
             }
         }
         return AccessManager::createRequest(op, req, outgoingData);
@@ -87,8 +114,43 @@ Credentials::Credentials(const QString &token, const QString &refreshToken, Acco
     , _ready(false)
     , _openIdConfig(AppConfig().openIdConfig())
 {
-    if (!token.isEmpty() && !refreshToken.isEmpty())
+    if (!token.isEmpty() && !refreshToken.isEmpty()) {
         _ready = true;
+        _sinceAccessToken.start();
+    }
+
+    _refreshRetryTimer.setSingleShot(true);
+    connect(&_refreshRetryTimer, &QTimer::timeout, this, &Credentials::refreshAccessTokenInternal);
+
+    _proactiveRefreshTimer.setSingleShot(true);
+    _proactiveRefreshTimer.setTimerType(Qt::VeryCoarseTimer);
+    connect(&_proactiveRefreshTimer, &QTimer::timeout, this, [this] {
+        if (!refreshPending()) {
+            qCInfo(lcCredentials) << "Refreshing the access token before it expires";
+            refreshAccessTokenInternal();
+        }
+    });
+
+    _pendingTokensTimer.setSingleShot(true);
+    connect(&_pendingTokensTimer, &QTimer::timeout, this, [this] {
+        qCWarning(lcCredentials) << "The keychain has not confirmed the new refresh token yet, using the new access token anyway";
+        commitPendingTokens();
+    });
+
+    _storeRetryTimer.setSingleShot(true);
+    connect(&_storeRetryTimer, &QTimer::timeout, this, &Credentials::writeRefreshToken);
+
+    // wieder im Netz: nicht die volle Pause abwarten
+    connect(NetworkInformation::instance(), &NetworkInformation::reachabilityChanged, this, [this] {
+        if (_refreshRetryTimer.isActive() && networkAvailable() && _refreshRetryTimer.remainingTimeAsDuration() > networkBackRetryDelay) {
+            qCInfo(lcCredentials) << "Network is back, retrying the token refresh soon";
+            _refreshRetryTimer.start(networkBackRetryDelay);
+        }
+    });
+
+    if (auto *app = QCoreApplication::instance()) {
+        connect(app, &QCoreApplication::aboutToQuit, this, &Credentials::waitForStoredRefreshToken);
+    }
 }
 
 Credentials::Credentials(Account *account)
@@ -107,26 +169,31 @@ AccessManager *Credentials::createAccessManager() const
 
 bool Credentials::ready() const
 {
-    return _ready;
+    // nach der Uhr des Rechners: sie läuft auch im Ruhezustand weiter, Zeitgeber nicht auf jedem System
+    return _ready && (_accessTokenStaleAt == 0 || QDateTime::currentSecsSinceEpoch() < _accessTokenStaleAt);
 }
-
 
 void Credentials::fetchFromKeychain()
 {
     _wasEverFetched = true;
+    _fetchRequested = true;
 
-    if (!_ready && !_refreshToken.isEmpty()) {
-        // This happens if the credentials are still loaded from the keychain, bur we are called
-        // here because the auth is invalid, so this means we simply need to refresh the credentials
-        refreshAccessToken();
+    if (ready()) {
+        emitFetched();
         return;
     }
 
-    if (_ready) {
-        Q_EMIT fetched();
-    } else {
-        fetchCredentialsFromKeychain();
+    if (!_refreshToken.isEmpty()) {
+        // This happens if the credentials are still loaded from the keychain, bur we are called
+        // here because the auth is invalid, so this means we simply need to refresh the credentials
+        blockJobs();
+        if (!refreshPending()) {
+            refreshAccessTokenInternal();
+        }
+        return;
     }
+
+    fetchCredentialsFromKeychain();
 }
 
 void Credentials::handleKeychainError(const QString &message)
@@ -136,29 +203,91 @@ void Credentials::handleKeychainError(const QString &message)
     _fetchErrorString = message;
     _accessToken.clear();
     _ready = false;
-    Q_EMIT fetched();
+    emitFetched();
 }
 
 void Credentials::fetchCredentialsFromKeychain()
 {
-    auto job = _account->credentialManager()->get(refreshTokenKeyC());
-    if (!job) {
-        handleKeychainError("get credentials job is null - most likely the key does not exist in the credentials manager");
+    if (!_account) {
         return;
     }
-    connect(job, &CredentialJob::finished, this, [job, this] {
-        if (job->error() != QKeychain::NoError) {
-            handleKeychainError(job->errorString());
+    // erst das Token, dann Anfragen
+    blockJobs();
+    readRefreshToken([this](KeychainResult result, const QString &refreshToken, const QString &error) {
+        if (result == KeychainResult::Ok && !refreshToken.isEmpty()) {
+            _keychainReadFailures = 0;
+            _refreshToken = refreshToken;
+            _storedRefreshToken = refreshToken;
+            if (!refreshPending()) {
+                refreshAccessTokenInternal();
+            }
             return;
         }
-        const auto data = job->data().toString();
-        if (!data.isEmpty()) {
-            _refreshToken = data;
-            refreshAccessToken();
+        if (result == KeychainResult::Error && ++_keychainReadFailures < keychainReadAttempts) {
+            // Der Schlüsselbund ist noch nicht bereit (Autostart, gesperrt): später erneut lesen, statt gleich eine neue
+            // Anmeldung zu verlangen
+            const auto delay = keychainRetryDelay(_keychainReadFailures);
+            qCWarning(lcCredentials) << "Could not read the refresh token from the keychain, retrying in" << delay << ":" << error;
+            QTimer::singleShot(delay, this, [this] {
+                if (_refreshToken.isEmpty() && !_ready) {
+                    fetchCredentialsFromKeychain();
+                }
+            });
+            return;
+        }
+        _keychainReadFailures = 0;
+        handleKeychainError(result == KeychainResult::Ok ? QStringLiteral("get credentials data is empty") : error);
+    });
+}
+
+void Credentials::readRefreshToken(const ReadCallback &done)
+{
+    auto job = _account->credentialManager()->get(refreshTokenKeyC());
+    if (!job) {
+        done(KeychainResult::NotFound, {}, QStringLiteral("get credentials job is null - most likely the key does not exist in the credentials manager"));
+        return;
+    }
+    connect(job, &CredentialJob::finished, this, [job, done] {
+        if (job->error() == QKeychain::NoError) {
+            done(KeychainResult::Ok, job->data().toString(), {});
         } else {
-            handleKeychainError("get credentials data is empty");
+            done(job->error() == QKeychain::EntryNotFound ? KeychainResult::NotFound : KeychainResult::Error, {}, job->errorString());
         }
     });
+}
+
+void Credentials::storeRefreshToken(const QString &refreshToken, const StoreCallback &done)
+{
+    auto job = _account->credentialManager()->set(refreshTokenKeyC(), refreshToken);
+    // CredentialManager::set startet den Auftrag verzögert: die Verbindung kommt rechtzeitig
+    connect(job, &QKeychain::Job::finished, this, [job, done] { done(job->error() == QKeychain::NoError, job->errorString()); });
+}
+
+void Credentials::removeRefreshToken()
+{
+    // i hoped we could change this to a new, more useful identifier but since the value is related to what is in the keychain, I don't
+    // think this can be changed easily so I'm leaving it for now.
+    _account->credentialManager()->clear("http");
+}
+
+std::chrono::milliseconds Credentials::defaultRefreshRetryDelay(int failedAttempts)
+{
+    const int exponent = std::clamp(failedAttempts - 1, 0, 4);
+    return std::min<milliseconds>(30s * (1 << exponent), 5min);
+}
+
+std::chrono::milliseconds Credentials::refreshRetryDelay(int failedAttempts) const
+{
+    // ±10 %: nach einem Ausfall des Servers kommen nicht alle Clients im selben Augenblick wieder
+    const auto delay = defaultRefreshRetryDelay(failedAttempts);
+    const double factor = 0.9 + QRandomGenerator::global()->bounded(0.2);
+    return milliseconds(static_cast<qint64>(static_cast<double>(delay.count()) * factor));
+}
+
+std::chrono::milliseconds Credentials::keychainRetryDelay(int failedAttempts) const
+{
+    // 1 s, 2 s, 4 s, … höchstens 5 min
+    return std::min<milliseconds>(1s * (1 << std::clamp(failedAttempts - 1, 0, 9)), 5min);
 }
 
 // Lisa todo: this is called periodically, find the trigger. it's coming mostly from the jobs :(
@@ -169,106 +298,319 @@ bool Credentials::stillValid(QNetworkReply *reply)
     // If the refresh fails, we are going to Q_EMIT authenticationFailed ourselves
     if (reply->error() == QNetworkReply::AuthenticationRequiredError) {
         slotAuthentication(reply, nullptr);
+    } else if (_ready && !_accessTokenWorked && reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 0
+        && reply->request().rawHeader("Authorization") == bearer(_accessToken)) {
+        // der Server hat das aktuelle Access-Token angenommen
+        _accessTokenWorked = true;
     }
     return true;
 }
 
 void Credentials::slotAuthentication(QNetworkReply *reply, QAuthenticator *authenticator)
 {
-    qCDebug(lcCredentials) << Q_FUNC_INFO << reply;
-    if (!_ready)
-        return;
     Q_UNUSED(authenticator)
+    // QNAM meldet eine Ablehnung über authenticationRequired und die Aufträge noch einmal über stillValid(): einmal reicht
+    if (reply->property(authenticationFailedC).toBool()) {
+        return;
+    }
     // Because of issue #4326, we need to set the login and password manually at every requests
     // Thus, if we reach this signal, those credentials were invalid and we terminate.
     qCWarning(lcCredentials) << "Stop request: Authentication failed for " << reply->url().toString() << reply->request().rawHeader("Original-Request-ID");
     reply->setProperty(authenticationFailedC, true);
 
-    if (!_oAuthJob) {
-        qCInfo(lcCredentials) << "Refreshing token";
-        refreshAccessToken();
+    if (_refreshToken.isEmpty()) {
+        // nichts zu erneuern: das Konto fragt den Nutzer
+        return;
     }
+    if (_ready && reply->request().rawHeader("Authorization") != bearer(_accessToken)) {
+        // die Anfrage trug ein älteres Token; ihre Wiederholung bekommt das aktuelle
+        return;
+    }
+
+    // Das aktuelle Access-Token gilt nicht mehr: alle Aufträge warten auf das neue, abgelehnte stehen mit in der Warteschlange
+    _ready = false;
+    blockJobs();
+    if (refreshPending()) {
+        return;
+    }
+    if (!_accessTokenWorked && _sinceAccessToken.isValid() && _sinceAccessToken.durationElapsed() < freshAccessTokenGrace) {
+        handleRefreshError(networkReplyErrorString(*reply), false, {});
+        return;
+    }
+    qCInfo(lcCredentials) << "Refreshing token";
+    refreshAccessTokenInternal();
 }
 
 bool Credentials::refreshAccessToken()
 {
     if (_refreshToken.isEmpty())
         return false;
-    if (_oAuthJob)
-        return true;
 
-    refreshAccessTokenInternal();
+    _fetchRequested = true;
+    if (!ready()) {
+        blockJobs();
+    }
+    if (_refreshRetryTimer.isActive()) {
+        // Pause nach einem Fehlschlag: auf Wunsch des Kontos (der Server antwortet wieder, ein Zertifikat ist bestätigt)
+        // bald erneut versuchen, aber nicht öfter als alle 10 s
+        const auto sinceAttempt = _sinceRefreshAttempt.isValid() ? _sinceRefreshAttempt.durationElapsed() : nanoseconds::max();
+        const auto wait = sinceAttempt >= explicitRetryInterval ? 0ms : duration_cast<milliseconds>(explicitRetryInterval - sinceAttempt);
+        if (_refreshRetryTimer.remainingTimeAsDuration() > wait) {
+            _refreshRetryTimer.start(wait);
+        }
+        return true;
+    }
+    if (!refreshPending()) {
+        refreshAccessTokenInternal();
+    }
     return true;
 }
 
-void Credentials::handleRefreshError(QNetworkReply::NetworkError error, const QString &message)
+void Credentials::refreshIfExpired()
 {
-    Q_UNUSED(message);
-
-    _oAuthJob->deleteLater();
-    _tokenRefreshRetriesCount++;
-    std::chrono::seconds timeout = {};
-
-    if (!networkAvailable()) {
-        _tokenRefreshRetriesCount = 0;
-        timeout = TokenRefreshDefaultTimeout;
-    } else {
-        switch (error) {
-        case QNetworkReply::ContentNotFoundError:
-            // 404: bigip f5?
-            timeout = 0s;
-            break;
-        case QNetworkReply::HostNotFoundError:
-            [[fallthrough]];
-        case QNetworkReply::TimeoutError:
-            [[fallthrough]];
-        // Qt reports OperationCanceledError if the request timed out
-        case QNetworkReply::OperationCanceledError:
-            [[fallthrough]];
-        case QNetworkReply::TemporaryNetworkFailureError:
-            [[fallthrough]];
-        // VPN not ready?
-        case QNetworkReply::ConnectionRefusedError:
-            _tokenRefreshRetriesCount = 0;
-            [[fallthrough]];
-        default:
-            timeout = TokenRefreshDefaultTimeout;
-        }
-    }
-
-    if (_tokenRefreshRetriesCount >= TokenRefreshMaxRetries) {
-        qCWarning(lcCredentials) << "Too many failed refreshes" << _tokenRefreshRetriesCount << "-> log out";
-        finishFailedRefresh();
-        _tokenRefreshRetriesCount = 0;
+    if (!_ready || _refreshToken.isEmpty()) {
         return;
     }
-    QTimer::singleShot(timeout, this, [this] { refreshAccessTokenInternal(); });
-    Q_EMIT authenticationFailed();
+    const qint64 now = QDateTime::currentSecsSinceEpoch();
+    if (_accessTokenStaleAt > 0 && now >= _accessTokenStaleAt) {
+        // nach der Uhr abgelaufen, etwa nach dem Ruhezustand: erst erneuern, dann senden
+        qCInfo(lcCredentials) << "The access token has expired, refreshing it before sending further requests";
+        _ready = false;
+        blockJobs();
+        if (!refreshPending()) {
+            refreshAccessTokenInternal();
+        }
+    } else if (_proactiveRefreshAt > 0 && now >= _proactiveRefreshAt && !refreshPending()) {
+        // der Zeitgeber kam zu spät (Ruhezustand): vorbeugend erneuern, die Aufträge laufen mit dem gültigen Token weiter
+        qCInfo(lcCredentials) << "Refreshing the access token before it expires";
+        refreshAccessTokenInternal();
+    }
 }
 
-void Credentials::handleRefreshSuccess(const QString &accessToken, const QString &refreshToken)
+bool Credentials::refreshPending() const
 {
-    _oAuthJob->deleteLater();
-    _tokenRefreshRetriesCount = 0;
-    if (refreshToken.isEmpty()) {
-        qCWarning(lcCredentials) << "Refresh job succeeded but refreshToken is empty -> log out";
-        finishFailedRefresh();
+    return _oAuthJob || _pendingTokens || _refreshRetryTimer.isActive();
+}
+
+void Credentials::blockJobs()
+{
+    if (_jobsBlocked) {
         return;
     }
-    _refreshToken = refreshToken;
-    if (!accessToken.isNull()) {
-        _ready = true;
-        _accessToken = accessToken;
-        persist();
+    _jobsBlocked = true;
+    Q_EMIT authenticationStarted();
+    if (_refreshRetryTimer.isActive()) {
+        // eine Pause nach einem Fehlschlag läuft schon: das Konto erfährt, warum nichts mehr geht
+        Q_EMIT authenticationDelayed(_refreshMaintenance, _refreshErrorString);
     }
+}
+
+void Credentials::emitFetched()
+{
+    _jobsBlocked = false;
+    _fetchRequested = false;
     Q_EMIT fetched();
+}
+
+void Credentials::refreshAccessTokenInternal()
+{
+    if (!_account || _refreshToken.isEmpty() || _oAuthJob || _pendingTokens)
+        return;
+
+    _refreshRetryTimer.stop();
+    _proactiveRefreshTimer.stop();
+    _sinceRefreshAttempt.start();
+
+    // parent with nam to ensure we reset when the nam is reset
+    // todo: #22 - the parenting here is highly questionable, as is the use of the shared account ptr
+    auto *job = new AccountBasedOAuth(_account, _openIdConfig, this);
+    _oAuthJob = job;
+    // nur das Ergebnis der laufenden Erneuerung zählt; eine abgebrochene meldet nichts mehr
+    const auto finishJob = [this, job] {
+        if (job != _oAuthJob) {
+            return false;
+        }
+        _oAuthJob = nullptr;
+        job->deleteLater();
+        return true;
+    };
+    connect(job, &AccountBasedOAuth::refreshFinished, this, [this, finishJob](const QString &accessToken, const QString &refreshToken, qint64 expiresIn) {
+        if (finishJob()) {
+            handleRefreshSuccess(accessToken, refreshToken, expiresIn);
+        }
+    });
+    connect(job, &AccountBasedOAuth::refreshRejected, this, [this, finishJob](const QString &message) {
+        if (finishJob()) {
+            handleRefreshRejected(message);
+        }
+    });
+    connect(job, &AccountBasedOAuth::refreshFailed, this, [this, finishJob](const QString &message, bool maintenance, const QString &newRefreshToken) {
+        if (finishJob()) {
+            handleRefreshError(message, maintenance, newRefreshToken);
+        }
+    });
+
+    job->refreshAuthentication(_refreshToken);
+}
+
+void Credentials::handleRefreshError(const QString &message, bool maintenance, const QString &newRefreshToken)
+{
+    if (!newRefreshToken.isEmpty() && newRefreshToken != _refreshToken) {
+        // der Server hat trotzdem schon gewechselt: mit dem neuen weiter
+        _refreshToken = newRefreshToken;
+        writeRefreshToken();
+    }
+    ++_tokenRefreshRetriesCount;
+    _refreshErrorString = message;
+    _refreshMaintenance = maintenance;
+
+    // ohne Netz ist jeder Versuch vergebens: dann meldet NetworkInformation die Rückkehr
+    const auto delay = networkAvailable() ? refreshRetryDelay(_tokenRefreshRetriesCount) : std::max<milliseconds>(refreshRetryDelay(_tokenRefreshRetriesCount), 5min);
+    qCWarning(lcCredentials) << "Refreshing the access token failed temporarily (" << _tokenRefreshRetriesCount << "in a row), retrying in" << delay << ":"
+                             << (maintenance ? QStringLiteral("server in maintenance mode") : message);
+    _refreshRetryTimer.start(delay);
+
+    if (_jobsBlocked || _fetchRequested || !ready()) {
+        // ohne gültiges Token stehen die Aufträge: dem Konto sagen, warum, statt eine neue Anmeldung zu verlangen
+        Q_EMIT authenticationDelayed(maintenance, message);
+    }
+}
+
+void Credentials::handleRefreshRejected(const QString &message)
+{
+    qCWarning(lcCredentials) << "The server no longer accepts the refresh token, a new sign-in is required:" << message;
+    _fetchErrorString = message;
+    finishFailedRefresh();
+}
+
+void Credentials::handleRefreshSuccess(const QString &accessToken, const QString &refreshToken, qint64 expiresIn)
+{
+    _tokenRefreshRetriesCount = 0;
+    _refreshErrorString.clear();
+    _refreshMaintenance = false;
+    // RFC 6749, Abschnitt 6: ohne neues Refresh-Token gilt das bisherige weiter
+    if (!refreshToken.isEmpty()) {
+        _refreshToken = refreshToken;
+    }
+    _pendingTokens = PendingTokens{accessToken, expiresIn};
+    if (_refreshToken == _storedRefreshToken) {
+        commitPendingTokens();
+        return;
+    }
+    // Erst in den Schlüsselbund, dann benutzen: Endet das Programm jetzt, liegt dort schon das gültige Refresh-Token. Den
+    // alten hat der Server mit dem Tausch verworfen.
+    _pendingTokensTimer.start(pendingTokensTimeout);
+    writeRefreshToken();
+}
+
+void Credentials::commitPendingTokens()
+{
+    if (!_pendingTokens) {
+        return;
+    }
+    const PendingTokens tokens = *_pendingTokens;
+    _pendingTokens.reset();
+    _pendingTokensTimer.stop();
+
+    _accessToken = tokens.accessToken;
+    _ready = true;
+    _accessTokenWorked = false;
+    _sinceAccessToken.start();
+    setAccessTokenLifetime(tokens.expiresIn);
+    qCInfo(lcCredentials) << "Access token refreshed" << (tokens.expiresIn > 0 ? QStringLiteral("valid for %1 s").arg(tokens.expiresIn) : QString());
+
+    if (_fetchRequested || _jobsBlocked) {
+        emitFetched();
+    }
+}
+
+void Credentials::setAccessTokenLifetime(qint64 expiresIn)
+{
+    _proactiveRefreshTimer.stop();
+    if (expiresIn <= 0) {
+        // unbekannt: erneuert wird nach einer Ablehnung (401)
+        _accessTokenStaleAt = 0;
+        _proactiveRefreshAt = 0;
+        return;
+    }
+    const qint64 now = QDateTime::currentSecsSinceEpoch();
+    // kurz vor dem Ablauf gilt es als abgelaufen (Laufzeit der Anfrage), bei kurzer Lebensdauer entsprechend früher
+    _accessTokenStaleAt = now + expiresIn - std::min<qint64>(60, expiresIn / 10);
+    const qint64 proactive = std::max<qint64>(1, expiresIn * 4 / 5);
+    _proactiveRefreshAt = now + proactive;
+    _proactiveRefreshTimer.start(seconds(proactive));
+}
+
+void Credentials::writeRefreshToken()
+{
+    _storeRetryTimer.stop();
+    if (!_account || _storeRunning || _refreshToken.isEmpty() || _refreshToken == _storedRefreshToken) {
+        return;
+    }
+    _storeRunning = true;
+    const QString token = _refreshToken;
+    storeRefreshToken(token, [this, token](bool ok, const QString &error) {
+        _storeRunning = false;
+        if (ok) {
+            _storedRefreshToken = token;
+            _storeFailures = 0;
+            if (_refreshToken.isEmpty()) {
+                // inzwischen abgemeldet: nichts im Schlüsselbund zurücklassen
+                removeRefreshToken();
+                _storedRefreshToken.clear();
+            }
+        } else {
+            ++_storeFailures;
+            qCWarning(lcCredentials) << "Could not store the refresh token in the keychain (attempt" << _storeFailures << "):" << error;
+        }
+
+        if (_pendingTokens && (_refreshToken == _storedRefreshToken || _storeFailures >= storeAttemptsBeforeUse)) {
+            if (_refreshToken != _storedRefreshToken) {
+                qCWarning(lcCredentials) << "Using the new access token although the keychain did not store the refresh token; storing it is retried";
+            }
+            commitPendingTokens();
+        }
+
+        if (!_refreshToken.isEmpty() && _refreshToken != _storedRefreshToken) {
+            if (ok) {
+                // inzwischen kam ein neueres
+                writeRefreshToken();
+            } else {
+                _storeRetryTimer.start(keychainRetryDelay(_storeFailures));
+            }
+        }
+        if (_storeWaitLoop) {
+            _storeWaitLoop->quit();
+        }
+    });
+}
+
+void Credentials::waitForStoredRefreshToken()
+{
+    if (_refreshToken.isEmpty() || _refreshToken == _storedRefreshToken) {
+        return;
+    }
+    // Das Programm endet: ein noch nicht gespeichertes Refresh-Token wäre beim nächsten Start verloren. Während des Wartens
+    // keine neue Erneuerung mehr beginnen.
+    _proactiveRefreshTimer.stop();
+    _refreshRetryTimer.stop();
+    writeRefreshToken();
+    if (!_storeRunning) {
+        return;
+    }
+    qCInfo(lcCredentials) << "Waiting for the keychain to store the refresh token before quitting";
+    QEventLoop loop;
+    _storeWaitLoop = &loop;
+    QTimer::singleShot(shutdownStoreTimeout, &loop, &QEventLoop::quit);
+    loop.exec();
+    _storeWaitLoop = nullptr;
 }
 
 void Credentials::finishFailedRefresh()
 {
     forgetSensitiveData();
-    Q_EMIT authenticationFailed();
-    Q_EMIT fetched();
+    // das Konto prüft die Verbindung und fragt dann den Nutzer (askFromUser())
+    emitFetched();
 }
 
 bool Credentials::networkAvailable()
@@ -276,26 +618,12 @@ bool Credentials::networkAvailable()
     auto qni = QNetworkInformation::instance();
     if (!qni)
         return true; // this can allegedly happen on Linux
-    if (qni->reachability() == QNetworkInformation::Reachability::Disconnected || qni->reachability() == QNetworkInformation::Reachability::Unknown)
+    // nur ein sicher fehlendes Netz zählt: Unknown melden manche Systeme dauerhaft, dann käme auch keine Rückkehr ins Netz
+    if (qni->reachability() == QNetworkInformation::Reachability::Disconnected)
         return false;
     if (qni->isBehindCaptivePortal())
         return false;
     return true;
-}
-
-void Credentials::refreshAccessTokenInternal()
-{
-    if (!_account)
-        return;
-
-    // parent with nam to ensure we reset when the nam is reset
-    // todo: #22 - the parenting here is highly questionable, as is the use of the shared account ptr
-    _oAuthJob = new AccountBasedOAuth(_account, _openIdConfig, this);
-    connect(_oAuthJob, &AccountBasedOAuth::refreshError, this, &Credentials::handleRefreshError);
-    connect(_oAuthJob, &AccountBasedOAuth::refreshFinished, this, &Credentials::handleRefreshSuccess);
-
-    Q_EMIT authenticationStarted();
-    _oAuthJob->refreshAuthentication(_refreshToken);
 }
 
 void Credentials::askFromUser()
@@ -319,11 +647,14 @@ void Credentials::askFromUser()
 
 void Credentials::askFromUserSucceeded(const QString &token, const QString &refreshToken)
 {
-    _accessToken = token;
+    // eine Erneuerung oder Pause von vorher zählt nicht mehr
+    stopRefresh();
+    _accessToken.clear();
+    _ready = false;
     _refreshToken = refreshToken;
-    _ready = true;
-    persist();
-    Q_EMIT fetched();
+    // wie nach einer Erneuerung: erst das Refresh-Token in den Schlüsselbund, dann benutzen
+    _fetchRequested = true;
+    handleRefreshSuccess(token, refreshToken, 0);
 
     if (_requestAuth) {
         delete _requestAuth;
@@ -333,16 +664,11 @@ void Credentials::askFromUserSucceeded(const QString &token, const QString &refr
 
 void Credentials::replaceTokens(const QString &accessToken, const QString &refreshToken)
 {
-    if (_oAuthJob) {
-        // die Erneuerung lief gegen die alte Adresse; ihr Ergebnis darf die neuen Token nicht überschreiben
-        _oAuthJob->disconnect(this);
-        _oAuthJob->deleteLater();
-        _oAuthJob = nullptr;
-    }
-    _tokenRefreshRetriesCount = 0;
     _fetchErrorString.clear();
     // sonst läse checkConnectivity() erst den Schlüsselbund, während der neue Token noch geschrieben wird
     _wasEverFetched = true;
+    // askFromUserSucceeded() verwirft über stopRefresh() eine Erneuerung gegen die alte Adresse samt Pausen: ihr Ergebnis
+    // darf die neuen Token nicht überschreiben
     askFromUserSucceeded(accessToken, refreshToken);
 }
 
@@ -355,12 +681,33 @@ void Credentials::askFromUserLogout()
     }
 }
 
+void Credentials::stopRefresh()
+{
+    if (_oAuthJob) {
+        _oAuthJob->disconnect(this);
+        _oAuthJob->deleteLater();
+        _oAuthJob = nullptr;
+    }
+    _refreshRetryTimer.stop();
+    _proactiveRefreshTimer.stop();
+    _pendingTokensTimer.stop();
+    _pendingTokens.reset();
+    _tokenRefreshRetriesCount = 0;
+    _refreshErrorString.clear();
+    _refreshMaintenance = false;
+}
+
 void Credentials::invalidateToken()
 {
     qCWarning(lcCredentials) << "Invalidating the credentials";
 
     _accessToken.clear();
     _ready = false;
+    setAccessTokenLifetime(0);
+
+    if (!_account) {
+        return;
+    }
 
     // clear the session cookie.
     _account->clearCookieJar();
@@ -371,9 +718,8 @@ void Credentials::invalidateToken()
         return;
     }
 
-    // i hoped we could change this to a new, more useful identifier but since the value is related to what is in the keychain, I don't
-    // think this can be changed easily so I'm leaving it for now.
-    _account->credentialManager()->clear("http");
+    removeRefreshToken();
+    _storedRefreshToken.clear();
 
     // let QNAM forget about the previous credentials it may have been using
     // This needs to be done later in the event loop because we might be called (directly or
@@ -385,18 +731,23 @@ void Credentials::invalidateToken()
 
 void Credentials::forgetSensitiveData()
 {
+    stopRefresh();
     // need to be done before invalidateToken, so it actually deletes the refresh_token from the keychain
     // to do, make that more explicit
     _refreshToken.clear();
     invalidateToken();
+    _fetchRequested = false;
+    if (_jobsBlocked) {
+        // angehaltene Aufträge bekommen kein Token mehr
+        _jobsBlocked = false;
+        Q_EMIT authenticationFailed();
+    }
 }
 
 void Credentials::persist()
 {
     // write secrets to the keychain
-        if (!_refreshToken.isEmpty()) {
-            _account->credentialManager()->set(refreshTokenKeyC(), _refreshToken);
-        } 
+    writeRefreshToken();
 }
 
 } // namespace OCC

@@ -79,6 +79,7 @@ AccountState::AccountState(Account *account)
     timer->start();
 
     connect(_account->credentials(), &AbstractCredentials::requestLogout, this, [this] { setState(State::SignedOut); });
+    connect(_account->credentials(), &AbstractCredentials::authenticationDelayed, this, &AccountState::slotAuthenticationDelayed);
 
     // todo: no we should not directly register the account, but let accountAdded signal trigger it
     if (FolderMan::instance()) {
@@ -636,6 +637,20 @@ void AccountState::slotInvalidCredentials()
     setState(AskingCredentials);
 }
 
+void AccountState::slotAuthenticationDelayed(bool maintenance, const QString &errorString)
+{
+    if (isSignedOut()) {
+        return;
+    }
+    // Die Erneuerung der Anmeldung scheitert vorübergehend. Die Anmeldung gilt weiter, die Credentials versuchen es nach
+    // einer Pause selbst wieder: keine Anmeldeaufforderung, nur zeigen, warum nichts läuft. Die Verbindungsprüfung läuft
+    // weiter; sie meldet Wartung und Zertifikatsfehler und stößt die Erneuerung wieder an, sobald der Server antwortet.
+    qCInfo(lcAccountState) << "Renewing the sign-in is delayed for" << _account->url().toString() << (maintenance ? QStringLiteral("(maintenance)") : errorString);
+    _waitingForNewCredentials = false;
+    _connectionErrors = errorString.isEmpty() ? QStringList() : QStringList{errorString};
+    setState(maintenance ? MaintenanceMode : NetworkError);
+}
+
 void AccountState::slotCredentialsFetched()
 {
     // Make a connection attempt, no matter whether the credentials are
@@ -643,9 +658,12 @@ void AccountState::slotCredentialsFetched()
     // going before bothering the user for a password.
     qCInfo(lcAccountState) << "Fetched credentials for" << _account->url().toString()
                            << "attempting to connect";
+    // refresh the creds/avatar/app providers/etc any time the user re-auths; ein bloß erneuertes Token (nach einer
+    // Ablehnung, ohne dass das Konto darauf wartete) braucht das nicht und soll das Synchronisieren nicht anhalten
+    if (_waitingForNewCredentials) {
+        _needsServerSettingsRefresh = true;
+    }
     _waitingForNewCredentials = false;
-    // refresh the creds/avatar/app providers/etc any time the user re-auths
-    _needsServerSettingsRefresh = true;
     checkConnectivity();
 }
 

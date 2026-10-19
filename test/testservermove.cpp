@@ -613,8 +613,10 @@ private Q_SLOTS:
 
         credentials->replaceTokens(QStringLiteral("new-access"), QStringLiteral("new-refresh"));
 
+        // wie nach jeder Anmeldung: Erst bestätigt der Schlüsselbund das neue Refresh-Token, dann gilt das Access-Token
+        QVERIFY(!credentials->ready());
+        QTRY_COMPARE_WITH_TIMEOUT(fetched.size(), 1, 15000);
         QVERIFY(credentials->ready());
-        QCOMPARE(fetched.size(), 1);
         QTRY_VERIFY(account->credentialManager()->contains(QStringLiteral("http/oauthtoken")));
         auto *job = account->credentialManager()->get(QStringLiteral("http/oauthtoken"));
         QVERIFY(job);

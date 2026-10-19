@@ -72,6 +72,34 @@ int defaultTimeoutMs()
     return static_cast<int>(duration_cast<milliseconds>(defaultTimeout()).count());
 }
 
+// Anfragen an den Token-Endpunkt nicht nach 30 s abbrechen: Der Server tauscht die Tokens womöglich trotzdem aus (eine
+// Bremse gegen Anmeldeversuche wartet bis zu 30 s, eine gesperrte Datenbank länger), die Antwort ginge verloren und
+// mit ihr das neue Refresh-Token. Länger als 120 s aber auch nicht: Die oauth2-App ab 0.10.0 nimmt das vorige
+// Refresh-Token noch 180 s an, die Wiederholung nach einer Zeitüberschreitung (30 s Pause) muss da hineinpassen.
+int tokenRequestTimeoutMs()
+{
+    return static_cast<int>(duration_cast<milliseconds>(120s).count());
+}
+
+// Anfragen an .well-known und den Token-Endpunkt ohne Cookies des Kontos: Mit noch angemeldeter Sitzung wertet der
+// Kern Client-Kennung und -Geheimnis als Anmeldeversuch eines Benutzers („Login failed“) und bremst weitere aus
+void withoutCookies(QNetworkRequest &request)
+{
+    request.setAttribute(QNetworkRequest::CookieLoadControlAttribute, QNetworkRequest::Manual);
+    request.setAttribute(QNetworkRequest::CookieSaveControlAttribute, QNetworkRequest::Manual);
+}
+
+// expires_in kommt je nach Server als Zahl oder als Zeichenkette
+qint64 secondsValue(const QJsonValue &value)
+{
+    if (value.isDouble()) {
+        return value.toInteger();
+    }
+    bool ok = false;
+    const qint64 result = value.toString().toLongLong(&ok);
+    return ok ? result : 0;
+}
+
 QVariant getRequiredField(const QVariantMap &json, const QString &s, QString *error)
 {
     const auto out = json.constFind(s);
@@ -370,7 +398,10 @@ QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
 {
     const QUrl requestTokenUrl = _tokenEndpoint;
     QNetworkRequest req;
-    req.setTransferTimeout(defaultTimeoutMs());
+    req.setTransferTimeout(tokenRequestTimeoutMs());
+    withoutCookies(req);
+    // eine Weiterleitung (etwa auf die Anmeldeseite, wenn die oauth2-App fehlt) ist keine Antwort des Token-Endpunkts
+    req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
     switch (_endpointAuthMethod) {
     case TokenEndpointAuthMethods::client_secret_basic:
         req.setRawHeader("Authorization", "Basic " + QStringLiteral("%1:%2").arg(_openIdConfig.clientId(), _openIdConfig.clientSecret()).toUtf8().toBase64());
@@ -439,6 +470,7 @@ void OAuth::fetchWellKnown()
     req.setAttribute(DontAddCredentialsAttribute, true);
     req.setUrl(Utility::concatUrlPath(_serverUrl, wellKnownPathC));
     req.setTransferTimeout(defaultTimeoutMs());
+    withoutCookies(req);
 
     auto reply = _networkAccessManager->get(req);
 
@@ -580,12 +612,21 @@ void AccountBasedOAuth::fetchWellKnown()
 
     connect(checkServerJob, &CoreJob::finished, this, [checkServerJob, this]() {
         if (checkServerJob->success()) {
+            // Während der Wartung antwortet der Token-Endpunkt nur mit 503: abwarten, das Refresh-Token gilt weiter
+            if (_isRefreshingToken
+                && checkServerJob->result().value<CheckServerJobResult>().statusObject().value(QStringLiteral("maintenance")).toVariant().toBool()) {
+                qCInfo(lcOauth) << "The server is in maintenance mode, not refreshing the token now";
+                Q_EMIT refreshFailed(QString(), true, QString());
+                return;
+            }
             qCDebug(lcOauth) << "CheckServerJob succeeded, fetching" << wellKnownPathC;
             OAuth::fetchWellKnown();
         } else {
             qCDebug(lcOauth) << "CheckServerJob failed, error:" << checkServerJob->errorMessage();
             if (_isRefreshingToken) {
-                Q_EMIT refreshError(checkServerJob->reply()->error(), checkServerJob->errorMessage());
+                const QNetworkReply *reply = checkServerJob->reply();
+                Q_EMIT refreshFailed(reply && reply->error() != QNetworkReply::NoError ? networkReplyErrorString(*reply) : checkServerJob->errorMessage(), false,
+                    QString());
             } else {
                 Q_EMIT result(Error);
             }
@@ -600,51 +641,51 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
         return;
     }
 
-    // I don't see where this ever gets set to false - seems to rely on a one shot run before creating a new instance where the value
-    // is initialized to false. hm.
+    // Jede Erneuerung bekommt ein eigenes Objekt (Credentials::startRefresh()): das bleibt gesetzt
     _isRefreshingToken = true;
 
-
-    // make this a real function -
     auto refresh = [this, refreshToken] {
         auto reply = postTokenRequest({{QStringLiteral("grant_type"), QStringLiteral("refresh_token")}, {QStringLiteral("refresh_token"), refreshToken}});
-        connect(reply, &QNetworkReply::finished, this, [reply, refreshToken, this]() {
-            const auto jsonData = reply->readAll();
+        connect(reply, &QNetworkReply::finished, this, [reply, this]() {
+            reply->deleteLater();
+            const int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
             QJsonParseError jsonParseError;
-            const auto data = QJsonDocument::fromJson(jsonData, &jsonParseError).object().toVariantMap();
-            QString accessToken;
-            QString newRefreshToken = refreshToken;
+            const QJsonObject data = QJsonDocument::fromJson(reply->readAll(), &jsonParseError).object();
             // https://developer.okta.com/docs/reference/api/oidc/#response-properties-2
-            const QString errorString = data.value(QStringLiteral("error")).toString();
-            if (!errorString.isEmpty()) {
-                if (errorString == QLatin1String("invalid_grant") || errorString == QLatin1String("invalid_request")) {
-                    newRefreshToken.clear();
-                } else {
-                    qCWarning(lcOauth) << "Error while refreshing the token:" << errorString << data.value(QStringLiteral("error_description")).toString();
-                }
-            } else if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(lcOauth) << "Error while refreshing the token:" << reply->error() << ":" << reply->errorString()
-                                   << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-                Q_EMIT refreshError(reply->error(), reply->errorString());
+            const QString error = data.value(QStringLiteral("error")).toString();
+            const QString description = data.value(QStringLiteral("error_description")).toString();
+            if (error == QLatin1String("invalid_grant")) {
+                // nur das heißt: dieses Refresh-Token gilt nicht mehr (abgelaufen, widerrufen oder schon verbraucht)
+                qCWarning(lcOauth) << "The server rejected the refresh token:" << error << description;
+                Q_EMIT refreshRejected(description.isEmpty() ? error : QStringLiteral("%1: %2").arg(error, description));
                 return;
-            } else {
-                if (jsonParseError.error != QJsonParseError::NoError || data.isEmpty()) {
-                    // Invalid or empty JSON: Network error maybe?
-                    qCWarning(lcOauth) << "Error while refreshing the token:" << jsonParseError.errorString();
-                } else {
-                    QString error;
-                    accessToken = getRequiredField(data, QStringLiteral("access_token"), &error).toString();
-                    if (!error.isEmpty()) {
-                        qCWarning(lcOauth) << "The reply from the server did not contain all expected fields:" << error;
-                    }
-
-                    const auto refresh_token = data.find(QStringLiteral("refresh_token"));
-                    if (refresh_token != data.constEnd()) {
-                        newRefreshToken = refresh_token.value().toString();
-                    }
-                }
             }
-            Q_EMIT refreshFinished(accessToken, newRefreshToken);
+
+            const QString accessToken = data.value(QStringLiteral("access_token")).toString();
+            const QString newRefreshToken = data.value(QStringLiteral("refresh_token")).toString();
+            const QString tokenType = data.value(QStringLiteral("token_type")).toString();
+            if (reply->error() == QNetworkReply::NoError && httpStatus >= 200 && httpStatus < 300 && error.isEmpty() && !accessToken.isEmpty()
+                && (tokenType.isEmpty() || tokenType.compare(QLatin1String("bearer"), Qt::CaseInsensitive) == 0)) {
+                // RFC 6749, Abschnitt 6: ohne neues Refresh-Token gilt das bisherige weiter
+                Q_EMIT refreshFinished(accessToken, newRefreshToken, secondsValue(data.value(QStringLiteral("expires_in"))));
+                return;
+            }
+
+            // Alles andere ist kein Urteil über das Refresh-Token: Netz, Zeitüberschreitung, 5xx, eine Weiterleitung oder
+            // HTML statt JSON (oauth2-App aus), ein gesperrtes Konto (unauthorized_client) oder ein Fehler in der
+            // Einrichtung (invalid_client, invalid_request)
+            QString reason;
+            if (!error.isEmpty()) {
+                reason = description.isEmpty() ? error : QStringLiteral("%1: %2").arg(error, description);
+            } else if (reply->error() != QNetworkReply::NoError) {
+                reason = networkReplyErrorString(*reply);
+            } else if (jsonParseError.error != QJsonParseError::NoError) {
+                reason = QStringLiteral("HTTP %1: %2").arg(QString::number(httpStatus), jsonParseError.errorString());
+            } else {
+                reason = QStringLiteral("HTTP %1").arg(QString::number(httpStatus));
+            }
+            qCWarning(lcOauth) << "Error while refreshing the token:" << reply->error() << httpStatus << reason;
+            Q_EMIT refreshFailed(reason, false, newRefreshToken);
         });
     };
 

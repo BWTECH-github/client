@@ -60,6 +60,8 @@ public:
     QString clientSecret() const;
     /** Ablauf des Access-Tokens; ungültig, wenn unbekannt. */
     QDateTime expiresAt() const;
+    /** Lebensdauer des Access-Tokens laut Token-Endpunkt (expires_in); 0, wenn unbekannt. */
+    std::chrono::seconds lifetime() const;
     /** Ob das Access-Token fehlt, abgelaufen ist oder innerhalb von margin abläuft. */
     bool needsRefresh(std::chrono::seconds margin) const;
 
