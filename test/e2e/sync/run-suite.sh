@@ -688,7 +688,8 @@ skip_because() { STATUS=SKIP; NOTES+=("$*"); echo "  SKIP: $*"; }
 token_posts_in() { count_req "$1" POST "$TOKEN_PATH_RE"; }
 
 # A8: Das Access-Token lebt 10 s, der Sync dauert ein Vielfaches davon und überträgt dabei viele Dateien parallel (ohne
-# Bulk: einzelne PUT und GET). Erwartet: keine neue Anmeldung, alles übertragen, Erneuerungen während des Laufs.
+# Bulk: 1200 einzelne PUT, dazu 3 GET; im Runner gut 25 ms je PUT, also rund 30 s). Erwartet: keine neue Anmeldung, alles
+# übertragen, Erneuerungen während des Laufs.
 a8() {
 	local tf=$WORK/oauth/token-a8.json i posts unauth started dur old
 	if [ -z "${OC_ROOT:-}" ]; then
@@ -704,8 +705,11 @@ a8() {
 	# abgelaufen: Der Lauf erneuert zuerst und bekommt ein Token mit 10 s Lebensdauer
 	token_edit "$tf" '.access_token = "abgelaufen" | .expires_at = (now | floor) - 60'
 	old=$(jq -r .refresh_token "$tf")
-	for i in $(seq 1 100); do rnd "$L/hoch/datei-$i.bin"; done
-	for i in $(seq 1 30); do seed "runter/datei-$i.bin" || { case_error "Serverdateien nicht anlegbar"; break; }; done
+	for i in $(seq 1 1200); do rnd "$L/hoch/datei-$i.bin"; done
+	# wenige, größere Dateien zum Herunterladen: davtool braucht je Datei einen eigenen Prozess
+	for i in 1 2 3; do
+		rnd_mib "$WORK/seed-$ID/runter-$i.bin" 2 && dav put "$WORK/seed-$ID/runter-$i.bin" "$R/runter/datei-$i.bin" || { case_error "Serverdateien nicht anlegbar"; break; }
+	done
 	TOKEN_FILE=$tf
 	started=$SECONDS
 	ocmd lauf1 env OWNCLOUD_BULK_UPLOAD=0
@@ -714,7 +718,7 @@ a8() {
 	check_run lauf1
 	grep -q 'Authentication failed' "$LOG" && fail "lauf1: neue Anmeldung verlangt: $(grep -m1 -ao 'Authentication failed:.*' "$LOG" | cut -c1-160)"
 	compare "$L" "$R"
-	[ "$(server_files "$R")" -eq 130 ] || fail "auf dem Server $(server_files "$R") statt 130 Dateien"
+	[ "$(server_files "$R")" -eq 1203 ] || fail "auf dem Server $(server_files "$R") statt 1203 Dateien"
 	posts=$(token_posts) unauth=$(unauthorized)
 	# die erste Erneuerung kommt vor dem Lauf, jede weitere mitten im Sync
 	if [ "$posts" -lt 2 ]; then
