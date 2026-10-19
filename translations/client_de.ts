@@ -761,12 +761,12 @@ Bitte legen Sie ein Konto an, indem Sie im Menü der Schaltfläche „Mehr“ di
     <name>OCC::AccountsGuiController</name>
     <message>
         <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+171"/>
-        <location line="+101"/>
+        <location line="+113"/>
         <source>New account failure</source>
         <translation>Fehler bei neuem Konto</translation>
     </message>
     <message>
-        <location line="-101"/>
+        <location line="-113"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
         <translation>Die für die Erstellung eines neuen Kontos erforderlichen Informationen sind unvollständig. Bitte führen Sie den Assistenten erneut aus.</translation>
     </message>
@@ -781,7 +781,7 @@ Bitte legen Sie ein Konto an, indem Sie im Menü der Schaltfläche „Mehr“ di
         <translation>Auf diesem Computer wurde keine Konfiguration des offiziellen ownCloud-Desktop-Clients gefunden.</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+48"/>
         <source>Accounts</source>
         <translation>Konten</translation>
     </message>
@@ -1105,7 +1105,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+406"/>
+        <location filename="../src/gui/folder.cpp" line="+407"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 wurde gelöscht.</translation>
@@ -1220,7 +1220,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <translation>Die systemeigene Ausschlussdatei kann nicht gelesen werden.</translation>
     </message>
     <message>
-        <location line="+195"/>
+        <location line="+205"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Der Ordner %1 wurde erzeugt, aber von der Synchronisation ausgeschlossen. Daten im Ordner werden nicht synchronisiert.</translation>
     </message>
@@ -1285,7 +1285,12 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <translation>Dateien löschen</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+2"/>
+        <source>Decide later</source>
+        <translation>Später entscheiden</translation>
+    </message>
+    <message>
+        <location line="+38"/>
         <source>Changes in synchronized folders could not be tracked reliably.
 
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
@@ -1298,7 +1303,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 %1</translation>
     </message>
     <message>
-        <location line="-143"/>
+        <location line="-150"/>
         <source>A folder from an external storage has been added: %1</source>
         <translation>Ein Ordner von einem externen Speicher wurde hinzugefügt: %1</translation>
     </message>
@@ -1758,7 +1763,7 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
 <context>
     <name>OCC::LegacyClient</name>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+89"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translation>Spaces werden nicht übernommen; fügen Sie sie nach der Anmeldung hinzu.</translation>
     </message>
@@ -1778,6 +1783,11 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>Der Ordner nutzt virtuelle Dateien, die auf diesem Computer nicht verfügbar sind.</translation>
     </message>
     <message>
+        <location line="+12"/>
+        <source>The new folder %1 would overlap the folder %2 of the official client.</source>
+        <translation>Der neue Ordner %1 würde sich mit dem Ordner %2 des offiziellen Clients überschneiden.</translation>
+    </message>
+    <message>
         <location line="+17"/>
         <location line="+26"/>
         <source>The folder could not be set up.</source>
@@ -1789,15 +1799,21 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>Der lokale Ordner existiert nicht.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="-19"/>
+        <location line="+22"/>
         <source>The folder is already synchronized.</source>
         <translation>Der Ordner wird bereits synchronisiert.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <source>The official ownCloud client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
+        <translation>Der offizielle ownCloud-Client läuft und synchronisiert den Ordner %1 ebenfalls. Beenden Sie ihn, damit nicht zwei Programme den Ordner gleichzeitig synchronisieren.</translation>
     </message>
 </context>
 <context>
     <name>OCC::LegacyClientImportController</name>
     <message>
-        <location line="+38"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+38"/>
         <source>%1: already set up.</source>
         <translation>%1: bereits eingerichtet.</translation>
     </message>
@@ -1872,12 +1888,12 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>%1: Anmeldung abgebrochen, nicht übernommen.</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+38"/>
         <source>%1: signed in as %2, the folders of the official client were not taken over.</source>
         <translation>%1: als %2 angemeldet, die Ordner des offiziellen Clients wurden nicht übernommen.</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+14"/>
         <source>%1: taken over, the files are recognized without downloading them again.</source>
         <translation>%1: übernommen, die Dateien werden ohne erneuten Download erkannt.</translation>
     </message>
@@ -3947,7 +3963,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>%1 (Übersprungen aufgrund des früheren Fehlers, erneuter Versuch in %2)</translation>
     </message>
     <message>
-        <location line="+198"/>
+        <location line="+201"/>
         <source>Unable to sync: the local folder is missing.</source>
         <translation>Synchronisierung nicht möglich: Der lokale Ordner fehlt.</translation>
     </message>
@@ -3965,7 +3981,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location line="+11"/>
         <location line="+83"/>
-        <location line="+117"/>
+        <location line="+140"/>
         <location line="+65"/>
         <source>Cannot open the sync journal.</source>
         <translation>Das Synchronisierungsprotokoll kann nicht geöffnet werden.</translation>
@@ -3986,13 +4002,13 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Auf dem Server ist nicht genug Platz, um alle Dateien hochzuladen.</translation>
     </message>
     <message>
-        <location line="-846"/>
+        <location line="-872"/>
         <source>application exit</source>
         <comment>abort reason</comment>
         <translation>Anwendung beendet</translation>
     </message>
     <message>
-        <location line="+322"/>
+        <location line="+325"/>
         <source>Unable to read the blacklist from the local database</source>
         <translation>Fehler beim Einlesen der schwarzen Liste aus der lokalen Datenbank</translation>
     </message>
