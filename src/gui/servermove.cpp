@@ -260,15 +260,18 @@ QString ServerMove::applyNewServerUrl(AccountState *accountState, const QUrl &ne
     account->setUrl(newUrl);
     Q_EMIT account->wantsAccountSaved(account);
 
-    if (folderMan) {
-        folderMan->rebuildFoldersForAccount(accountState, [&oldUrl, &newUrl, account](FolderDefinition &definition) {
-            if (const auto rebased = rebaseUrl(definition.webDavUrl(), oldUrl, newUrl)) {
-                definition.setWebDavUrl(*rebased);
-            } else {
-                qCWarning(lcServerMove) << "unexpected WebDAV address" << definition.webDavUrl() << "for" << definition.localPath();
-                definition.setWebDavUrl(account->davUrl());
-            }
-        });
+    // ohne laufenden Lauf (oben geprüft, seitdem keine Ereignisschleife) baut FolderMan immer um
+    const bool rebuilt = !folderMan || folderMan->rebuildFoldersForAccount(accountState, [&oldUrl, &newUrl, account](FolderDefinition &definition) {
+        if (const auto rebased = rebaseUrl(definition.webDavUrl(), oldUrl, newUrl)) {
+            definition.setWebDavUrl(*rebased);
+        } else {
+            qCWarning(lcServerMove) << "unexpected WebDAV address" << definition.webDavUrl() << "for" << definition.localPath();
+            definition.setWebDavUrl(account->davUrl());
+        }
+    });
+    if (!rebuilt) {
+        // die Ordnerpaare tragen noch die alte Adresse; ein erneuter Umzug stellt sie über rebaseUrl() um
+        qCCritical(lcServerMove) << "the folders of" << account->displayNameWithHost() << "were not rebuilt for the new address";
     }
 
     // die neuen Token unter dem neuen Host speichern; schließt auch eine offene Neuanmeldung für die alte Adresse
@@ -641,7 +644,8 @@ void ServerMoveController::applyWhenSyncsStopped(const QUrl &newUrl, const QStri
         fail(tr("The synchronization of the account could not be stopped. The address was not changed, please try again."));
         return;
     }
-    releaseSyncs();
+    // erst umstellen, dann die Synchronisation freigeben (reset() bzw. fail()): FolderMan::setSyncEnabled(true) startet
+    // sofort den nächsten Lauf aus der Warteschlange, womöglich einen Ordner dieses Kontos
     const QString error = ServerMove::applyNewServerUrl(_accountState, newUrl, accessToken, refreshToken);
     if (!error.isEmpty()) {
         fail(error);
