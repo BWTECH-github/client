@@ -755,9 +755,13 @@ void ShareDialog::updateLinkPolicy()
     for (const auto &share : std::as_const(_shares))
         linkCount += share.isLink() ? 1 : 0;
     const bool onlyOneLink = !editing && !capabilities.sharePublicLinkMultiple() && linkCount > 0;
+    // Allowlist des Servers für Link-Ersteller: vorhandene Links lassen sich weiter bearbeiten, neue lehnt er ab (403)
+    const bool mayNotCreate = !editing && !capabilities.sharePublicLinkCanCreate();
     const bool mayShare = _maxPermissions.testFlag(SharePermission::Share);
 
     QStringList hints;
+    if (mayNotCreate)
+        hints.append(tr("You are not allowed to create public links on this server."));
     if (passwordEnforced)
         hints.append(tr("The server requires a password for this kind of link."));
     if (expireEnforced)
@@ -766,7 +770,7 @@ void ShareDialog::updateLinkPolicy()
         hints.append(tr("The server allows only one public link per item."));
     _linkPolicyHint->setText(hints.join(QLatin1Char('\n')));
     _linkPolicyHint->setVisible(!hints.isEmpty());
-    _linkEditor->setEnabled(mayShare && !onlyOneLink);
+    _linkEditor->setEnabled(mayShare && !onlyOneLink && !mayNotCreate);
 }
 
 void ShareDialog::saveLink()

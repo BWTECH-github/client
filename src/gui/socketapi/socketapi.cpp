@@ -444,8 +444,9 @@ void SocketApi::command_COPY_PUBLIC_LINK(const QString &localFile, SocketListene
     Account *account = fileData.folder->accountState()->account();
     const QString remotePath = fileData.serverRelativePath;
     const QString localPath = fileData.localPath;
-    if (PublicLinkCreator::needsUserInput(account->capabilities())) {
-        // Passwort oder Ablaufdatum vorgeschrieben: das Formular im Dialog kennt die Vorgaben schon
+    // Passwort oder Ablaufdatum vorgeschrieben: das Formular im Dialog kennt die Vorgaben schon; ohne Erlaubnis zum
+    // Anlegen (Allowlist des Servers) zeigt der Dialog die vorhandenen Links und den Grund
+    if (PublicLinkCreator::needsUserInput(account->capabilities()) || !account->capabilities().sharePublicLinkCanCreate()) {
         Q_EMIT shareCommandReceived(remotePath, localPath, ShareDialogStartPage::PublicLinks, QString());
         return;
     }
@@ -453,10 +454,10 @@ void SocketApi::command_COPY_PUBLIC_LINK(const QString &localFile, SocketListene
     connect(creator, &PublicLinkCreator::linkReady, this, [creator, localPath](const QString &url) {
         creator->deleteLater();
         copyUrlToClipboard(QUrl(url));
-        // Rückmeldung, weil zwischen Klick und Zwischenablage zwei Serveranfragen liegen
+        // Rückmeldung auf eine ausdrückliche Aktion, zwischen Klick und Zwischenablage liegen zwei Serveranfragen:
+        // auch dann, wenn optionale Benachrichtigungen aus sind
         if (auto *app = ocAppOrNull()) {
-            app->tray()->slotShowOptionalTrayMessage(
-                tr("Public link copied"), tr("The public link to %1 is in the clipboard.").arg(QFileInfo(localPath).fileName()));
+            app->tray()->slotShowTrayMessage(tr("Public link copied"), tr("The public link to %1 is in the clipboard.").arg(QFileInfo(localPath).fileName()));
         }
     });
     connect(creator, &PublicLinkCreator::failed, this, [this, creator, remotePath, localPath](const QString &serverMessage) {
@@ -785,11 +786,14 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
     } else {
         listener->sendMessage(QStringLiteral("MENU_ITEM:SHARE") + flagString + tr("Share…"));
 
-        // öffentliche Links wie im Client 6.0.3; verlangt der Server Passwort oder Ablaufdatum, öffnet „Erstellen“ das Formular
+        // öffentliche Links wie im Client 6.0.3; verlangt der Server Passwort oder Ablaufdatum, öffnet „Erstellen“ das Formular.
+        // Wer keine Links anlegen darf (Allowlist des Servers), sieht nur „verwalten“ für vorhandene Links.
         if (capabilities.sharePublicLink()) {
-            const QString createText =
-                PublicLinkCreator::needsUserInput(capabilities) ? tr("Create public link…") : tr("Create and copy public link to clipboard");
-            listener->sendMessage(QStringLiteral("MENU_ITEM:COPY_PUBLIC_LINK") + flagString + createText);
+            if (capabilities.sharePublicLinkCanCreate()) {
+                const QString createText =
+                    PublicLinkCreator::needsUserInput(capabilities) ? tr("Create public link…") : tr("Create and copy public link to clipboard");
+                listener->sendMessage(QStringLiteral("MENU_ITEM:COPY_PUBLIC_LINK") + flagString + createText);
+            }
             listener->sendMessage(QStringLiteral("MENU_ITEM:MANAGE_PUBLIC_LINKS") + flagString + tr("Manage public links…"));
         }
     }

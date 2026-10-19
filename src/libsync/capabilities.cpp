@@ -52,6 +52,12 @@ bool Capabilities::sharePublicLink() const
     return shareAPI() && _fileSharingPublicCapabilities.value(QStringLiteral("enabled"), true).toBool();
 }
 
+bool Capabilities::sharePublicLinkCanCreate() const
+{
+    // fehlt der Schlüssel (ältere Server), gilt keine Einschränkung
+    return sharePublicLink() && _fileSharingPublicCapabilities.value(QStringLiteral("can_create_public_link"), true).toBool();
+}
+
 bool Capabilities::sharePublicLinkAllowUpload() const
 {
     return _fileSharingPublicCapabilities.value(QStringLiteral("upload")).toBool();
