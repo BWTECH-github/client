@@ -327,6 +327,46 @@ private Q_SLOTS:
         QVERIFY(!folderman->checkRemotePathValidity(uuid, QStringLiteral("/Dokumente")).isEmpty());
     }
 
+    // Wird ein Konto mit vielen Ordnerpaaren (ownCloud 10) entfernt, verschwinden alle: Bisher lief die Schleife über den
+    // Hash, aus dem sie zugleich löschte, und übersprang Einträge. Die übersprungenen behielten Journal und
+    // Sync-Root-Registrierung und lebten bis zum Neustart weiter.
+    void testRemovingAccountRemovesAllOc10Pairs()
+    {
+        auto dir = TestUtils::createTempDir();
+        QVERIFY(dir.isValid());
+        const QString dirPath = QDir(dir.path()).canonicalPath();
+
+        auto accountState = createDummyAccount();
+        Account *account = accountState->account();
+        account->setCapabilities({account->url(), oc10Capabilities()});
+        const QUuid uuid = account->uuid();
+        FolderMan *folderman = TestUtils::folderMan();
+
+        constexpr int pairs = 40;
+        int destroyed = 0;
+        QStringList journals;
+        for (int i = 0; i < pairs; ++i) {
+            const QString local = dirPath + QStringLiteral("/paar%1").arg(i);
+            QVERIFY(QDir().mkpath(local));
+            Folder *folder = folderman->addFolder(accountState.get(), oc10FolderDefinition(account, local, QStringLiteral("/Ordner%1").arg(i)));
+            QVERIFY(folder);
+            connect(folder, &QObject::destroyed, this, [&destroyed] { ++destroyed; });
+            // das Journal anlegen, damit sein Löschen sichtbar ist
+            folder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {});
+            journals.append(folder->journalDb()->databaseFilePath());
+            QVERIFY(QFileInfo::exists(journals.last()));
+        }
+        QCOMPARE(folderman->foldersForAccount(uuid).size(), pairs);
+
+        QVERIFY(QMetaObject::invokeMethod(folderman, "slotRemoveFoldersForAccount", Q_ARG(OCC::AccountState *, accountState.get())));
+
+        QVERIFY(folderman->foldersForAccount(uuid).isEmpty());
+        QTRY_COMPARE(destroyed, pairs);
+        for (const auto &journal : std::as_const(journals)) {
+            QVERIFY2(!QFileInfo::exists(journal), qPrintable(journal));
+        }
+    }
+
     // Spaces (oCIS) bleiben wie bisher: dort gibt es keine Prüfung der Serverordner
     void testRemotePathValidityIgnoresSpaces()
     {

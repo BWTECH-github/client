@@ -740,7 +740,11 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
     // we always should emit before the folders have actually been deleted. consider renaming
     emit folderListChanged(id, {});
 
-    for (const auto &f : std::as_const(_folders[id])) {
+    // über eine Kopie: deleteFolderSync() entfernt den Ordner aus _folders[id], ein Iterator darüber überspränge danach
+    // Einträge (QHash rückt beim Löschen nach). Ohne Spaces hat ein Konto mehrere Ordnerpaare; ein übersprungenes behielte
+    // Journal und Sync-Root-Registrierung und lebte bis zum Neustart weiter.
+    const QList<Folder *> folders = _folders.value(id).values();
+    for (Folder *f : folders) {
         disconnectAutoSave(f);
         removeFolderSettings(f->id(), settings);
         deleteFolderSync(f);
