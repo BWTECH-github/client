@@ -70,6 +70,10 @@ endif(UNIX AND NOT APPLE)
 owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
+# Ordner-Assistent für ownCloud 10: Serverordner wählen und anlegen, schon gespiegelte Serverordner sperren
+owncloud_add_test(FolderWizard)
+# „Serveradresse ändern…“: status.php-Prüfung, Weiterleitungen, Instanz-Vergleich, Umstellen von Konto und Ordnerpaaren
+owncloud_add_test(ServerMove)
 
 owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp
     # Anmeldeseite des Assistenten: Browser erneut öffnen, Browser lässt sich nicht öffnen, Assistent geschlossen

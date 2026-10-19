@@ -97,6 +97,10 @@ void AccountsGuiController::onAccountAdded(AccountState *state)
     connect(account, &Account::accountAliasChanged, accountAction, [accountAction](const QString &newAlias) { accountAction->setText(newAlias); });
 
     accountAction->setToolTip(QString("%1\n%2").arg(account->davDisplayName(), account->url().toDisplayString()));
+    // nach „Serveradresse ändern…“ die neue Adresse zeigen
+    connect(account, &Account::urlChanged, accountAction, [accountAction, account] {
+        accountAction->setToolTip(QString("%1\n%2").arg(account->davDisplayName(), account->url().toDisplayString()));
+    });
     accountAction->setData(QVariant::fromValue(accountView));
     accountAction->setCheckable(true);
 

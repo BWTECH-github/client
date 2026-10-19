@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#include <algorithm>
+
 namespace OCC {
 
 WatcherThread::WatchChanges WatcherThread::watchChanges(size_t fileNotifyBufferSize)
@@ -37,7 +39,7 @@ WatcherThread::WatchChanges WatcherThread::watchChanges(size_t fileNotifyBufferS
 
     if (_directory == INVALID_HANDLE_VALUE) {
         const auto error = GetLastError();
-        qCWarning(lcFolderWatcher) << "Failed to create handle for" << _path << ", error:" << Utility::formatWinError(error);
+        reportError(QStringLiteral("Failed to create handle for %1, error: %2").arg(_path, Utility::formatWinError(error)));
         _directory = nullptr;
         return WatchChanges::Error;
     }
@@ -73,12 +75,14 @@ WatcherThread::WatchChanges WatcherThread::watchChanges(size_t fileNotifyBufferS
                 Q_EMIT changed({_path});
                 return WatchChanges::NeedBiggerBuffer;
             } else {
-                qCWarning(lcFolderWatcher) << "ReadDirectoryChangesW error" << Utility::formatWinError(errorCode);
+                reportError(QStringLiteral("ReadDirectoryChangesW error %1").arg(Utility::formatWinError(errorCode)));
                 return WatchChanges::Error;
             }
         }
 
         _parent->_ready = true;
+        // die Beobachtung läuft wieder: ein späterer Fehler ist wieder eine Warnung wert
+        _consecutiveErrors = 0;
 
         HANDLE handles[] = { _resultEvent, _stopEvent };
         DWORD result = WaitForMultipleObjects(
@@ -91,7 +95,7 @@ WatcherThread::WatchChanges WatcherThread::watchChanges(size_t fileNotifyBufferS
             return WatchChanges::Done;
         }
         if (result != 0) {
-            qCWarning(lcFolderWatcher) << "WaitForMultipleObjects failed" << result << Utility::formatWinError(error);
+            reportError(QStringLiteral("WaitForMultipleObjects failed %1 %2").arg(QString::number(result), Utility::formatWinError(error)));
             return WatchChanges::Error;
         }
 
@@ -104,7 +108,7 @@ WatcherThread::WatchChanges WatcherThread::watchChanges(size_t fileNotifyBufferS
                 Q_EMIT changed({_path});
                 return WatchChanges::NeedBiggerBuffer;
             } else {
-                qCWarning(lcFolderWatcher) << "GetOverlappedResult error" << Utility::formatWinError(errorCode);
+                reportError(QStringLiteral("GetOverlappedResult error %1").arg(Utility::formatWinError(errorCode)));
                 return WatchChanges::Error;
             }
         }
@@ -166,11 +170,24 @@ void WatcherThread::closeHandle()
     }
 }
 
+void WatcherThread::reportError(const QString &message)
+{
+    // ein stundenlang getrenntes Netzlaufwerk schriebe sonst alle paar Sekunden eine Warnung ins Protokoll
+    if (_consecutiveErrors == 0) {
+        qCWarning(lcFolderWatcher).noquote() << message << "- retrying with growing pauses, repeated errors are logged at debug level";
+    } else {
+        qCDebug(lcFolderWatcher).noquote() << message;
+    }
+}
+
+DWORD WatcherThread::retryDelayMs(int consecutiveErrors)
+{
+    // 2, 4, 8, 16, 32 s, danach jede Minute
+    return std::min<DWORD>(2000u << std::min(std::max(consecutiveErrors, 1) - 1, 5), 60000u);
+}
+
 void WatcherThread::run()
 {
-    _resultEvent = CreateEvent(nullptr, true, false, nullptr);
-    _stopEvent = CreateEvent(nullptr, true, false, nullptr);
-
     // If this buffer fills up before we've extracted its data we will lose
     // change information. Therefore start big.
     size_t bufferSize = 4096 * 10;
@@ -184,10 +201,14 @@ void WatcherThread::run()
         case WatchChanges::Done:
             return;
         case WatchChanges::Error:
-            // Other errors shouldn't actually happen,
-            // so sleep a bit to avoid running into the same error case in a
-            // tight loop.
-            sleep(2);
+            // Etwa wenn der Ordner gelöscht oder das Laufwerk getrennt wurde: nach einer Pause erneut versuchen, nicht in
+            // einer engen Schleife. Früher fiel der Fall nach sleep(2) in Q_UNREACHABLE() durch, im Release-Build ein
+            // Absturz des ganzen Programms. stop() beendet die Pause sofort.
+            ++_consecutiveErrors;
+            if (WaitForSingleObject(_stopEvent, retryDelayMs(_consecutiveErrors)) == WAIT_OBJECT_0) {
+                return;
+            }
+            continue;
         default:
             Q_UNREACHABLE();
         }
@@ -200,14 +221,18 @@ WatcherThread::WatcherThread(FolderWatcherPrivate *parent, const QString &path)
     , _path(path + (path.endsWith(QLatin1Char('/')) ? QString() : QStringLiteral("/")))
     , _longPath(FileSystem::longWinPath(_path))
     , _directory(nullptr)
-    , _resultEvent(nullptr)
-    , _stopEvent(nullptr)
+    // Die Ereignisse entstehen hier, nicht erst in run(): Kam stop() vor dem Start des Threads (Ordner gleich nach dem
+    // Anlegen wieder entfernt), setzte es sonst ein Ereignis, das es noch nicht gab, und wait() im Destruktor hing für immer.
+    , _resultEvent(CreateEvent(nullptr, true, false, nullptr))
+    , _stopEvent(CreateEvent(nullptr, true, false, nullptr))
 {
 }
 
 WatcherThread::~WatcherThread()
 {
     closeHandle();
+    CloseHandle(_resultEvent);
+    CloseHandle(_stopEvent);
 }
 
 void WatcherThread::stop()

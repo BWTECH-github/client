@@ -60,16 +60,17 @@ void ETagWatcher::onFolderAdded(const QUuid &accountId, Folder *folder)
 {
     Q_UNUSED(accountId);
 
-    QString spaceId = folder->spaceId();
-    if (_lastEtagJobForSpace.contains(accountId) && _lastEtagJobForSpace[accountId].contains(spaceId))
+    // bei Spaces die Space-ID, ohne Spaces die Ordner-ID: mehrere Ordnerpaare eines ownCloud-10-Kontos
+    const QString key = folder->mapKey();
+    if (_lastEtagJobForSpace.contains(accountId) && _lastEtagJobForSpace[accountId].contains(key))
         return;
 
-    _lastEtagJobForSpace[accountId].insert(spaceId, ETagInfo{{}, folder});
+    _lastEtagJobForSpace[accountId].insert(key, ETagInfo{{}, folder});
 
     connect(folder->syncEngine(), &SyncEngine::rootEtagDiscovered, this, [accountId, folder, this](const QString &etag, const QDateTime &time) {
-        QString spaceId = folder->spaceId();
-        if (_lastEtagJobForSpace.contains(accountId) && _lastEtagJobForSpace[accountId].contains(spaceId)) {
-            auto &info = _lastEtagJobForSpace[accountId][spaceId];
+        const QString key = folder->mapKey();
+        if (_lastEtagJobForSpace.contains(accountId) && _lastEtagJobForSpace[accountId].contains(key)) {
+            auto &info = _lastEtagJobForSpace[accountId][key];
             info.etag = etag;
             if (folder->accountState()) {
                 folder->accountState()->tagLastSuccessfulETagRequest(time);
@@ -82,7 +83,7 @@ void ETagWatcher::onFolderRemoved(const QUuid &accountId, Folder *folder)
 {
     Q_UNUSED(accountId);
     if (folder && _lastEtagJobForSpace.contains(accountId))
-        _lastEtagJobForSpace[accountId].remove(folder->spaceId());
+        _lastEtagJobForSpace[accountId].remove(folder->mapKey());
 }
 
 void ETagWatcher::updateEtag(const QUuid &accountId, const QString &spaceId, const QString &etag)

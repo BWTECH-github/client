@@ -12,6 +12,7 @@
  * for more details.
  */
 #pragma once
+#include "gui/owncloudguilib.h"
 #include "gui/qmlutils.h"
 
 #include "libsync/account.h"
@@ -27,7 +28,8 @@ class SpacesBrowser;
 namespace OCC::Spaces {
 class SpacesModel;
 
-class SpacesBrowser : public QWidget
+// exportiert, weil die statische Bibliothek des Ordner-Assistenten sie nutzt und die Tests sie mit hineinziehen
+class OWNCLOUDGUI_EXPORT SpacesBrowser : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(QSortFilterProxyModel *model MEMBER _sortModel READ model CONSTANT)

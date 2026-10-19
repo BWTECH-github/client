@@ -5,7 +5,10 @@
  *
  */
 #include "account.h"
+#include "accountstate.h"
+#include "configfile.h"
 #include "libsync/creds/credentialmanager.h"
+#include "theme.h"
 
 #include "testutils/syncenginetestutils.h"
 
@@ -90,6 +93,34 @@ private Q_SLOTS:
 #else
         QVERIFY(QTest::qWaitFor([this] { return _finished; }));
 #endif
+    }
+
+    // nach einem Serverumzug (neuer Host) liest der Manager die bekannten Schlüssel aus dem neuen Bereich, nicht mehr aus dem
+    // alten: sonst landete der neue Token unter dem alten Bereich und wäre nach einem Neustart verloren
+    void testScopeFollowsServerUrl()
+    {
+        auto accountState = createDummyAccount();
+        Account *account = accountState->account();
+        CredentialManager *creds = account->credentialManager();
+        const QString key = QStringLiteral("scope-test");
+        const QString oldHost = account->url().host();
+        const auto scopeGroup = [account](const QString &host) {
+            return QStringLiteral("%1_credentials:%2:%3").arg(Theme::instance()->appName(), host, account->uuid().toString(QUuid::WithoutBraces));
+        };
+
+        {
+            auto oldScope = ConfigFile::settingsWithGroup(QStringLiteral("Credentials/") + scopeGroup(oldHost));
+            oldScope->setValue(key, true);
+            oldScope->sync();
+        }
+        QVERIFY(creds->contains(key));
+
+        account->setUrl(QUrl(QStringLiteral("https://neu.example.org/owncloud")));
+        QVERIFY(!creds->contains(key));
+
+        auto credentials = ConfigFile::settingsWithGroup(QStringLiteral("Credentials"));
+        credentials->remove(scopeGroup(oldHost));
+        credentials->remove(scopeGroup(QStringLiteral("neu.example.org")));
     }
 
     void testSetGet2()

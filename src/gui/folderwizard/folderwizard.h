@@ -36,10 +36,12 @@ class FolderWizard : public QWizard
 {
     Q_OBJECT
 public:
+    // QWizard zeigt die Seiten in der Reihenfolge ihrer IDs: erst der Serverordner (oder Space), dann der lokale Ordner,
+    // damit der Vorschlag für den lokalen Ordner zum gewählten Serverordner passt
     enum PageType {
         Page_Space,
-        Page_Source,
         Page_Target,
+        Page_Source,
         Page_SelectiveSync
     };
     Q_ENUM(PageType)

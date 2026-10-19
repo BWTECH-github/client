@@ -48,6 +48,14 @@ protected:
     WatchChanges watchChanges(size_t fileNotifyBufferSize);
     void processEntries(FILE_NOTIFY_INFORMATION *curEntry);
     void closeHandle();
+    // nur der erste Fehler einer Folge als Warnung, die übrigen im Debug-Protokoll
+    void reportError(const QString &message);
+
+public:
+    // Pause vor dem nächsten Versuch nach so vielen Fehlern in Folge: 2 s, verdoppelt, höchstens 60 s
+    static DWORD retryDelayMs(int consecutiveErrors);
+
+protected:
 
 Q_SIGNALS:
     void changed(const QSet<QString> &path);
@@ -60,6 +68,9 @@ private:
     HANDLE _directory;
     HANDLE _resultEvent;
     HANDLE _stopEvent;
+    // Fehler in Folge (Ordner gelöscht, Laufwerk getrennt): nur der erste kommt als Warnung ins Protokoll, die Pause bis
+    // zum nächsten Versuch wächst; zurückgesetzt, sobald die Beobachtung wieder läuft
+    int _consecutiveErrors = 0;
 };
 
 /**

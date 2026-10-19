@@ -36,6 +36,7 @@ set(client_SRCS
     protocolitem.cpp
     syncerrorwidget.cpp
     selectivesyncwidget.cpp
+    servermove.cpp
     shareapi.cpp
     sharedialog.cpp
     tlserrordialog.cpp

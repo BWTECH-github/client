@@ -5,6 +5,8 @@
  *
  */
 
+#include <QAtomicInt>
+#include <QScopeGuard>
 #include <QtTest>
 
 #include "common/chronoelapsedtimer.h"
@@ -268,6 +270,76 @@ private Q_SLOTS:
         mkdir(dir);
         QVERIFY(waitForPathChanged(dir));
     }
+
+#ifdef Q_OS_WIN
+    // Wird der beobachtete Ordner selbst gelöscht (oder das Laufwerk getrennt), wartet der Beobachter-Thread und versucht
+    // es erneut. Früher fiel er nach zwei Sekunden in Q_UNREACHABLE() und riss im Release-Build das Programm mit.
+    void testWatchedFolderRemoved()
+    {
+        auto parentDir = TestUtils::createTempDir();
+        QVERIFY(parentDir.isValid());
+        const QString watched = parentDir.path() + QStringLiteral("/watched");
+        QVERIFY(QDir().mkpath(watched));
+
+        auto watcher = std::make_unique<FolderWatcherForTests>();
+        watcher->init(watched);
+        QVERIFY(QDir(watched).removeRecursively());
+
+        // länger als zwei Pausen nach einem Fehler: der Thread muss die Fehler überstehen
+        QTest::qWait(4500);
+
+        // stop() beendet die Pause sofort, das Entfernen des Beobachters hängt nicht
+        Utility::ChronoElapsedTimer timer;
+        watcher.reset();
+        QVERIFY(timer.duration() < 1500ms);
+    }
+
+    // Ein Beobachter, der gleich nach dem Anlegen wieder verschwindet: stop() kam früher mitunter vor dem Start des Threads
+    // und ging ins Leere, der Destruktor wartete dann für immer.
+    void testWatcherRemovedRightAfterCreation()
+    {
+        auto parentDir = TestUtils::createTempDir();
+        QVERIFY(parentDir.isValid());
+        Utility::ChronoElapsedTimer timer;
+        for (int i = 0; i < 200; ++i) {
+            FolderWatcherForTests watcher;
+            watcher.init(parentDir.path());
+        }
+        QVERIFY(timer.duration() < 30s);
+    }
+
+    // Ein dauerhaft fehlender Ordner (etwa ein getrenntes Netzlaufwerk) schreibt eine Warnung ins Protokoll, nicht alle zwei
+    // Sekunden eine: rund 1800 Zeilen je Stunde füllten sonst das Protokoll
+    void testMissingFolderIsReportedOnce()
+    {
+        auto parentDir = TestUtils::createTempDir();
+        QVERIFY(parentDir.isValid());
+        const QString watched = parentDir.path() + QStringLiteral("/watched");
+        QVERIFY(QDir().mkpath(watched));
+
+        static QAtomicInt warnings;
+        static QtMessageHandler previousHandler = nullptr;
+        warnings.storeRelaxed(0);
+        previousHandler = qInstallMessageHandler([](QtMsgType type, const QMessageLogContext &context, const QString &message) {
+            if (type == QtWarningMsg && qstrcmp(context.category, "gui.folderwatcher") == 0) {
+                warnings.fetchAndAddRelaxed(1);
+            }
+            if (previousHandler) {
+                previousHandler(type, context, message);
+            }
+        });
+        const auto restore = qScopeGuard([] { qInstallMessageHandler(previousHandler); });
+
+        auto watcher = std::make_unique<FolderWatcherForTests>();
+        watcher->init(watched);
+        QVERIFY(QDir(watched).removeRecursively());
+        // länger als vier Versuche im alten Takt von zwei Sekunden
+        QTest::qWait(9000);
+        watcher.reset();
+
+        QVERIFY2(warnings.loadRelaxed() <= 1, qPrintable(QString::number(warnings.loadRelaxed())));
+    }
+#endif
 };
 
 #ifdef Q_OS_MAC

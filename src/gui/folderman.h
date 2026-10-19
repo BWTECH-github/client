@@ -23,6 +23,8 @@
 #include <QList>
 #include <QObject>
 
+#include <functional>
+
 namespace OCC {
 
 class FolderMan;
@@ -147,6 +149,19 @@ public:
      *  - space folder not in a spaces sync root of other account (check with account uuid) or (possibly branded) client
      */
     QString checkPathValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid) const;
+
+    /**
+     * @brief Prüft einen Serverordner für ein neues Ordnerpaar eines Kontos ohne Spaces (ownCloud 10/owncloud.online).
+     *
+     * Jeder Serverordner wird je Konto höchstens einmal gespiegelt: weder derselbe Ordner noch ein Ober- oder Unterordner
+     * (die Kontowurzel eingeschlossen) eines schon synchronisierten Serverordners. Sonst läge jede Datei doppelt auf der
+     * Platte, und Löschungen wirkten über beide Kopien. Ordner von Spaces (mit Space-ID) bleiben außen vor.
+     *
+     * @param accountUuid das Konto
+     * @param remotePath der Serverordner relativ zur WebDAV-Wurzel des Kontos, etwa "/" oder "/Dokumente"
+     * @return eine Fehlermeldung, oder einen leeren String, wenn der Serverordner frei ist
+     */
+    QString checkRemotePathValidity(const QUuid &accountUuid, const QString &remotePath) const;
 
     static std::unique_ptr<FolderMan> createInstance();
 
@@ -300,10 +315,23 @@ public:
      */
     // todo: #1
     // todo: #2
-    void addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &config);
+    // owncloud.online: liefert den Grund, wenn das Paar nicht angelegt wird (sonst leer), damit der Aufrufer ihn zeigen kann
+    QString addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &config);
 
     // todo: #3
     void removeFolderSettings(Folder *folder);
+
+    /// läuft gerade eine Synchronisation eines Ordners dieses Kontos?
+    bool isAnySyncRunning(const QUuid &accountId) const;
+
+    /**
+     * Baut alle Ordnerpaare eines Kontos neu auf, etwa nach einem Serverumzug: Die Ordner werden entladen (Journale, lokale
+     * Ordner und virtuelle Dateien bleiben), @p adjust passt jede Definition an, dann werden sie gespeichert und neu
+     * geladen. Die alten Ordner sind gelöscht, bevor die neuen entstehen: Journal und Cloud-Files-Verbindung lassen sich
+     * nicht doppelt öffnen. Läuft noch eine Synchronisation des Kontos, ändert es nichts und liefert false; der Aufrufer
+     * muss sie vorher beenden (ein laufender Ordner darf nicht gelöscht werden).
+     */
+    bool rebuildFoldersForAccount(AccountState *accountState, const std::function<void(FolderDefinition &)> &adjust);
 
     /**
      * @brief folder retrieves the folder given the spaceId, or null if no folder exists for the account and space combo

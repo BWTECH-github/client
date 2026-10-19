@@ -112,6 +112,13 @@ public:
 
     const QByteArray &id() const { return _id; }
 
+    /**
+     * Schlüssel, unter dem FolderMan, die Ordnerliste und der ETag-Wächter den Ordner führen: bei Spaces die Space-ID
+     * (je Space genau ein Ordner), sonst die Ordner-ID. Ohne Spaces (ownCloud 10/owncloud.online) ist die Space-ID immer
+     * leer und ließe als Schlüssel nur ein Ordnerpaar je Konto zu.
+     */
+    QString mapKey() const { return _spaceId.isEmpty() ? QString::fromUtf8(_id) : _spaceId; }
+
     QString displayName() const;
 
     /**
@@ -210,6 +217,9 @@ public:
      * @return the space id for the folder
      */
     QString spaceId() const { return _definition.spaceId(); }
+
+    /// siehe FolderDefinition::mapKey()
+    QString mapKey() const { return _definition.mapKey(); }
 
     /**
      * remote folder path, usually without trailing /, exception "/"

@@ -27,9 +27,11 @@
 #include "libsync/theme.h"
 #include "mainwindow/colormanager.h"
 #include "quotainfo.h"
+#include "serveraddressdialog.h"
 
 #include <QDesktopServices>
 #include <QInputDialog>
+#include <QLineEdit>
 #include <QMenu>
 #include <QMessageBox>
 #include <QPushButton>
@@ -130,6 +132,15 @@ void AccountViewController::buildManageAccountMenu()
     connect(_rename, &QAction::triggered, this, &AccountViewController::onChangeAlias);
     actions.push_back(_rename);
 
+    // ownCloud 10/owncloud.online: nach einem Serverumzug die neue Adresse übernehmen. Spaces bringen ihre Adressen vom
+    // Server mit, dort gibt es den Eintrag nicht.
+    if (!_accountState->account()->capabilities().spacesSupport().enabled) {
+        _changeServerUrl = new QAction(tr("Change server address…"), this);
+        _changeServerUrl->setObjectName("changeServerUrlAction");
+        connect(_changeServerUrl, &QAction::triggered, this, &AccountViewController::onChangeServerUrl);
+        actions.push_back(_changeServerUrl);
+    }
+
     _view->setAccountMenuActions(actions);
 }
 
@@ -144,6 +155,9 @@ void AccountViewController::refreshAccountActions()
         _showInBrowser->setEnabled(false);
         _remove->setEnabled(false);
         _rename->setEnabled(false);
+        if (_changeServerUrl) {
+            _changeServerUrl->setEnabled(false);
+        }
         return;
     }
 
@@ -228,6 +242,19 @@ void AccountViewController::onChangeAlias()
     int res = dialog.exec();
     if (res == QDialog::Accepted && !dialog.textValue().isEmpty())
         _accountState->account()->setAccountAlias(dialog.textValue());
+}
+
+void AccountViewController::onChangeServerUrl()
+{
+    if (!_accountState || !_accountState->account() || !_view) {
+        return;
+    }
+
+    // die Modal-Hülle übernimmt den Dialog und löscht ihn mit sich, sobald er angenommen oder verworfen ist
+    auto *dialog = new ServerAddressDialog(_accountState, _view);
+    auto *widget = new AccountModalWidget(tr("Change server address"), dialog, _view);
+    addAccountModalWidget(widget);
+    dialog->findChild<QLineEdit *>(QStringLiteral("newServerUrlEdit"))->setFocus();
 }
 
 QIcon AccountViewController::lookupStatusIcon(StatusIcon status)
@@ -393,7 +420,11 @@ void AccountViewController::onFolderWizardAccepted()
 
 
     // Refactoring todo: turn this into a signal/requestAddFolder
-    FolderMan::instance()->addFolderFromGui(_accountState, config);
+    const QString error = FolderMan::instance()->addFolderFromGui(_accountState, config);
+    // etwa die letzte Sicherung gegen einen schon gespiegelten Serverordner: nicht still verwerfen
+    if (!error.isEmpty() && _view) {
+        QMessageBox::warning(_view, tr("Folder not added"), error);
+    }
 }
 
 }

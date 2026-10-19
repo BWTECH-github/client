@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Select a remote destination folder</string>
+      <string>Choose the folder on the server</string>
      </property>
      <property name="flat">
       <bool>true</bool>
@@ -46,7 +46,7 @@
         <item>
          <widget class="QPushButton" name="addFolderButton">
           <property name="text">
-           <string>Create Folder</string>
+           <string>Create folder…</string>
           </property>
          </widget>
         </item>

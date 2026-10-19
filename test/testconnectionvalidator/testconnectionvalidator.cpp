@@ -142,6 +142,50 @@ private Q_SLOTS:
         QCOMPARE(spy.first().first().value<ConnectionValidator::Status>(), status);
         QCOMPARE(reachedStage, failStage);
     }
+
+    void testStatusPhpMovedPermanently_data()
+    {
+        QTest::addColumn<int>("httpStatus");
+        QTest::addColumn<bool>("reportsMove");
+
+        QTest::newRow("301") << 301 << true;
+        QTest::newRow("308") << 308 << true;
+        // vorübergehende Weiterleitungen sind kein Umzug
+        QTest::newRow("302") << 302 << false;
+        QTest::newRow("307") << 307 << false;
+    }
+
+    // Serverumzug: Einer dauerhaften Weiterleitung von status.php wird nicht gefolgt, die neue Adresse aber gemeldet
+    // (Vorschlag für „Serveradresse ändern…“)
+    void testStatusPhpMovedPermanently()
+    {
+        QFETCH(int, httpStatus);
+        QFETCH(bool, reportsMove);
+
+        FakeFolder fakeFolder({});
+        QStringList hosts;
+        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            hosts.append(request.url().host());
+            if (request.url().path().endsWith(QLatin1String("status.php"))) {
+                return new FakeRedirectReply(op, request, this, httpStatus, QUrl(QStringLiteral("https://neu.example.org/owncloud/status.php")));
+            }
+            return nullptr;
+        });
+
+        ConnectionValidator val(fakeFolder.account(), nullptr);
+        QSignalSpy moved(&val, &ConnectionValidator::serverMoved);
+        QSignalSpy spy(&val, &ConnectionValidator::connectionResult);
+        val.checkServer(ConnectionValidator::ValidationMode::ValidateAuthAndUpdate);
+        QVERIFY(spy.wait());
+        QCOMPARE(spy.first().first().value<ConnectionValidator::Status>(), ConnectionValidator::StatusNotFound);
+        QCOMPARE(moved.size(), reportsMove ? 1 : 0);
+        if (reportsMove) {
+            QCOMPARE(moved.first().first().toUrl(), QUrl(QStringLiteral("https://neu.example.org/owncloud")));
+            QVERIFY(spy.first().at(1).toStringList().join(QLatin1Char(' ')).contains(QStringLiteral("https://neu.example.org/owncloud")));
+        }
+        // keine Anfrage an den neuen Host
+        QVERIFY(!hosts.contains(QStringLiteral("neu.example.org")));
+    }
 };
 
 QTEST_MAIN(TestConnectionValidator)

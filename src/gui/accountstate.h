@@ -160,6 +160,12 @@ public:
     /// Triggers a ping to the server to update state, connection status and errors.
     /// blockJobs determines if we block the job queue while the connection is checked
     void checkConnectivity(bool blockJobs = false);
+
+    /**
+     * Die neue Adresse, die der Server zuletzt per dauerhafter Weiterleitung von status.php nannte (Serverumzug), sonst leer.
+     * Nur ein Vorschlag für „Serveradresse ändern…“, übernommen wird nichts automatisch.
+     */
+    QUrl movedServerUrl() const { return _movedServerUrl; }
     void fetchServerSettings();
 
 private:
@@ -183,6 +189,7 @@ private:
     State _state;
     ConnectionStatus _connectionStatus;
     QStringList _connectionErrors;
+    QUrl _movedServerUrl;
     bool _waitingForNewCredentials;
     QDateTime _timeOfLastETagCheck;
     bool _settingUp = false;

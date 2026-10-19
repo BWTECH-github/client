@@ -266,7 +266,7 @@ Anwendung zur Datei-Synchronisation.</translation>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+49"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+50"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Fehler:&lt;/b&gt; %1</translation>
     </message>
@@ -313,13 +313,13 @@ Anwendung zur Datei-Synchronisation.</translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>Select a remote destination folder</source>
-        <translation>Einen entfernten Zielordner auswählen</translation>
+        <source>Choose the folder on the server</source>
+        <translation>Ordner auf dem Server wählen</translation>
     </message>
     <message>
         <location line="+29"/>
-        <source>Create Folder</source>
-        <translation>Ordner erstellen</translation>
+        <source>Create folder…</source>
+        <translation>Ordner anlegen…</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -636,13 +636,13 @@ Bitte legen Sie ein Konto an, indem Sie im Menü der Schaltfläche „Mehr“ di
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+108"/>
-        <location line="+42"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location line="+54"/>
         <source>Log in</source>
         <translation>Anmelden</translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="-49"/>
         <source>Reconnect</source>
         <translation>Erneut verbinden</translation>
     </message>
@@ -657,7 +657,12 @@ Bitte legen Sie ein Konto an, indem Sie im Menü der Schaltfläche „Mehr“ di
         <translation>Alias ändern…</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+8"/>
+        <source>Change server address…</source>
+        <translation>Serveradresse ändern…</translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>Log out</source>
         <translation>Abmelden</translation>
     </message>
@@ -692,7 +697,12 @@ Bitte legen Sie ein Konto an, indem Sie im Menü der Schaltfläche „Mehr“ di
         <translation>Alias des Kontos:</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+18"/>
+        <source>Change server address</source>
+        <translation>Serveradresse ändern</translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation>Die Server Version %1 wird nicht unterstützt. Weitere Schritte erfolgen auf eigene Gefahr.</translation>
     </message>
@@ -756,11 +766,16 @@ Bitte legen Sie ein Konto an, indem Sie im Menü der Schaltfläche „Mehr“ di
         <source>Invalid connection status</source>
         <translation>Ungültiger Verbindungsstatus</translation>
     </message>
+    <message>
+        <location line="+92"/>
+        <source>Folder not added</source>
+        <translation>Ordner nicht hinzugefügt</translation>
+    </message>
 </context>
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+170"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+174"/>
         <location line="+61"/>
         <source>New account failure</source>
         <translation>Fehler bei neuem Konto</translation>
@@ -970,17 +985,22 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="+171"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="+188"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation>Authentifizierungsfehler: Entweder der Benutzername oder das Passwort sind falsch.</translation>
     </message>
     <message>
-        <location line="-18"/>
+        <location line="-34"/>
         <source>timeout</source>
         <translation>Zeitüberschreitung</translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+24"/>
+        <source>The server reports a new address: %1. If your server has moved, choose “Change server address…” in the account menu.</source>
+        <translation>Der Server nennt eine neue Adresse: %1. Wenn Ihr Server umgezogen ist, wählen Sie im Kontomenü „Serveradresse ändern…“.</translation>
+    </message>
+    <message>
+        <location line="+65"/>
         <source>No account configured</source>
         <translation>Kein Konto konfiguriert</translation>
     </message>
@@ -990,7 +1010,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <translation>Die zur Verfügung gestellten Anmeldeinformationen sind nicht korrekt.</translation>
     </message>
     <message>
-        <location line="-187"/>
+        <location line="-203"/>
         <source>No owncloud.online account configured</source>
         <translation>Kein owncloud.online-Konto konfiguriert</translation>
     </message>
@@ -998,7 +1018,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+218"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+222"/>
         <source>Failed to parse credentials %1</source>
         <translation>Fehler beim Verarbeiten der Zugangsdaten %1</translation>
     </message>
@@ -1339,7 +1359,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+569"/>
+        <location filename="../src/gui/folderman.cpp" line="+571"/>
         <source>Could not reset folder state</source>
         <translation>Der Ordnerzustand konnte nicht zurückgesetzt werden.</translation>
     </message>
@@ -1359,7 +1379,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Konto getrennt oder pausiert</translation>
     </message>
     <message>
-        <location line="+313"/>
+        <location line="+380"/>
         <source>User triggered force sync</source>
         <translation>Benutzer hat die Synchronisierung erzwungen</translation>
     </message>
@@ -1369,7 +1389,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Ordner wird entfernt.</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source> (backup)</source>
         <translation>(Sicherung)</translation>
     </message>
@@ -1409,7 +1429,37 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Der lokale Ordner %1 ist bereits in einem Ordner enthalten, der in einer Ordnersynchronisierungsverbindung verwendet wird.</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+38"/>
+        <source>The whole account is already synced with the local folder %1. Each server folder can only be synced once. To sync this server folder to a different local folder, remove the existing folder sync connection first.</source>
+        <translation>Das ganze Konto wird bereits mit dem lokalen Ordner %1 synchronisiert. Jeder Serverordner lässt sich nur einmal synchronisieren. Um diesen Serverordner mit einem anderen lokalen Ordner zu synchronisieren, entfernen Sie zuerst die bestehende Ordnersynchronisierungsverbindung.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder contains the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. Choose a folder outside of it, or remove the existing folder sync connection first.</source>
+        <translation>Dieser Serverordner enthält den Ordner %1, der bereits mit dem lokalen Ordner %2 synchronisiert wird. Jeder Serverordner lässt sich nur einmal synchronisieren. Wählen Sie einen Ordner außerhalb davon, oder entfernen Sie zuerst die bestehende Ordnersynchronisierungsverbindung.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder is inside the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. To sync it to a different local folder, remove the existing folder sync connection first.</source>
+        <translation>Dieser Serverordner liegt im Ordner %1, der bereits mit dem lokalen Ordner %2 synchronisiert wird. Jeder Serverordner lässt sich nur einmal synchronisieren. Um ihn mit einem anderen lokalen Ordner zu synchronisieren, entfernen Sie zuerst die bestehende Ordnersynchronisierungsverbindung.</translation>
+    </message>
+    <message>
+        <location line="+175"/>
+        <source>The account no longer exists.</source>
+        <translation>Das Konto gibt es nicht mehr.</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The local folder %1 could not be set up for synchronization.</source>
+        <translation>Der lokale Ordner %1 konnte nicht für die Synchronisation eingerichtet werden.</translation>
+    </message>
+    <message>
+        <location line="-226"/>
+        <source>This server folder is already synced with the local folder %1. Each server folder can only be synced once.</source>
+        <translation>Dieser Serverordner wird bereits mit dem lokalen Ordner %1 synchronisiert. Jeder Serverordner lässt sich nur einmal synchronisieren.</translation>
+    </message>
+    <message>
+        <location line="+24"/>
         <source>No valid folder selected.</source>
         <translation>Es wurde kein gültiger Ordner ausgewählt.</translation>
     </message>
@@ -1425,12 +1475,12 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 </translation>
     </message>
     <message>
-        <location line="-79"/>
+        <location line="-126"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>Der Ordner &apos;%1&apos; wird bereits von einem anderen Konto verwendet.</translation>
     </message>
     <message>
-        <location line="-945"/>
+        <location line="-1013"/>
         <source>Application shutting down</source>
         <translation>Anwendung wird beendet</translation>
     </message>
@@ -1448,7 +1498,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::FolderModelController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+117"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+120"/>
         <source>%1 options</source>
         <translation>%1 Optionen</translation>
     </message>
@@ -1477,7 +1527,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+109"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+129"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation>Virtuelle Dateien sind für den ausgewählten Ordner nicht verfügbar.</translation>
     </message>
@@ -1508,6 +1558,105 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <location line="+64"/>
         <source>Select the local folder</source>
         <translation>Einen lokalen Ordner auswählen</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::FolderWizardRemotePath</name>
+    <message>
+        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="+100"/>
+        <source>Folders on the server</source>
+        <translation>Ordner auf dem Server</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path on the server, for example /Documents</source>
+        <translation>Pfad auf dem Server, zum Beispiel /Dokumente</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path of the server folder</source>
+        <translation>Pfad des Serverordners</translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Please enter a name for the new folder.</source>
+        <translation>Bitte geben Sie einen Namen für den neuen Ordner ein.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder name %1 is not allowed.</source>
+        <translation>Der Ordnername %1 ist nicht erlaubt.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The folder name must not contain any of these characters: %1</source>
+        <translation>Der Ordnername darf keines dieser Zeichen enthalten: %1</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The folder name must not end with a dot.</source>
+        <translation>Der Ordnername darf nicht mit einem Punkt enden.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The folder name %1 is reserved by Windows.</source>
+        <translation>Der Ordnername %1 ist unter Windows reserviert.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Folders named %1 are excluded from synchronization.</source>
+        <translation>Ordner mit dem Namen %1 sind von der Synchronisation ausgeschlossen.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 - %2</source>
+        <extracomment>Name eines weiteren lokalen Ordners: %1 ist der Sync-Ordner des Kontos, %2 der Serverordner</extracomment>
+        <translation>%1 - %2</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Create folder on the server</source>
+        <translation>Ordner auf dem Server anlegen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Name of the new folder in %1:</source>
+        <translation>Name des neuen Ordners in %1:</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>The folder %1 was created on the server.</source>
+        <translation>Der Ordner %1 wurde auf dem Server angelegt.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Authentication failed while accessing the server. Please sign in again and retry.</source>
+        <translation>Die Anmeldung am Server ist fehlgeschlagen. Bitte melden Sie sich erneut an und versuchen Sie es noch einmal.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You are not allowed to create a folder here.</source>
+        <translation>Sie dürfen hier keinen Ordner anlegen.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>A folder or file with this name already exists on the server.</source>
+        <translation>Auf dem Server gibt es bereits einen Ordner oder eine Datei mit diesem Namen.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder could not be created on the server: %1</source>
+        <translation>Der Ordner konnte auf dem Server nicht angelegt werden: %1</translation>
+    </message>
+    <message>
+        <location line="+65"/>
+        <source>The folder list could not be loaded: %1</source>
+        <translation>Die Ordnerliste konnte nicht geladen werden: %1</translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>Choose this to sync the entire account</source>
+        <translation>Wählen Sie dies, um das ganze Konto zu synchronisieren</translation>
     </message>
 </context>
 <context>
@@ -3064,6 +3213,170 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
 </context>
 <context>
+    <name>OCC::ServerAddressDialog</name>
+    <message>
+        <location filename="../src/gui/accountsgui/serveraddressdialog.cpp" line="+35"/>
+        <source>Change server address</source>
+        <translation>Serveradresse ändern</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>If your server has moved to a new address, enter the new address here. The account and its folders, files and settings are kept. To make sure that it is the same server and the same user, you sign in again at the new address.</source>
+        <translation>Wenn Ihr Server unter eine neue Adresse umgezogen ist, geben Sie die neue Adresse hier ein. Das Konto mit seinen Ordnern, Dateien und Einstellungen bleibt erhalten. Damit sicher ist, dass es derselbe Server und derselbe Benutzer ist, melden Sie sich an der neuen Adresse erneut an.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Current address:</source>
+        <translation>Bisherige Adresse:</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address</source>
+        <translation>Neue Adresse</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address:</source>
+        <translation>Neue Adresse:</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Open browser again</source>
+        <translation>Browser erneut öffnen</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Check and sign in</source>
+        <translation>Prüfen und anmelden</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Sign-in link: %1</source>
+        <translation>Anmeldelink: %1</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerMoveController</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="+450"/>
+        <source>Checking %1…</source>
+        <translation>Prüfe %1…</translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Another account already uses this address with the same user.</source>
+        <translation>Ein anderes Konto nutzt diese Adresse bereits mit demselben Benutzer.</translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Checking that this is the same server and the same user…</source>
+        <translation>Prüfe, ob es derselbe Server und derselbe Benutzer ist…</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The browser could not be opened. Copy the sign-in link and open it in your browser.</source>
+        <translation>Der Browser ließ sich nicht öffnen. Kopieren Sie den Anmeldelink und öffnen Sie ihn in Ihrem Browser.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in page of the new address does not use a secure connection (HTTPS).</source>
+        <translation>Die Anmeldeseite der neuen Adresse nutzt keine sichere Verbindung (HTTPS).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the new address cannot be reached. Please try again later.</source>
+        <translation>Der Anmeldedienst der neuen Adresse ist nicht erreichbar. Bitte versuchen Sie es später erneut.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Signing in at the new address failed. Please sign in with the same user as before: %1.</source>
+        <translation>Die Anmeldung an der neuen Adresse ist fehlgeschlagen. Bitte melden Sie sich mit demselben Benutzer wie bisher an: %1.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Please sign in at the new address in your browser, with the same user as before: %1.</source>
+        <translation>Bitte melden Sie sich im Browser an der neuen Adresse an, mit demselben Benutzer wie bisher: %1.</translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>The new address did not accept the sign-in. The address was not changed.</source>
+        <translation>Die neue Adresse hat die Anmeldung nicht angenommen. Die Adresse wurde nicht geändert.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The user %1 does not exist at the new address. The address was not changed.</source>
+        <translation>Den Benutzer %1 gibt es an der neuen Adresse nicht. Die Adresse wurde nicht geändert.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address redirected the check to another address. The address was not changed.</source>
+        <translation>Die neue Adresse hat die Prüfung an eine andere Adresse weitergeleitet. Die Adresse wurde nicht geändert.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address could not be checked: %1</source>
+        <translation>Die neue Adresse ließ sich nicht prüfen: %1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The new address does not report which installation it belongs to, so it cannot be confirmed that it is the same server. The address was not changed.</source>
+        <translation>Die neue Adresse nennt nicht, zu welcher Installation sie gehört. Daher lässt sich nicht bestätigen, dass es derselbe Server ist. Die Adresse wurde nicht geändert.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The server at %1 is a different installation than the one this account was set up with. To protect your files, the address was not changed.</source>
+        <translation>Der Server unter %1 ist eine andere Installation als die, mit der dieses Konto eingerichtet wurde. Zum Schutz Ihrer Dateien wurde die Adresse nicht geändert.</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>The synchronization of the account could not be stopped. The address was not changed, please try again.</source>
+        <translation>Die Synchronisation des Kontos ließ sich nicht anhalten. Die Adresse wurde nicht geändert, bitte versuchen Sie es erneut.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerStatusCheck</name>
+    <message>
+        <location line="-339"/>
+        <source>No server could be reached at %1.</source>
+        <translation>Unter %1 ist kein Server erreichbar.</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>The address %1 redirects to another server (%2). For your security, this redirect is not followed automatically. If you trust that server, enter its address directly.</source>
+        <translation>Die Adresse %1 leitet auf einen anderen Server weiter (%2). Zu Ihrer Sicherheit wird dieser Weiterleitung nicht automatisch gefolgt. Wenn Sie diesem Server vertrauen, geben Sie seine Adresse direkt ein.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The address %1 redirects to %2, which is not the address of a server.</source>
+        <translation>Die Adresse %1 leitet auf %2 weiter. Das ist keine Serveradresse.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address %1 redirects too often.</source>
+        <translation>Die Adresse %1 leitet zu oft weiter.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>No server could be reached at %1: %2</source>
+        <translation>Unter %1 ist kein Server erreichbar: %2</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>No server was found at %1.</source>
+        <translation>Unter %1 wurde kein Server gefunden.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The server at %1 is not set up yet.</source>
+        <translation>Der Server unter %1 ist noch nicht eingerichtet.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The server at %1 is in maintenance mode. Please try again later.</source>
+        <translation>Der Server unter %1 ist im Wartungsmodus. Bitte versuchen Sie es später erneut.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::SettingsView</name>
     <message>
         <location filename="../src/gui/mainwindow/settingsview.ui" line="+14"/>
@@ -4487,6 +4800,67 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <location line="+6"/>
         <source>Could not detect compatible server at %1</source>
         <translation>Ein kompatibler Server konnte unter %1 nicht gefunden werden.</translation>
+    </message>
+</context>
+<context>
+    <name>ServerMove</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="-294"/>
+        <source>Please enter the new address of your server.</source>
+        <translation>Bitte geben Sie die neue Adresse Ihres Servers ein.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 is not a valid address.</source>
+        <translation>%1 ist keine gültige Adresse.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address must start with https://.</source>
+        <translation>Die Adresse muss mit https:// beginnen.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain a user name or password.</source>
+        <translation>Die Adresse darf keinen Benutzernamen und kein Passwort enthalten.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain “?” or “#”.</source>
+        <translation>Die Adresse darf kein „?“ und kein „#“ enthalten.</translation>
+    </message>
+    <message>
+        <location line="+138"/>
+        <location line="+189"/>
+        <location line="+37"/>
+        <location line="+78"/>
+        <location line="+25"/>
+        <location line="+65"/>
+        <source>The account no longer exists.</source>
+        <translation>Das Konto gibt es nicht mehr.</translation>
+    </message>
+    <message>
+        <location line="-390"/>
+        <location line="+190"/>
+        <source>The server address can only be changed for accounts without Spaces.</source>
+        <translation>Die Serveradresse lässt sich nur bei Konten ohne Spaces ändern.</translation>
+    </message>
+    <message>
+        <location line="-186"/>
+        <location line="+197"/>
+        <location line="+26"/>
+        <source>This is already the address of the account.</source>
+        <translation>Das ist bereits die Adresse des Kontos.</translation>
+    </message>
+    <message>
+        <location line="-218"/>
+        <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
+        <translation>Eine Synchronisation des Kontos läuft noch. Die Adresse wurde nicht geändert, bitte versuchen Sie es erneut.</translation>
+    </message>
+    <message>
+        <location line="+366"/>
+        <source>change of the account&apos;s server address</source>
+        <translation>Änderung der Serveradresse des Kontos</translation>
     </message>
 </context>
 <context>

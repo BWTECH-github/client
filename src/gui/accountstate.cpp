@@ -401,6 +401,7 @@ void AccountState::checkConnectivity(bool blockJobs)
 
     _connectionValidator = new ConnectionValidator(_account.get(), this);
     connect(_connectionValidator, &ConnectionValidator::connectionResult, this, &AccountState::slotConnectionValidatorResult);
+    connect(_connectionValidator, &ConnectionValidator::serverMoved, this, [this](const QUrl &newServerUrl) { _movedServerUrl = newServerUrl; });
     connect(_connectionValidator, &ConnectionValidator::sslErrors, this,
         [blockJobs, this](const QList<QSslError> &errors) { handleSslConnectionErrors(errors, blockJobs); });
 
@@ -570,6 +571,7 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
 
     switch (status) {
     case ConnectionValidator::Connected:
+        _movedServerUrl.clear();
         setState(Connected);
         break;
     case ConnectionValidator::Undefined:

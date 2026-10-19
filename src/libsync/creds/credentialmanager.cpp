@@ -167,8 +167,12 @@ QStringList CredentialManager::knownKeys(const QString &group) const
 QSettings &CredentialManager::credentialsList() const
 {
     // delayed init as scope requires a fully inizialised acc
-    if (!_credentialsList) {
-        _credentialsList = ConfigFile::settingsWithGroup("Credentials/" + scope());
+    // nach Account::setUrl() mit neuem Host gehört die Liste zu einem anderen Bereich, sonst landeten neue Schlüssel unter
+    // dem alten und wären nach einem Neustart verloren
+    const QString currentScope = scope();
+    if (!_credentialsList || _credentialsListScope != currentScope) {
+        _credentialsList = ConfigFile::settingsWithGroup("Credentials/" + currentScope);
+        _credentialsListScope = currentScope;
     }
     return *_credentialsList;
 }

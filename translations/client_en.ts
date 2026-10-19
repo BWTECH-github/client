@@ -264,7 +264,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+49"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+50"/>
         <source>&lt;b&gt;Error:&lt;/b&gt; %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -311,12 +311,12 @@ File synchronization desktop utility.</source>
     </message>
     <message>
         <location line="+6"/>
-        <source>Select a remote destination folder</source>
+        <source>Choose the folder on the server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+29"/>
-        <source>Create Folder</source>
+        <source>Create folder…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -629,13 +629,13 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+108"/>
-        <location line="+42"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location line="+54"/>
         <source>Log in</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-37"/>
+        <location line="-49"/>
         <source>Reconnect</source>
         <translation type="unfinished"></translation>
     </message>
@@ -650,7 +650,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+8"/>
+        <source>Change server address…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
         <source>Log out</source>
         <translation type="unfinished"></translation>
     </message>
@@ -685,7 +690,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+18"/>
+        <source>Change server address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+41"/>
         <source>The server version %1 is unsupported! Proceed at your own risk.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -749,11 +759,16 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <source>Invalid connection status</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+92"/>
+        <source>Folder not added</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+170"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+174"/>
         <location line="+61"/>
         <source>New account failure</source>
         <translation type="unfinished"></translation>
@@ -959,12 +974,12 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::ConnectionValidator</name>
     <message>
-        <location filename="../src/gui/connectionvalidator.cpp" line="+171"/>
+        <location filename="../src/gui/connectionvalidator.cpp" line="+188"/>
         <source>Authentication error: Either username or password are wrong.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-18"/>
+        <location line="-34"/>
         <source>timeout</source>
         <translation type="unfinished"></translation>
     </message>
@@ -974,7 +989,12 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+152"/>
+        <location line="+103"/>
+        <source>The server reports a new address: %1. If your server has moved, choose “Change server address…” in the account menu.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+65"/>
         <source>No account configured</source>
         <translation type="unfinished"></translation>
     </message>
@@ -987,7 +1007,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+218"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+222"/>
         <source>Failed to parse credentials %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1324,7 +1344,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+569"/>
+        <location filename="../src/gui/folderman.cpp" line="+571"/>
         <source>Could not reset folder state</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1349,7 +1369,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+278"/>
+        <location line="+345"/>
         <source>User triggered force sync</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1359,7 +1379,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+25"/>
         <source> (backup)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1399,7 +1419,37 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+38"/>
+        <source>The whole account is already synced with the local folder %1. Each server folder can only be synced once. To sync this server folder to a different local folder, remove the existing folder sync connection first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder contains the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. Choose a folder outside of it, or remove the existing folder sync connection first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>This server folder is inside the folder %1, which is already synced with the local folder %2. Each server folder can only be synced once. To sync it to a different local folder, remove the existing folder sync connection first.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+175"/>
+        <source>The account no longer exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The local folder %1 could not be set up for synchronization.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-226"/>
+        <source>This server folder is already synced with the local folder %1. Each server folder can only be synced once.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
         <source>No valid folder selected.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1414,12 +1464,12 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-79"/>
+        <location line="-126"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-945"/>
+        <location line="-1013"/>
         <source>Application shutting down</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1432,7 +1482,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderModelController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+117"/>
+        <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+120"/>
         <source>%1 options</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1461,7 +1511,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizard</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+109"/>
+        <location filename="../src/gui/folderwizard/folderwizard.cpp" line="+129"/>
         <source>Virtual files are not available for the selected folder</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1491,6 +1541,105 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location line="+64"/>
         <source>Select the local folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OCC::FolderWizardRemotePath</name>
+    <message>
+        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="+100"/>
+        <source>Folders on the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path on the server, for example /Documents</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Path of the server folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Please enter a name for the new folder.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder name %1 is not allowed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The folder name must not contain any of these characters: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The folder name must not end with a dot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The folder name %1 is reserved by Windows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Folders named %1 are excluded from synchronization.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 - %2</source>
+        <extracomment>Name eines weiteren lokalen Ordners: %1 ist der Sync-Ordner des Kontos, %2 der Serverordner</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Create folder on the server</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Name of the new folder in %1:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>The folder %1 was created on the server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Authentication failed while accessing the server. Please sign in again and retry.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You are not allowed to create a folder here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>A folder or file with this name already exists on the server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder could not be created on the server: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+65"/>
+        <source>The folder list could not be loaded: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>Choose this to sync the entire account</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3043,6 +3192,170 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::ServerAddressDialog</name>
+    <message>
+        <location filename="../src/gui/accountsgui/serveraddressdialog.cpp" line="+35"/>
+        <source>Change server address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>If your server has moved to a new address, enter the new address here. The account and its folders, files and settings are kept. To make sure that it is the same server and the same user, you sign in again at the new address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Current address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>New address:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>Open browser again</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Check and sign in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Sign-in link: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerMoveController</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="+450"/>
+        <source>Checking %1…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Another account already uses this address with the same user.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Checking that this is the same server and the same user…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The browser could not be opened. Copy the sign-in link and open it in your browser.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in page of the new address does not use a secure connection (HTTPS).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the new address cannot be reached. Please try again later.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Signing in at the new address failed. Please sign in with the same user as before: %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Please sign in at the new address in your browser, with the same user as before: %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+46"/>
+        <source>The new address did not accept the sign-in. The address was not changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The user %1 does not exist at the new address. The address was not changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address redirected the check to another address. The address was not changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The new address could not be checked: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The new address does not report which installation it belongs to, so it cannot be confirmed that it is the same server. The address was not changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The server at %1 is a different installation than the one this account was set up with. To protect your files, the address was not changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>The synchronization of the account could not be stopped. The address was not changed, please try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OCC::ServerStatusCheck</name>
+    <message>
+        <location line="-339"/>
+        <source>No server could be reached at %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>The address %1 redirects to another server (%2). For your security, this redirect is not followed automatically. If you trust that server, enter its address directly.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The address %1 redirects to %2, which is not the address of a server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address %1 redirects too often.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>No server could be reached at %1: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>No server was found at %1.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The server at %1 is not set up yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The server at %1 is in maintenance mode. Please try again later.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OCC::SettingsView</name>
     <message>
         <location filename="../src/gui/mainwindow/settingsview.ui" line="+14"/>
@@ -4463,6 +4776,67 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+6"/>
         <source>Could not detect compatible server at %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ServerMove</name>
+    <message>
+        <location filename="../src/gui/servermove.cpp" line="-294"/>
+        <source>Please enter the new address of your server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>%1 is not a valid address.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The address must start with https://.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain a user name or password.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The address must not contain “?” or “#”.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+138"/>
+        <location line="+189"/>
+        <location line="+37"/>
+        <location line="+78"/>
+        <location line="+25"/>
+        <location line="+65"/>
+        <source>The account no longer exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-390"/>
+        <location line="+190"/>
+        <source>The server address can only be changed for accounts without Spaces.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-186"/>
+        <location line="+197"/>
+        <location line="+26"/>
+        <source>This is already the address of the account.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-218"/>
+        <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+366"/>
+        <source>change of the account&apos;s server address</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
