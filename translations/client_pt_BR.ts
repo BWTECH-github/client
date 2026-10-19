@@ -360,7 +360,8 @@ Utilitário de sincronização de arquivos na área de trabalho.</translation>
     <message>
         <location line="+101"/>
         <source>Server replied &quot;%1 %2&quot; to &quot;%3 %4&quot;</source>
-        <translation>Resposta do servidor &quot;%1 %2&quot; to &quot;%3 %4&quot;</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Resposta do servidor &quot;%1 %2&quot; para &quot;%3 %4&quot;</translation>
     </message>
 </context>
 <context>

@@ -4316,7 +4316,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+38"/>
         <source>&amp;lt;not specified&amp;gt;</source>
-        <translation>غير محدد؛</translation>
+        <translation>&amp;lt;غير محدد&amp;gt;</translation>
     </message>
     <message>
         <location line="+6"/>

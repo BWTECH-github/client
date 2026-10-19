@@ -49,9 +49,21 @@ Neu übersetzt (und ebenso gekennzeichnet) wurden nur Einträge, die in der Ober
   zh_TW (44) und zh_HK (113, davon 69 aus zh_TW übernommen)
 - verstümmeltes oder fremdes HTML (nl 3, sq 2)
 
+Nach der Gegenprüfung nachgezogen (Einträge je Kontext):
+
+- deutscher Text in es (6), ein englisches „to“ in pt_BR (1)
+- Langzeichen in zh-Hans (11, aus zh_CN übernommen), Kurzzeichen in zh_TW (16) und zh_HK (24)
+- „PROPFIND-Antwort ist XML“ statt „ist kein XML“ in zh_TW und zh_HK
+- „<nicht angegeben>“ ohne Maskierung in lo und ug (Qt verschluckte es als unbekanntes Tag), ohne Klammern in ar
+
 Mechanisch korrigiert, ohne den Wortlaut zu ändern: `<byte value="xd"/>` stand als Text in der Versionsausgabe aller
 Sprachen; Leerzeichen am Rand wie in der Quelle (` (backup)` wird an Ordnernamen angehängt); `</ a>` und ein
-abschließendes `<p>` statt `</p>`.
+abschließendes `<p>` statt `</p>`; britische Schreibung in en_US (synchronisation → synchronization u. a.). In nl gilt
+für sechs Pluralformen wieder der Community-Wortlaut, nur ein `%2` statt `%n` ist berichtigt.
+
+`check_catalogs.py` erkennt deutschen Text in anderen Katalogen, Zeichen der falschen chinesischen Schrift
+(`zh_script_chars.json`, erzeugt mit `make_zh_script_chars.py` aus den Zeichentabellen von OpenCC) und maskierte spitze
+Klammern, die von der Quelle abweichen.
 
 ## Schreibrichtung (rechts nach links)
 
@@ -76,4 +88,5 @@ python3 admin/translations/check_catalogs.py     # dieselbe Prüfung wie der CI-
 ```
 
 Der CI-Job `translations` bricht ab, wenn ein Katalog einen Quelltext nicht kennt, ein Eintrag unübersetzt ist,
-Platzhalter fehlen oder hinzukommen, fremdes HTML auftaucht oder ein Katalog sich nicht kompilieren lässt.
+Platzhalter fehlen oder hinzukommen, fremdes HTML auftaucht, deutscher Text in einem anderen Katalog steht, ein
+chinesischer Katalog die falsche Schrift verwendet oder ein Katalog sich nicht kompilieren lässt.

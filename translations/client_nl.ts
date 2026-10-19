@@ -1139,8 +1139,8 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <location line="-30"/>
         <source>%1 and %n other file(s) have been removed.</source>
         <translation>
-            <numerusform>%1 en %n ander bestand(en) zijn verwijderd.</numerusform>
-            <numerusform>%1 en %n andere bestand(en) zijn verwijderd.</numerusform>
+            <numerusform>%1 en één ander bestand zijn verwijderd.</numerusform>
+            <numerusform>%1 en %n andere bestanden zijn verwijderd.</numerusform>
         </translation>
     </message>
     <message>
@@ -1152,8 +1152,8 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <location line="+74"/>
         <source>%1 and %n other file(s) have been added.</source>
         <translation>
-            <numerusform>%1 en %n ander bestand is toegevoegd.</numerusform>
-            <numerusform>%1 en %n ander(e) bestand(en) was / waren toegevoegd.</numerusform>
+            <numerusform>%1 en één ander bestand is toegevoegd.</numerusform>
+            <numerusform>%1 en %n andere bestanden zijn toegevoegd.</numerusform>
         </translation>
     </message>
     <message>
@@ -1166,24 +1166,24 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <location line="+5"/>
         <source>%1 and %n other file(s) have been updated.</source>
         <translation>
-            <numerusform>%1 en %n ander bestand(en) zijn bijgewerkt.</numerusform>
-            <numerusform>%1 en %n andere bestand(en) zijn bijgewerkt.</numerusform>
+            <numerusform>%1 en één ander bestand zijn bijgewerkt.</numerusform>
+            <numerusform>%1 en %n andere bestanden zijn bijgewerkt.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
         <translation>
-            <numerusform>%1 is hernoemd naar %2 en %n ander bestand(en) is hernoemd.</numerusform>
-            <numerusform>%1 is hernoemd naar %2 en %n andere bestand(en) zijn hernoemd.</numerusform>
+            <numerusform>%1 is hernoemd naar %2 en één ander bestand zijn ook hernoemd.</numerusform>
+            <numerusform>%1 is hernoemd naar %2 en %n andere bestanden zijn ook hernoemd.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
         <translation>
-            <numerusform>%1 is verplaatst naar %2 en %n ander bestand(en) is verplaatst.</numerusform>
-            <numerusform>%1 is verplaatst naar %2 en %n andere bestand(en) zijn verplaatst.</numerusform>
+            <numerusform>%1 is verplaatst naar %2 en één ander bestand zijn ook verplaatst.</numerusform>
+            <numerusform>%1 is verplaatst naar %2 en %n andere bestanden zijn ook verplaatst.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -1204,8 +1204,8 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <location line="+5"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
         <translation>
-            <numerusform>%1 en %n ander bestand(en) konden niet worden gesynchroniseerd wegens fouten. Bekijk het log voor details.</numerusform>
-            <numerusform>%1 en %n andere bestand(en) konden niet worden gesynchroniseerd wegens fouten. Bekijk het log voor details.</numerusform>
+            <numerusform>%1 en één ander bestand konden niet worden gesynchroniseerd door fouten. Bekijk het log voor details.</numerusform>
+            <numerusform>%1 en %n andere bestanden konden niet worden gesynchroniseerd door fouten. Bekijk het log voor details.</numerusform>
         </translation>
     </message>
     <message>

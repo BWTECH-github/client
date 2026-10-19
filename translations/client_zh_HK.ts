@@ -271,7 +271,8 @@ File synchronization desktop utility.</source>
     <message>
         <location line="+24"/>
         <source>Local folder %1 does not exist.</source>
-        <translation>本地文件夹 %1 不存在。</translation>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>本地資料夾 %1 不存在。</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -1017,7 +1018,8 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
         <source>%1 the file is currently in use</source>
-        <translation>%1 文件当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 檔案目前正在使用中</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -1156,7 +1158,8 @@ The update will be performed in the background, and overwrite the current AppIma
         <location line="+33"/>
         <location line="+112"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
-        <translation>伺服器錯誤：PROPFIND回覆格式為XML！</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>伺服器錯誤：PROPFIND 回覆不是 XML 格式！</translation>
     </message>
 </context>
 <context>
@@ -1652,7 +1655,8 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location line="+14"/>
         <source>Add Folder Sync Connection</source>
-        <translation>添加同步文件夹</translation>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>新增資料夾同步功能的連線</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2070,7 +2074,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+1"/>
         <source>Are you sure you want to quit %1?</source>
-        <translation>你确定要退出 %1 吗？</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>您確定要退出 %1 嗎？</translation>
     </message>
 </context>
 <context>
@@ -2135,7 +2140,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+13"/>
         <source>Use system proxy</source>
-        <translation>使用系统代理</translation>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>使用系統預設代理伺服器</translation>
     </message>
     <message>
         <location line="+65"/>
@@ -2575,7 +2581,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/owncloudpropagator.cpp" line="+829"/>
         <source>File %1 is currently in use</source>
-        <translation>文件 %1 当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>檔案 %1 目前正在使用中</translation>
     </message>
     <message>
         <location line="+39"/>
@@ -2751,7 +2758,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+3"/>
         <source>%1 the folder is currently in use</source>
-        <translation>%1 文件夹当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 資料夾目前正在使用中</translation>
     </message>
 </context>
 <context>
@@ -2821,7 +2829,8 @@ Note that using any logging command line options will override the settings.</so
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
-        <translation>文件 %1 当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>檔案 %1 目前正在使用中</translation>
     </message>
     <message>
         <location line="-639"/>
@@ -2862,7 +2871,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>文件 %1 当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>檔案 %1 目前正在使用中</translation>
     </message>
     <message>
         <location line="-16"/>
@@ -2875,7 +2885,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="-106"/>
         <source>%1 failed with: %2</source>
-        <translation>%1 失败：%2</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 失敗：%2</translation>
     </message>
     <message>
         <location line="+30"/>
@@ -2893,7 +2904,8 @@ Note that using any logging command line options will override the settings.</so
         <location line="-36"/>
         <location line="+27"/>
         <source>%1 the file is currently in use</source>
-        <translation>%1 文件当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 檔案目前正在使用中</translation>
     </message>
 </context>
 <context>
@@ -2918,12 +2930,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>文件 %1 当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>檔案 %1 目前正在使用中</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Failed to rename file</source>
-        <translation>重命名文件失败</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>重新命名檔案失敗</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2976,7 +2990,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>文件 %1 当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>檔案 %1 目前正在使用中</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -3001,7 +3016,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>文件 %1 当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>檔案 %1 目前正在使用中</translation>
     </message>
 </context>
 <context>
@@ -3028,7 +3044,8 @@ Note that using any logging command line options will override the settings.</so
         <location line="-147"/>
         <location line="+31"/>
         <source>%1 the file is currently in use</source>
-        <translation>%1 文件当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 檔案目前正在使用中</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -3053,7 +3070,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagateuploadfile.cpp" line="+42"/>
         <source>%1 the file is currently in use</source>
-        <translation>%1 文件当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 檔案目前正在使用中</translation>
     </message>
     <message>
         <location line="+80"/>
@@ -3079,7 +3097,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagateuploadng.cpp" line="+156"/>
         <source>%1 the file is currently in use</source>
-        <translation>%1 文件当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 檔案目前正在使用中</translation>
     </message>
     <message>
         <location line="+472"/>
@@ -3116,7 +3135,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagateuploadtus.cpp" line="+58"/>
         <source>%1 the file is currently in use</source>
-        <translation>%1 文件当前正在使用中</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 檔案目前正在使用中</translation>
     </message>
     <message>
         <location line="+56"/>
@@ -3467,7 +3487,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+8"/>
         <source>Sync hidden files</source>
-        <translation>同步隐藏文件</translation>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>同步隱藏檔案</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -4816,7 +4837,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+4"/>
         <source>The Virtual filesystem feature requires a NTFS file system, %1 is using %2</source>
-        <translation>虚拟文件系统功能需要 NTFS 文件系统，%1 正在使用 %2</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>虛擬檔案系統功能需要 NTFS 檔案系統，%1 正在使用 %2</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -5095,7 +5117,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+2"/>
         <source>Conflict</source>
-        <translation>冲突</translation>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>衝突</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -5245,7 +5268,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/common/pinstate.cpp" line="+27"/>
         <source>Always available locally</source>
-        <translation>始终在本地可用</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>始終在本地可用</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -5423,7 +5447,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+13"/>
         <source>Make always available locally</source>
-        <translation>始终本地可用</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>設為始終在本地可用</translation>
     </message>
     <message>
         <location line="+5"/>

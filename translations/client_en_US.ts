@@ -37,7 +37,7 @@
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
         <translation>%1 version %2<byte value="xd"/>
-File synchronisation desktop utility.</translation>
+File synchronization desktop utility.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -418,7 +418,7 @@ This action will abort any currently running synchronization.</source>
 
 The only advantage of disabling virtual file support is that the selective sync feature will become available again.
 
-This action will abort any currently running synchronisation.</translation>
+This action will abort any currently running synchronization.</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -458,7 +458,7 @@ This action will abort any currently running synchronisation.</translation>
     <message>
         <location line="+1"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation>Synchronisation is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronisation now?</translation>
+        <translation>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -1031,7 +1031,7 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location line="+4"/>
         <source>Server did not ask for authorization</source>
-        <translation>Server did not ask for authorisation</translation>
+        <translation>Server did not ask for authorization</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1230,12 +1230,12 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location line="+195"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
-        <translation>The folder %1 was created but was excluded from synchronisation previously. Data inside it will not be synchronised.</translation>
+        <translation>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
-        <translation>The file %1 was created but was excluded from synchronisation previously. It will not be synchronised.</translation>
+        <translation>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -1286,9 +1286,9 @@ The update will be performed in the background, and overwrite the current AppIma
 This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
 
 %1</source>
-        <translation>Changes in synchronised folders could not be tracked reliably.
+        <translation>Changes in synchronized folders could not be tracked reliably.
 
-This means that the synchronisation client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
+This means that the synchronization client might not upload local changes immediately and will instead only scan for local changes and upload them occasionally (every two hours by default).
 
 %1</translation>
     </message>
@@ -1704,7 +1704,7 @@ This means that the synchronisation client might not upload local changes immedi
         <source>Files or folders matching a pattern will not be synchronized. Changes take effect the next time folders are synchronized.
 
 Items where deletion is allowed will be deleted if they prevent a directory from being removed. This is useful for meta data.</source>
-        <translation>Files or folders matching a pattern will not be synchronised. Changes take effect the next time folders are synchronised.
+        <translation>Files or folders matching a pattern will not be synchronized. Changes take effect the next time folders are synchronized.
 
 Items, where deletion is allowed, will be deleted if they prevent a directory from being removed. This is useful for metadata.</translation>
     </message>
@@ -2931,7 +2931,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+132"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
-        <translation>Unable to retrieve authorisation link! Please contact your system administrator.</translation>
+        <translation>Unable to retrieve authorization link! Please contact your system administrator.</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -3043,7 +3043,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location line="+6"/>
         <source>Deselect remote folders you do not wish to synchronize.</source>
-        <translation>Deselect remote folders you do not wish to synchronise.</translation>
+        <translation>Deselect remote folders you do not wish to synchronize.</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -4001,7 +4001,7 @@ Note that using any logging command line options will override the settings.</tr
     <message>
         <location line="+6"/>
         <source>&lt;div id=&quot;cert&quot;&gt;&lt;h3&gt;with Certificate %1&lt;/h3&gt;&lt;div id=&quot;ccert&quot;&gt;&lt;p&gt;Organization: %2&lt;br/&gt;Unit: %3&lt;br/&gt;Country: %4&lt;/p&gt;&lt;p&gt;Fingerprint (MD5): &lt;tt&gt;%5&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA1): &lt;tt&gt;%6&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA256): &lt;tt&gt;%7&lt;/tt&gt;&lt;br/&gt;&lt;br/&gt;Effective Date: %8Expiration Date: %9&lt;/div&gt;&lt;h3&gt;Issuer: %10&lt;/h3&gt;&lt;div id=&quot;issuer&quot;&gt;&lt;p&gt;Organization: %11&lt;br/&gt;Unit: %12&lt;br/&gt;Country: %13&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</source>
-        <translation>&lt;div id=&quot;cert&quot;&gt;&lt;h3&gt;with Certificate %1&lt;/h3&gt;&lt;div id=&quot;ccert&quot;&gt;&lt;p&gt;Organisation: %2&lt;br/&gt;Unit: %3&lt;br/&gt;Country: %4&lt;/p&gt;&lt;p&gt;Fingerprint (MD5): &lt;tt&gt;%5&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA1): &lt;tt&gt;%6&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA256): &lt;tt&gt;%7&lt;/tt&gt;&lt;br/&gt;&lt;br/&gt;Effective Date: %8Expiration Date: %9&lt;/div&gt;&lt;h3&gt;Issuer: %10&lt;/h3&gt;&lt;div id=&quot;issuer&quot;&gt;&lt;p&gt;Organisation: %11&lt;br/&gt;Unit: %12&lt;br/&gt;Country: %13&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</translation>
+        <translation>&lt;div id=&quot;cert&quot;&gt;&lt;h3&gt;with Certificate %1&lt;/h3&gt;&lt;div id=&quot;ccert&quot;&gt;&lt;p&gt;Organization: %2&lt;br/&gt;Unit: %3&lt;br/&gt;Country: %4&lt;/p&gt;&lt;p&gt;Fingerprint (MD5): &lt;tt&gt;%5&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA1): &lt;tt&gt;%6&lt;/tt&gt;&lt;br/&gt;Fingerprint (SHA256): &lt;tt&gt;%7&lt;/tt&gt;&lt;br/&gt;&lt;br/&gt;Effective Date: %8Expiration Date: %9&lt;/div&gt;&lt;h3&gt;Issuer: %10&lt;/h3&gt;&lt;div id=&quot;issuer&quot;&gt;&lt;p&gt;Organization: %11&lt;br/&gt;Unit: %12&lt;br/&gt;Country: %13&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</translation>
     </message>
 </context>
 <context>
@@ -4125,7 +4125,7 @@ Note that using any logging command line options will override the settings.</tr
         <location line="-88"/>
         <location line="+105"/>
         <source>Resume synchronization</source>
-        <translation>Resume synchronisation</translation>
+        <translation>Resume synchronization</translation>
     </message>
     <message>
         <location line="-102"/>

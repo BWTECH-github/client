@@ -472,7 +472,8 @@ Esta acción abortará cualquier sincronización actualmente en ejecución.</tra
     <message>
         <location line="+0"/>
         <source>The sync operation is running.&lt;br/&gt;Do you want to stop it?</source>
-        <translation>Die sync Operation läuft gerade.&lt;br/&gt;Wollen Sie sie stoppen?</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>La operación de sincronización está en curso.&lt;br/&gt;¿Desea detenerla?</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -2343,7 +2344,8 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     <message>
         <location line="+3"/>
         <source>%1 installed successfully. Restart the application to finish installing the update.</source>
-        <translation>%1 erfolgreich installiert. Starten Sie die Anwendung neu um die Installation des Updates abzuschließen.</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 se instaló correctamente. Reinicie la aplicación para terminar de instalar la actualización.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2478,7 +2480,8 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     <message>
         <location line="+159"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
-        <translation>SelectiveSync: Ignoriert, da der Pfad deaktiviert wurde</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sincronización selectiva: se ignora porque su ruta no está seleccionada</translation>
     </message>
     <message>
         <location line="+74"/>
@@ -3905,7 +3908,8 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     <message>
         <location line="+84"/>
         <source>Aborted due to %1</source>
-        <translation>Abgebrochen wegen %1</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Cancelado debido a %1</translation>
     </message>
     <message>
         <location line="+186"/>
@@ -3921,7 +3925,8 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <location line="-750"/>
         <source>application exit</source>
         <comment>abort reason</comment>
-        <translation>Die Anwendung wurde beendet</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>cierre de la aplicación</translation>
     </message>
     <message>
         <location line="+312"/>
@@ -4641,7 +4646,8 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     <message>
         <location line="+2"/>
         <source>less than a minute ago</source>
-        <translation>weniger als eine Minute</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>hace menos de un minuto</translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>

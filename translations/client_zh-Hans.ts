@@ -481,12 +481,14 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location line="+2"/>
         <source>Resume sync</source>
-        <translation>繼續同步</translation>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>恢复同步</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Pause sync</source>
-        <translation>暫停同步</translation>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>暂停同步</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -1148,7 +1150,8 @@ The update will be performed in the background, and overwrite the current AppIma
     <message>
         <location line="+4"/>
         <source>Server did not ask for authorization</source>
-        <translation>伺服器沒有要求授權</translation>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>服务器并未要求身份验证</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2033,7 +2036,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/mainwindow/mainwindow.cpp" line="+56"/>
         <source>Hide</source>
-        <translation>隱藏</translation>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>隐藏</translation>
     </message>
     <message>
         <location line="+55"/>
@@ -2227,7 +2231,8 @@ Note that using any logging command line options will override the settings.</so
         <location line="+1"/>
         <location line="+1"/>
         <source>Username for proxy server</source>
-        <translation>代理伺服器使用者名稱</translation>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>代理服务器用户名</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2658,7 +2663,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+9"/>
         <source>Filename contains trailing spaces.</source>
-        <translation>文件名包含尾隨空格。</translation>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>文件名尾部含有空格。</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2706,7 +2712,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="-1079"/>
         <source>server reported no %1</source>
-        <translation>伺服器報告沒有 %1</translation>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>服务器回复没有 %1</translation>
     </message>
     <message>
         <location line="+199"/>
@@ -3660,7 +3667,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+15"/>
         <source>Name:</source>
-        <translation>名稱:</translation>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>名字：</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -4955,7 +4963,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="-19"/>
         <source>Update Failed</source>
-        <translation>更新失敗</translation>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
+        <translation>更新失败</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -5026,8 +5035,9 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location line="+4"/>
         <source>%n minute(s) ago</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%n 分鐘前</numerusform>
+            <numerusform>%n 分钟前</numerusform>
         </translation>
     </message>
     <message>
@@ -5219,8 +5229,9 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location line="+1"/>
         <source>%n minute(s)</source>
+        <translatorcomment>aus zh_CN übernommen, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%n分鐘</numerusform>
+            <numerusform>%n分钟</numerusform>
         </translation>
     </message>
     <message numerus="yes">

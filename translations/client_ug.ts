@@ -4271,7 +4271,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+38"/>
         <source>&amp;lt;not specified&amp;gt;</source>
-        <translation>&lt;بەلگىلەنمىگەن&gt;</translation>
+        <translation>&amp;lt;بەلگىلەنمىگەن&amp;gt;</translation>
     </message>
     <message>
         <location line="+6"/>
