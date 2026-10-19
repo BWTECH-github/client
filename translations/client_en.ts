@@ -759,6 +759,11 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <source>Invalid connection status</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+92"/>
+        <source>Folder not added</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OCC::AccountsGuiController</name>
@@ -1364,12 +1369,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+62"/>
-        <source>The server address of the account changed</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+277"/>
+        <location line="+345"/>
         <source>User triggered force sync</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1434,7 +1434,17 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-13"/>
+        <location line="+175"/>
+        <source>The account no longer exists.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The local folder %1 could not be set up for synchronization.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-226"/>
         <source>This server folder is already synced with the local folder %1. Each server folder can only be synced once.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1459,7 +1469,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1007"/>
+        <location line="-1013"/>
         <source>Application shutting down</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1537,7 +1547,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizardRemotePath</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="+95"/>
+        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="+100"/>
         <source>Folders on the server</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1569,6 +1579,16 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location line="+5"/>
         <source>The folder name must not end with a dot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The folder name %1 is reserved by Windows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Folders named %1 are excluded from synchronization.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3217,12 +3237,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+432"/>
-        <source>The new address must use an encrypted connection (https://), like the current one.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location filename="../src/gui/servermove.cpp" line="+450"/>
         <source>Checking %1…</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3282,20 +3297,25 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+10"/>
         <source>The new address does not report which installation it belongs to, so it cannot be confirmed that it is the same server. The address was not changed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>The server at %1 is a different installation than the one this account was set up with. To protect your files, the address was not changed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>The synchronization of the account could not be stopped. The address was not changed, please try again.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-306"/>
+        <location line="-339"/>
         <source>No server could be reached at %1.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4762,7 +4782,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-291"/>
+        <location filename="../src/gui/servermove.cpp" line="-294"/>
         <source>Please enter the new address of your server.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4772,7 +4792,7 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>The address must start with https://.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4787,25 +4807,36 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+143"/>
-        <location line="+182"/>
-        <location line="+41"/>
+        <location line="+138"/>
+        <location line="+189"/>
+        <location line="+37"/>
         <location line="+78"/>
         <location line="+25"/>
+        <location line="+65"/>
         <source>The account no longer exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-322"/>
-        <location line="+183"/>
+        <location line="-390"/>
+        <location line="+190"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-179"/>
-        <location line="+190"/>
-        <location line="+30"/>
+        <location line="-186"/>
+        <location line="+197"/>
+        <location line="+26"/>
         <source>This is already the address of the account.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-218"/>
+        <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+366"/>
+        <source>change of the account&apos;s server address</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

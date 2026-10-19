@@ -766,6 +766,11 @@ Bitte legen Sie ein Konto an, indem Sie im Menü der Schaltfläche „Mehr“ di
         <source>Invalid connection status</source>
         <translation>Ungültiger Verbindungsstatus</translation>
     </message>
+    <message>
+        <location line="+92"/>
+        <source>Folder not added</source>
+        <translation>Ordner nicht hinzugefügt</translation>
+    </message>
 </context>
 <context>
     <name>OCC::AccountsGuiController</name>
@@ -1374,12 +1379,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Konto getrennt oder pausiert</translation>
     </message>
     <message>
-        <location line="+97"/>
-        <source>The server address of the account changed</source>
-        <translation>Die Serveradresse des Kontos wurde geändert</translation>
-    </message>
-    <message>
-        <location line="+277"/>
+        <location line="+380"/>
         <source>User triggered force sync</source>
         <translation>Benutzer hat die Synchronisierung erzwungen</translation>
     </message>
@@ -1444,7 +1444,17 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Dieser Serverordner liegt im Ordner %1, der bereits mit dem lokalen Ordner %2 synchronisiert wird. Jeder Serverordner lässt sich nur einmal synchronisieren. Um ihn mit einem anderen lokalen Ordner zu synchronisieren, entfernen Sie zuerst die bestehende Ordnersynchronisierungsverbindung.</translation>
     </message>
     <message>
-        <location line="-13"/>
+        <location line="+175"/>
+        <source>The account no longer exists.</source>
+        <translation>Das Konto gibt es nicht mehr.</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>The local folder %1 could not be set up for synchronization.</source>
+        <translation>Der lokale Ordner %1 konnte nicht für die Synchronisation eingerichtet werden.</translation>
+    </message>
+    <message>
+        <location line="-226"/>
         <source>This server folder is already synced with the local folder %1. Each server folder can only be synced once.</source>
         <translation>Dieser Serverordner wird bereits mit dem lokalen Ordner %1 synchronisiert. Jeder Serverordner lässt sich nur einmal synchronisieren.</translation>
     </message>
@@ -1470,7 +1480,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Der Ordner &apos;%1&apos; wird bereits von einem anderen Konto verwendet.</translation>
     </message>
     <message>
-        <location line="-1007"/>
+        <location line="-1013"/>
         <source>Application shutting down</source>
         <translation>Anwendung wird beendet</translation>
     </message>
@@ -1553,7 +1563,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::FolderWizardRemotePath</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="+95"/>
+        <location filename="../src/gui/folderwizard/folderwizardremotepath.cpp" line="+100"/>
         <source>Folders on the server</source>
         <translation>Ordner auf dem Server</translation>
     </message>
@@ -1586,6 +1596,16 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <location line="+5"/>
         <source>The folder name must not end with a dot.</source>
         <translation>Der Ordnername darf nicht mit einem Punkt enden.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The folder name %1 is reserved by Windows.</source>
+        <translation>Der Ordnername %1 ist unter Windows reserviert.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Folders named %1 are excluded from synchronization.</source>
+        <translation>Ordner mit dem Namen %1 sind von der Synchronisation ausgeschlossen.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3238,12 +3258,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+432"/>
-        <source>The new address must use an encrypted connection (https://), like the current one.</source>
-        <translation>Die neue Adresse muss wie die bisherige eine verschlüsselte Verbindung (https://) nutzen.</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location filename="../src/gui/servermove.cpp" line="+450"/>
         <source>Checking %1…</source>
         <translation>Prüfe %1…</translation>
     </message>
@@ -3303,20 +3318,25 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Die neue Adresse ließ sich nicht prüfen: %1</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+10"/>
         <source>The new address does not report which installation it belongs to, so it cannot be confirmed that it is the same server. The address was not changed.</source>
         <translation>Die neue Adresse nennt nicht, zu welcher Installation sie gehört. Daher lässt sich nicht bestätigen, dass es derselbe Server ist. Die Adresse wurde nicht geändert.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>The server at %1 is a different installation than the one this account was set up with. To protect your files, the address was not changed.</source>
         <translation>Der Server unter %1 ist eine andere Installation als die, mit der dieses Konto eingerichtet wurde. Zum Schutz Ihrer Dateien wurde die Adresse nicht geändert.</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>The synchronization of the account could not be stopped. The address was not changed, please try again.</source>
+        <translation>Die Synchronisation des Kontos ließ sich nicht anhalten. Die Adresse wurde nicht geändert, bitte versuchen Sie es erneut.</translation>
     </message>
 </context>
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-306"/>
+        <location line="-339"/>
         <source>No server could be reached at %1.</source>
         <translation>Unter %1 ist kein Server erreichbar.</translation>
     </message>
@@ -4785,7 +4805,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-291"/>
+        <location filename="../src/gui/servermove.cpp" line="-294"/>
         <source>Please enter the new address of your server.</source>
         <translation>Bitte geben Sie die neue Adresse Ihres Servers ein.</translation>
     </message>
@@ -4795,7 +4815,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>%1 ist keine gültige Adresse.</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>The address must start with https://.</source>
         <translation>Die Adresse muss mit https:// beginnen.</translation>
     </message>
@@ -4810,26 +4830,37 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Die Adresse darf kein „?“ und kein „#“ enthalten.</translation>
     </message>
     <message>
-        <location line="+143"/>
-        <location line="+182"/>
-        <location line="+41"/>
+        <location line="+138"/>
+        <location line="+189"/>
+        <location line="+37"/>
         <location line="+78"/>
         <location line="+25"/>
+        <location line="+65"/>
         <source>The account no longer exists.</source>
         <translation>Das Konto gibt es nicht mehr.</translation>
     </message>
     <message>
-        <location line="-322"/>
-        <location line="+183"/>
+        <location line="-390"/>
+        <location line="+190"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translation>Die Serveradresse lässt sich nur bei Konten ohne Spaces ändern.</translation>
     </message>
     <message>
-        <location line="-179"/>
-        <location line="+190"/>
-        <location line="+30"/>
+        <location line="-186"/>
+        <location line="+197"/>
+        <location line="+26"/>
         <source>This is already the address of the account.</source>
         <translation>Das ist bereits die Adresse des Kontos.</translation>
+    </message>
+    <message>
+        <location line="-218"/>
+        <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
+        <translation>Eine Synchronisation des Kontos läuft noch. Die Adresse wurde nicht geändert, bitte versuchen Sie es erneut.</translation>
+    </message>
+    <message>
+        <location line="+366"/>
+        <source>change of the account&apos;s server address</source>
+        <translation>Änderung der Serveradresse des Kontos</translation>
     </message>
 </context>
 <context>
