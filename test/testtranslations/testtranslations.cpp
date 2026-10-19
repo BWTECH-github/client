@@ -5,6 +5,7 @@
  *
  */
 
+#include "gui/FoldersGui/buttondelegate.h"
 #include "gui/translations.h"
 
 #include <QDialogButtonBox>
@@ -182,6 +183,20 @@ private Q_SLOTS:
         const QDialogButtonBox box(QDialogButtonBox::Yes | QDialogButtonBox::No);
         QCOMPARE(buttonText(box, QDialogButtonBox::Yes), QStringLiteral("Ja"));
         QCOMPARE(buttonText(box, QDialogButtonBox::No), QStringLiteral("Nein"));
+    }
+
+    // Klassen ohne Q_OBJECT übersetzen nur mit eigenem Kontext: ButtonDelegate (Optionsknopf der Ordnerliste) suchte
+    // seine Texte unter „QItemDelegate“ und blieb für Screenreader in jeder Sprache englisch
+    void testButtonDelegateTextsAreTranslated()
+    {
+        QTranslator translator;
+        QVERIFY(translator.load(Translations::translationsFilePrefix() + QStringLiteral("de"), Translations::translationsDirectoryPath()));
+        QVERIFY(QCoreApplication::installTranslator(&translator));
+
+        const QString translated = ButtonDelegate::tr("%1 options button");
+
+        QVERIFY(QCoreApplication::removeTranslator(&translator));
+        QCOMPARE(translated, QStringLiteral("%1-Optionen-Schaltfläche"));
     }
 };
 
