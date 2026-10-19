@@ -35,6 +35,32 @@ private Q_SLOTS:
         QFETCH(QString, name);
         QVERIFY2(!IconResources::findIconPath(QStringLiteral("universal"), name).isEmpty(), qPrintable(name));
     }
+
+    // Hilfe und Konflikthilfe führen ins Handbuch des Desktop-Clients; die frühere Seite owncloud.online/conflicts.html
+    // gab es nie (404), die Startseite von owncloud.online ist keine Hilfe
+    void testHelpLinksPointToClientManual()
+    {
+        const QUrl help(Theme::instance()->helpUrl());
+        QCOMPARE(help.scheme(), QStringLiteral("https"));
+        QCOMPARE(help.host(), QStringLiteral("docs.owncloud.online"));
+        QCOMPARE(help.path(), QStringLiteral("/user/desktop-client"));
+
+        const QUrl conflicts(Theme::instance()->conflictHelpUrl());
+        QCOMPARE(conflicts.adjusted(QUrl::RemoveFragment), help);
+        QCOMPARE(conflicts.fragment(), QStringLiteral("wenn-dieselbe-datei-zweimal-geaendert-wurde"));
+    }
+
+    // ein Theme ohne Hilfe zeigt auch keinen Konfliktlink
+    void testNoConflictLinkWithoutHelp()
+    {
+        class NoHelpTheme : public Theme
+        {
+        public:
+            QString helpUrl() const override { return {}; }
+        };
+        const NoHelpTheme theme;
+        QVERIFY(theme.conflictHelpUrl().isEmpty());
+    }
 };
 
 QTEST_GUILESS_MAIN(TestTheme)

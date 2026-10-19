@@ -24,6 +24,14 @@
 #include <QStandardPaths>
 #include <QTranslator>
 
+namespace {
+// Qt liest die Schreibrichtung aus der Übersetzung von „QT_LAYOUT_DIRECTION“ im Kontext QGuiApplication und spiegelt die
+// Oberfläche bei „RTL“. Nicht jede Sprache hat einen Qt-Katalog (Uigurisch fehlt), deshalb steht der Eintrag in jedem
+// eigenen Katalog; die Markierung sorgt dafür, dass lupdate ihn dort anlegt.
+//: Translate this string to "RTL" in right-to-left languages (such as Arabic or Uyghur), otherwise to "LTR".
+[[maybe_unused]] constexpr const char *layoutDirectionText = QT_TRANSLATE_NOOP("QGuiApplication", "QT_LAYOUT_DIRECTION");
+}
+
 namespace OCC {
 
 namespace Translations {
@@ -98,8 +106,16 @@ namespace Translations {
 
     bool loadQtTranslation(QTranslator *translator, const QStringList &catalogPrefixes, const QString &language, const QStringList &searchPaths)
     {
-        // "de-informal" -> "de"; Gebietsangaben wie in "de_DE" kürzt QTranslator::load() selbst
-        const QString qtLanguage = language.section(QLatin1Char('-'), 0, 0);
+        // Qt liefert Chinesisch nur als zh_CN (Kurzzeichen) und zh_TW (Langzeichen); "de-informal" -> "de";
+        // Gebietsangaben wie in "de_DE" kürzt QTranslator::load() selbst
+        QString qtLanguage;
+        if (language == QLatin1String("zh-Hans")) {
+            qtLanguage = QStringLiteral("zh_CN");
+        } else if (language == QLatin1String("zh_HK")) {
+            qtLanguage = QStringLiteral("zh_TW");
+        } else {
+            qtLanguage = language.section(QLatin1Char('-'), 0, 0);
+        }
         for (const auto &dir : searchPaths) {
             for (const auto &prefix : catalogPrefixes) {
                 if (translator->load(prefix + qtLanguage, dir)) {

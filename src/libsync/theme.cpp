@@ -87,17 +87,19 @@ Theme::Theme()
 
 QString Theme::helpUrl() const
 {
-    return QStringLiteral("https://owncloud.online/");
+    // Benutzerhandbuch des Desktop-Clients; die Startseite von owncloud.online ist keine Hilfe
+    return QStringLiteral("https://docs.owncloud.online/user/desktop-client");
 }
 
 QString Theme::conflictHelpUrl() const
 {
-    auto baseUrl = helpUrl();
-    if (baseUrl.isEmpty())
+    // Konflikte erklärt ein Abschnitt der Handbuchseite, eine eigene Seite (früher "conflicts.html") gibt es nicht.
+    // Ein Theme mit anderer Hilfe-Adresse liefert seinen Konfliktlink selbst, statt dass hier eine Seite geraten wird.
+    const QString manual = Theme::helpUrl();
+    if (helpUrl() != manual) {
         return QString();
-    if (!baseUrl.endsWith(QLatin1Char('/')))
-        baseUrl.append(QLatin1Char('/'));
-    return baseUrl + QStringLiteral("conflicts.html");
+    }
+    return manual + QStringLiteral("#wenn-dieselbe-datei-zweimal-geaendert-wurde");
 }
 
 QString Theme::overrideServerUrl() const

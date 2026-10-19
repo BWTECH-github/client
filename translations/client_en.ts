@@ -4326,9 +4326,9 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location line="-543"/>
         <source>%n new notification(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n new notification</numerusform>
+            <numerusform>%n new notifications</numerusform>
         </translation>
     </message>
     <message>
@@ -4410,9 +4410,9 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location line="+4"/>
         <source>%n more on the server</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n more on the server</numerusform>
+            <numerusform>%n more on the server</numerusform>
         </translation>
     </message>
     <message>
@@ -4461,9 +4461,9 @@ Note that using any logging command line options will override the settings.</so
     <message numerus="yes">
         <location line="+12"/>
         <source>%n unresolved conflict(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%n unresolved conflict</numerusform>
+            <numerusform>%n unresolved conflicts</numerusform>
         </translation>
     </message>
     <message>
@@ -4808,6 +4808,15 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+1"/>
         <source>Update manually</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QGuiApplication</name>
+    <message>
+        <location filename="../src/gui/translations.cpp" line="+32"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <extracomment>Translate this string to &quot;RTL&quot; in right-to-left languages (such as Arabic or Uyghur), otherwise to &quot;LTR&quot;.</extracomment>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -36,7 +36,7 @@
         <location filename="../src/gui/main.cpp" line="+102"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation>%1 Version %2&lt;byte value=&quot;xd&quot;/&gt;
+        <translation>%1 Version %2<byte value="xd"/>
 Anwendung zur Datei-Synchronisation.</translation>
     </message>
     <message>
@@ -78,7 +78,7 @@ Anwendung zur Datei-Synchronisation.</translation>
     <message>
         <location line="+1"/>
         <source>Enable debug mode.</source>
-        <translation>Aktivieren des Debug-Modus </translation>
+        <translation>Aktivieren des Debug-Modus</translation>
     </message>
     <message>
         <location line="+19"/>
@@ -183,8 +183,7 @@ Anwendung zur Datei-Synchronisation.</translation>
         <location line="-24"/>
         <location line="+16"/>
         <source>Unavailable: the space is no longer available on the server</source>
-        <translation>Nicht verfügbar: Der Speicherplatz ist auf dem Server nicht mehr verfügbar
-</translation>
+        <translation>Nicht verfügbar: Der Speicherplatz ist auf dem Server nicht mehr verfügbar</translation>
     </message>
     <message>
         <location line="-12"/>
@@ -422,8 +421,7 @@ Anwendung zur Datei-Synchronisation.</translation>
     <message>
         <location line="-95"/>
         <source>Manage subfolder sync</source>
-        <translation>Synchronisierung von Unterordnern verwalten
-</translation>
+        <translation>Synchronisierung von Unterordnern verwalten</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -1496,12 +1494,12 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location line="+25"/>
         <source> (backup)</source>
-        <translation>(Sicherung)</translation>
+        <translation> (Sicherung)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source> (backup %1)</source>
-        <translation>(Sicherung %1)</translation>
+        <translation> (Sicherung %1)</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -1576,8 +1574,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
     <message>
         <location line="+6"/>
         <source>You have no permission to write to the selected folder.</source>
-        <translation>Sie haben keine Schreibberechtigung für den ausgewählten Ordner.
-</translation>
+        <translation>Sie haben keine Schreibberechtigung für den ausgewählten Ordner.</translation>
     </message>
     <message>
         <location line="-126"/>
@@ -2197,7 +2194,7 @@ Da diese Protokolldateien sehr groß werden können, erstellt der Client für je
     <message>
         <location line="+32"/>
         <source>Log Http traffic </source>
-        <translation>HTTP Datenverkehr loggen</translation>
+        <translation>HTTP Datenverkehr loggen </translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3148,7 +3145,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <location line="+11"/>
         <location line="+195"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
-        <translation>Das Hochladen von %1 überschreitet das Speicherkontingent des Ordners </translation>
+        <translation>Das Hochladen von %1 überschreitet das Speicherkontingent des Ordners</translation>
     </message>
     <message>
         <location line="-147"/>
@@ -5078,6 +5075,15 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
 </context>
 <context>
+    <name>QGuiApplication</name>
+    <message>
+        <location filename="../src/gui/translations.cpp" line="+32"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <extracomment>Translate this string to &quot;RTL&quot; in right-to-left languages (such as Arabic or Uyghur), otherwise to &quot;LTR&quot;.</extracomment>
+        <translation>LTR</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/common/utility.cpp" line="+309"/>
@@ -5378,7 +5384,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     <message>
         <location filename="../src/libsync/platform_win.cpp" line="+122"/>
         <source>Shutting down %1</source>
-        <translation>Herunterfahren von %1 </translation>
+        <translation>Herunterfahren von %1</translation>
     </message>
 </context>
 <context>

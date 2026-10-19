@@ -36,8 +36,8 @@
         <location filename="../src/gui/main.cpp" line="+102"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation>%1 versão %2&lt;byte value=&quot;xd&quot;/&gt;
-Utilitário de sincronização de arquivos na área de trabalho. </translation>
+        <translation>%1 versão %2<byte value="xd"/>
+Utilitário de sincronização de arquivos na área de trabalho.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -53,32 +53,32 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location line="+2"/>
         <source>Quit the running instance.</source>
-        <translation>Saia da instância em execução. </translation>
+        <translation>Saia da instância em execução.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Write log to file (use - to write to stdout).</source>
-        <translation>Grave o log no arquivo (use - para gravar no stdout). </translation>
+        <translation>Grave o log no arquivo (use - para gravar no stdout).</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Write each sync log output in a new file in folder.</source>
-        <translation>Grave cada saída do log de sincronização em um novo arquivo na pasta. </translation>
+        <translation>Grave cada saída do log de sincronização em um novo arquivo na pasta.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Flush the log file after every write.</source>
-        <translation>Libere o arquivo de log após cada gravação. </translation>
+        <translation>Libere o arquivo de log após cada gravação.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Output debug-level messages in the log.</source>
-        <translation>Envie mensagens de nível de depuração no log. </translation>
+        <translation>Envie mensagens de nível de depuração no log.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enable debug mode.</source>
-        <translation>Ative o modo de depuração. </translation>
+        <translation>Ative o modo de depuração.</translation>
     </message>
     <message>
         <location line="+19"/>
@@ -101,7 +101,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location line="+5"/>
         <source>Show in web browser</source>
-        <translation>Mostrar no navegador da web </translation>
+        <translation>Mostrar no navegador da web</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -168,7 +168,7 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location filename="../src/libsync/filesystem.cpp" line="+192"/>
         <source>Could not remove folder</source>
-        <translation>Não foi possível remover a pasta </translation>
+        <translation>Não foi possível remover a pasta</translation>
     </message>
 </context>
 <context>
@@ -224,7 +224,8 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location line="+3"/>
         <source>, %1 left</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>, faltam %1</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -359,7 +360,8 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
     <message>
         <location line="+101"/>
         <source>Server replied &quot;%1 %2&quot; to &quot;%3 %4&quot;</source>
-        <translation>Resposta do servidor &quot;%1 %2&quot; to &quot;%3 %4&quot;</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Resposta do servidor &quot;%1 %2&quot; para &quot;%3 %4&quot;</translation>
     </message>
 </context>
 <context>
@@ -392,7 +394,8 @@ Utilitário de sincronização de arquivos na área de trabalho. </translation>
         <location line="+21"/>
         <location line="+238"/>
         <source>Manage availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gerenciar disponibilidade</translation>
     </message>
     <message>
         <location line="-226"/>
@@ -532,17 +535,19 @@ Esta ação interromperá qualquer sincronização em andamento.</translation>
     <message>
         <location line="+49"/>
         <source>Unchecked folders will be removed from your local file system and will not be synchronized to this computer anymore.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>As pastas desmarcadas serão removidas do seu sistema de arquivos local e não serão mais sincronizadas com este computador.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Aplicar</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Discard</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Descartar</translation>
     </message>
 </context>
 <context>
@@ -585,12 +590,14 @@ Crie uma conta selecionando a opção &quot;Adicionar conta...&quot; no menu do 
     <message>
         <location line="+7"/>
         <source>Retrieving user settings and server capabilities timed out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O tempo esgotou ao obter as configurações do usuário e os recursos do servidor.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível obter as configurações do usuário e os recursos do servidor.</translation>
     </message>
 </context>
 <context>
@@ -624,13 +631,14 @@ Crie uma conta selecionando a opção &quot;Adicionar conta...&quot; no menu do 
         <location line="+105"/>
         <source>%1 of %2 used</source>
         <extracomment>storage quota, %1 and %2 are sizes like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>%1 de %2 usado</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>%1 used</source>
         <extracomment>storage quota without a server-side limit, %1 is a size like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 usados</translation>
     </message>
 </context>
 <context>
@@ -654,7 +662,8 @@ Crie uma conta selecionando a opção &quot;Adicionar conta...&quot; no menu do 
     <message>
         <location line="+5"/>
         <source>Change alias...</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Alterar apelido...</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -684,12 +693,14 @@ Crie uma conta selecionando a opção &quot;Adicionar conta...&quot; no menu do 
     <message>
         <location line="+24"/>
         <source>Change alias</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Alterar apelido</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Account alias:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Apelido da conta:</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -704,12 +715,14 @@ Crie uma conta selecionando a opção &quot;Adicionar conta...&quot; no menu do 
     <message>
         <location line="+4"/>
         <source>Server is temporarily unavailable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor está temporariamente indisponível.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Server is currently in maintenance mode.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor está em modo de manutenção no momento.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -729,7 +742,8 @@ Crie uma conta selecionando a opção &quot;Adicionar conta...&quot; no menu do 
     <message>
         <location line="+2"/>
         <source>Sync is paused due to metered internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>A sincronização está pausada porque a conexão com a Internet é limitada.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -754,7 +768,8 @@ Crie uma conta selecionando a opção &quot;Adicionar conta...&quot; no menu do 
     <message>
         <location line="+3"/>
         <source>Invalid connection status</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Status de conexão inválido</translation>
     </message>
 </context>
 <context>
@@ -903,7 +918,8 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location line="+2"/>
         <source>You are almost set! The synchronization options are under Advanced. By default the client enables the Virtual File System (VFS) and only downloads files when you open them.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Está quase pronto! As opções de sincronização ficam em Avançado. Por padrão, o cliente ativa o sistema de arquivos virtual (VFS) e só baixa os arquivos quando você os abre.</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -916,42 +932,46 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"></translation>
+        <translation>O arquivo %1 está atualmente em uso</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível ler %1</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Local file changed during sync.</source>
-        <translation type="unfinished"></translation>
+        <translation>Arquivo local modificado durante a sincronização.</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Bulk upload failed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Falha no envio em lote</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Server did not confirm the upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor não confirmou o envio</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Server confirmed the upload without an etag</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor confirmou o envio sem um ETag</translation>
     </message>
     <message>
         <location line="+70"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished">O servidor não forneceu as permissões de arquivo</translation>
+        <translation>O servidor não forneceu as permissões de arquivo</translation>
     </message>
     <message>
         <location line="+74"/>
         <source>Error updating metadata: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro ao atualizar metadados : %1</translation>
     </message>
 </context>
 <context>
@@ -982,7 +1002,8 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location line="-79"/>
         <source>No owncloud.online account configured</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nenhuma conta owncloud.online configurada</translation>
     </message>
     <message>
         <location line="+152"/>
@@ -1071,7 +1092,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location filename="../src/gui/models/expandingheaderview.cpp" line="+102"/>
         <source>Reset column sizes</source>
-        <translation>Redefinir tamanhos de coluna </translation>
+        <translation>Redefinir tamanhos de coluna</translation>
     </message>
 </context>
 <context>
@@ -1222,37 +1243,44 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
     <message>
         <location line="+38"/>
         <source>A folder from an external storage has been added: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Uma pasta de um armazenamento externo foi adicionada: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>A new folder larger than %1 MB has been added: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Uma nova pasta com mais de %1 MB foi adicionada: %2</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>The folder %1 was added on the server from an external storage.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>A pasta %1 foi adicionada no servidor a partir de um armazenamento externo.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The new folder %1 on the server is larger than %2 MB.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>A nova pasta %1 no servidor tem mais de %2 MB.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Do you want to synchronize it to this computer?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Deseja sincronizá-la com este computador?</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sincronizar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Do not synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não sincronizar</translation>
     </message>
     <message>
         <location line="+53"/>
@@ -1273,54 +1301,62 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
     <message>
         <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+136"/>
         <source>Loading …</source>
-        <translation type="unfinished">Carregando ...</translation>
+        <translation>Carregando ...</translation>
     </message>
     <message>
         <location line="+206"/>
         <source>This folder no longer exists on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Esta pasta não existe mais no servidor.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>An error occurred while loading the folder contents.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ocorreu um erro ao carregar o conteúdo da pasta.</translation>
     </message>
     <message>
         <location line="+202"/>
         <source>This folder is empty on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Esta pasta está vazia no servidor.</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Arquivo %1, %2</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Folder %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote folder row, %1 is the folder name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pasta %1, %2</translation>
     </message>
     <message>
         <location line="+284"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sempre manter neste dispositivo</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Liberar espaço (somente online)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Restaurar padrão</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Share…</source>
-        <translation type="unfinished">Compartilhar…</translation>
+        <translation>Compartilhar…</translation>
     </message>
 </context>
 <context>
@@ -1361,7 +1397,7 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
     <message>
         <location line="+35"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished">Sincronização pausada pelo usuário</translation>
+        <translation>Sincronização pausada pelo usuário</translation>
     </message>
     <message>
         <location line="+278"/>
@@ -1401,17 +1437,17 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
     <message>
         <location line="+47"/>
         <source>There is already a sync from the server to this local folder.</source>
-        <translation>Já existe uma sincronização do servidor para esta pasta local. </translation>
+        <translation>Já existe uma sincronização do servidor para esta pasta local.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The local folder %1 already contains a folder used in a folder sync connection.</source>
-        <translation>A pasta local %1 já contém uma pasta utilizada numa ligação de sincronização de pasta. </translation>
+        <translation>A pasta local %1 já contém uma pasta utilizada numa ligação de sincronização de pasta.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The local folder %1 is already contained in a folder used in a folder sync connection.</source>
-        <translation>A pasta local %1 já contém uma pasta utilizada numa ligação de sincronização de pasta. </translation>
+        <translation>A pasta local %1 já contém uma pasta utilizada numa ligação de sincronização de pasta.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -1436,7 +1472,8 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
     <message>
         <location line="-945"/>
         <source>Application shutting down</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O aplicativo está sendo encerrado</translation>
     </message>
     <message>
         <location line="+404"/>
@@ -1563,62 +1600,74 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O token de acesso expirou e o arquivo de token não tem um token de atualização. Entre novamente para criar um novo arquivo de token.</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>owncloudcmd cannot sign in interactively. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O owncloudcmd não consegue entrar de forma interativa. Entre novamente para criar um novo arquivo de token.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor rejeitou o token de acesso que acabou de emitir (HTTP 401). Verifique se o servidor web repassa o cabeçalho Authorization para o owncloud.online.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The server rejected the access token (HTTP 401) and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor rejeitou o token de acesso (HTTP 401) e o arquivo de token não tem um token de atualização. Entre novamente para criar um novo arquivo de token.</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O arquivo de token %1 está bloqueado por outra execução do owncloudcmd.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read the token file again: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível ler novamente o arquivo de token: %1</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Cannot refresh the access token without an account.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não é possível renovar o token de acesso sem uma conta.</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor não aceita mais o token de atualização (%1). O login expirou ou foi revogado; entre novamente para criar um novo arquivo de token.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The server refused to refresh the access token (%1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor se recusou a renovar o token de acesso (%1).</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Falha ao renovar o token de acesso: %1 (HTTP %2).</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O endpoint de token respondeu sem um token de acesso utilizável (HTTP %1).</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível salvar os tokens renovados em %1: %2</translation>
     </message>
 </context>
 <context>
@@ -1719,7 +1768,7 @@ Os itens em que a exclusão é permitida serão excluídos se impedirem que um d
     <message>
         <location line="+42"/>
         <source>Share…</source>
-        <translation type="unfinished">Compartilhar…</translation>
+        <translation>Compartilhar…</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1734,7 +1783,7 @@ Os itens em que a exclusão é permitida serão excluídos se impedirem que um d
     <message>
         <location line="+22"/>
         <source>Retry sync</source>
-        <translation>Tentar sincronizar novamente </translation>
+        <translation>Tentar sincronizar novamente</translation>
     </message>
 </context>
 <context>
@@ -1774,7 +1823,7 @@ Como os arquivos de log podem ficar grandes, o cliente iniciará um novo para ca
     <message>
         <location line="+32"/>
         <source>Log Http traffic </source>
-        <translation>Log de tráfego Http</translation>
+        <translation>Log de tráfego Http </translation>
     </message>
     <message>
         <location line="+9"/>
@@ -1889,7 +1938,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="+307"/>
         <source>Reset Filters</source>
-        <translation>Redefinir Filtros </translation>
+        <translation>Redefinir Filtros</translation>
     </message>
     <message>
         <location line="+90"/>
@@ -1995,23 +2044,27 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+49"/>
         <source>Bandwidth</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Largura de banda</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Limit upload speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Limitar a velocidade de envio a</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+8"/>
         <source> kB/s</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> kB/s</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>Limit download speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Limitar a velocidade de download a</translation>
     </message>
 </context>
 <context>
@@ -2172,7 +2225,8 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Copiar URL de login</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2202,7 +2256,8 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+18"/>
         <source>Please sign in using the browser window that has opened and allow access if you are asked to.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Entre usando a janela do navegador que foi aberta e permita o acesso, se for solicitado.</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2237,7 +2292,8 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+5"/>
         <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível abrir o navegador. Copie o link com o botão acima e abra-o no seu navegador.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2255,7 +2311,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="+248"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
-        <translation>Não foi possível baixar atualização. Por favor, clique &lt;a href=&apos;%1&apos;&gt;aqui&lt;/ a&gt; para baixar a atualização manualmente.</translation>
+        <translation>Não foi possível baixar atualização. Por favor, clique &lt;a href=&apos;%1&apos;&gt;aqui&lt;/a&gt; para baixar a atualização manualmente.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2265,7 +2321,8 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="-10"/>
         <source>Downloading %1. Please wait…</source>
-        <translation>Baixando 1%. Aguarde…</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Baixando %1. Aguarde…</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2341,7 +2398,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+3"/>
         <source>File name contains at least one invalid character</source>
-        <translation>O nome do arquivo contem pelo menos um caractere inválido  </translation>
+        <translation>O nome do arquivo contem pelo menos um caractere inválido</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2410,7 +2467,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+74"/>
         <source>Moved to invalid target, restoring</source>
-        <translation> Movido para destino inválido, restaurando</translation>
+        <translation>Movido para destino inválido, restaurando</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -2450,7 +2507,8 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+178"/>
         <source>This Space is currently unavailable</source>
-        <translation>This Space is currently unavailable</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Este espaço está indisponível no momento</translation>
     </message>
     <message>
         <location line="+21"/>
@@ -2476,13 +2534,13 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/libsync/propagatedownload.cpp" line="+131"/>
         <source>Failed to free up space, the file %1 is currently in use</source>
-        <translation>Falha ao liberar espaço, o arquivo %1 está atualmente em uso </translation>
+        <translation>Falha ao liberar espaço, o arquivo %1 está atualmente em uso</translation>
     </message>
     <message>
         <location line="+25"/>
         <location line="+81"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
-        <translation>O arquivo %1 não pode ser baixado por causa de um conflito de nome de arquivo local com %2! </translation>
+        <translation>O arquivo %1 não pode ser baixado por causa de um conflito de nome de arquivo local com %2!</translation>
     </message>
     <message>
         <location line="+58"/>
@@ -2517,7 +2575,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+107"/>
         <source>File %1 cannot be saved because of a local file name clash with %2!</source>
-        <translation>O arquivo %1 não pode ser salvo devido a um conflito de nome de arquivo local com %2! </translation>
+        <translation>O arquivo %1 não pode ser salvo devido a um conflito de nome de arquivo local com %2!</translation>
     </message>
     <message>
         <location line="+88"/>
@@ -2530,7 +2588,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
-        <translation>O arquivo %1 está atualmente em uso </translation>
+        <translation>O arquivo %1 está atualmente em uso</translation>
     </message>
     <message>
         <location line="-639"/>
@@ -2557,7 +2615,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+15"/>
         <source>Can not create local folder %1 because of a local file name clash with %2</source>
-        <translation>Não foi possível criar a pasta local %1 devido a um conflito de nome de arquivo local com %2 </translation>
+        <translation>Não foi possível criar a pasta local %1 devido a um conflito de nome de arquivo local com %2</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -2567,7 +2625,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>O arquivo %1 está atualmente em uso </translation>
+        <translation>O arquivo %1 está atualmente em uso</translation>
     </message>
     <message>
         <location line="-16"/>
@@ -2585,7 +2643,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+30"/>
         <source>Could not remove %1 because of a local file name clash with %2!</source>
-        <translation>Não foi possível remover %1 por causa de um conflito de nome de arquivo local com %2! </translation>
+        <translation>Não foi possível remover %1 por causa de um conflito de nome de arquivo local com %2!</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -2619,7 +2677,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>O arquivo %1 está atualmente em uso </translation>
+        <translation>O arquivo %1 está atualmente em uso</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2650,12 +2708,13 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+36"/>
         <source>Error writing metadata to the database: %1</source>
-        <translation>Erro ao gravar metadados no banco de dados:% 1 </translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Erro ao gravar os metadados no banco de dados: %1</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>Setting file status failed due to file lock</source>
-        <translation>A configuração do status do arquivo falhou devido ao bloqueio do arquivo </translation>
+        <translation>A configuração do status do arquivo falhou devido ao bloqueio do arquivo</translation>
     </message>
 </context>
 <context>
@@ -2673,7 +2732,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>O arquivo %1 está atualmente em uso </translation>
+        <translation>O arquivo %1 está atualmente em uso</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -2696,7 +2755,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+3"/>
         <source>The file %1 is currently in use</source>
-        <translation>O arquivo %1 está atualmente em uso </translation>
+        <translation>O arquivo %1 está atualmente em uso</translation>
     </message>
 </context>
 <context>
@@ -2749,7 +2808,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+80"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation>O servidor solicitou a remoção de um recurso legado (pesquisa) </translation>
+        <translation>O servidor solicitou a remoção de um recurso legado (pesquisa)</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -2767,34 +2826,35 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/libsync/propagateuploadng.cpp" line="+156"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"></translation>
+        <translation>%1  o arquivo está atualmente em uso</translation>
     </message>
     <message>
         <location line="+166"/>
         <location line="+124"/>
         <location line="+253"/>
         <source>Unexpected return code from server (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Código de retorno inesperado do servidor (%1)</translation>
     </message>
     <message>
         <location line="-71"/>
         <source>The local file was removed during sync.</source>
-        <translation type="unfinished">O arquivo local foi removido durante a sincronização.</translation>
+        <translation>O arquivo local foi removido durante a sincronização.</translation>
     </message>
     <message>
         <location line="+66"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation type="unfinished">O servidor solicitou a remoção de um recurso legado (pesquisa) </translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor solicitou um recurso antigo que foi removido (polling)</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Missing File ID from server</source>
-        <translation type="unfinished"></translation>
+        <translation>Falta ID do arquivo do servidor</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Missing ETag from server</source>
-        <translation type="unfinished"></translation>
+        <translation>Falta ETag do servidor</translation>
     </message>
 </context>
 <context>
@@ -2807,7 +2867,8 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+56"/>
         <source>Checksum computation failed</source>
-        <translation>Checksum computation failed</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Falha no cálculo da soma de verificação</translation>
     </message>
     <message>
         <location line="+105"/>
@@ -2863,12 +2924,14 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/quotainfo.cpp" line="+107"/>
         <source>Storage space almost full</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Espaço de armazenamento quase cheio</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The cloud storage of %1 is almost full: %2 of %3 are used.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O armazenamento em nuvem de %1 está quase cheio: %2 de %3 estão em uso.</translation>
     </message>
 </context>
 <context>
@@ -2876,7 +2939,8 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+132"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível obter o link de autorização! Entre em contato com o administrador do sistema.</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -2886,12 +2950,14 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+4"/>
         <source>The browser could not be opened. Copy the link and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível abrir o navegador. Copie o link e abra-o no seu navegador.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>A página de login não usa uma conexão segura (HTTPS), por isso não foi aberta. Entre em contato com o administrador do sistema.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2929,7 +2995,8 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Copiar URL de login</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3011,27 +3078,32 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+364"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Navegue pelos seus arquivos abaixo. Clique com o botão direito em uma pasta para alterar a disponibilidade: sempre manter neste dispositivo ou liberar espaço deixando-a somente online.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Disponibilidade</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sempre manter neste dispositivo</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Liberar espaço (somente online)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Restaurar padrão</translation>
     </message>
 </context>
 <context>
@@ -3039,27 +3111,32 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível dispensar a notificação porque o servidor não está acessível.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The notification could not be dismissed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível dispensar a notificação.</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>The action could not be carried out because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível executar a ação porque o servidor não está acessível.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>The action points to another server and was not carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>A ação aponta para outro servidor e não foi executada.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>The action could not be carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível executar a ação.</translation>
     </message>
 </context>
 <context>
@@ -3092,7 +3169,8 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+7"/>
         <source>Show window on startup</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mostrar a janela ao iniciar</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -3127,12 +3205,14 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+7"/>
         <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O HTTP/2 reutiliza uma única conexão para muitas solicitações, o que acelera a sincronização em conexões com alta latência e com muitos arquivos pequenos. Ativado por padrão; desmarque somente se o seu servidor ou proxy tiver problemas com HTTP/2. Entra em vigor após reiniciar.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Use HTTP/2 (recommended, requires restart)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usar HTTP/2 (recomendado, requer reinicialização)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3147,27 +3227,30 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+27"/>
         <source>Show sync folders in the Explorer navigation pane</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mostrar as pastas sincronizadas no painel de navegação do Explorer</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Advanced - Approve folder sync (non-virtual files mode only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Avançado - Aprovar a sincronização de pastas (somente sem arquivos virtuais)</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Ask for confirmation before synchronizing folders larger than</source>
-        <translation type="unfinished"></translation>
+        <translation>Solicite confirmação antes de sincronizar pastas maiores que</translation>
     </message>
     <message>
         <location line="+7"/>
         <source> MB</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> MB</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>Ask for confirmation before synchronizing external storages</source>
-        <translation type="unfinished"></translation>
+        <translation>Pedir confirmação antes de sincronizar os armazenamentos externos</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3182,7 +3265,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+0"/>
         <source>Language changes require a restart of this application to take effect.</source>
-        <translation>As alterações de idioma exigem a reinicialização deste aplicativo para ter efeito. </translation>
+        <translation>As alterações de idioma exigem a reinicialização deste aplicativo para ter efeito.</translation>
     </message>
     <message>
         <location line="+130"/>
@@ -3205,380 +3288,442 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="+107"/>
         <source>Share %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Compartilhar %1</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Share &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Compartilhar &lt;b&gt;%1&lt;/b&gt;</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usuários e grupos</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Public links</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Links públicos</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Close</source>
-        <translation type="unfinished">Fechar</translation>
+        <translation>Fechar</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Not connected to the server. Please check the connection and reopen the dialog.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sem conexão com o servidor. Verifique a conexão e abra a caixa de diálogo novamente.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Share with users or groups:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Compartilhar com usuários ou grupos:</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Name of a user or group …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nome de um usuário ou grupo …</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Matching users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usuários e grupos correspondentes</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Shared with:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Compartilhado com:</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nome:</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+583"/>
         <source>Download / View</source>
-        <translation type="unfinished"></translation>
+        <translation>Baixar / Visualizar</translation>
     </message>
     <message>
         <location line="-582"/>
         <location line="+581"/>
         <source>Download / View / Upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Baixar / Ver / Enviar</translation>
     </message>
     <message>
         <location line="-580"/>
         <location line="+578"/>
         <source>Download / View / Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Baixar / Ver / Editar</translation>
     </message>
     <message>
         <location line="-577"/>
         <location line="+575"/>
         <source>Upload only (File Drop)</source>
-        <translation type="unfinished"></translation>
+        <translation>Apenas enviar (Deixar um Arquivo)</translation>
     </message>
     <message>
         <location line="-567"/>
         <source>Recipients can:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Os destinatários podem:</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Protect with a password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Proteger com senha</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Senha</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Set an expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Definir uma data de expiração</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Data de expiração</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Cancel</source>
-        <translation type="unfinished">Cancelar</translation>
+        <translation>Cancelar</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>You are not allowed to share this item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Você não tem permissão para compartilhar este item.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Public link created.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link público criado.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Shared with %1.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Compartilhado com %1.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Public link saved.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link público salvo.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Public link deleted.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link público excluído.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Share removed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Compartilhamento removido.</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>No users or groups found.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nenhum usuário ou grupo encontrado.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Select a user or group to share with.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Selecione um usuário ou grupo com quem compartilhar.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Server message: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mensagem do servidor: %1</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Searching for users and groups failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>A pesquisa de usuários e grupos falhou.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Could not load the existing shares.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível carregar os compartilhamentos existentes.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Creating the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível criar o link público.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sharing with %1 failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível compartilhar com %1.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Saving the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível salvar o link público.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Changing the permissions failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível alterar as permissões.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Deleting the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível excluir o link público.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Removing the share failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível remover o compartilhamento.</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Enter at least %1 characters to search.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Digite pelo menos %1 caracteres para pesquisar.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Searching …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pesquisando …</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Sharing with %1 …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Compartilhando com %1 …</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Not shared with any user or group yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ainda não compartilhado com nenhum usuário ou grupo.</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+62"/>
         <source>Loading shares …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Carregando compartilhamentos …</translation>
     </message>
     <message>
         <location line="-46"/>
         <source>Remove</source>
-        <translation type="unfinished">Remover</translation>
+        <translation>Remover</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Parar de compartilhar com %1</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>can view</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>pode ver</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>can edit</source>
-        <translation type="unfinished"></translation>
+        <translation>pode editar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>can create</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>pode criar</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>can delete</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>pode excluir</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>can share</source>
-        <translation type="unfinished"></translation>
+        <translation>pode compartilhar</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>No public links yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ainda não há links públicos.</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+69"/>
         <location line="+45"/>
         <source>Public link</source>
-        <translation type="unfinished"></translation>
+        <translation>Linque público</translation>
     </message>
     <message>
         <location line="-109"/>
         <source>password protected</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>protegido por senha</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>expires %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>expira em %1</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Link address of %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Endereço do link de %1</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Copy link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Copiar link</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Editar</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Delete</source>
-        <translation type="unfinished">Excluir</translation>
+        <translation>Excluir</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Delete the public link &quot;%1&quot;? Everyone who has the link loses access.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Excluir o link público &quot;%1&quot;? Todos que têm o link perderão o acesso.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Parar de compartilhar com %1?</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Edit public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Editar link público</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Salvar</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>New public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Novo link público</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Create public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Criar link público</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Leave empty to keep the current password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Deixe em branco para manter a senha atual</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>The server requires a password for this kind of link.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor exige uma senha para este tipo de link.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server requires an expiration date at most %1 days ahead.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor exige uma data de expiração de no máximo %1 dias a partir de hoje.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The server requires an expiration date.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor exige uma data de expiração.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server allows only one public link per item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor permite apenas um link público por item.</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Please enter a password, or uncheck the password option.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Digite uma senha ou desmarque a opção de senha.</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (%2)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>%1 (group)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (grupo)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 (federated)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (federado)</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Link copied to the clipboard: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link copiado para a área de transferência: %1</translation>
     </message>
 </context>
 <context>
@@ -3798,7 +3943,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+26"/>
         <source>Reset column sizes</source>
-        <translation>Redefinir tamanhos de coluna </translation>
+        <translation>Redefinir tamanhos de coluna</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -3832,9 +3977,10 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="+178"/>
+        <location filename="../src/libsync/theme.cpp" line="+180"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;Versão %1. Para mais informações, visite &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Por Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller e outros.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;O cliente de desktop owncloud.online é distribuído por %4 e licenciado sob a GNU General Public License (GPL) versão 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -3872,33 +4018,37 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
         <location line="+22"/>
         <location line="+650"/>
         <source>Offline</source>
-        <translation type="unfinished">Desconectado</translation>
+        <translation>Desconectado</translation>
     </message>
     <message>
         <location line="-668"/>
         <location line="+675"/>
         <source>Syncing</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sincronizando</translation>
     </message>
     <message>
         <location line="-673"/>
         <source>Aborting sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Cancelando a sincronização</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Atualizado</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date, some files were ignored</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Atualizado, alguns arquivos foram ignorados</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Error</source>
-        <translation type="unfinished">Erro</translation>
+        <translation>Erro</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3906,26 +4056,29 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
-        <translation type="unfinished">Sincronização pausada</translation>
+        <translation>Sincronização pausada</translation>
     </message>
     <message>
         <location line="-649"/>
         <location line="+655"/>
         <source>Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Indisponível</translation>
     </message>
     <message numerus="yes">
         <location line="-543"/>
         <source>%n new notification(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n nova notificação</numerusform>
+            <numerusform>%n novas notificações</numerusform>
         </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For %1. You find them in the menu of the tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Para %1. Você as encontra no menu do ícone da bandeja do sistema.</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -3945,12 +4098,13 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+10"/>
         <source>Add account…</source>
-        <translation type="unfinished">Adicionar conta…</translation>
+        <translation>Adicionar conta…</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Settings…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Configurações…</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3971,212 +4125,237 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
         <location line="+33"/>
         <location line="+92"/>
         <source>Open in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Abrir no navegador</translation>
     </message>
     <message>
         <location line="-88"/>
         <location line="+105"/>
         <source>Resume synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>Retomar sincronização</translation>
     </message>
     <message>
         <location line="-102"/>
         <source>Log in…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Entrar…</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Log out</source>
-        <translation type="unfinished">Sair</translation>
+        <translation>Sair</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Recently changed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Alterados recentemente</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>No files synchronized recently</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nenhum arquivo sincronizado recentemente</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>On the server</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>No servidor</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Show all activity…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mostrar toda a atividade…</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Notifications (%1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Notificações (%1)</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Dismiss</source>
-        <translation type="unfinished"></translation>
+        <translation>Dispensar</translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n more on the server</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>mais %n no servidor</numerusform>
+            <numerusform>mais %n no servidor</numerusform>
         </translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Resume synchronization (paused until %1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Retomar a sincronização (pausada até %1)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Pause synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>Dar uma pausa na sincronização</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 1 hour</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Por 1 hora</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 2 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Por 2 horas</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 4 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Por 4 horas</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until tomorrow</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Até amanhã</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until I resume</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Até eu retomar</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>No account configured</source>
-        <translation type="unfinished">Nenhuma conta configurada</translation>
+        <translation>Nenhuma conta configurada</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronization paused until %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sincronização pausada até %1</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Synchronization paused</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sincronização pausada</translation>
     </message>
     <message>
         <location line="+21"/>
         <location line="+37"/>
         <source>Signed out</source>
-        <translation type="unfinished">Saiu</translation>
+        <translation>Saiu</translation>
     </message>
     <message>
         <location line="-34"/>
         <location line="+36"/>
         <location line="+16"/>
         <source>Disconnected</source>
-        <translation type="unfinished">Desconectado</translation>
+        <translation>Desconectado</translation>
     </message>
     <message>
         <location line="-49"/>
         <source>Disconnected from some accounts</source>
-        <translation type="unfinished"></translation>
+        <translation>Desconectado de algumas contas</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>No sync folders configured</source>
-        <translation type="unfinished"></translation>
+        <translation>Nenhuma pasta de sincronização configurada</translation>
     </message>
     <message numerus="yes">
         <location line="+12"/>
         <source>%n unresolved conflict(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n conflito não resolvido</numerusform>
+            <numerusform>%n conflitos não resolvidos</numerusform>
         </translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Up to date (%1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Atualizado (%1)</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Connected</source>
-        <translation type="unfinished">Conectado</translation>
+        <translation>Conectado</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server temporarily unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Servidor temporariamente indisponível</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server in maintenance mode</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Servidor em modo de manutenção</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Network error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erro de rede</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server configuration error</source>
-        <translation type="unfinished">Erro de configuração do servidor</translation>
+        <translation>Erro de configuração do servidor</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Waiting for sign-in</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aguardando login</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Connecting…</source>
-        <translation type="unfinished">Conectando…</translation>
+        <translation>Conectando…</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Waiting to sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aguardando sincronização</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Open folder &quot;%1&quot; (%2)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Abrir a pasta &quot;%1&quot; (%2)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Unresolved conflicts</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Conflitos não resolvidos</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Checking for changes</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Verificando alterações</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2 (%3 left)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sincronizando %1 de %2 (faltam %3)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Sincronizando %1 de %2</translation>
     </message>
 </context>
 <context>
@@ -4299,7 +4478,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     <message>
         <location line="+4"/>
         <source>The Virtual filesystem feature is not supported on network drives</source>
-        <translation>O recurso de sistema de arquivos virtual não é compatível com unidades de rede </translation>
+        <translation>O recurso de sistema de arquivos virtual não é compatível com unidades de rede</translation>
     </message>
 </context>
 <context>
@@ -4404,6 +4583,15 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
+    <name>QGuiApplication</name>
+    <message>
+        <location filename="../src/gui/translations.cpp" line="+32"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <extracomment>Translate this string to &quot;RTL&quot; in right-to-left languages (such as Arabic or Uyghur), otherwise to &quot;LTR&quot;.</extracomment>
+        <translation>LTR</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/common/utility.cpp" line="+309"/>
@@ -4456,37 +4644,43 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
     <message>
         <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+114"/>
         <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível acessar o servidor em %1. Verifique o endereço e sua conexão com a Internet.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No secure connection to %1 could be established: the server&apos;s certificate is invalid or was not accepted. If the problem persists, please contact the server&apos;s administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Não foi possível estabelecer uma conexão segura com %1: o certificado do servidor é inválido ou não foi aceito. Se o problema persistir, entre em contato com o administrador do servidor.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The server at %1 is in maintenance mode or temporarily unavailable. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor em %1 está em modo de manutenção ou temporariamente indisponível. Tente novamente mais tarde.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No owncloud.online server was found at %1. Please check the address.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nenhum servidor owncloud.online foi encontrado em %1. Verifique o endereço.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O aplicativo &quot;OAuth2&quot; não está instalado ou não está ativado neste servidor. Peça ao seu administrador para instalá-lo e ativá-lo pelo &quot;Market&quot;.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Observação para administradores: o cliente de desktop entra pelo aplicativo &quot;OAuth2&quot;. Instale-o pelo &quot;Market&quot; e ative-o para todos os usuários (linha de comando: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not detect compatible server at %1</source>
-        <translation type="unfinished">Não foi possível detectar o servidor compatível em %1</translation>
+        <translation>Não foi possível detectar o servidor compatível em %1</translation>
     </message>
 </context>
 <context>
@@ -4810,22 +5004,25 @@ foi baixado. A versão instalada é %3.&lt;/p&gt;</translation>
     <message>
         <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O %1 foi instalado ou atualizado. Para concluir a instalação, o Windows precisa ser reiniciado para que a integração com o Explorador de Arquivos funcione corretamente.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Restart Windows now</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Reiniciar o Windows agora</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Restart later</source>
-        <translation type="unfinished">Reiniciar mais tarde</translation>
+        <translation>Reiniciar mais tarde</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>%1 installation finished - restarting Windows</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Instalação do %1 concluída - reiniciando o Windows</translation>
     </message>
 </context>
 <context>

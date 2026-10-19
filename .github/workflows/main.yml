@@ -32,7 +32,8 @@ defaults:
 
 jobs:
 # ------------------------------------------------------------------------------------------------------------------------------------------
-  # Übersetzungs-Gate: keine neuen unübersetzten Quelltexte, deutsche Dateien (Sie/Du) vollständig, alle .ts kompilierbar.
+  # Übersetzungs-Gate: alle Kataloge kennen jeden Quelltext und sind vollständig übersetzt (client_en.ts nur die Pluralformen),
+  # Platzhalter/HTML stimmen, alle .ts kompilierbar. Ablauf für neue Texte: admin/translations/README.md
   translations:
     permissions:
       contents: read
@@ -49,25 +50,24 @@ jobs:
         run: python3 -B admin/release/test_make_update_feed.py
       - name: install-deps
         run: sudo apt-get update -q && sudo apt-get install -y -q qt6-l10n-tools
+      - name: catalog-check-selftest
+        run: python3 -B admin/translations/test_check_catalogs.py
       - name: lupdate-check
         run: |
           set -euo pipefail
           tmp="$(mktemp -d)"
-          for lang in de de-informal; do
-            cp "translations/client_${lang}.ts" "$tmp/"
-            out="$(/usr/lib/qt6/bin/lupdate src -no-obsolete -locations none -ts "$tmp/client_${lang}.ts" 2>&1)"
-            echo "$out"
-            # neue Quelltexte = im Code, aber noch nicht in der .ts-Datei
-            if ! echo "$out" | grep -Eq '\(0 new and'; then
-              echo "::error::client_${lang}.ts ist nicht aktuell: lupdate src -no-obsolete -locations relative -ts translations/client_en.ts translations/client_de.ts translations/client_de-informal.ts ausführen und übersetzen"
-              exit 1
-            fi
-            if grep -q 'type="unfinished"' "$tmp/client_${lang}.ts"; then
-              grep -n -B3 'type="unfinished"' "$tmp/client_${lang}.ts" | grep '<source>' | head -40
-              echo "::error::client_${lang}.ts enthält unübersetzte Einträge"
-              exit 1
-            fi
-          done
+          cp translations/client_*.ts "$tmp/"
+          out="$(/usr/lib/qt6/bin/lupdate src -no-obsolete -locations none -ts "$tmp"/client_*.ts 2>&1)"
+          echo "$out"
+          # neue Quelltexte = im Code, aber noch nicht in den .ts-Dateien (eine "Found …"-Zeile je Katalog)
+          found="$(echo "$out" | grep -E 'Found [0-9]+ source text' || true)"
+          if [ "$(printf '%s\n' "$found" | grep -c .)" -ne "$(ls translations/client_*.ts | wc -l)" ] \
+              || printf '%s\n' "$found" | grep -v '(0 new and' >/dev/null; then
+            echo "::error::Kataloge nicht aktuell: lupdate src -no-obsolete -locations relative -ts translations/client_*.ts ausführen und alle Sprachen übersetzen (admin/translations/README.md)"
+            exit 1
+          fi
+      - name: catalog-check
+        run: python3 -B admin/translations/check_catalogs.py translations
       - name: lrelease-check
         run: |
           set -euo pipefail

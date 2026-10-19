@@ -36,7 +36,7 @@
         <location filename="../src/gui/main.cpp" line="+102"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation>%1バージョン%2&lt;byte value=&quot;xd&quot;/&gt;
+        <translation>%1バージョン%2<byte value="xd"/>
 ファイル同期デスクトップユーティリティ。</translation>
     </message>
     <message>
@@ -223,7 +223,8 @@ File synchronization desktop utility.</source>
     <message>
         <location line="+3"/>
         <source>, %1 left</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>、残り %1</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -391,7 +392,8 @@ File synchronization desktop utility.</source>
         <location line="+21"/>
         <location line="+238"/>
         <source>Manage availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>利用可能状態を管理</translation>
     </message>
     <message>
         <location line="-226"/>
@@ -455,7 +457,7 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location line="+1"/>
         <source>Synchronization is paused because the Internet connection is a metered connection&lt;p&gt;Do you really want to force a Synchronization now?</source>
-        <translation>インターネット接続が従量制プランのため、&lt;p&gt;同期は一時停止中です。強制的に同期を開始しますか？&#xa0;</translation>
+        <translation>インターネット接続が従量制プランのため、&lt;p&gt;同期は一時停止中です。強制的に同期を開始しますか？</translation>
     </message>
     <message>
         <location line="+23"/>
@@ -531,17 +533,19 @@ This action will abort any currently running synchronization.</source>
     <message>
         <location line="+49"/>
         <source>Unchecked folders will be removed from your local file system and will not be synchronized to this computer anymore.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>チェックを外したフォルダーはローカルのファイルシステムから削除され、このコンピューターとは同期されなくなります。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>適用</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Discard</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>破棄</translation>
     </message>
 </context>
 <context>
@@ -564,12 +568,16 @@ This action will abort any currently running synchronization.</source>
         <source>You don&apos;t have any connected accounts yet.
 
 Please create an account by selecting the &quot;Add account...&quot; option on the More button menu.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>接続済みのアカウントがまだありません。
+
+「その他」ボタンのメニューから「アカウントを追加...」を選択して、アカウントを作成してください。</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>組織が定義した追加のロゴ</translation>
     </message>
 </context>
 <context>
@@ -577,17 +585,20 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location filename="../src/gui/accountstate.cpp" line="+248"/>
         <source>The server is not supported by this client.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このサーバーはこのクライアントではサポートされていません。</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Retrieving user settings and server capabilities timed out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザー設定とサーバー機能の取得がタイムアウトしました。</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザー設定とサーバー機能を取得できません。</translation>
     </message>
 </context>
 <context>
@@ -621,13 +632,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <location line="+105"/>
         <source>%1 of %2 used</source>
         <extracomment>storage quota, %1 and %2 are sizes like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>%2 の %1 を使用</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>%1 used</source>
         <extracomment>storage quota without a server-side limit, %1 is a size like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 使用中</translation>
     </message>
 </context>
 <context>
@@ -651,7 +663,8 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+5"/>
         <source>Change alias...</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>エイリアスを変更...</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -681,12 +694,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+24"/>
         <source>Change alias</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>エイリアスを変更</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Account alias:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アカウントのエイリアス:</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -701,12 +716,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+4"/>
         <source>Server is temporarily unavailable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーは一時的に利用できません。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Server is currently in maintenance mode.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーは現在メンテナンスモードです。</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -726,7 +743,8 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+2"/>
         <source>Sync is paused due to metered internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>従量制課金のインターネット接続のため、同期は一時停止しています。</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -751,7 +769,8 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+3"/>
         <source>Invalid connection status</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>無効な接続状態</translation>
     </message>
 </context>
 <context>
@@ -760,12 +779,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+170"/>
         <location line="+61"/>
         <source>New account failure</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>新規アカウントのエラー</translation>
     </message>
     <message>
         <location line="-61"/>
         <source>The information required to create a new account is incomplete. Please run the wizard again.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>新しいアカウントの作成に必要な情報が不足しています。ウィザードをもう一度実行してください。</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -777,7 +798,10 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <source>The account could not be created due to an error:
 %1
 Please check the server&apos;s availability then run the wizard again.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>エラーのためアカウントを作成できませんでした:
+%1
+サーバーが利用可能か確認してから、ウィザードをもう一度実行してください。</translation>
     </message>
 </context>
 <context>
@@ -898,12 +922,14 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location line="+2"/>
         <source>You are almost set! The synchronization options are under Advanced. By default the client enables the Virtual File System (VFS) and only downloads files when you open them.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>もうすぐ完了です。同期オプションは「詳細設定」にあります。既定では、クライアントは仮想ファイルシステム (VFS) を有効にし、ファイルを開いたときにだけダウンロードします。</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>組織が定義した追加のロゴ</translation>
     </message>
 </context>
 <context>
@@ -911,42 +937,46 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"></translation>
+        <translation>ファイル %1 は現在使用中です</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 を読み込めませんでした</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Local file changed during sync.</source>
-        <translation type="unfinished"></translation>
+        <translation>ローカルのファイルが同期中に変更されました。</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Bulk upload failed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>一括アップロードに失敗しました</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Server did not confirm the upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーがアップロードを確認しませんでした</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Server confirmed the upload without an etag</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーは ETag なしでアップロードを確認しました</translation>
     </message>
     <message>
         <location line="+70"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished">サーバーはファイル権限を提供しませんでした</translation>
+        <translation>サーバーはファイル権限を提供しませんでした</translation>
     </message>
     <message>
         <location line="+74"/>
         <source>Error updating metadata: %1</source>
-        <translation type="unfinished">メタデータの更新エラー: %1</translation>
+        <translation>メタデータの更新エラー: %1</translation>
     </message>
 </context>
 <context>
@@ -954,7 +984,8 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location filename="../src/gui/FoldersGui/buttondelegate.cpp" line="+49"/>
         <source>%1 options button</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 オプションボタン</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -977,12 +1008,14 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location line="-79"/>
         <source>No owncloud.online account configured</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>owncloud.online アカウントが設定されていません</translation>
     </message>
     <message>
         <location line="+152"/>
         <source>No account configured</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アカウントが設定されていません</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -1003,7 +1036,8 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+86"/>
         <source>Server does not support OAuth</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーは OAuth をサポートしていません</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1013,7 +1047,8 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location line="+3"/>
         <source>Failed to determine authentication type: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>認証方式を特定できませんでした: %1</translation>
     </message>
 </context>
 <context>
@@ -1021,7 +1056,8 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location filename="../src/gui/networkadapters/discoverwebfingerserviceadapter.h" line="+84"/>
         <source>Invalid reply received from server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーから無効な応答を受信しました。</translation>
     </message>
 </context>
 <context>
@@ -1029,7 +1065,8 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
         <source>The account was deleted before we could start the propfind job</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>PROPFIND ジョブを開始する前にアカウントが削除されました</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -1074,17 +1111,20 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+67"/>
         <source>server sent invalid content type: %1.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーが無効なコンテンツタイプを送信しました: %1。</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>could not parse Capabilities from server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーの機能情報 (Capabilities) を解析できませんでした。</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>reply sent for different subject (server): %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>別の対象 (サーバー) に対する応答が送信されました: %1</translation>
     </message>
 </context>
 <context>
@@ -1122,7 +1162,8 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location line="-67"/>
         <source>The folder has been disabled or removed from the server</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このフォルダーはサーバー上で無効化または削除されました</translation>
     </message>
     <message numerus="yes">
         <location line="+74"/>
@@ -1210,37 +1251,44 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
     <message>
         <location line="+38"/>
         <source>A folder from an external storage has been added: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>外部ストレージのフォルダーが追加されました: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>A new folder larger than %1 MB has been added: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 MB より大きい新しいフォルダーが追加されました: %2</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>The folder %1 was added on the server from an external storage.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>フォルダー %1 が外部ストレージからサーバーに追加されました。</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The new folder %1 on the server is larger than %2 MB.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバー上の新しいフォルダー %1 は %2 MB を超えています。</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Do you want to synchronize it to this computer?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このコンピューターと同期しますか?</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>同期する</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Do not synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>同期しない</translation>
     </message>
     <message>
         <location line="+53"/>
@@ -1261,54 +1309,63 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+136"/>
         <source>Loading …</source>
-        <translation type="unfinished">読込中...</translation>
+        <translation>読込中...</translation>
     </message>
     <message>
         <location line="+206"/>
         <source>This folder no longer exists on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このフォルダーはサーバー上にもう存在しません。</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>An error occurred while loading the folder contents.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>フォルダーの内容を読み込む際にエラーが発生しました。</translation>
     </message>
     <message>
         <location line="+202"/>
         <source>This folder is empty on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このフォルダーはサーバー上で空です。</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ファイル %1、%2</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Folder %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote folder row, %1 is the folder name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>フォルダー %1、%2</translation>
     </message>
     <message>
         <location line="+284"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このデバイスに常に保持する</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>空き容量を増やす (オンラインのみ)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>既定に戻す</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Share…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>共有…</translation>
     </message>
 </context>
 <context>
@@ -1349,7 +1406,7 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location line="+35"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished">ユーザーにより同期が一時停止されました</translation>
+        <translation>ユーザーにより同期が一時停止されました</translation>
     </message>
     <message>
         <location line="+278"/>
@@ -1364,17 +1421,18 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location line="+24"/>
         <source> (backup)</source>
-        <translation>(バックアップ)</translation>
+        <translation> (バックアップ)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source> (backup %1)</source>
-        <translation>(%1をバックアップ)</translation>
+        <translation> (%1をバックアップ)</translation>
     </message>
     <message>
         <location line="+46"/>
         <source>The selected path is not a folder.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>選択したパスはフォルダーではありません。</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1384,7 +1442,8 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location line="+8"/>
         <source>Folder &apos;%1&apos; is already in use by application %2.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>フォルダー &apos;%1&apos; はすでにアプリケーション %2 で使用されています。</translation>
     </message>
     <message>
         <location line="+47"/>
@@ -1404,17 +1463,20 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location line="+12"/>
         <source>No valid folder selected.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>有効なフォルダーが選択されていません。</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>The selected path does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>選択したパスは存在しません。</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>You have no permission to write to the selected folder.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>選択したフォルダーへの書き込み権限がありません。</translation>
     </message>
     <message>
         <location line="-79"/>
@@ -1424,7 +1486,8 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location line="-945"/>
         <source>Application shutting down</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アプリケーションを終了しています</translation>
     </message>
     <message>
         <location line="+404"/>
@@ -1437,7 +1500,8 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/gui/FoldersGui/foldermodelcontroller.cpp" line="+117"/>
         <source>%1 options</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 のオプション</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -1551,62 +1615,74 @@ This means that the synchronization client might not upload local changes immedi
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アクセストークンの有効期限が切れており、トークンファイルにリフレッシュトークンがありません。もう一度ログインして新しいトークンファイルを作成してください。</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>owncloudcmd cannot sign in interactively. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>owncloudcmd は対話形式でログインできません。もう一度ログインして新しいトークンファイルを作成してください。</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーは発行したばかりのアクセストークンを拒否しました (HTTP 401)。Web サーバーが Authorization ヘッダーを owncloud.online に渡しているか確認してください。</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The server rejected the access token (HTTP 401) and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーはアクセストークンを拒否しました (HTTP 401)。トークンファイルにリフレッシュトークンがありません。もう一度ログインして新しいトークンファイルを作成してください。</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>トークンファイル %1 は別の owncloudcmd の実行によってロックされています。</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read the token file again: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>トークンファイルを再度読み込めませんでした: %1</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Cannot refresh the access token without an account.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アカウントがないため、アクセストークンを更新できません。</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーはリフレッシュトークンを受け付けなくなりました (%1)。ログインの有効期限が切れたか、取り消されました。もう一度ログインして新しいトークンファイルを作成してください。</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The server refused to refresh the access token (%1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーはアクセストークンの更新を拒否しました (%1)。</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アクセストークンの更新に失敗しました: %1 (HTTP %2)。</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>トークンエンドポイントは使用可能なアクセストークンなしで応答しました (HTTP %1)。</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>更新されたトークンを %1 に保存できませんでした: %2</translation>
     </message>
 </context>
 <context>
@@ -1707,7 +1783,8 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location line="+42"/>
         <source>Share…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>共有…</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1792,12 +1869,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+55"/>
         <source>Main toolbar for the application</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アプリケーションのメインツールバー</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Main toolbar</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>メインツールバー</translation>
     </message>
 </context>
 <context>
@@ -1805,7 +1884,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+87"/>
         <source>Add account...</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アカウントを追加...</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1836,7 +1916,8 @@ Note that using any logging command line options will override the settings.</so
         <location line="+14"/>
         <location line="+8"/>
         <source>Errors: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>エラー: %1</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -1983,23 +2064,27 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+49"/>
         <source>Bandwidth</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>帯域幅</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Limit upload speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アップロード速度の上限</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+8"/>
         <source> kB/s</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> kB/s</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>Limit download speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ダウンロード速度の上限</translation>
     </message>
 </context>
 <context>
@@ -2007,12 +2092,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
         <source>no error details are available</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>エラーの詳細はありません</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Unable to connect to server during account creation: %1.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アカウントの作成中にサーバーに接続できませんでした: %1。</translation>
     </message>
 </context>
 <context>
@@ -2033,7 +2120,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+56"/>
         <source>Add account…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アカウントを追加…</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2053,7 +2141,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+3"/>
         <source>Open sign in again</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログインをもう一度開く</translation>
     </message>
 </context>
 <context>
@@ -2079,17 +2168,19 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/creds/oauth.cpp" line="+199"/>
         <source>Successfully signed in</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログインに成功しました</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Now, explore %1 on desktop.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>デスクトップで %1 をお使いください。</translation>
     </message>
     <message>
         <location line="+115"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
-        <translation>サーバからエラーが返されました: &lt;em&gt;%1&lt;/em&gt;&#xa0;</translation>
+        <translation>サーバからエラーが返されました: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2127,7 +2218,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+6"/>
         <source>You logged-in with user &lt;em&gt;%1&lt;/em&gt;, but must login with user &lt;em&gt;%2&lt;/em&gt;.&lt;br&gt;Please return to the %3 client and restart the authentication.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザー &lt;em&gt;%1&lt;/em&gt; でログインしましたが、ユーザー &lt;em&gt;%2&lt;/em&gt; でログインする必要があります。&lt;br&gt;%3 クライアントに戻り、認証をやり直してください。</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2145,37 +2237,44 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+3"/>
         <source>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>この画面は開いたままにしてください。Web ブラウザーにログイン画面が表示され、次のアドレスに接続します。</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログイン URL</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログイン URL をクリップボードにコピーするには、コピーボタンを使用してください</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログイン URL をコピー</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy URL to sign in</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログイン用の URL をコピー</translation>
     </message>
     <message>
         <location line="+24"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>組織が定義した追加のロゴ</translation>
     </message>
     <message>
         <location line="+134"/>
         <source>URL copied</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>URL をコピーしました</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2185,57 +2284,68 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+67"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログインサービスに接続できません。問題が解決しない場合は、サポートにお問い合わせください。</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Please sign in using the browser window that has opened and allow access if you are asked to.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>開いたブラウザーのウィンドウでログインし、確認された場合はアクセスを許可してください。</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>上のボタンで認証 URL をコピーし、この情報をサポートに伝えてください。</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>Failed to look up WebFinger instances: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>WebFinger インスタンスの検索に失敗しました: %1</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>You are already connected to an account with these credentials.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>この資格情報のアカウントにはすでに接続しています。</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Unable to retrieve capabilities from server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーから機能情報を取得できません。</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The server is not supported by this client.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このサーバーはこのクライアントではサポートされていません。</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Error while trying to log in to OAuth2-enabled server. %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>OAuth2 対応サーバーへのログイン中にエラーが発生しました。%1</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ブラウザーを開けませんでした。上のボタンでリンクをコピーし、ブラウザーで開いてください。</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>OAuth2 authentication requires a secured connection. %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>OAuth2 認証には安全な接続が必要です。%1</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Authorization server unreachable. %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>認可サーバーに到達できません。%1</translation>
     </message>
 </context>
 <context>
@@ -2243,7 +2353,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="+248"/>
         <source>Could not download update. Please click &lt;a href=&apos;%1&apos;&gt;here&lt;/a&gt; to download the update manually.</source>
-        <translation>アップデートをダウンロードできませんでした。手動でアップデートするには、&lt;a href=&apos;%1&apos;&gt;ここ&lt;/a&gt; をクリックしてください。 </translation>
+        <translation>アップデートをダウンロードできませんでした。手動でアップデートするには、&lt;a href=&apos;%1&apos;&gt;ここ&lt;/a&gt; をクリックしてください。</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2253,7 +2363,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="-10"/>
         <source>Downloading %1. Please wait…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 をダウンロードしています。お待ちください…</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2278,7 +2389,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+2"/>
         <source>Checking update server…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アップデートサーバーを確認しています…</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2301,7 +2413,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+39"/>
         <source>vfs instance is not available.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>VFS インスタンスを利用できません。</translation>
     </message>
 </context>
 <context>
@@ -2377,7 +2490,8 @@ Note that using any logging command line options will override the settings.</so
         <location line="+710"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>VFS インスタンスがありません。続行できません。</translation>
     </message>
     <message>
         <location line="-1079"/>
@@ -2388,7 +2502,8 @@ Note that using any logging command line options will override the settings.</so
         <location line="+199"/>
         <location line="+402"/>
         <source>account was deleted. Unable to continue</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アカウントが削除されました。続行できません</translation>
     </message>
     <message>
         <location line="+159"/>
@@ -2408,12 +2523,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+110"/>
         <source>Error while reading the database.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>データベースの読み込み中にエラーが発生しました。</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>account was deleted. Unable to continue.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アカウントが削除されました。続行できません。</translation>
     </message>
     <message>
         <location line="-170"/>
@@ -2747,7 +2864,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+20"/>
         <source>The server did not acknowledge the file upload. (No e-tag was present)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーがファイルのアップロードを確認しませんでした。(ETag がありません)</translation>
     </message>
 </context>
 <context>
@@ -2755,34 +2873,34 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/libsync/propagateuploadng.cpp" line="+156"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished"></translation>
+        <translation>フォイル %1 は現在使用中です</translation>
     </message>
     <message>
         <location line="+166"/>
         <location line="+124"/>
         <location line="+253"/>
         <source>Unexpected return code from server (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>サーバー (%1) からの予期しない戻りコード</translation>
     </message>
     <message>
         <location line="-71"/>
         <source>The local file was removed during sync.</source>
-        <translation type="unfinished">ローカルファイルを同期中に削除します。</translation>
+        <translation>ローカルファイルを同期中に削除します。</translation>
     </message>
     <message>
         <location line="+66"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation type="unfinished">サーバーは削除されたレガシー機能（ポーリング）を要求した</translation>
+        <translation>サーバーは削除されたレガシー機能（ポーリング）を要求した</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Missing File ID from server</source>
-        <translation type="unfinished"></translation>
+        <translation>サーバーからファイルIDの戻りがありません</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Missing ETag from server</source>
-        <translation type="unfinished"></translation>
+        <translation>サーバーからETagの戻りがありません</translation>
     </message>
 </context>
 <context>
@@ -2851,12 +2969,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/quotainfo.cpp" line="+107"/>
         <source>Storage space almost full</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ストレージ容量がほぼいっぱいです</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The cloud storage of %1 is almost full: %2 of %3 are used.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 のクラウドストレージがほぼいっぱいです: %3 中 %2 を使用しています。</translation>
     </message>
 </context>
 <context>
@@ -2864,22 +2984,26 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+132"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>認可リンクを取得できません。システム管理者に問い合わせてください。</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>IdP is unreachable. Contact your system administrator or try again later.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>IdP に到達できません。システム管理者に問い合わせるか、後でもう一度お試しください。</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The browser could not be opened. Copy the link and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ブラウザーを開けませんでした。リンクをコピーしてブラウザーで開いてください。</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログインページが安全な接続 (HTTPS) を使用していないため、開きませんでした。システム管理者に問い合わせてください。</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2897,37 +3021,44 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+2"/>
         <source>Sign in required</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログインが必要です</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーの問題またはタイムアウトにより、自動的に切断された可能性があります。もう一度ログインしてください。</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログイン URL</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>To copy the sign in URL to the clipboard, use the copy button</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログイン URL をクリップボードにコピーするには、コピーボタンを使用してください</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログイン URL をコピー</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Copy URL to sign in</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログイン用の URL をコピー</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>組織が定義した追加のロゴ</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2942,7 +3073,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+102"/>
         <source>URL copied</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>URL をコピーしました</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2955,12 +3087,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="+71"/>
         <source>Resolved url is invalid %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>解決された URL が無効です %1</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Rejected redirect from %1 to %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 から %2 へのリダイレクトを拒否しました</translation>
     </message>
 </context>
 <context>
@@ -2999,27 +3133,32 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+364"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>以下でファイルを参照できます。フォルダーを右クリックすると利用可能状態を変更できます: このデバイスに常に保持するか、オンラインのみにして空き容量を増やします。</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>利用可能状態</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このデバイスに常に保持する</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>空き容量を増やす (オンラインのみ)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>既定に戻す</translation>
     </message>
 </context>
 <context>
@@ -3027,27 +3166,32 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーに接続できないため、通知を閉じられませんでした。</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The notification could not be dismissed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>通知を閉じられませんでした。</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>The action could not be carried out because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーに接続できないため、操作を実行できませんでした。</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>The action points to another server and was not carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>この操作は別のサーバーを指しているため、実行されませんでした。</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>The action could not be carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>操作を実行できませんでした。</translation>
     </message>
 </context>
 <context>
@@ -3080,7 +3224,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+7"/>
         <source>Show window on startup</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>起動時にウィンドウを表示する</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -3115,12 +3260,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+7"/>
         <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>HTTP/2 は 1 つの接続を多数の要求で再利用するため、遅延の大きい回線や小さなファイルが多い場合に同期が速くなります。既定で有効です。サーバーやプロキシで HTTP/2 に問題がある場合にのみオフにしてください。再起動後に有効になります。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Use HTTP/2 (recommended, requires restart)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>HTTP/2 を使用する (推奨、再起動が必要)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3135,27 +3282,30 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+27"/>
         <source>Show sync folders in the Explorer navigation pane</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>エクスプローラーのナビゲーションウィンドウに同期フォルダーを表示する</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Advanced - Approve folder sync (non-virtual files mode only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>詳細 - フォルダーの同期を承認する (仮想ファイルを使わない場合のみ)</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Ask for confirmation before synchronizing folders larger than</source>
-        <translation type="unfinished"></translation>
+        <translation>指定された容量以上のフォルダーは同期前に確認する</translation>
     </message>
     <message>
         <location line="+7"/>
         <source> MB</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> MB</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>Ask for confirmation before synchronizing external storages</source>
-        <translation type="unfinished"></translation>
+        <translation>外部ストレージと同期する前に確認する</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3193,380 +3343,442 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="+107"/>
         <source>Share %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 を共有</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Share &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;b&gt;%1&lt;/b&gt; を共有</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザーとグループ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Public links</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンク</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Close</source>
-        <translation type="unfinished">閉じる</translation>
+        <translation>閉じる</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Not connected to the server. Please check the connection and reopen the dialog.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーに接続されていません。接続を確認して、ダイアログを開き直してください。</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Share with users or groups:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザーまたはグループと共有:</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Name of a user or group …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザー名またはグループ名 …</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Matching users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>一致するユーザーとグループ</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Shared with:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>共有先:</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>名前:</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+583"/>
         <source>Download / View</source>
-        <translation type="unfinished"></translation>
+        <translation>ダウンロード / 表示</translation>
     </message>
     <message>
         <location line="-582"/>
         <location line="+581"/>
         <source>Download / View / Upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ダウンロード / 表示 / アップロード</translation>
     </message>
     <message>
         <location line="-580"/>
         <location line="+578"/>
         <source>Download / View / Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>ダウンロード/閲覧/編集</translation>
     </message>
     <message>
         <location line="-577"/>
         <location line="+575"/>
         <source>Upload only (File Drop)</source>
-        <translation type="unfinished"></translation>
+        <translation>アップロードのみ（ファイルドロップ）</translation>
     </message>
     <message>
         <location line="-567"/>
         <source>Recipients can:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>受信者ができること:</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Protect with a password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>パスワードで保護する</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>パスワード</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Set an expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>有効期限を設定する</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>有効期限</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Cancel</source>
-        <translation type="unfinished">キャンセル</translation>
+        <translation>キャンセル</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>You are not allowed to share this item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このアイテムを共有する権限がありません。</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Public link created.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンクを作成しました。</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Shared with %1.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 と共有しました。</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Public link saved.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンクを保存しました。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Public link deleted.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンクを削除しました。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Share removed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>共有を解除しました。</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>No users or groups found.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザーもグループも見つかりませんでした。</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Select a user or group to share with.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>共有するユーザーまたはグループを選択してください。</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Server message: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーからのメッセージ: %1</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Searching for users and groups failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザーとグループの検索に失敗しました。</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Could not load the existing shares.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>既存の共有を読み込めませんでした。</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Creating the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンクを作成できませんでした。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sharing with %1 failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 との共有に失敗しました。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Saving the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンクを保存できませんでした。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Changing the permissions failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>権限を変更できませんでした。</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Deleting the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンクを削除できませんでした。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Removing the share failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>共有を解除できませんでした。</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Enter at least %1 characters to search.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>検索するには %1 文字以上入力してください。</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Searching …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>検索しています …</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Sharing with %1 …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 と共有しています …</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Not shared with any user or group yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>まだどのユーザーともグループとも共有されていません。</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+62"/>
         <source>Loading shares …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>共有を読み込んでいます …</translation>
     </message>
     <message>
         <location line="-46"/>
         <source>Remove</source>
-        <translation type="unfinished">削除</translation>
+        <translation>削除</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 との共有を解除</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>can view</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>閲覧可</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>can edit</source>
-        <translation type="unfinished"></translation>
+        <translation>編集を許可</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>can create</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>作成可</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>can delete</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>削除可</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>can share</source>
-        <translation type="unfinished"></translation>
+        <translation>共有可</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>No public links yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンクはまだありません。</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+69"/>
         <location line="+45"/>
         <source>Public link</source>
-        <translation type="unfinished"></translation>
+        <translation>公開リンク</translation>
     </message>
     <message>
         <location line="-109"/>
         <source>password protected</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>パスワード保護</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>expires %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>有効期限 %1</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Link address of %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 のリンクアドレス</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Copy link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>リンクをコピー</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>編集</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Delete</source>
-        <translation type="unfinished">削除</translation>
+        <translation>削除</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Delete the public link &quot;%1&quot;? Everyone who has the link loses access.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンク「%1」を削除しますか? リンクを持っている全員がアクセスできなくなります。</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 との共有を解除しますか?</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Edit public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンクを編集</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>保存</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>New public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>新しい公開リンク</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Create public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>公開リンクを作成</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Leave empty to keep the current password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>現在のパスワードを維持する場合は空欄のままにしてください</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>The server requires a password for this kind of link.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>この種類のリンクにはパスワードが必要です (サーバーの設定)。</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server requires an expiration date at most %1 days ahead.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーでは、%1 日以内の有効期限が必要です。</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The server requires an expiration date.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーでは有効期限が必要です。</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server allows only one public link per item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーでは 1 つのアイテムにつき公開リンクは 1 つだけです。</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Please enter a password, or uncheck the password option.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>パスワードを入力するか、パスワードのオプションのチェックを外してください。</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (%2)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>%1 (group)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (グループ)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 (federated)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (フェデレーション)</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Link copied to the clipboard: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>リンクをクリップボードにコピーしました: %1</translation>
     </message>
 </context>
 <context>
@@ -3614,13 +3826,15 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="-74"/>
         <source>Select new location…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>新しい場所を選択…</translation>
     </message>
     <message>
         <location line="+87"/>
         <location line="+30"/>
         <source>Share…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>共有…</translation>
     </message>
     <message>
         <location line="-28"/>
@@ -3651,28 +3865,33 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+22"/>
         <source>Rename…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>名前を変更…</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Rename and upload…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>名前を変更してアップロード…</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+4"/>
         <source>Move and rename…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>移動して名前を変更…</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Move, rename and upload…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>移動、名前を変更してアップロード…</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Move and upload…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>移動してアップロード…</translation>
     </message>
     <message>
         <location line="-5"/>
@@ -3820,9 +4039,10 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="+178"/>
+        <location filename="../src/libsync/theme.cpp" line="+180"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;バージョン %1。詳細については &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt; をご覧ください&lt;/p&gt;&lt;p&gt;&lt;small&gt;作者: Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller ほか&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online デスクトップクライアントは %4 によって配布され、GNU General Public License (GPL) バージョン 2.0 の下でライセンスされています。&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -3860,33 +4080,36 @@ Note that using any logging command line options will override the settings.</so
         <location line="+22"/>
         <location line="+650"/>
         <source>Offline</source>
-        <translation type="unfinished">オフライン</translation>
+        <translation>オフライン</translation>
     </message>
     <message>
         <location line="-668"/>
         <location line="+675"/>
         <source>Syncing</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>同期中</translation>
     </message>
     <message>
         <location line="-673"/>
         <source>Aborting sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>同期を中止しています</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date</source>
-        <translation type="unfinished"></translation>
+        <translation>最新です</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date, some files were ignored</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>最新の状態です (一部のファイルは除外されました)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Error</source>
-        <translation type="unfinished">エラー</translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3894,25 +4117,28 @@ Note that using any logging command line options will override the settings.</so
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
-        <translation type="unfinished">同期の一時停止</translation>
+        <translation>同期の一時停止</translation>
     </message>
     <message>
         <location line="-649"/>
         <location line="+655"/>
         <source>Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>利用不可</translation>
     </message>
     <message numerus="yes">
         <location line="-543"/>
         <source>%n new notification(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n 件の新しい通知</numerusform>
         </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For %1. You find them in the menu of the tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 向けです。通知はトレイアイコンのメニューにあります。</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -3932,12 +4158,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+10"/>
         <source>Add account…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アカウントを追加…</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Settings…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>設定…</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3958,210 +4186,235 @@ Note that using any logging command line options will override the settings.</so
         <location line="+33"/>
         <location line="+92"/>
         <source>Open in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>ブラウザーで開く</translation>
     </message>
     <message>
         <location line="-88"/>
         <location line="+105"/>
         <source>Resume synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>同期を再開する</translation>
     </message>
     <message>
         <location line="-102"/>
         <source>Log in…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログイン…</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Log out</source>
-        <translation type="unfinished">ログアウト</translation>
+        <translation>ログアウト</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Recently changed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>最近の変更</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>No files synchronized recently</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>最近同期されたファイルはありません</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>On the server</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバー上</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Show all activity…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>すべてのアクティビティを表示…</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Notifications (%1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>通知 (%1)</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Dismiss</source>
-        <translation type="unfinished"></translation>
+        <translation>閉じる</translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n more on the server</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>サーバー上にあと %n 件</numerusform>
         </translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Resume synchronization (paused until %1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>同期を再開 (%1 まで一時停止中)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Pause synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>同期を一時停止</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 1 hour</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>1 時間</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 2 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>2 時間</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 4 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>4 時間</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until tomorrow</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>明日まで</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until I resume</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>再開するまで</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>No account configured</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>アカウントが設定されていません</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronization paused until %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 まで同期を一時停止中</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Synchronization paused</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>同期を一時停止中</translation>
     </message>
     <message>
         <location line="+21"/>
         <location line="+37"/>
         <source>Signed out</source>
-        <translation type="unfinished">サインアウト</translation>
+        <translation>サインアウト</translation>
     </message>
     <message>
         <location line="-34"/>
         <location line="+36"/>
         <location line="+16"/>
         <source>Disconnected</source>
-        <translation type="unfinished">切断しました</translation>
+        <translation>切断しました</translation>
     </message>
     <message>
         <location line="-49"/>
         <source>Disconnected from some accounts</source>
-        <translation type="unfinished"></translation>
+        <translation>一部のアカウントから切断されました</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>No sync folders configured</source>
-        <translation type="unfinished"></translation>
+        <translation>同期フォルダが設定されていません</translation>
     </message>
     <message numerus="yes">
         <location line="+12"/>
         <source>%n unresolved conflict(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>未解決の競合 %n 件</numerusform>
         </translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Up to date (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>最新 (%1)</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Connected</source>
-        <translation type="unfinished">接続しました</translation>
+        <translation>接続しました</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server temporarily unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーは一時的に利用できません</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server in maintenance mode</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーはメンテナンスモードです</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Network error</source>
-        <translation type="unfinished"></translation>
+        <translation>ネットワークエラー</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server configuration error</source>
-        <translation type="unfinished">サーバー設定エラー</translation>
+        <translation>サーバー設定エラー</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Waiting for sign-in</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログインを待っています</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Connecting…</source>
-        <translation type="unfinished">接続中 …</translation>
+        <translation>接続中 …</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Waiting to sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>同期を待っています</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Open folder &quot;%1&quot; (%2)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>フォルダー「%1」を開く (%2)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Unresolved conflicts</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>未解決の競合</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Checking for changes</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>変更を確認しています</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2 (%3 left)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%2 中 %1 を同期中 (残り %3)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>%2 の %1 を同期しています</translation>
     </message>
 </context>
 <context>
@@ -4190,7 +4443,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
         <source>Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ログインを完了するために Web ブラウザーが開きます。</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -4205,37 +4459,43 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+8"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>まずサーバーのアドレスを入力してください。ログインを完了するために Web ブラウザーが開きます。</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Server address field</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーアドレス欄</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Enter your server address here</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ここにサーバーのアドレスを入力してください</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Additional logo defined by the organization</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>組織が定義した追加のロゴ</translation>
     </message>
     <message>
         <location line="+106"/>
         <source>Invalid server URL: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>無効なサーバー URL: %1</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Invalid URL scheme. Only https is accepted.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>無効な URL スキームです。https のみ使用できます。</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>The requested URL failed with query value: %1</source>
-        <translation>要求されたURLは、以下のクエリ値で失敗しました: %1 </translation>
+        <translation>要求されたURLは、以下のクエリ値で失敗しました: %1</translation>
     </message>
 </context>
 <context>
@@ -4243,22 +4503,26 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+64"/>
         <source>Network request to collect user info failed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザー情報を取得するネットワーク要求に失敗しました</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Unable to retrieve user info: invalid credentials.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザー情報を取得できません: 資格情報が無効です。</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Unexpected network response when retrieving user info.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ユーザー情報の取得中に予期しないネットワーク応答がありました。</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Retrieving user info failed with JSON error.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>JSON エラーのため、ユーザー情報の取得に失敗しました。</translation>
     </message>
 </context>
 <context>
@@ -4298,27 +4562,32 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+41"/>
         <source>Could not find StorageProviderState property %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>StorageProviderState プロパティ %1 が見つかりませんでした</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 の StorageFolder が見つかりませんでした。エラー: %2</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 %2 の StorageFolder を取得できませんでした (0x%3)</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>The folder is used by a different client: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このフォルダーは別のクライアントで使用されています: %1</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 の StorageProvider の登録中にエラーが発生しました: %2 (0x%3)</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -4333,7 +4602,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+15"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>フォルダーを %1 から %2 にダウングレードすることはできません</translation>
     </message>
 </context>
 <context>
@@ -4346,7 +4616,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+26"/>
         <source>WebFinger lookup returned no links</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>WebFinger の検索でリンクが返されませんでした</translation>
     </message>
 </context>
 <context>
@@ -4354,7 +4625,7 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/updater/ocupdater.cpp" line="+441"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;%1 クライアントの新しいバージョンが利用可能です。&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; がダウンロード可能です。インストールされているバージョンは %3 です。&lt;p&gt;</translation>
+        <translation>&lt;p&gt;%1 クライアントの新しいバージョンが利用可能です。&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; がダウンロード可能です。インストールされているバージョンは %3 です。&lt;/p&gt;</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -4385,6 +4656,15 @@ Note that using any logging command line options will override the settings.</so
         <location line="+1"/>
         <source>Update manually</source>
         <translation>手動で更新</translation>
+    </message>
+</context>
+<context>
+    <name>QGuiApplication</name>
+    <message>
+        <location filename="../src/gui/translations.cpp" line="+32"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <extracomment>Translate this string to &quot;RTL&quot; in right-to-left languages (such as Arabic or Uyghur), otherwise to &quot;LTR&quot;.</extracomment>
+        <translation>LTR</translation>
     </message>
 </context>
 <context>
@@ -4437,37 +4717,43 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+114"/>
         <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 のサーバーに接続できませんでした。アドレスとインターネット接続を確認してください。</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No secure connection to %1 could be established: the server&apos;s certificate is invalid or was not accepted. If the problem persists, please contact the server&apos;s administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 への安全な接続を確立できませんでした: サーバーの証明書が無効か、受け入れられませんでした。問題が解決しない場合は、サーバーの管理者に問い合わせてください。</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The server at %1 is in maintenance mode or temporarily unavailable. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 のサーバーはメンテナンスモードか、一時的に利用できません。後でもう一度お試しください。</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No owncloud.online server was found at %1. Please check the address.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 に owncloud.online サーバーが見つかりませんでした。アドレスを確認してください。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このサーバーでは「OAuth2」アプリがインストールされていないか、有効になっていません。「Market」からインストールして有効にするよう管理者に依頼してください。</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>管理者の方へ: デスクトップクライアントは「OAuth2」アプリを通じてログインします。「Market」からインストールし、すべてのユーザーに対して有効にしてください (コマンドライン: occ app:enable oauth2)。</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not detect compatible server at %1</source>
-        <translation type="unfinished">%1 で互換性のあるサーバーを検出できませんでした。</translation>
+        <translation>%1 で互換性のあるサーバーを検出できませんでした。</translation>
     </message>
 </context>
 <context>
@@ -4535,7 +4821,8 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+2"/>
         <source>Restored</source>
-        <translation>Restored</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>復元済み</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -4721,12 +5008,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+5"/>
         <source>Renamed %1 to %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 の名前を %2 に変更しました</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Moved %1 to %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 を %2 に移動しました</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -4785,22 +5074,25 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 がインストールまたは更新されました。インストールを完了するには、エクスプローラーとの統合が正しく機能するように Windows を再起動する必要があります。</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Restart Windows now</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>今すぐ Windows を再起動</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Restart later</source>
-        <translation type="unfinished">後で再起動する</translation>
+        <translation>後で再起動する</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>%1 installation finished - restarting Windows</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 のインストールが完了しました - Windows を再起動しています</translation>
     </message>
 </context>
 <context>

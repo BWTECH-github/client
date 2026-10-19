@@ -36,7 +36,7 @@
         <location filename="../src/gui/main.cpp" line="+102"/>
         <source>%1 version %2<byte value="xd"/>
 File synchronization desktop utility.</source>
-        <translation>%1 versie %2&lt;byte value=&quot;xd&quot;/&gt;
+        <translation>%1 versie %2<byte value="xd"/>
 Bestandssynchronisatie desktop software tool.</translation>
     </message>
     <message>
@@ -224,7 +224,8 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location line="+3"/>
         <source>, %1 left</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>, nog %1</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -249,7 +250,8 @@ Bestandssynchronisatie desktop software tool.</translation>
     <message>
         <location line="+2"/>
         <source>%1 is not a folder.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 is geen map.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -392,7 +394,8 @@ Bestandssynchronisatie desktop software tool.</translation>
         <location line="+21"/>
         <location line="+238"/>
         <source>Manage availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Beschikbaarheid beheren</translation>
     </message>
     <message>
         <location line="-226"/>
@@ -532,17 +535,19 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
     <message>
         <location line="+49"/>
         <source>Unchecked folders will be removed from your local file system and will not be synchronized to this computer anymore.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Niet-aangevinkte mappen worden van uw lokale bestandssysteem verwijderd en niet langer met deze computer gesynchroniseerd.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Apply</source>
-        <translation type="unfinished"></translation>
+        <translation>Toepassen</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Discard</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Verwerpen</translation>
     </message>
 </context>
 <context>
@@ -565,7 +570,7 @@ Deze actie annuleert alle huidig lopende synchronisatie.</translation>
         <source>You don&apos;t have any connected accounts yet.
 
 Please create an account by selecting the &quot;Add account...&quot; option on the More button menu.</source>
-        <translation>Je hebt nog geen gekoppelde accounts. Maak een account aan door de optie &apos;Account toevoegen...&apos; te selecteren in het menu van de knop &apos;Meer&apos;. </translation>
+        <translation>Je hebt nog geen gekoppelde accounts. Maak een account aan door de optie &apos;Account toevoegen...&apos; te selecteren in het menu van de knop &apos;Meer&apos;.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -583,12 +588,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+7"/>
         <source>Retrieving user settings and server capabilities timed out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Er is een time-out opgetreden bij het ophalen van de gebruikersinstellingen en de servermogelijkheden.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan de gebruikersinstellingen en de servermogelijkheden niet ophalen.</translation>
     </message>
 </context>
 <context>
@@ -622,13 +629,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <location line="+105"/>
         <source>%1 of %2 used</source>
         <extracomment>storage quota, %1 and %2 are sizes like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>%1% van %2 gebruikt</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>%1 used</source>
         <extracomment>storage quota without a server-side limit, %1 is a size like &quot;11.2 GB&quot;</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 gebruikt</translation>
     </message>
 </context>
 <context>
@@ -652,7 +660,8 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+5"/>
         <source>Change alias...</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Alias wijzigen...</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -682,12 +691,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+24"/>
         <source>Change alias</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Alias wijzigen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Account alias:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Accountalias:</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -702,12 +713,14 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+4"/>
         <source>Server is temporarily unavailable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server is tijdelijk niet beschikbaar.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Server is currently in maintenance mode.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server staat momenteel in onderhoudsmodus.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -727,7 +740,8 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+2"/>
         <source>Sync is paused due to metered internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De synchronisatie is gepauzeerd vanwege een internetverbinding met datalimiet.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -752,7 +766,8 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
     <message>
         <location line="+3"/>
         <source>Invalid connection status</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ongeldige verbindingsstatus</translation>
     </message>
 </context>
 <context>
@@ -899,7 +914,8 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location line="+2"/>
         <source>You are almost set! The synchronization options are under Advanced. By default the client enables the Virtual File System (VFS) and only downloads files when you open them.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>U bent bijna klaar! De synchronisatieopties vindt u onder Geavanceerd. Standaard schakelt de client het virtuele bestandssysteem (VFS) in en downloadt bestanden pas wanneer u ze opent.</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -912,42 +928,47 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished">%1 is in gebruik</translation>
+        <translation>%1 is in gebruik</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan %1 niet lezen</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Local file changed during sync.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokaal bestand gewijzigd bij sync.</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Bulk upload failed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Bulkupload mislukt</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Server did not confirm the upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server heeft de upload niet bevestigd</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Server confirmed the upload without an etag</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server heeft de upload zonder ETag bevestigd</translation>
     </message>
     <message>
         <location line="+70"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server heeft de bestandsrechten niet geleverd</translation>
     </message>
     <message>
         <location line="+74"/>
         <source>Error updating metadata: %1</source>
-        <translation type="unfinished">Fout bij het bijwerken van de metadata: %1</translation>
+        <translation>Fout bij het bijwerken van de metadata: %1</translation>
     </message>
 </context>
 <context>
@@ -978,7 +999,8 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location line="-79"/>
         <source>No owncloud.online account configured</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Geen owncloud.online-account geconfigureerd</translation>
     </message>
     <message>
         <location line="+152"/>
@@ -1085,8 +1107,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location line="+8"/>
         <source>reply sent for different subject (server): %1</source>
-        <translation>antwoord verzonden voor ander onderwerp (server): %1
-&#xa0;</translation>
+        <translation>antwoord verzonden voor ander onderwerp (server): %1</translation>
     </message>
 </context>
 <context>
@@ -1117,6 +1138,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message numerus="yes">
         <location line="-30"/>
         <source>%1 and %n other file(s) have been removed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%1 en één ander bestand zijn verwijderd.</numerusform>
             <numerusform>%1 en %n andere bestanden zijn verwijderd.</numerusform>
@@ -1130,8 +1152,9 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message numerus="yes">
         <location line="+74"/>
         <source>%1 and %n other file(s) have been added.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 en één ander bestand is toegevoegd.</numerusform>
+            <numerusform>%1 en één ander bestand zijn toegevoegd.</numerusform>
             <numerusform>%1 en %n andere bestanden zijn toegevoegd.</numerusform>
         </translation>
     </message>
@@ -1144,33 +1167,37 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message numerus="yes">
         <location line="+5"/>
         <source>%1 and %n other file(s) have been updated.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%1 en één ander bestand zijn bijgewerkt.</numerusform>
-            <numerusform>%1 en %2 andere bestanden zijn bijgewerkt.</numerusform>
+            <numerusform>%1 en %n andere bestanden zijn bijgewerkt.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 has been renamed to %2 and %n other file(s) have been renamed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 is hernoemd naar %2 en één ander bestand zijn ook hernoemd.</numerusform>
+            <numerusform>%1 is hernoemd naar %2 en één ander bestand is ook hernoemd.</numerusform>
             <numerusform>%1 is hernoemd naar %2 en %n andere bestanden zijn ook hernoemd.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 has been moved to %2 and %n other file(s) have been moved.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 is verplaatst naar %2 en één ander bestand zijn ook verplaatst.</numerusform>
+            <numerusform>%1 is verplaatst naar %2 en één ander bestand is ook verplaatst.</numerusform>
             <numerusform>%1 is verplaatst naar %2 en %n andere bestanden zijn ook verplaatst.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location line="+7"/>
         <source>%1 and %n other file(s) have sync conflicts.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
-            <numerusform>%1 en één ander bestand hebben synchronisatie conflicten.</numerusform>
-            <numerusform>%1 en %n andere bestanden hebben synchronisatie conflicten.</numerusform>
+            <numerusform>%1 en %n ander bestand hebben synchronisatieconflicten.</numerusform>
+            <numerusform>%1 en %n andere bestanden hebben synchronisatieconflicten.</numerusform>
         </translation>
     </message>
     <message>
@@ -1181,6 +1208,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message numerus="yes">
         <location line="+5"/>
         <source>%1 and %n other file(s) could not be synced due to errors. See the log for details.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
             <numerusform>%1 en één ander bestand konden niet worden gesynchroniseerd door fouten. Bekijk het log voor details.</numerusform>
             <numerusform>%1 en %n andere bestanden konden niet worden gesynchroniseerd door fouten. Bekijk het log voor details.</numerusform>
@@ -1219,37 +1247,44 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
     <message>
         <location line="+38"/>
         <source>A folder from an external storage has been added: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Er is een map van een externe opslag toegevoegd: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>A new folder larger than %1 MB has been added: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Er is een nieuwe map groter dan %1 MB toegevoegd: %2</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>The folder %1 was added on the server from an external storage.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De map %1 is op de server toegevoegd vanuit een externe opslag.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The new folder %1 on the server is larger than %2 MB.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De nieuwe map %1 op de server is groter dan %2 MB.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Do you want to synchronize it to this computer?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wilt u deze met deze computer synchroniseren?</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchroniseren</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Do not synchronize</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Niet synchroniseren</translation>
     </message>
     <message>
         <location line="+53"/>
@@ -1270,54 +1305,62 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+136"/>
         <source>Loading …</source>
-        <translation type="unfinished">Laden...</translation>
+        <translation>Laden...</translation>
     </message>
     <message>
         <location line="+206"/>
         <source>This folder no longer exists on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Deze map bestaat niet meer op de server.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>An error occurred while loading the folder contents.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Er is een fout opgetreden bij het laden van de mapinhoud.</translation>
     </message>
     <message>
         <location line="+202"/>
         <source>This folder is empty on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Deze map is leeg op de server.</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Bestand %1, %2</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Folder %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote folder row, %1 is the folder name, %2 its size or availability</extracomment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Map %1, %2</translation>
     </message>
     <message>
         <location line="+284"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Altijd op dit apparaat bewaren</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ruimte vrijmaken (alleen online)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Standaard herstellen</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Share…</source>
-        <translation type="unfinished">Delen...</translation>
+        <translation>Delen...</translation>
     </message>
 </context>
 <context>
@@ -1358,7 +1401,7 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location line="+35"/>
         <source>Sync paused by user</source>
-        <translation type="unfinished">Synchronisatie gepauzeerd door gebruiker</translation>
+        <translation>Synchronisatie gepauzeerd door gebruiker</translation>
     </message>
     <message>
         <location line="+278"/>
@@ -1373,12 +1416,12 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location line="+24"/>
         <source> (backup)</source>
-        <translation>(backup)</translation>
+        <translation> (backup)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source> (backup %1)</source>
-        <translation>(backup %1)</translation>
+        <translation> (backup %1)</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -1433,7 +1476,8 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location line="-945"/>
         <source>Application shutting down</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Toepassing wordt afgesloten</translation>
     </message>
     <message>
         <location line="+404"/>
@@ -1560,62 +1604,74 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+118"/>
         <source>The access token has expired and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Het toegangstoken is verlopen en het tokenbestand bevat geen vernieuwingstoken. Meld u opnieuw aan om een nieuw tokenbestand te maken.</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>owncloudcmd cannot sign in interactively. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>owncloudcmd kan niet interactief aanmelden. Meld u opnieuw aan om een nieuw tokenbestand te maken.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The server rejected the access token it has just issued (HTTP 401). Check that the web server passes the Authorization header on to owncloud.online.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server heeft het zojuist uitgegeven toegangstoken geweigerd (HTTP 401). Controleer of de webserver de Authorization-header doorgeeft aan owncloud.online.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The server rejected the access token (HTTP 401) and the token file has no refresh token. Sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server heeft het toegangstoken geweigerd (HTTP 401) en het tokenbestand bevat geen vernieuwingstoken. Meld u opnieuw aan om een nieuw tokenbestand te maken.</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>The token file %1 is locked by another owncloudcmd run.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Het tokenbestand %1 is vergrendeld door een andere uitvoering van owncloudcmd.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not read the token file again: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan het tokenbestand niet opnieuw lezen: %1</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Cannot refresh the access token without an account.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Het toegangstoken kan zonder account niet worden vernieuwd.</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>The server no longer accepts the refresh token (%1). The sign-in has expired or was revoked; sign in again to create a new token file.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server accepteert het vernieuwingstoken niet meer (%1). De aanmelding is verlopen of ingetrokken; meld u opnieuw aan om een nieuw tokenbestand te maken.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The server refused to refresh the access token (%1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server weigerde het toegangstoken te vernieuwen (%1).</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Refreshing the access token failed: %1 (HTTP %2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Vernieuwen van het toegangstoken mislukt: %1 (HTTP %2).</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The token endpoint answered without a usable access token (HTTP %1).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Het token-eindpunt antwoordde zonder bruikbaar toegangstoken (HTTP %1).</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Could not store the refreshed tokens in %1: %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan de vernieuwde tokens niet opslaan in %1: %2</translation>
     </message>
 </context>
 <context>
@@ -1706,7 +1762,8 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
     <message>
         <location line="+37"/>
         <source>Filter menu</source>
-        <translation>Filter menu</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Filtermenu</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1716,7 +1773,7 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
     <message>
         <location line="+42"/>
         <source>Share…</source>
-        <translation type="unfinished">Delen...</translation>
+        <translation>Delen...</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1801,14 +1858,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+55"/>
         <source>Main toolbar for the application</source>
-        <translation>Hoofdwerkbalk voor de applicatie
-&#xa0;</translation>
+        <translation>Hoofdwerkbalk voor de applicatie</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Main toolbar</source>
-        <translation>Hoofdwerkbalk
-&#xa0;</translation>
+        <translation>Hoofdwerkbalk</translation>
     </message>
 </context>
 <context>
@@ -1826,7 +1881,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+5"/>
         <source>About...</source>
-        <translation>About...</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Over...</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1888,12 +1944,14 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/syncerrorwidget.cpp" line="+307"/>
         <source>Reset Filters</source>
-        <translation>Reset Filters</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Filters herstellen</translation>
     </message>
     <message>
         <location line="+90"/>
         <source>Status Filter:</source>
-        <translation>Status Filter:</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Statusfilter:</translation>
     </message>
 </context>
 <context>
@@ -1961,7 +2019,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+21"/>
         <source>Proxy type</source>
-        <translation>Proxy type</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Proxytype</translation>
     </message>
     <message>
         <location filename="../src/gui/networksettings.cpp" line="+54"/>
@@ -1994,23 +2053,27 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+49"/>
         <source>Bandwidth</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Bandbreedte</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Limit upload speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Uploadsnelheid beperken tot</translation>
     </message>
     <message>
         <location line="+3"/>
         <location line="+8"/>
         <source> kB/s</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> kB/s</translation>
     </message>
     <message>
         <location line="-3"/>
         <source>Limit download speed to</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Downloadsnelheid beperken tot</translation>
     </message>
 </context>
 <context>
@@ -2095,7 +2158,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+1"/>
         <source>Now, explore %1 on desktop.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ontdek nu %1 op uw desktop.</translation>
     </message>
     <message>
         <location line="+115"/>
@@ -2105,12 +2169,14 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+2"/>
         <source>There was an error accessing the &apos;token&apos; endpoint: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
-        <translation>Er heeft zich een fout voorgedaan bij het verkrijgen van de &apos;token&apos; eindpunt: 1 2 %1 2</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Er is een fout opgetreden bij het benaderen van het &apos;token&apos;-eindpunt: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Could not parse the JSON returned from the server: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</source>
-        <translation>Kon de JSON dat teruggekomen is van de server niet ontleden: 1 2 %1 2</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan de JSON die de server heeft teruggestuurd niet verwerken: &lt;br&gt;&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2151,12 +2217,14 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
         <source>Application Name Logo %1</source>
-        <translation>Logo van de applicatie</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Logo van de applicatie %1</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Laat dit scherm open. In uw webbrowser verschijnt een aanmeldvenster dat u met het volgende adres verbindt.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -2171,7 +2239,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aanmeld-URL kopiëren</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2191,27 +2260,31 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+2"/>
         <source>Copy URL</source>
-        <translation>Kopiëren URL </translation>
+        <translation>Kopiëren URL</translation>
     </message>
     <message>
         <location line="+67"/>
         <source>Unable to connect to the login service. If the problem continues, please contact support.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan geen verbinding maken met de aanmeldservice. Neem contact op met de ondersteuning als het probleem aanhoudt.</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>Please sign in using the browser window that has opened and allow access if you are asked to.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Meld u aan in het geopende browservenster en sta toegang toe als daarom wordt gevraagd.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Please copy the authentication URL using the button above, and provide this information to support.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kopieer de authenticatie-URL met de knop hierboven en geef deze informatie door aan de ondersteuning.</translation>
     </message>
     <message>
         <location line="+34"/>
         <source>Failed to look up WebFinger instances: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Opzoeken van WebFinger-instanties mislukt: %1</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -2236,7 +2309,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+5"/>
         <source>The browser could not be opened. Copy the link with the button above and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De browser kon niet worden geopend. Kopieer de link met de knop hierboven en open deze in uw browser.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2312,7 +2386,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+39"/>
         <source>vfs instance is not available.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>VFS-instantie is niet beschikbaar.</translation>
     </message>
 </context>
 <context>
@@ -2360,7 +2435,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+3"/>
         <source>File/Folder is ignored because it&apos;s hidden.</source>
-        <translation>Bestand/Map is genegeerd omdat het verborgen is. </translation>
+        <translation>Bestand/Map is genegeerd omdat het verborgen is.</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2388,7 +2463,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location line="+710"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>de VFS-instantie ontbreekt. Kan niet doorgaan.</translation>
     </message>
     <message>
         <location line="-1079"/>
@@ -2419,12 +2495,14 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+110"/>
         <source>Error while reading the database.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Fout bij het lezen van de database.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>account was deleted. Unable to continue.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>account is verwijderd. Kan niet doorgaan.</translation>
     </message>
     <message>
         <location line="-170"/>
@@ -2730,7 +2808,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+178"/>
         <source>The server did not provide the file permissions</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server heeft de bestandsrechten niet geleverd</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -2758,7 +2837,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+20"/>
         <source>The server did not acknowledge the file upload. (No e-tag was present)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server heeft de bestandsupload niet bevestigd. (Er was geen ETag aanwezig)</translation>
     </message>
 </context>
 <context>
@@ -2766,34 +2846,34 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/libsync/propagateuploadng.cpp" line="+156"/>
         <source>%1 the file is currently in use</source>
-        <translation type="unfinished">%1 is in gebruik</translation>
+        <translation>%1 is in gebruik</translation>
     </message>
     <message>
         <location line="+166"/>
         <location line="+124"/>
         <location line="+253"/>
         <source>Unexpected return code from server (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Onverwachte reactie van server (%1)</translation>
     </message>
     <message>
         <location line="-71"/>
         <source>The local file was removed during sync.</source>
-        <translation type="unfinished">Het lokale bestand werd verwijderd tijdens sync.</translation>
+        <translation>Het lokale bestand werd verwijderd tijdens sync.</translation>
     </message>
     <message>
         <location line="+66"/>
         <source>The server did ask for a removed legacy feature(polling)</source>
-        <translation type="unfinished">De server vroeg om een verwijderde legacy feature (polling).</translation>
+        <translation>De server vroeg om een verwijderde legacy feature (polling).</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Missing File ID from server</source>
-        <translation type="unfinished"></translation>
+        <translation>Ontbrekende File ID van de server</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Missing ETag from server</source>
-        <translation type="unfinished"></translation>
+        <translation>Ontbrekende ETag van de server</translation>
     </message>
 </context>
 <context>
@@ -2862,12 +2942,14 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/quotainfo.cpp" line="+107"/>
         <source>Storage space almost full</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Opslagruimte bijna vol</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The cloud storage of %1 is almost full: %2 of %3 are used.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De cloudopslag van %1 is bijna vol: %2 van %3 wordt gebruikt.</translation>
     </message>
 </context>
 <context>
@@ -2875,7 +2957,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/creds/requestauthenticationcontroller.cpp" line="+132"/>
         <source>Unable to retrieve authorization link! Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan de autorisatielink niet ophalen! Neem contact op met uw systeembeheerder.</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -2885,12 +2968,14 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+4"/>
         <source>The browser could not be opened. Copy the link and open it in your browser.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De browser kon niet worden geopend. Kopieer de link en open deze in uw browser.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The sign-in page does not use a secure connection (HTTPS), so it was not opened. Please contact your system administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De aanmeldpagina gebruikt geen beveiligde verbinding (HTTPS) en is daarom niet geopend. Neem contact op met uw systeembeheerder.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2903,7 +2988,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
         <source>Application Name Logo %1</source>
-        <translation>Logo van de applicatie</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Logo van de applicatie %1</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2913,7 +2999,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+8"/>
         <source>You may have been automatically disconnected due to a server issue or time out. Please sign in again.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mogelijk bent u automatisch afgemeld vanwege een serverprobleem of een time-out. Meld u opnieuw aan.</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -2928,7 +3015,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+7"/>
         <source>Copy sign in URL</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aanmeld-URL kopiëren</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2958,7 +3046,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+2"/>
         <source>Copy URL</source>
-        <translation>Kopiëren URL </translation>
+        <translation>Kopiëren URL</translation>
     </message>
 </context>
 <context>
@@ -2966,12 +3054,14 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/networkadapters/resolveurladapter.cpp" line="+71"/>
         <source>Resolved url is invalid %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Opgeloste URL is ongeldig %1</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Rejected redirect from %1 to %2</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Omleiding van %1 naar %2 geweigerd</translation>
     </message>
 </context>
 <context>
@@ -3000,37 +3090,44 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location line="+22"/>
         <location line="+155"/>
         <source>Currently there are no subfolders on the server.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Er zijn momenteel geen submappen op de server.</translation>
     </message>
     <message>
         <location line="-153"/>
         <source>An error occurred while loading the list of subfolders.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Er is een fout opgetreden bij het laden van de lijst met submappen.</translation>
     </message>
     <message>
         <location line="+364"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Blader hieronder door uw bestanden. Klik met de rechtermuisknop op een map om de beschikbaarheid te wijzigen: altijd op dit apparaat bewaren of ruimte vrijmaken door de map alleen online beschikbaar te maken.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Availability</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Beschikbaarheid</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Always keep on this device</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Altijd op dit apparaat bewaren</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Free up space (online only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ruimte vrijmaken (alleen online)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Reset to default</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Standaard herstellen</translation>
     </message>
 </context>
 <context>
@@ -3038,27 +3135,32 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De melding kon niet worden gesloten omdat de server niet bereikbaar is.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>The notification could not be dismissed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De melding kon niet worden gesloten.</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>The action could not be carried out because the server is not reachable.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De actie kon niet worden uitgevoerd omdat de server niet bereikbaar is.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>The action points to another server and was not carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De actie verwijst naar een andere server en is niet uitgevoerd.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>The action could not be carried out.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De actie kon niet worden uitgevoerd.</translation>
     </message>
 </context>
 <context>
@@ -3091,7 +3193,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+7"/>
         <source>Show window on startup</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Venster tonen bij opstarten</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -3126,12 +3229,14 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+7"/>
         <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>HTTP/2 hergebruikt één verbinding voor veel verzoeken, wat de synchronisatie versnelt bij verbindingen met hoge latentie en bij veel kleine bestanden. Standaard ingeschakeld; schakel dit alleen uit als uw server of proxy problemen heeft met HTTP/2. Wordt van kracht na een herstart.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Use HTTP/2 (recommended, requires restart)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>HTTP/2 gebruiken (aanbevolen, herstart vereist)</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -3146,27 +3251,30 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+27"/>
         <source>Show sync folders in the Explorer navigation pane</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gesynchroniseerde mappen tonen in het navigatiedeelvenster van Verkenner</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Advanced - Approve folder sync (non-virtual files mode only)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Geavanceerd - Mapsynchronisatie goedkeuren (alleen zonder virtuele bestanden)</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Ask for confirmation before synchronizing folders larger than</source>
-        <translation type="unfinished"></translation>
+        <translation>Vraag bevestiging voordat mappen worden gedownload groter dan</translation>
     </message>
     <message>
         <location line="+7"/>
         <source> MB</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation> MB</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>Ask for confirmation before synchronizing external storages</source>
-        <translation type="unfinished"></translation>
+        <translation>Vraag bevestiging voor synchronisatie van mappen op externe opslag</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -3204,380 +3312,442 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/sharedialog.cpp" line="+107"/>
         <source>Share %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 delen</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Share &lt;b&gt;%1&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;b&gt;%1&lt;/b&gt; delen</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gebruikers en groepen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Public links</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Openbare links</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Close</source>
-        <translation type="unfinished">Sluiten</translation>
+        <translation>Sluiten</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Not connected to the server. Please check the connection and reopen the dialog.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Niet verbonden met de server. Controleer de verbinding en open het dialoogvenster opnieuw.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Share with users or groups:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Delen met gebruikers of groepen:</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Name of a user or group …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Naam van een gebruiker of groep …</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Matching users and groups</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Overeenkomende gebruikers en groepen</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Shared with:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gedeeld met:</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Naam:</translation>
     </message>
     <message>
         <location line="+5"/>
         <location line="+583"/>
         <source>Download / View</source>
-        <translation type="unfinished"></translation>
+        <translation>Download / Bekijk</translation>
     </message>
     <message>
         <location line="-582"/>
         <location line="+581"/>
         <source>Download / View / Upload</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Downloaden / Bekijken / Uploaden</translation>
     </message>
     <message>
         <location line="-580"/>
         <location line="+578"/>
         <source>Download / View / Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Download / Bekijk / Bewerk</translation>
     </message>
     <message>
         <location line="-577"/>
         <location line="+575"/>
         <source>Upload only (File Drop)</source>
-        <translation type="unfinished"></translation>
+        <translation>Alleen uploaden (File Drop)</translation>
     </message>
     <message>
         <location line="-567"/>
         <source>Recipients can:</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ontvangers kunnen:</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Protect with a password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Beveiligen met een wachtwoord</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Wachtwoord</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Set an expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Vervaldatum instellen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Expiration date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Vervaldatum</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Cancel</source>
-        <translation type="unfinished">Annuleer</translation>
+        <translation>Annuleer</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>You are not allowed to share this item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>U mag dit item niet delen.</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>Public link created.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Openbare link gemaakt.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Shared with %1.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gedeeld met %1.</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Public link saved.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Openbare link opgeslagen.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Public link deleted.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Openbare link verwijderd.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Share removed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Share verwijderd.</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>No users or groups found.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Geen gebruikers of groepen gevonden.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Select a user or group to share with.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Selecteer een gebruiker of groep om mee te delen.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Server message: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Bericht van de server: %1</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Searching for users and groups failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zoeken naar gebruikers en groepen mislukt.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Could not load the existing shares.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan de bestaande shares niet laden.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Creating the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Maken van de openbare link mislukt.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Sharing with %1 failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Delen met %1 mislukt.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Saving the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Opslaan van de openbare link mislukt.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Changing the permissions failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wijzigen van de rechten mislukt.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Deleting the public link failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Verwijderen van de openbare link mislukt.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Removing the share failed.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Verwijderen van de share mislukt.</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Enter at least %1 characters to search.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Voer minstens %1 tekens in om te zoeken.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Searching …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zoeken …</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Sharing with %1 …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Delen met %1 …</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Not shared with any user or group yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nog met geen enkele gebruiker of groep gedeeld.</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+62"/>
         <source>Loading shares …</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shares laden …</translation>
     </message>
     <message>
         <location line="-46"/>
         <source>Remove</source>
-        <translation type="unfinished">Verwijder</translation>
+        <translation>Verwijder</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Delen met %1 stoppen</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>can view</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>kan bekijken</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>can edit</source>
-        <translation type="unfinished"></translation>
+        <translation>kan wijzigen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>can create</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>kan maken</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>can delete</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>kan verwijderen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>can share</source>
-        <translation type="unfinished"></translation>
+        <translation>kan delen</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>No public links yet.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nog geen openbare links.</translation>
     </message>
     <message>
         <location line="+6"/>
         <location line="+69"/>
         <location line="+45"/>
         <source>Public link</source>
-        <translation type="unfinished"></translation>
+        <translation>Openbare Link</translation>
     </message>
     <message>
         <location line="-109"/>
         <source>password protected</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>beveiligd met wachtwoord</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>expires %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>verloopt op %1</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Link address of %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Linkadres van %1</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Copy link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link kopiëren</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Bewerken</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Delete</source>
-        <translation type="unfinished">Verwijderen</translation>
+        <translation>Verwijderen</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Delete the public link &quot;%1&quot;? Everyone who has the link loses access.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De openbare link &quot;%1&quot; verwijderen? Iedereen die de link heeft, verliest de toegang.</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Stop sharing with %1?</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Delen met %1 stoppen?</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Edit public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Openbare link bewerken</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Save</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Opslaan</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>New public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nieuwe openbare link</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Create public link</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Openbare link maken</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Leave empty to keep the current password</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Leeg laten om het huidige wachtwoord te behouden</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>The server requires a password for this kind of link.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server vereist een wachtwoord voor dit type link.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server requires an expiration date at most %1 days ahead.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server vereist een vervaldatum van hoogstens %1 dagen vooruit.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The server requires an expiration date.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server vereist een vervaldatum.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>The server allows only one public link per item.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server staat slechts één openbare link per item toe.</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Please enter a password, or uncheck the password option.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Voer een wachtwoord in of schakel de wachtwoordoptie uit.</translation>
     </message>
     <message>
         <location line="+48"/>
         <source>%1 (%2)</source>
         <comment>sharee (additional info, e.g. the email address)</comment>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (%2)</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>%1 (group)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (groep)</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>%1 (federated)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 (gefedereerd)</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>Link copied to the clipboard: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Link naar het klembord gekopieerd: %1</translation>
     </message>
 </context>
 <context>
@@ -3701,12 +3871,14 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/folderwizard/spacespage.cpp" line="+31"/>
         <source>Select a folder to sync it to your computer.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Selecteer een map om met uw computer te synchroniseren.</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Select a Space to sync it to your computer.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Selecteer een Space om met uw computer te synchroniseren.</translation>
     </message>
 </context>
 <context>
@@ -3719,7 +3891,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+188"/>
         <source>Unable to sync: the local folder is missing.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronisatie niet mogelijk: de lokale map ontbreekt.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -3738,7 +3911,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location line="+31"/>
         <location line="+65"/>
         <source>Cannot open the sync journal.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan het synchronisatiejournaal niet openen.</translation>
     </message>
     <message>
         <location line="+84"/>
@@ -3807,7 +3981,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+30"/>
         <source>Filter menu</source>
-        <translation>Filter menu</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Filtermenu</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3831,9 +4006,10 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::Theme</name>
     <message>
-        <location filename="../src/libsync/theme.cpp" line="+178"/>
+        <location filename="../src/libsync/theme.cpp" line="+180"/>
         <source>&lt;p&gt;Version %1. For more information visit &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller and others.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;owncloud.online Desktop Client is distributed by %4 and licensed under the GNU General Public License (GPL) Version 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;Versie %1. Ga voor meer informatie naar &lt;a href=&quot;%2&quot;&gt;https://%3&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;small&gt;Door Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz,  Jan-Christoph Borchardt, Thomas Müller,&lt;br&gt;Dominik Schmidt, Michael Stingl, Hannah von Reth, Fabian Müller en anderen.&lt;/small&gt;&lt;/p&gt;&lt;p&gt;De owncloud.online-desktopclient wordt verspreid door %4 en valt onder de GNU General Public License (GPL) versie 2.0.&lt;/p&gt;&lt;p&gt;&lt;small&gt;%5&lt;/small&gt;&lt;/p&gt;</translation>
     </message>
 </context>
 <context>
@@ -3851,7 +4027,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/tlserrordialog.cpp" line="+28"/>
         <source>Cannot connect securely to %1</source>
-        <translation>Kan niet beveiligd verbinden met &lt;i&gt;%1&lt;/i&gt;:</translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan geen beveiligde verbinding maken met %1</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -3871,33 +4048,37 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location line="+22"/>
         <location line="+650"/>
         <source>Offline</source>
-        <translation type="unfinished">Offline</translation>
+        <translation>Offline</translation>
     </message>
     <message>
         <location line="-668"/>
         <location line="+675"/>
         <source>Syncing</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchroniseren</translation>
     </message>
     <message>
         <location line="-673"/>
         <source>Aborting sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronisatie wordt afgebroken</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Bijgewerkt</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Up to date, some files were ignored</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Bijgewerkt, sommige bestanden zijn genegeerd</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Error</source>
-        <translation type="unfinished">Fout</translation>
+        <translation>Fout</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3905,26 +4086,29 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
-        <translation type="unfinished">Synchronisatie gepauzeerd.</translation>
+        <translation>Synchronisatie gepauzeerd.</translation>
     </message>
     <message>
         <location line="-649"/>
         <location line="+655"/>
         <source>Unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Niet beschikbaar</translation>
     </message>
     <message numerus="yes">
         <location line="-543"/>
         <source>%n new notification(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n nieuwe melding</numerusform>
+            <numerusform>%n nieuwe meldingen</numerusform>
         </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For %1. You find them in the menu of the tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Voor %1. U vindt ze in het menu van het systeemvakpictogram.</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -3944,12 +4128,13 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+10"/>
         <source>Add account…</source>
-        <translation type="unfinished">Account toevoegen...</translation>
+        <translation>Account toevoegen...</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Settings…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Instellingen…</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3970,212 +4155,236 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location line="+33"/>
         <location line="+92"/>
         <source>Open in browser</source>
-        <translation type="unfinished"></translation>
+        <translation>Open in browser</translation>
     </message>
     <message>
         <location line="-88"/>
         <location line="+105"/>
         <source>Resume synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>Hervat synchronisatie</translation>
     </message>
     <message>
         <location line="-102"/>
         <source>Log in…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Aanmelden…</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Log out</source>
-        <translation type="unfinished">Afmelden</translation>
+        <translation>Afmelden</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Recently changed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Recent gewijzigd</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>No files synchronized recently</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Recent geen bestanden gesynchroniseerd</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>On the server</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Op de server</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>Show all activity…</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Alle activiteit tonen…</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Notifications (%1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Meldingen (%1)</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Dismiss</source>
-        <translation type="unfinished"></translation>
+        <translation>Terzijde leggen</translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
         <source>%n more on the server</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>nog %n op de server</numerusform>
+            <numerusform>nog %n op de server</numerusform>
         </translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Resume synchronization (paused until %1)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronisatie hervatten (gepauzeerd tot %1)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Pause synchronization</source>
-        <translation type="unfinished"></translation>
+        <translation>Pauzeer synchronisatie</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 1 hour</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gedurende 1 uur</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 2 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gedurende 2 uur</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>For 4 hours</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Gedurende 4 uur</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until tomorrow</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Tot morgen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Until I resume</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Totdat ik hervat</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>No account configured</source>
-        <translation type="unfinished">Geen account geconfigureerd</translation>
+        <translation>Geen account geconfigureerd</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Synchronization paused until %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronisatie gepauzeerd tot %1</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Synchronization paused</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronisatie gepauzeerd</translation>
     </message>
     <message>
         <location line="+21"/>
         <location line="+37"/>
         <source>Signed out</source>
-        <translation type="unfinished">Afgemeld</translation>
+        <translation>Afgemeld</translation>
     </message>
     <message>
         <location line="-34"/>
         <location line="+36"/>
         <location line="+16"/>
         <source>Disconnected</source>
-        <translation type="unfinished">Niet verbonden</translation>
+        <translation>Niet verbonden</translation>
     </message>
     <message>
         <location line="-49"/>
         <source>Disconnected from some accounts</source>
-        <translation type="unfinished"></translation>
+        <translation>Losgekoppeld van sommige accounts</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>No sync folders configured</source>
-        <translation type="unfinished"></translation>
+        <translation>Geen synchronisatie-mappen geconfigureerd.</translation>
     </message>
     <message numerus="yes">
         <location line="+12"/>
         <source>%n unresolved conflict(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n onopgelost conflict</numerusform>
+            <numerusform>%n onopgeloste conflicten</numerusform>
         </translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Up to date (%1)</source>
-        <translation type="unfinished"></translation>
+        <translation>Bijgewerkt (%1)</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Connected</source>
-        <translation type="unfinished">Verbonden</translation>
+        <translation>Verbonden</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server temporarily unavailable</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Server tijdelijk niet beschikbaar</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server in maintenance mode</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Server in onderhoudsmodus</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Network error</source>
-        <translation type="unfinished"></translation>
+        <translation>Netwerkfout</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Server configuration error</source>
-        <translation type="unfinished">Server configuratiefout</translation>
+        <translation>Server configuratiefout</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Waiting for sign-in</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wachten op aanmelding</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Connecting…</source>
-        <translation type="unfinished">Verbinden...</translation>
+        <translation>Verbinden...</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>Waiting to sync</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wachten op synchronisatie</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Open folder &quot;%1&quot; (%2)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Map &quot;%1&quot; openen (%2)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Unresolved conflicts</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Onopgeloste conflicten</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Checking for changes</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Controleren op wijzigingen</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2 (%3 left)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 van %2 synchroniseren (nog %3)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Syncing %1 of %2</source>
-        <translation type="unfinished"></translation>
+        <translation>Synchroniseren %1 van %2</translation>
     </message>
 </context>
 <context>
@@ -4204,7 +4413,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
         <source>Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Uw webbrowser wordt geopend om de aanmelding te voltooien.</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -4219,7 +4429,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+8"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Voer uw serveradres in om te beginnen. Uw webbrowser wordt geopend om de aanmelding te voltooien.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -4229,7 +4440,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+1"/>
         <source>Enter your server address here</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Voer hier uw serveradres in</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -4249,7 +4461,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+28"/>
         <source>The requested URL failed with query value: %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De opgevraagde URL is mislukt met querywaarde: %1</translation>
     </message>
 </context>
 <context>
@@ -4257,22 +4470,26 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+64"/>
         <source>Network request to collect user info failed</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Netwerkverzoek om gebruikersinformatie op te halen is mislukt</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Unable to retrieve user info: invalid credentials.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan gebruikersinformatie niet ophalen: ongeldige inloggegevens.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Unexpected network response when retrieving user info.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Onverwacht netwerkantwoord bij het ophalen van gebruikersinformatie.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Retrieving user info failed with JSON error.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ophalen van gebruikersinformatie mislukt met een JSON-fout.</translation>
     </message>
 </context>
 <context>
@@ -4312,7 +4529,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+41"/>
         <source>Could not find StorageProviderState property %1</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan de StorageProviderState-eigenschap %1 niet vinden</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -4322,7 +4540,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+10"/>
         <source>Could not retrieve StorageFolder for %1 %2 (0x%3)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kan de StorageFolder voor %1 %2 niet ophalen (0x%3)</translation>
     </message>
     <message>
         <location line="+34"/>
@@ -4332,7 +4551,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+26"/>
         <source>Error registering StorageProvider for %1: %2 (0x%3)</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Fout bij het registreren van de StorageProvider voor %1: %2 (0x%3)</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -4347,7 +4567,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+15"/>
         <source>Downgrading the folder from %1 to %2 is not supported</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Het downgraden van de map van %1 naar %2 wordt niet ondersteund</translation>
     </message>
 </context>
 <context>
@@ -4360,7 +4581,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location line="+26"/>
         <source>WebFinger lookup returned no links</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>WebFinger-opzoeking leverde geen links op</translation>
     </message>
 </context>
 <context>
@@ -4399,6 +4621,15 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <location line="+1"/>
         <source>Update manually</source>
         <translation>Handmatig bijwerken</translation>
+    </message>
+</context>
+<context>
+    <name>QGuiApplication</name>
+    <message>
+        <location filename="../src/gui/translations.cpp" line="+32"/>
+        <source>QT_LAYOUT_DIRECTION</source>
+        <extracomment>Translate this string to &quot;RTL&quot; in right-to-left languages (such as Arabic or Uyghur), otherwise to &quot;LTR&quot;.</extracomment>
+        <translation>LTR</translation>
     </message>
 </context>
 <context>
@@ -4454,37 +4685,43 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/networkadapters/serverdiagnostics.cpp" line="+114"/>
         <source>The server at %1 could not be reached. Please check the address and your internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server op %1 is niet bereikbaar. Controleer het adres en uw internetverbinding.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No secure connection to %1 could be established: the server&apos;s certificate is invalid or was not accepted. If the problem persists, please contact the server&apos;s administrator.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Er kon geen beveiligde verbinding met %1 worden gemaakt: het certificaat van de server is ongeldig of is niet geaccepteerd. Neem contact op met de beheerder van de server als het probleem aanhoudt.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The server at %1 is in maintenance mode or temporarily unavailable. Please try again later.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server op %1 staat in onderhoudsmodus of is tijdelijk niet beschikbaar. Probeer het later opnieuw.</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>No owncloud.online server was found at %1. Please check the address.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Er is geen owncloud.online-server gevonden op %1. Controleer het adres.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De app &quot;OAuth2&quot; is niet geïnstalleerd of niet ingeschakeld op deze server. Vraag uw beheerder om deze via &quot;Market&quot; te installeren en in te schakelen.</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Opmerking voor beheerders: de desktopclient meldt zich aan via de app &quot;OAuth2&quot;. Installeer deze via &quot;Market&quot; en schakel hem in voor alle gebruikers (opdrachtregel: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Could not detect compatible server at %1</source>
-        <translation type="unfinished">Kon geen compatibele server detecteren bij %1</translation>
+        <translation>Kon geen compatibele server detecteren bij %1</translation>
     </message>
 </context>
 <context>
@@ -4808,22 +5045,25 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     <message>
         <location filename="../src/gui/main.cpp" line="-280"/>
         <source>%1 has been installed or updated. To complete the installation, Windows needs to be restarted so that the file explorer integration works correctly.</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 is geïnstalleerd of bijgewerkt. Om de installatie te voltooien moet Windows opnieuw worden opgestart, zodat de integratie met Verkenner correct werkt.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Restart Windows now</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Windows nu opnieuw opstarten</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Restart later</source>
-        <translation type="unfinished">Later herstarten</translation>
+        <translation>Later herstarten</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>%1 installation finished - restarting Windows</source>
-        <translation type="unfinished"></translation>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Installatie van %1 voltooid - Windows wordt opnieuw opgestart</translation>
     </message>
 </context>
 <context>

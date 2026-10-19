@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <QCoreApplication>
 #include <QItemDelegate>
 
 class QPushButton;
@@ -23,6 +24,10 @@ namespace OCC {
 
 class ButtonDelegate : public QItemDelegate
 {
+    // ohne Q_OBJECT übersetzte tr() im Kontext „QItemDelegate“, die Kataloge führen die Texte unter „OCC::ButtonDelegate“:
+    // Name und Beschreibung des Optionsknopfs für Screenreader blieben in jeder Sprache englisch
+    Q_DECLARE_TR_FUNCTIONS(OCC::ButtonDelegate)
+
 public:
     ButtonDelegate(QAbstractItemView *parent);
 
