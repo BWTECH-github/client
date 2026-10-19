@@ -315,18 +315,23 @@ public:
      */
     // todo: #1
     // todo: #2
-    void addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &config);
+    // owncloud.online: liefert den Grund, wenn das Paar nicht angelegt wird (sonst leer), damit der Aufrufer ihn zeigen kann
+    QString addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &config);
 
     // todo: #3
     void removeFolderSettings(Folder *folder);
 
+    /// läuft gerade eine Synchronisation eines Ordners dieses Kontos?
+    bool isAnySyncRunning(const QUuid &accountId) const;
+
     /**
-     * Baut alle Ordnerpaare eines Kontos neu auf, etwa nach einem Serverumzug: Laufende Synchronisationen werden beendet,
-     * die Ordner entladen (Journale, lokale Ordner und virtuelle Dateien bleiben), @p adjust passt jede Definition an,
-     * dann werden sie gespeichert und neu geladen. Die alten Ordner sind gelöscht, bevor die neuen entstehen: Journal und
-     * Cloud-Files-Verbindung lassen sich nicht doppelt öffnen.
+     * Baut alle Ordnerpaare eines Kontos neu auf, etwa nach einem Serverumzug: Die Ordner werden entladen (Journale, lokale
+     * Ordner und virtuelle Dateien bleiben), @p adjust passt jede Definition an, dann werden sie gespeichert und neu
+     * geladen. Die alten Ordner sind gelöscht, bevor die neuen entstehen: Journal und Cloud-Files-Verbindung lassen sich
+     * nicht doppelt öffnen. Läuft noch eine Synchronisation des Kontos, ändert es nichts und liefert false; der Aufrufer
+     * muss sie vorher beenden (ein laufender Ordner darf nicht gelöscht werden).
      */
-    void rebuildFoldersForAccount(AccountState *accountState, const std::function<void(FolderDefinition &)> &adjust);
+    bool rebuildFoldersForAccount(AccountState *accountState, const std::function<void(FolderDefinition &)> &adjust);
 
     /**
      * @brief folder retrieves the folder given the spaceId, or null if no folder exists for the account and space combo

@@ -420,7 +420,11 @@ void AccountViewController::onFolderWizardAccepted()
 
 
     // Refactoring todo: turn this into a signal/requestAddFolder
-    FolderMan::instance()->addFolderFromGui(_accountState, config);
+    const QString error = FolderMan::instance()->addFolderFromGui(_accountState, config);
+    // etwa die letzte Sicherung gegen einen schon gespiegelten Serverordner: nicht still verwerfen
+    if (!error.isEmpty() && _view) {
+        QMessageBox::warning(_view, tr("Folder not added"), error);
+    }
 }
 
 }

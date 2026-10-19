@@ -33,6 +33,8 @@
 #include <QNetworkReply>
 #include <QXmlStreamReader>
 
+#include <utility>
+
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcServerMove, "gui.servermove", QtInfoMsg)
@@ -86,7 +88,8 @@ QUrl ServerMove::normalizeServerUrl(const QString &input, QString *error)
         *error = tr("%1 is not a valid address.").arg(input.trimmed());
         return {};
     }
-    if (scheme != QLatin1String("https") && scheme != QLatin1String("http")) {
+    // auch http nicht: Die Anmeldung (OAuth2) verlangt https und scheiterte sonst erst im Browser
+    if (scheme != QLatin1String("https")) {
         *error = tr("The address must start with https://.");
         return {};
     }
@@ -100,6 +103,10 @@ QUrl ServerMove::normalizeServerUrl(const QString &input, QString *error)
     }
 
     url.setScheme(scheme);
+    // „:443“ ist dieselbe Adresse: sonst hielte Utility::urlEqual() sie für eine andere und es folgte ein sinnloser Umzug
+    if (url.port() == defaultPort(scheme)) {
+        url.setPort(-1);
+    }
     QString path = cleanServerPath(url.path());
     for (const auto suffix : {QLatin1String("/status.php"), QLatin1String("/index.php")}) {
         if (path.endsWith(suffix)) {
@@ -239,13 +246,21 @@ QString ServerMove::applyNewServerUrl(AccountState *accountState, const QUrl &ne
     if (Utility::urlEqual(oldUrl, newUrl)) {
         return tr("This is already the address of the account.");
     }
+    FolderMan *folderMan = FolderMan::instance();
+    // ein laufender Ordner darf nicht umgebaut werden; ServerMoveController wartet vorher, bis alle Läufe beendet sind
+    if (folderMan && folderMan->isAnySyncRunning(account->uuid())) {
+        return tr("A synchronization of the account is still running. The address was not changed, please try again.");
+    }
     qCInfo(lcServerMove) << "moving account" << account->displayNameWithHost() << "from" << oldUrl << "to" << newUrl;
 
-    // die alten Zugangsdaten liegen im Schlüsselbund unter dem alten Host: erst löschen, dann umstellen
+    // Ab hier ohne Ereignisschleife, zuerst die Kontoadresse, dann die Ordnerpaare, zuletzt die neuen Token. Bricht der
+    // Prozess dazwischen ab, verlangt der Client höchstens eine neue Anmeldung an der neuen Adresse.
+    // Die alten Zugangsdaten liegen im Schlüsselbund unter dem alten Host: erst löschen, dann umstellen.
     account->credentials()->forgetSensitiveData();
     account->setUrl(newUrl);
+    Q_EMIT account->wantsAccountSaved(account);
 
-    if (FolderMan *folderMan = FolderMan::instance()) {
+    if (folderMan) {
         folderMan->rebuildFoldersForAccount(accountState, [&oldUrl, &newUrl, account](FolderDefinition &definition) {
             if (const auto rebased = rebaseUrl(definition.webDavUrl(), oldUrl, newUrl)) {
                 definition.setWebDavUrl(*rebased);
@@ -260,7 +275,6 @@ QString ServerMove::applyNewServerUrl(AccountState *accountState, const QUrl &ne
     if (auto *credentials = qobject_cast<Credentials *>(account->credentials())) {
         credentials->replaceTokens(accessToken, refreshToken);
     }
-    Q_EMIT account->wantsAccountSaved(account);
 
     if (accountState->isSignedOut()) {
         accountState->signIn();
@@ -430,10 +444,6 @@ void ServerMoveController::start(const QString &input)
         fail(ServerMove::tr("This is already the address of the account."));
         return;
     }
-    if (account->url().scheme() == QLatin1String("https") && url.scheme() == QLatin1String("http")) {
-        fail(tr("The new address must use an encrypted connection (https://), like the current one."));
-        return;
-    }
 
     _statusCheck = new ServerStatusCheck(accessManager(), this);
     connect(_statusCheck, &ServerStatusCheck::finished, this, &ServerMoveController::onStatusChecked);
@@ -578,35 +588,82 @@ void ServerMoveController::finishVerification(QNetworkReply *reply, const QUrl &
         return;
     }
 
-    // Gleiche Instanz? Die Datei-IDs von ownCloud 10 enden auf die Instanz-ID. Ohne synchronisierte Einträge gibt es nichts
-    // zu vergleichen, aber auch nichts, was ein fremder Server als gelöscht erscheinen lassen könnte.
+    // Gleiche Instanz? Die Datei-IDs von ownCloud 10 enden auf die Instanz-ID. Eine solche ID muss die neue Adresse immer
+    // melden, auch wenn noch nichts synchronisiert wurde: sonst ginge etwa ein Infinite-Scale-Server (Datei-IDs
+    // „storage$space!id“) durch, dessen Ordner nicht zu diesem Konto passen.
+    // Die Antwort kommt von einem noch nicht bestätigten Server: nur so viel lesen, wie ein PROPFIND mit Tiefe 0 braucht.
+    const QString newInstance = ServerMove::instanceIdFromFileId(ServerMove::fileIdFromPropfind(reply->read(256 * 1024)));
+    if (newInstance.isEmpty()) {
+        fail(tr("The new address does not report which installation it belongs to, so it cannot be confirmed that it is the same server. "
+                "The address was not changed."));
+        return;
+    }
     const QString knownInstance = ServerMove::knownInstanceId(account->uuid());
-    if (!knownInstance.isEmpty()) {
-        // die Antwort kommt von einem noch nicht bestätigten Server: nur so viel lesen, wie ein PROPFIND mit Tiefe 0 braucht
-        const QString newInstance = ServerMove::instanceIdFromFileId(ServerMove::fileIdFromPropfind(reply->read(256 * 1024)));
-        if (newInstance.isEmpty()) {
-            fail(tr("The new address does not report which installation it belongs to, so it cannot be confirmed that it is the same server. "
-                    "The address was not changed."));
-            return;
-        }
-        if (newInstance != knownInstance) {
-            qCWarning(lcServerMove) << "instance mismatch: known" << knownInstance << "new" << newInstance;
-            fail(tr("The server at %1 is a different installation than the one this account was set up with. To protect your files, the address was "
-                    "not changed.")
-                     .arg(displayUrl(newUrl)));
-            return;
-        }
+    if (!knownInstance.isEmpty() && newInstance != knownInstance) {
+        qCWarning(lcServerMove) << "instance mismatch: known" << knownInstance << "new" << newInstance;
+        fail(tr("The server at %1 is a different installation than the one this account was set up with. To protect your files, the address was "
+                "not changed.")
+                 .arg(displayUrl(newUrl)));
+        return;
     }
 
+    // Erst umstellen, wenn kein Lauf des Kontos mehr läuft, und bevor sich etwas ändert: ohne verschachtelte Ereignisschleife
+    // (Beenden über das Tray) und nie einen laufenden Ordner löschen
     _applying = true;
+    if (FolderMan *folderMan = FolderMan::instance()) {
+        folderMan->setSyncEnabled(false);
+        _syncsHeld = true;
+        for (Folder *folder : folderMan->foldersForAccount(account->uuid())) {
+            if (folder->isSyncRunning()) {
+                folder->slotTerminateSync(ServerMove::tr("change of the account's server address"));
+            }
+        }
+    }
+    _syncStopTime.start();
+    _syncStopPoll = new QTimer(this);
+    _syncStopPoll->setInterval(100);
+    connect(_syncStopPoll, &QTimer::timeout, this, [newUrl, accessToken, refreshToken, this] { applyWhenSyncsStopped(newUrl, accessToken, refreshToken); });
+    _syncStopPoll->start();
+    applyWhenSyncsStopped(newUrl, accessToken, refreshToken);
+}
+
+void ServerMoveController::applyWhenSyncsStopped(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken)
+{
+    if (!_accountState || !_accountState->account()) {
+        fail(ServerMove::tr("The account no longer exists."));
+        return;
+    }
+    FolderMan *folderMan = FolderMan::instance();
+    if (folderMan && folderMan->isAnySyncRunning(_accountState->account()->uuid())) {
+        if (_syncStopTime.elapsed() < syncStopTimeoutMs) {
+            return;
+        }
+        fail(tr("The synchronization of the account could not be stopped. The address was not changed, please try again."));
+        return;
+    }
+    releaseSyncs();
     const QString error = ServerMove::applyNewServerUrl(_accountState, newUrl, accessToken, refreshToken);
-    _applying = false;
     if (!error.isEmpty()) {
         fail(error);
         return;
     }
     reset();
     Q_EMIT succeeded(newUrl);
+}
+
+void ServerMoveController::releaseSyncs()
+{
+    if (_syncStopPoll) {
+        _syncStopPoll->stop();
+        _syncStopPoll->deleteLater();
+        _syncStopPoll = nullptr;
+    }
+    if (std::exchange(_syncsHeld, false)) {
+        if (FolderMan *folderMan = FolderMan::instance()) {
+            folderMan->setSyncEnabled(true);
+        }
+    }
+    _applying = false;
 }
 
 void ServerMoveController::cancel()
@@ -640,6 +697,7 @@ void ServerMoveController::reset()
         _verificationReply->deleteLater();
         _verificationReply = nullptr;
     }
+    releaseSyncs();
     _newUrl.clear();
 }
 

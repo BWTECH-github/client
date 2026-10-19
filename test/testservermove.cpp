@@ -5,6 +5,7 @@
  *
  */
 
+#include <QScopeGuard>
 #include <QSignalSpy>
 #include <QtTest>
 
@@ -14,7 +15,9 @@
 #include "common/syncjournaldb.h"
 #include "common/syncjournalfilerecord.h"
 #include "configfile.h"
+#include "creds/credentials.h"
 #include "folder.h"
+#include "libsync/creds/credentialmanager.h"
 #include "folderman.h"
 #include "servermove.h"
 #include "testutils/testutils.h"
@@ -92,7 +95,10 @@ private Q_SLOTS:
         QTest::newRow("double slashes") << QStringLiteral("https://example.org//oc//") << QStringLiteral("https://example.org/oc");
         QTest::newRow("port") << QStringLiteral("example.org:8443") << QStringLiteral("https://example.org:8443");
         QTest::newRow("upper case scheme and host") << QStringLiteral("HTTPS://Cloud.Example.ORG") << QStringLiteral("https://cloud.example.org");
-        QTest::newRow("http stays http") << QStringLiteral("http://intranet.local") << QStringLiteral("http://intranet.local");
+        // derselbe Server wie ohne Port: sonst folgte ein sinnloser Umzug mit Neuanmeldung
+        QTest::newRow("explicit default port") << QStringLiteral("https://example.org:443/oc/") << QStringLiteral("https://example.org/oc");
+        // die Anmeldung (OAuth2) verlangt https: http gleich ablehnen, nicht erst im Browser scheitern
+        QTest::newRow("http") << QStringLiteral("http://intranet.local") << QString();
         QTest::newRow("empty") << QString() << QString();
         QTest::newRow("credentials") << QStringLiteral("https://user:secret@example.org") << QString();
         QTest::newRow("query") << QStringLiteral("https://example.org/?a=b") << QString();
@@ -441,13 +447,123 @@ private Q_SLOTS:
         QSignalSpy failed(&controller, &ServerMoveController::failed);
 
         // dieselbe Adresse wie bisher
-        controller.start(account->url().toString());
+        account->setUrl(QUrl(QStringLiteral("https://alt.example.org/owncloud")));
+        controller.start(QStringLiteral("https://alt.example.org:443/owncloud/"));
         QCOMPARE(failed.size(), 1);
         // Unsinn
         controller.start(QStringLiteral("https://user:pw@neu.example.org"));
         QCOMPARE(failed.size(), 2);
+        // von https zu http: nie eine unverschlüsselte Verbindung
+        controller.start(QStringLiteral("http://neu.example.org/owncloud"));
+        QCOMPARE(failed.size(), 3);
+        QVERIFY(failed.last().first().toString().contains(QStringLiteral("https://")));
         QCOMPARE(requests, 0);
         QVERIFY(!controller.isBusy());
+        QCOMPARE(account->url(), QUrl(QStringLiteral("https://alt.example.org/owncloud")));
+    }
+
+    // ein zweites Konto mit derselben Adresse und demselben Benutzer: kein Umzug dorthin
+    void testStartRejectsDuplicateAccount()
+    {
+        auto accountState = createDummyAccountWithFileSupport(FileInfo::A12_B12_C12_S12());
+        Account *account = accountState->account();
+        account->setCapabilities({account->url(), oc10Capabilities()});
+        auto otherState = createDummyAccount();
+        const QUrl target(QStringLiteral("https://neu.example.org/owncloud"));
+        otherState->account()->setUrl(target);
+        QVERIFY(AccountManager::instance()->accountState(otherState->account()->uuid()));
+
+        ServerMoveController controller(accountState.get(), nullptr);
+        controller.setAccessManagerFactory([](QObject *parent) -> QNetworkAccessManager * {
+            auto *accessManager = new FakeAM({}, parent);
+            accessManager->setOverride([accessManager](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+                return new FakePayloadReply(op, request, statusOk, accessManager);
+            });
+            return accessManager;
+        });
+        QSignalSpy failed(&controller, &ServerMoveController::failed);
+        controller.start(target.toString());
+        QVERIFY(failed.wait());
+        QVERIFY(!controller.isBusy());
+        QVERIFY(account->url() != target);
+    }
+
+    // Antworten der neuen Adresse auf die Prüfung, die den Umzug stoppen
+    void testVerifyRejectsServerAnswers_data()
+    {
+        QTest::addColumn<int>("httpStatus");
+        QTest::addColumn<QByteArray>("rootFileId");
+
+        QTest::newRow("not signed in") << 401 << QByteArray();
+        QTest::newRow("forbidden") << 403 << QByteArray();
+        QTest::newRow("user unknown") << 404 << QByteArray();
+        QTest::newRow("redirect") << 301 << QByteArray();
+        QTest::newRow("server error") << 500 << QByteArray();
+        // ohne synchronisierte Einträge: trotzdem nur eine ownCloud-10-Installation, kein Infinite Scale
+        QTest::newRow("no oc10 instance") << 207 << QByteArray("storage$space!opaque");
+    }
+
+    void testVerifyRejectsServerAnswers()
+    {
+        QFETCH(int, httpStatus);
+        QFETCH(QByteArray, rootFileId);
+
+        auto accountState = createDummyAccountWithFileSupport(FileInfo::A12_B12_C12_S12());
+        Account *account = accountState->account();
+        account->setCapabilities({account->url(), oc10Capabilities()});
+        const QUrl oldUrl = account->url();
+        QVERIFY(ServerMove::knownInstanceId(account->uuid()).isEmpty());
+
+        FileInfo server = FileInfo::A12_B12_C12_S12();
+        server.fileId = rootFileId;
+        auto *accessManager = new FakeAM(server, nullptr);
+        if (httpStatus != 207) {
+            accessManager->setOverride([httpStatus, accessManager](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+                if (httpStatus == 301) {
+                    return new FakeRedirectReply(op, request, accessManager, 301, QUrl(QStringLiteral("https://anders.example.org/remote.php/dav/files/admin/")));
+                }
+                return new FakeErrorReply(op, request, accessManager, httpStatus);
+            });
+        }
+        ServerMoveController controller(accountState.get(), nullptr);
+        controller.setAccessManagerFactory([accessManager](QObject *parent) -> QNetworkAccessManager * {
+            accessManager->setParent(parent);
+            return accessManager;
+        });
+        QSignalSpy failed(&controller, &ServerMoveController::failed);
+        QSignalSpy succeeded(&controller, &ServerMoveController::succeeded);
+        controller.verifyAndApply(QUrl(QStringLiteral("https://neu.example.org/owncloud")), QStringLiteral("new-token"), QStringLiteral("new-refresh"));
+        QVERIFY(failed.wait());
+        QCOMPARE(succeeded.size(), 0);
+        QVERIFY(!failed.first().first().toString().isEmpty());
+        QCOMPARE(account->url(), oldUrl);
+        QVERIFY(!controller.isBusy());
+    }
+
+    // Nach dem Umzug liegt der neue Token unter dem Schlüssel des neuen Hosts (der Schlüsselbund ist nach Host getrennt)
+    void testReplaceTokensStoresUnderNewHost()
+    {
+#ifndef Q_OS_WIN
+        QSKIP("needs a credential store that also works in the CI runners");
+#else
+        auto accountState = createDummyAccount();
+        Account *account = accountState->account();
+        auto *credentials = new Credentials(QString(), QString(), account);
+        QSignalSpy fetched(credentials, &AbstractCredentials::fetched);
+        account->setUrl(QUrl(QStringLiteral("https://neu-%1.example.org/owncloud").arg(QUuid::createUuid().toString(QUuid::Id128))));
+        const auto cleanup = qScopeGuard([account] { account->credentialManager()->clear(); });
+
+        credentials->replaceTokens(QStringLiteral("new-access"), QStringLiteral("new-refresh"));
+
+        QVERIFY(credentials->ready());
+        QCOMPARE(fetched.size(), 1);
+        QTRY_VERIFY(account->credentialManager()->contains(QStringLiteral("http/oauthtoken")));
+        auto *job = account->credentialManager()->get(QStringLiteral("http/oauthtoken"));
+        QVERIFY(job);
+        QSignalSpy read(job, &CredentialJob::finished);
+        QVERIFY(read.wait());
+        QCOMPARE(job->data().toString(), QStringLiteral("new-refresh"));
+#endif
     }
 };
 

@@ -756,15 +756,27 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
     emit unsyncedSpaceCountChanged(id, 0, 0);
 }
 
-void FolderMan::rebuildFoldersForAccount(AccountState *accountState, const std::function<void(FolderDefinition &)> &adjust)
+bool FolderMan::isAnySyncRunning(const QUuid &accountId) const
+{
+    const auto folders = _folders.value(accountId);
+    return std::any_of(folders.cbegin(), folders.cend(), [](const Folder *folder) { return folder->isSyncRunning(); });
+}
+
+bool FolderMan::rebuildFoldersForAccount(AccountState *accountState, const std::function<void(FolderDefinition &)> &adjust)
 {
     if (!accountState || !accountState->account()) {
-        return;
+        return false;
     }
     const QUuid accountId = accountState->account()->uuid();
     const QList<Folder *> oldFolders = foldersForAccount(accountId);
     if (oldFolders.isEmpty()) {
-        return;
+        return true;
+    }
+    // ohne Warteschleife: Ein laufender Ordner darf nicht gelöscht werden (~Folder setzt ein beendetes Engine voraus), und
+    // eine verschachtelte Ereignisschleife mitten im Umbau ließe das Beenden über das Tray zu
+    if (isAnySyncRunning(accountId)) {
+        qCWarning(lcFolderMan) << "Not rebuilding the folders of" << accountState->account()->displayNameWithHost() << "while a sync is running";
+        return false;
     }
 
     setSyncEnabled(false);
@@ -776,17 +788,6 @@ void FolderMan::rebuildFoldersForAccount(AccountState *accountState, const std::
 
     QList<FolderDefinition> definitions;
     for (Folder *folder : oldFolders) {
-        if (folder->isSyncRunning()) {
-            QEventLoop waitLoop;
-            connect(folder, &Folder::syncFinished, &waitLoop, &QEventLoop::quit);
-            // nicht endlos warten, falls das Ende nie gemeldet wird
-            QTimer::singleShot(30s, &waitLoop, &QEventLoop::quit);
-            folder->slotTerminateSync(tr("The server address of the account changed"));
-            if (folder->isSyncRunning()) {
-                waitLoop.exec();
-            }
-        }
-
         FolderDefinition definition = folder->definition();
         adjust(definition);
         // zuerst die Einstellungen: scheitert das Neuladen, gilt beim nächsten Start trotzdem die angepasste Definition
@@ -814,6 +815,7 @@ void FolderMan::rebuildFoldersForAccount(AccountState *accountState, const std::
     emit folderListChanged(accountId, _folders.value(accountId).values());
     scheduleFoldersForAccount(accountId);
     setSyncEnabled(true);
+    return true;
 }
 
 void FolderMan::removeFolderSettings(const QByteArray &folderId, QSettings &settings)
@@ -1455,10 +1457,10 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
 }
 
 // todo: #1
-void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &description)
+QString FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &description)
 {
     if (!accountState || !accountState->account())
-        return;
+        return tr("The account no longer exists.");
 
     // letzte Sicherung hinter dem Ordner-Assistenten: denselben Serverordner (oder einen Ober-/Unterordner) nie ein
     // zweites Mal spiegeln
@@ -1466,7 +1468,7 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
         const QString remoteError = checkRemotePathValidity(accountState->account()->uuid(), description.remotePath);
         if (!remoteError.isEmpty()) {
             qCWarning(lcFolderMan) << "Refusing to add folder sync connection for" << description.remotePath << ":" << remoteError;
-            return;
+            return remoteError;
         }
     }
 
@@ -1496,6 +1498,7 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
         _scheduler->enqueueFolder(f, SyncScheduler::Priority::High);
     }
     setSyncEnabled(true);
+    return f ? QString() : tr("The local folder %1 could not be set up for synchronization.").arg(QDir::toNativeSeparators(description.localPath));
 }
 
 QString FolderMan::suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid)

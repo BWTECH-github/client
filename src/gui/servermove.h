@@ -16,8 +16,10 @@
 #include "gui/owncloudguilib.h"
 
 #include <QCoreApplication>
+#include <QElapsedTimer>
 #include <QObject>
 #include <QPointer>
+#include <QTimer>
 #include <QUrl>
 
 #include <functional>
@@ -160,10 +162,18 @@ Q_SIGNALS:
     void failed(const QString &message);
     void succeeded(const QUrl &newUrl);
 
+public:
+    /// so lange höchstens warten, bis laufende Synchronisationen des Kontos beendet sind; danach bleibt alles, wie es war
+    static constexpr int syncStopTimeoutMs = 30 * 1000;
+
 private:
     void onStatusChecked(const ServerStatusCheck::Result &result);
     void startSignIn(const QUrl &newUrl);
     void finishVerification(QNetworkReply *reply, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
+    /// stellt um, sobald kein Lauf des Kontos mehr läuft (geprüft alle 100 ms, ohne verschachtelte Ereignisschleife)
+    void applyWhenSyncsStopped(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
+    /// beendet das Warten und gibt die angehaltene Synchronisation wieder frei
+    void releaseSyncs();
     void fail(const QString &message);
     void reset();
     QNetworkAccessManager *accessManager();
@@ -174,6 +184,10 @@ private:
     QPointer<ServerStatusCheck> _statusCheck;
     QPointer<OAuth> _oauth;
     QPointer<QNetworkReply> _verificationReply;
+    QPointer<QTimer> _syncStopPoll;
+    QElapsedTimer _syncStopTime;
+    // FolderMan::setSyncEnabled(false) gilt bis releaseSyncs()
+    bool _syncsHeld = false;
     QUrl _newUrl;
     bool _applying = false;
 };
