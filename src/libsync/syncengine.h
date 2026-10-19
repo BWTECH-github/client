@@ -74,9 +74,36 @@ public:
     void setMoveToTrash(bool trashIt) { _moveToTrash = trashIt; }
     bool moveToTrash() const { return _moveToTrash; }
 
+    /**
+     * owncloud.online: Löschschutz wie im 2.x-Client. Ist er an, endet ein Lauf ohne jede Änderung, wenn er alle
+     * bzw. sehr viele Dateien löschen würde, und meldet das über aboutToRemoveAllFiles(). Standard: aus, die
+     * Anwendung (Ordner, owncloudcmd) schaltet ihn ein.
+     */
+    void setPromptRemoveAllFiles(bool prompt) { _promptRemoveAllFiles = prompt; }
+    bool promptRemoveAllFiles() const { return _promptRemoveAllFiles; }
+
+    /**
+     * Antwort „Löschen“: die zuletzt gemeldeten Löschungen (beide Richtungen) sind bestätigt, der nächste Lauf führt sie
+     * ohne erneute Rückfrage aus. Nur diese: was bis dahin dazukommt, prüft der Schutz wieder. Die Bestätigung gilt, bis
+     * ein Lauf die Propagation beginnt.
+     */
+    void allowRemoveAllFilesOnce();
+
+    /**
+     * Antwort „Behalten“: die zuletzt gemeldeten Löschungen (beide Richtungen) werden verworfen. Die Einträge der
+     * betroffenen Dateien verschwinden aus dem Journal, der nächste Lauf stellt sie deshalb von der anderen Seite wieder
+     * her (Hochladen bzw. Herunterladen). Lokal muss der nächste Lauf vollständig suchen, das veranlasst der Aufrufer.
+     */
+    void keepFilesOfRemoveAllPrompt();
+
+    /** „Sehr viele“: mindestens so viele Dateien und mindestens die Hälfte der bekannten Dateien. */
+    static constexpr int removeManyFilesMinimum = 200;
+
     // file path must be absolute!
     bool isExcluded(QStringView filePath) const;
     void addManualExclude(const QString &filePath);
+    /** Zusätzliche Ausschlussliste aus einer Datei (owncloudcmd --exclude); greift nach reloadExcludes(). */
+    void addExcludeList(const QString &filePath);
     bool loadDefaultExcludes();
     bool reloadExcludes();
     void clearManualExcludes();
@@ -154,6 +181,14 @@ Q_SIGNALS:
     void finished(bool success);
     void started();
 
+    /**
+     * owncloud.online: der Lauf würde alle (allFiles) bzw. sehr viele Dateien löschen und endet deshalb ohne Änderung
+     * (siehe setPromptRemoveAllFiles()). Kommt vor finished(false).
+     * direction: Down = auf dem Server gelöscht, der Lauf löschte lokal; Up = lokal gelöscht, der Lauf löschte auf
+     * dem Server. removedFiles: betroffene Dateien dieser Richtung, knownFiles: Dateien laut Journal.
+     */
+    void aboutToRemoveAllFiles(SyncFileItem::Direction direction, bool allFiles, int removedFiles, int knownFiles);
+
     /** Emitted when propagation has problems with a locked file.
      *
      * Forwarded from OwncloudPropagator::seenLockedFile.
@@ -189,6 +224,9 @@ private Q_SLOTS:
 
 private:
     bool checkErrorBlacklisting(SyncFileItem &item);
+
+    /** Löschschutz: true, wenn der Lauf alle bzw. sehr viele Dateien löschen würde; meldet das dann. */
+    bool checkRemoveAllFiles();
 
     // Cleans up unnecessary downloadinfo entries in the journal as well
     // as their temporary files.
@@ -273,6 +311,24 @@ private:
 
     // destructor called
     bool _goingDown = false;
+
+    // Löschschutz (siehe setPromptRemoveAllFiles)
+    bool _promptRemoveAllFiles = false;
+    // wie 2.x: mindestens ein Eintrag bleibt erhalten (unverändert, nur Metadaten, umbenannt, unverändert auf dem Server)
+    bool _hasNoneFiles = false;
+
+    /** eine Löschung, die der Schutz meldet: oberster gelöschter Pfad und Richtung */
+    struct RemoveAllFilesEntry
+    {
+        QString path;
+        SyncFileItem::Direction direction;
+    };
+    /** liegt path (oder ein Ordner darüber) mit dieser Richtung unter den bestätigten Löschungen? */
+    bool isApprovedRemoval(const QString &path, SyncFileItem::Direction direction) const;
+    // die zuletzt gemeldeten Löschungen beider Richtungen, für „Behalten“ und „Löschen“
+    QList<RemoveAllFilesEntry> _removeAllFilesPromptEntries;
+    // mit „Löschen“ bestätigt, bis ein Lauf die Propagation beginnt
+    QList<RemoveAllFilesEntry> _approvedRemovals;
 };
 }
 

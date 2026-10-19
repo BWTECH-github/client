@@ -49,6 +49,9 @@ public:
      */
     explicit NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, ColorManager *colorManager, QObject *parent);
 
+    /** owncloud.online: Serveradresse vorbelegen (Umstieg vom offiziellen Client) */
+    void presetServerUrl(const QUrl &url);
+
 
 protected Q_SLOTS:
     // slots for handling signals from the wizard:
@@ -99,6 +102,8 @@ private:
 
     // this is the only controller we need to explicitly keep our eye on as we need to give it values to start the oauth step
     OAuthPageController *_oauthController = nullptr;
+    // für presetServerUrl
+    UrlPageController *_urlController = nullptr;
     bool _autoValidateOAuthPage = false;
 
     QHash<int, QList<QWizard::WizardButton>> _buttonLayouts;

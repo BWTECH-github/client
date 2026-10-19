@@ -21,6 +21,8 @@ if (NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})
 endif()
 
 owncloud_add_test(ExcludedFiles)
+# owncloud.online: systemweite Ausschlussliste neben dem Programm (wie 6.0.3)
+owncloud_add_test(InstallationExcludes)
 
 owncloud_add_test(Utility)
 owncloud_add_test(AppConfig ../src/libsync/owncloudtheme.cpp)
@@ -35,6 +37,8 @@ owncloud_add_test(SyncEngine)
 owncloud_add_test(SyncMove)
 add_dependencies(SyncMoveTest test_helper)
 owncloud_add_test(SyncDelete)
+# owncloud.online: Löschschutz („Alle Dateien entfernen?“) wie im 2.x-Client
+owncloud_add_test(AllFilesDeleted)
 owncloud_add_test(SyncConflict)
 owncloud_add_test(SyncFileStatusTracker)
 owncloud_add_test(Download)
@@ -80,6 +84,8 @@ owncloud_add_test(ServerMove)
 if (NOT APPLE OR NOT DEFINED ENV{GITHUB_ACTION})
     owncloud_add_test(NetworkSettings)
 endif()
+# owncloud.online: Umstieg vom offiziellen Client (Konfiguration lesen, Journal kopieren, Ordner übernehmen)
+owncloud_add_test(LegacyClient)
 
 owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/userinfoadapter.cpp ../src/gui/creds/oauthhtmlpage.cpp
     # Anmeldeseite des Assistenten: Browser erneut öffnen, Browser lässt sich nicht öffnen, Assistent geschlossen
@@ -94,6 +100,12 @@ set_target_properties(OAuthTest PROPERTIES AUTOUIC ON)
 # owncloudcmd mit OAuth2-Token-Datei: Bearer, Erneuern nach 401 und bei Ablauf, Exit-Codes
 owncloud_add_test(CmdOAuth ../src/cmd/cmdsession.cpp ../src/cmd/httpoauthcredentials.cpp ../src/cmd/oauthtokenfile.cpp)
 target_include_directories(CmdOAuthTest PRIVATE "${CMAKE_SOURCE_DIR}/src/cmd")
+
+# owncloudcmd: Optionen wie 6.0.3 (Befehlszeile) und ihre Wirkung im Lauf, Löschschutz ohne/mit Rückfrage
+owncloud_add_test(CmdOptions ../src/cmd/cmdoptions.cpp)
+target_include_directories(CmdOptionsTest PRIVATE "${CMAKE_SOURCE_DIR}/src/cmd")
+owncloud_add_test(CmdSync ../src/cmd/cmdsession.cpp ../src/cmd/httpbasiccredentials.cpp ../src/cmd/httpoauthcredentials.cpp ../src/cmd/oauthtokenfile.cpp)
+target_include_directories(CmdSyncTest PRIVATE "${CMAKE_SOURCE_DIR}/src/cmd")
 
 configure_file(test_journal.db "${PROJECT_BINARY_DIR}/bin/test_journal.db" COPYONLY)
 

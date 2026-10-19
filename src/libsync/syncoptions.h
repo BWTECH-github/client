@@ -24,6 +24,7 @@
 #include <QString>
 
 #include <chrono>
+#include <optional>
 
 
 namespace OCC {
@@ -50,6 +51,11 @@ public:
     /** Ask for confirmation before syncing folders from external storages. Only
      * used while virtual files are off. */
     bool _confirmExternalStorage = false;
+
+    /** owncloud.online: Bandbreite dieses Laufs in Byte/s (owncloudcmd --uplimit/--downlimit), 0 = unbegrenzt.
+     * Ohne Wert gelten die Netzwerk-Einstellungen. */
+    std::optional<qint64> _uploadLimit;
+    std::optional<qint64> _downloadLimit;
 
     /** The initial un-adjusted chunk size in bytes for chunked uploads, which also
      * classifies an item as "to be chunked" (item size above this value).

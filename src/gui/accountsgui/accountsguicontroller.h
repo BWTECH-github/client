@@ -32,6 +32,7 @@ class Account;
 class MainWindow;
 class AccountViewController;
 class ColorManager;
+class LegacyClientImportController;
 
 class AccountsGuiController : public QObject
 {
@@ -40,6 +41,9 @@ class AccountsGuiController : public QObject
 public:
     AccountsGuiController(AccountManager *accountMgr, MainWindow *window, ColorManager *colorManager, QObject *parent);
     void runAccountWizard();
+
+    /** owncloud.online: Konten und Sync-Ordner des offiziellen Desktop-Clients übernehmen (Menü) */
+    void runLegacyImport();
 
 
 private:
@@ -63,5 +67,12 @@ private:
 
     void setupAccountPlaceholder();
     void removeAccountPlaceholder();
+
+    /** erster Start ohne Konto: Umstieg vom offiziellen Client anbieten, sonst der Assistent */
+    void runFirstStart();
+    /** false, wenn nichts übernommen wird */
+    bool startLegacyImport(bool firstStart);
+    // laufender Umstieg; höchstens einer zugleich
+    QPointer<LegacyClientImportController> _legacyImport;
 };
 }

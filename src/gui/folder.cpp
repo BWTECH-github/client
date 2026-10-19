@@ -29,6 +29,7 @@
 #include "filesystem.h"
 #include "folderman.h"
 #include "folderwatcher.h"
+#include "legacyclient/legacyclientconfig.h"
 #include "libsync/graphapi/spacesmanager.h"
 #include "localdiscoverytracker.h"
 #include "scheduling/syncscheduler.h"
@@ -42,6 +43,7 @@
 #include "common/utility_win.h"
 #endif
 
+#include <QLocale>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QTimer>
@@ -151,6 +153,9 @@ Folder::Folder(const FolderDefinition &definition, AccountState *accountState, S
 
     // owncloud.online: neue große/externe Ordner erst nach Rückfrage synchronisieren
     connect(_engine, &SyncEngine::newBigFolder, this, &Folder::slotNewBigFolderDiscovered);
+
+    // owncloud.online: Löschschutz – alle bzw. sehr viele Dateien erst nach Rückfrage löschen
+    connect(_engine, &SyncEngine::aboutToRemoveAllFiles, this, &Folder::slotAboutToRemoveAllFiles);
 
     // this needs investigation as it looks sus. I would expect to get a signal like this from the space directly
     connect(_accountState->account()->spacesManager(), &GraphApi::SpacesManager::spaceChanged, this, [this](GraphApi::Space *changedSpace) {
@@ -844,6 +849,8 @@ void Folder::startSync()
     // owncloud.online: die Optionen bei jedem Lauf frisch laden, damit geänderte Einstellungen (Freigabe neuer
     // großer Ordner) ohne Neustart greifen; upstream setzt sie nur einmal, wenn die VFS startet
     _engine->setSyncOptions(loadSyncOptions());
+    // Schlüssel promptDeleteAllFiles (Standard an), wie im 2.x-Client
+    _engine->setPromptRemoveAllFiles(ConfigFile().promptDeleteFiles());
 
     qCInfo(lcFolder) << "*** Start syncing " << remoteUrl().toString() << "client version"
                      << Theme::instance()->aboutVersions(Theme::VersionFormat::OneLiner);
@@ -852,6 +859,16 @@ void Folder::startSync()
 
     if (!reloadExcludes()) {
         slotSyncError(tr("Could not read system exclude file"));
+        QMetaObject::invokeMethod(
+            this, [this] { slotSyncFinished(false); }, Qt::QueuedConnection);
+        return;
+    }
+
+    // owncloud.online: nie zugleich mit dem offiziellen Client, der denselben Ordner synchronisiert (etwa nach dem
+    // Umstieg, wenn er per Autostart wieder läuft); der Ordner wartet, bis er beendet ist
+    const QString doubleSync = LegacyClient::doubleSyncReason(path());
+    if (!doubleSync.isEmpty()) {
+        slotSyncError(doubleSync);
         QMetaObject::invokeMethod(
             this, [this] { slotSyncFinished(false); }, Qt::QueuedConnection);
         return;
@@ -1159,6 +1176,77 @@ void Folder::setNewBigFolderApproval(const QString &folderPath, bool approved)
     // make sure the folder is rediscovered and fetched on the sync we trigger now
     _journal->schedulePathForRemoteDiscovery(folderPath);
     FolderMan::instance()->forceFolderSync(this);
+}
+
+void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction direction, bool allFiles, int removedFiles, int knownFiles)
+{
+    if (_removeAllFilesDialog) {
+        ocApp()->ensureVisible();
+        _removeAllFilesDialog->raise();
+        return;
+    }
+
+    // Angehalten bleibt der Ordner bis zur Antwort, auch über einen Neustart hinweg: ohne Antwort wird nichts gelöscht
+    setSyncPaused(true);
+
+    const QLocale locale;
+    const QString folder = shortGuiLocalPath();
+    QString text;
+    if (direction == SyncFileItem::Down) {
+        text = allFiles ? tr("All files in the sync folder '%1' were deleted on the server.").arg(folder)
+                        : tr("%1 of %2 files in the sync folder '%3' were deleted on the server.")
+                              .arg(locale.toString(removedFiles), locale.toString(knownFiles), folder);
+        text += QStringLiteral("\n\n")
+            + tr("If you delete them here as well, they will be removed from this computer. If you keep them, they will be uploaded to the server "
+                 "again, provided you have the permission to do so.");
+    } else {
+        text = allFiles ? tr("All files in your local sync folder '%1' were deleted.").arg(folder)
+                        : tr("%1 of %2 files in your local sync folder '%3' were deleted.")
+                              .arg(locale.toString(removedFiles), locale.toString(knownFiles), folder);
+        text += QStringLiteral("\n\n")
+            + tr("If you delete them on the server as well, they will only be available from the server's deleted files. If this was an "
+                 "accident, choose \"Keep files\": they will be downloaded from the server again.");
+    }
+    text += QStringLiteral("\n\n") + tr("The synchronization of this folder is paused until you decide.");
+
+    auto *msgBox = new QMessageBox(QMessageBox::Warning, allFiles ? tr("Remove all files?") : tr("Remove many files?"), text, QMessageBox::NoButton,
+        ocApp()->mainWindow());
+    msgBox->setObjectName(QStringLiteral("removeAllFilesDialog"));
+    QPushButton *keepButton = msgBox->addButton(tr("Keep files"), QMessageBox::AcceptRole);
+    keepButton->setObjectName(QStringLiteral("keepFilesButton"));
+    QPushButton *removeButton = msgBox->addButton(tr("Delete files"), QMessageBox::DestructiveRole);
+    removeButton->setObjectName(QStringLiteral("removeFilesButton"));
+    QPushButton *laterButton = msgBox->addButton(tr("Decide later"), QMessageBox::RejectRole);
+    laterButton->setObjectName(QStringLiteral("decideLaterButton"));
+    // Eingabe behält, gelöscht wird nur auf ausdrücklichen Klick. Escape und Schließen entscheiden nichts: „Behalten“
+    // holte sonst ungefragt alles zurück, etwa auf die Systemplatte, wenn nur ein Laufwerk fehlt. Der Ordner bleibt
+    // angehalten; nach dem Fortsetzen fragt der nächste Lauf erneut.
+    msgBox->setDefaultButton(keepButton);
+    msgBox->setEscapeButton(laterButton);
+    msgBox->setAttribute(Qt::WA_DeleteOnClose);
+    _removeAllFilesDialog = msgBox;
+
+    connect(msgBox, &QMessageBox::finished, this, [this, msgBox, removeButton, keepButton] {
+        if (msgBox->clickedButton() == removeButton) {
+            qCInfo(lcFolder) << "User confirmed removing the files of" << path();
+            _engine->allowRemoveAllFilesOnce();
+        } else if (msgBox->clickedButton() == keepButton) {
+            qCInfo(lcFolder) << "User keeps the files of" << path() << "- they are restored by the next sync";
+            _engine->keepFilesOfRemoveAllPrompt();
+            // wiederherzustellende lokale Dateien findet nur eine vollständige lokale Suche
+            slotNextSyncFullLocalDiscovery();
+        } else {
+            qCInfo(lcFolder) << "No decision about removing the files of" << path() << "- the folder stays paused";
+            return;
+        }
+        // weiter wie vor der Rückfrage; FolderMan plant den Ordner beim Fortsetzen ein
+        setSyncPaused(false);
+    });
+    connect(this, &Folder::destroyed, msgBox, &QMessageBox::deleteLater);
+
+    ocApp()->tray()->slotShowTrayMessage(msgBox->windowTitle(), text.section(QLatin1Char('\n'), 0, 0));
+    ocApp()->ensureVisible();
+    msgBox->open();
 }
 
 void Folder::slotWatcherUnreliable(const QString &message)

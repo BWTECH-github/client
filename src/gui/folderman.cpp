@@ -1517,6 +1517,31 @@ QString FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnec
     return f ? QString() : tr("The local folder %1 could not be set up for synchronization.").arg(QDir::toNativeSeparators(description.localPath));
 }
 
+Folder *FolderMan::adoptExistingFolder(AccountState *accountState, const FolderDefinition &definition)
+{
+    if (!accountState || !accountState->account()) {
+        return nullptr;
+    }
+    const QUuid accountId = accountState->account()->uuid();
+    // addFolder gäbe sonst den vorhandenen Ordner zurück
+    if (folder(accountId, definition.spaceId())) {
+        qCWarning(lcFolderMan) << "Cannot adopt" << definition.localPath() << "- the account already has a folder for space" << definition.spaceId();
+        return nullptr;
+    }
+
+    setSyncEnabled(false);
+    Folder *f = addFolder(accountState, definition);
+    if (f) {
+        // die Auswahl-Sync-Listen kommen mit dem übernommenen Journal und bleiben, wie sie sind
+        saveFolder(f);
+        emit folderAdded(accountId, f);
+        _scheduler->enqueueFolder(f, SyncScheduler::Priority::High);
+        qCInfo(lcFolderMan) << "Adopted existing sync folder" << definition.localPath() << "with journal" << definition.journalPath();
+    }
+    setSyncEnabled(true);
+    return f;
+}
+
 QString FolderMan::suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid)
 {
     return FolderMan::instance()->findGoodPathForNewSyncFolder(QDir::homePath(), Theme::instance()->appName(), folderType, accountUuid);

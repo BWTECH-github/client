@@ -324,6 +324,15 @@ public:
     // owncloud.online: liefert den Grund, wenn das Paar nicht angelegt wird (sonst leer), damit der Aufrufer ihn zeigen kann
     QString addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &config);
 
+    /**
+     * owncloud.online: übernimmt einen bestehenden Sync-Ordner mit vorbereitetem Journal (Umstieg vom offiziellen Client).
+     * Anders als addFolderFromGui legt es nichts an und löscht kein Journal; speichert den Ordner und plant ihn ein.
+     * nullptr, wenn das Konto für diesen Space schon einen Ordner hat oder der Ordner nicht entsteht.
+     *
+     * emits folderAdded(newFolder)
+     */
+    Folder *adoptExistingFolder(AccountState *accountState, const FolderDefinition &definition);
+
     // todo: #3
     void removeFolderSettings(Folder *folder);
 

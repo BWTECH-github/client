@@ -20,6 +20,7 @@
 #include "folderman.h"
 #include "guiutility.h"
 #include "iconresources.h"
+#include "legacyclient/legacyclientconfig.h"
 #include "localactivitywidget.h"
 #include "mainwindow.h"
 #include "modalwrapperwidget.h"
@@ -88,6 +89,14 @@ QList<QAction *> MainWindowController::buildMenuActions()
     addAccountAction->setObjectName("addAcountAction");
     connect(addAccountAction, &QAction::triggered, this, &MainWindowController::requestAccountWizard);
     menuActions.push_back(addAccountAction);
+
+    // owncloud.online: Umstieg vom offiziellen ownCloud-Client
+    if (LegacyClient::findConfig()) {
+        QAction *legacyImportAction = new QAction(tr("Import from official client..."), this);
+        legacyImportAction->setObjectName("legacyImportAction");
+        connect(legacyImportAction, &QAction::triggered, this, &MainWindowController::requestLegacyImport);
+        menuActions.push_back(legacyImportAction);
+    }
 
     QAction *settingsAction = new QAction(tr("Settings..."), this);
     settingsAction->setObjectName("settingsAction");

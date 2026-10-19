@@ -821,6 +821,16 @@ Bitte legen Sie ein Konto an, indem Sie im Menü der Schaltfläche „Mehr“ di
         <translation>Die für die Erstellung eines neuen Kontos erforderlichen Informationen sind unvollständig. Bitte führen Sie den Assistenten erneut aus.</translation>
     </message>
     <message>
+        <location line="+29"/>
+        <source>Import from the official client</source>
+        <translation>Vom offiziellen Client übernehmen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No configuration of the official desktop client was found on this computer.</source>
+        <translation>Auf diesem Computer wurde keine Konfiguration des offiziellen Desktop-Clients gefunden.</translation>
+    </message>
+    <message>
         <location line="+26"/>
         <source>Accounts</source>
         <translation>Konten</translation>
@@ -1273,6 +1283,66 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <location line="+3"/>
         <source>The file %1 was created but was excluded from synchronization previously. It will not be synchronized.</source>
         <translation>Die Datei %1 wurde erzeugt, aber von der Synchronisation ausgeschlossen. Sie wird nicht synchronisiert.</translation>
+    </message>
+    <message>
+        <location line="+127"/>
+        <source>All files in the sync folder &apos;%1&apos; were deleted on the server.</source>
+        <translation>Alle Dateien im Sync-Ordner „%1“ wurden auf dem Server gelöscht.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in the sync folder &apos;%3&apos; were deleted on the server.</source>
+        <translation>%1 von %2 Dateien im Sync-Ordner „%3“ wurden auf dem Server gelöscht.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them here as well, they will be removed from this computer. If you keep them, they will be uploaded to the server again, provided you have the permission to do so.</source>
+        <translation>Wenn Sie sie auch hier löschen, werden sie von diesem Computer entfernt. Wenn Sie sie behalten, werden sie wieder auf den Server hochgeladen, sofern Sie dazu berechtigt sind.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>All files in your local sync folder &apos;%1&apos; were deleted.</source>
+        <translation>Alle Dateien in Ihrem lokalen Sync-Ordner „%1“ wurden gelöscht.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%1 of %2 files in your local sync folder &apos;%3&apos; were deleted.</source>
+        <translation>%1 von %2 Dateien in Ihrem lokalen Sync-Ordner „%3“ wurden gelöscht.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>If you delete them on the server as well, they will only be available from the server&apos;s deleted files. If this was an accident, choose &quot;Keep files&quot;: they will be downloaded from the server again.</source>
+        <translation>Wenn Sie sie auch auf dem Server löschen, sind sie nur noch über die gelöschten Dateien des Servers erreichbar. War das ein Versehen, wählen Sie „Dateien behalten“; dann werden sie wieder vom Server heruntergeladen.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The synchronization of this folder is paused until you decide.</source>
+        <translation>Die Synchronisation dieses Ordners ist angehalten, bis Sie sich entscheiden.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Remove all files?</source>
+        <translation>Alle Dateien entfernen?</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Remove many files?</source>
+        <translation>Viele Dateien entfernen?</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Keep files</source>
+        <translation>Dateien behalten</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Delete files</source>
+        <translation>Dateien löschen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Decide later</source>
+        <translation>Später entscheiden</translation>
     </message>
     <message>
         <location line="+117"/>
@@ -1874,6 +1944,174 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
     </message>
 </context>
 <context>
+    <name>OCC::LegacyClient</name>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <source>Spaces are not taken over; add them after signing in.</source>
+        <translation>Spaces werden nicht übernommen; fügen Sie sie nach der Anmeldung hinzu.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The folder belongs to a different user or server.</source>
+        <translation>Der Ordner gehört zu einem anderen Benutzer oder Server.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Only one sync folder per account is possible at the moment.</source>
+        <translation>Derzeit ist nur ein Sync-Ordner je Konto möglich.</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The folder uses virtual files, which are not available on this computer.</source>
+        <translation>Der Ordner nutzt virtuelle Dateien, die auf diesem Computer nicht verfügbar sind.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>The new folder %1 would overlap the folder %2 of the official client.</source>
+        <translation>Der neue Ordner %1 würde sich mit dem Ordner %2 des offiziellen Clients überschneiden.</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <location line="+26"/>
+        <source>The folder could not be set up.</source>
+        <translation>Der Ordner konnte nicht eingerichtet werden.</translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <source>The local folder does not exist.</source>
+        <translation>Der lokale Ordner existiert nicht.</translation>
+    </message>
+    <message>
+        <location line="-19"/>
+        <location line="+22"/>
+        <source>The folder is already synchronized.</source>
+        <translation>Der Ordner wird bereits synchronisiert.</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
+        <translation>Der offizielle Client läuft und synchronisiert den Ordner %1 ebenfalls. Beenden Sie ihn, damit nicht zwei Programme den Ordner gleichzeitig synchronisieren.</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::LegacyClientImportController</name>
+    <message>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+38"/>
+        <source>%1: already set up.</source>
+        <translation>%1: bereits eingerichtet.</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>• %1 – %n sync folder(s)</source>
+        <translation>
+            <numerusform>• %1 – %n Sync-Ordner</numerusform>
+            <numerusform>• %1 – %n Sync-Ordner</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <location line="+20"/>
+        <source>Import from the official client</source>
+        <translation>Vom offiziellen Client übernehmen</translation>
+    </message>
+    <message>
+        <location line="-25"/>
+        <source>All accounts of the official client are already set up.</source>
+        <translation>Alle Konten des offiziellen Clients sind bereits eingerichtet.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
+        <translation>Auf diesem Computer ist der offizielle Desktop-Client eingerichtet. Möchten Sie seine Konten und Sync-Ordner übernehmen?</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <translation>Sie melden sich je Konto einmal im Browser an. Bereits synchronisierte Ordner werden erkannt und nicht erneut heruntergeladen. Am offiziellen Client wird nichts verändert.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Import</source>
+        <translation>Übernehmen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Set up a new account</source>
+        <translation>Neues Konto einrichten</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Cancel</source>
+        <translation>Abbrechen</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
+        <translation>Der offizielle Client läuft noch. Beenden Sie ihn und schalten Sie seinen Autostart aus, bevor Sie übernehmen – sonst synchronisieren beide Programme dieselben Ordner.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Check again</source>
+        <translation>Erneut prüfen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Import anyway</source>
+        <translation>Trotzdem übernehmen</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Sign in: %1</source>
+        <translation>Anmelden: %1</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: sign-in cancelled, not taken over.</source>
+        <translation>%1: Anmeldung abgebrochen, nicht übernommen.</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>%1: signed in as %2, the folders of the official client were not taken over.</source>
+        <translation>%1: als %2 angemeldet, die Ordner des offiziellen Clients wurden nicht übernommen.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>%1: taken over, the files are recognized without downloading them again.</source>
+        <translation>%1: übernommen, die Dateien werden ohne erneuten Download erkannt.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: taken over; the synchronization state could not be read, the files are compared with the server once.</source>
+        <translation>%1: übernommen; der Synchronisationsstand war nicht lesbar, die Dateien werden einmal mit dem Server abgeglichen.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>%1: set up again with virtual files at %2; only placeholders are created.</source>
+        <translation>%1: mit virtuellen Dateien neu eingerichtet unter %2; es werden nur Platzhalter angelegt.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1: not taken over. %2</source>
+        <translation>%1: nicht übernommen. %2</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>%1: the account could not be created: %2</source>
+        <translation>%1: das Konto konnte nicht angelegt werden: %2</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Import finished</source>
+        <translation>Übernahme abgeschlossen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
+        <translation>Beenden Sie den offiziellen Client dauerhaft (Autostart ausschalten oder deinstallieren), damit die Ordner nicht doppelt synchronisiert werden.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::LocalActivityWidget</name>
     <message>
         <location filename="../src/gui/localactivitywidget.cpp" line="+165"/>
@@ -2003,6 +2241,11 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <location filename="../src/gui/mainwindow/mainwindowcontroller.cpp" line="+87"/>
         <source>Add account...</source>
         <translation>Konto hinzufügen…</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Import from official client...</source>
+        <translation>Vom offiziellen Client übernehmen…</translation>
     </message>
     <message>
         <location line="+5"/>

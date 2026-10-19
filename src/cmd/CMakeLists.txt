@@ -1,5 +1,6 @@
 add_executable(owncloudcmd
     cmd.cpp
+    cmdoptions.cpp
     cmdsession.cpp
     httpbasiccredentials.cpp
     httpoauthcredentials.cpp

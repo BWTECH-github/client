@@ -188,6 +188,12 @@ void Application::buildAppGuis()
     // either way but always prefer to parent things to "the creator".
     _accountsGuiController = new AccountsGuiController(AccountManager::instance(), _mainWin, _colorManager, _mainController);
     connect(_mainController, &MainWindowController::requestAccountWizard, _accountsGuiController, &AccountsGuiController::runAccountWizard);
+    connect(_mainController, &MainWindowController::requestLegacyImport, _accountsGuiController, [this] {
+        // der Assistent läuft womöglich schon (erster Start): keinen zweiten darüberlegen
+        if (_mainWin && !_mainWin->isModalActive()) {
+            _accountsGuiController->runLegacyImport();
+        }
+    });
 
     // Setting up the gui class will allow tray notifications for the
     // setup that follows, like folder setup

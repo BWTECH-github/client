@@ -41,6 +41,8 @@ public:
 
 signals:
     void requestAccountWizard();
+    /** owncloud.online: Konten des offiziellen Clients übernehmen */
+    void requestLegacyImport();
 
 protected:
     void addActionToIconUpdates(QAction *action, const QString &iconName);

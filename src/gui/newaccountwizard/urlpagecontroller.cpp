@@ -147,6 +147,13 @@ void UrlPageController::updateColorsAndIcons()
     _logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
 }
 
+void UrlPageController::presetUrl(const QString &urlText)
+{
+    if (_urlField && _urlField->isEnabled()) {
+        setUrl(urlText);
+    }
+}
+
 void UrlPageController::setUrl(const QString &urlText)
 {
     QSignalBlocker blocker(_urlField);
