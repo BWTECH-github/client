@@ -125,7 +125,7 @@ void writeLegacyJournal(const QString &journalPath)
     journal.close();
 }
 
-// Dummy-Konto wie ownCloud 10 / owncloud.online: ohne Spaces
+// Dummy-Konto wie bei owncloud.online: ohne Spaces
 TestUtils::TestUtilsPrivate::AccountStateRaii oc10Account()
 {
     auto accountState = createDummyAccount();

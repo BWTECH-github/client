@@ -187,13 +187,13 @@ bool LegacyClientImportController::confirm(bool firstStart)
     }
     if (_pending.isEmpty()) {
         if (!firstStart && _window) {
-            QMessageBox::information(_window, tr("Import from the official ownCloud client"), tr("All accounts of the official client are already set up."));
+            QMessageBox::information(_window, tr("Import from the official client"), tr("All accounts of the official client are already set up."));
         }
         return false;
     }
 
-    QMessageBox box(QMessageBox::Question, tr("Import from the official ownCloud client"),
-        tr("The official ownCloud desktop client is set up on this computer. Do you want to take over its accounts and sync folders?")
+    QMessageBox box(QMessageBox::Question, tr("Import from the official client"),
+        tr("The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?")
             + QStringLiteral("\n\n") + lines.join(QLatin1Char('\n')),
         QMessageBox::NoButton, _window);
     box.setInformativeText(tr("You sign in once per account in the browser. Folders that are already synchronized are recognized and not "
@@ -212,8 +212,8 @@ bool LegacyClientImportController::officialClientStopped()
 {
     // zwei Programme auf denselben Ordnern synchronisieren gegeneinander
     while (LegacyClient::isOfficialClientRunning()) {
-        QMessageBox box(QMessageBox::Warning, tr("Import from the official ownCloud client"),
-            tr("The official ownCloud client is still running. Quit it and turn off its autostart before importing, otherwise both programs "
+        QMessageBox box(QMessageBox::Warning, tr("Import from the official client"),
+            tr("The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs "
                "synchronize the same folders."),
             QMessageBox::NoButton, _window);
         QPushButton *retryButton = box.addButton(tr("Check again"), QMessageBox::AcceptRole);
@@ -347,7 +347,7 @@ void LegacyClientImportController::showReport()
         return;
     }
     QMessageBox box(QMessageBox::Information, tr("Import finished"), _report.join(QLatin1Char('\n')), QMessageBox::Ok, _window);
-    box.setInformativeText(tr("Quit the official ownCloud client for good (turn off its autostart or uninstall it), so that the folders are not "
+    box.setInformativeText(tr("Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not "
                               "synchronized twice."));
     _window->ensureVisible();
     box.exec();

@@ -354,7 +354,7 @@ namespace LegacyClient {
                 if (pathsOverlap(localPath, folder)) {
                     qCWarning(lcLegacyClient) << "Not syncing" << localPath << "while the official client is running, it also syncs" << folder;
                     return QCoreApplication::translate("OCC::LegacyClient",
-                        "The official ownCloud client is running and also synchronizes the folder %1. Quit it, so that the folder is not "
+                        "The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not "
                         "synchronized by two programs at the same time.")
                         .arg(QDir::toNativeSeparators(folder));
                 }

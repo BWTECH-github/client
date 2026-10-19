@@ -197,8 +197,8 @@ void AccountsGuiController::runLegacyImport()
         return;
     }
     if (!LegacyClient::findConfig()) {
-        QMessageBox::information(_window, tr("Import from the official ownCloud client"),
-            tr("No configuration of the official ownCloud desktop client was found on this computer."));
+        QMessageBox::information(_window, tr("Import from the official client"),
+            tr("No configuration of the official desktop client was found on this computer."));
         return;
     }
     startLegacyImport(/*firstStart=*/false);

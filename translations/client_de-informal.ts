@@ -772,13 +772,13 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
     </message>
     <message>
         <location line="+29"/>
-        <source>Import from the official ownCloud client</source>
-        <translation>Vom offiziellen ownCloud-Client übernehmen</translation>
+        <source>Import from the official client</source>
+        <translation>Vom offiziellen Client übernehmen</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>No configuration of the official ownCloud desktop client was found on this computer.</source>
-        <translation>Auf diesem Computer wurde keine Konfiguration des offiziellen ownCloud-Desktop-Clients gefunden.</translation>
+        <source>No configuration of the official desktop client was found on this computer.</source>
+        <translation>Auf diesem Computer wurde keine Konfiguration des offiziellen Desktop-Clients gefunden.</translation>
     </message>
     <message>
         <location line="+48"/>
@@ -1806,8 +1806,8 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
     </message>
     <message>
         <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
-        <source>The official ownCloud client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
-        <translation>Der offizielle ownCloud-Client läuft und synchronisiert den Ordner %1 ebenfalls. Beende ihn, damit nicht zwei Programme den Ordner gleichzeitig synchronisieren.</translation>
+        <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
+        <translation>Der offizielle Client läuft und synchronisiert den Ordner %1 ebenfalls. Beende ihn, damit nicht zwei Programme den Ordner gleichzeitig synchronisieren.</translation>
     </message>
 </context>
 <context>
@@ -1829,8 +1829,8 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <location line="+4"/>
         <location line="+5"/>
         <location line="+20"/>
-        <source>Import from the official ownCloud client</source>
-        <translation>Vom offiziellen ownCloud-Client übernehmen</translation>
+        <source>Import from the official client</source>
+        <translation>Vom offiziellen Client übernehmen</translation>
     </message>
     <message>
         <location line="-25"/>
@@ -1839,8 +1839,8 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
     </message>
     <message>
         <location line="+6"/>
-        <source>The official ownCloud desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
-        <translation>Auf diesem Computer ist der offizielle ownCloud-Desktop-Client eingerichtet. Möchtest du seine Konten und Sync-Ordner übernehmen?</translation>
+        <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
+        <translation>Auf diesem Computer ist der offizielle Desktop-Client eingerichtet. Möchtest du seine Konten und Sync-Ordner übernehmen?</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1864,8 +1864,8 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
     </message>
     <message>
         <location line="+14"/>
-        <source>The official ownCloud client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
-        <translation>Der offizielle ownCloud-Client läuft noch. Beende ihn und schalte seinen Autostart aus, bevor du übernimmst – sonst synchronisieren beide Programme dieselben Ordner.</translation>
+        <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
+        <translation>Der offizielle Client läuft noch. Beende ihn und schalte seinen Autostart aus, bevor du übernimmst – sonst synchronisieren beide Programme dieselben Ordner.</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1924,8 +1924,8 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
     </message>
     <message>
         <location line="+1"/>
-        <source>Quit the official ownCloud client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
-        <translation>Beende den offiziellen ownCloud-Client dauerhaft (Autostart ausschalten oder deinstallieren), damit die Ordner nicht doppelt synchronisiert werden.</translation>
+        <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
+        <translation>Beende den offiziellen Client dauerhaft (Autostart ausschalten oder deinstallieren), damit die Ordner nicht doppelt synchronisiert werden.</translation>
     </message>
 </context>
 <context>

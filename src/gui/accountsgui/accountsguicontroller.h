@@ -42,7 +42,7 @@ public:
     AccountsGuiController(AccountManager *accountMgr, MainWindow *window, ColorManager *colorManager, QObject *parent);
     void runAccountWizard();
 
-    /** owncloud.online: Konten und Sync-Ordner des offiziellen ownCloud-Clients übernehmen (Menü) */
+    /** owncloud.online: Konten und Sync-Ordner des offiziellen Desktop-Clients übernehmen (Menü) */
     void runLegacyImport();
 
 
