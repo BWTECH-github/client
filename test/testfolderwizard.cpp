@@ -181,6 +181,19 @@ private Q_SLOTS:
                  QStringLiteral("pipe|"), QStringLiteral("\"zitat\""), QStringLiteral("endet."), }) {
             QVERIFY2(!FolderWizardRemotePath::checkNewFolderName(invalid).isEmpty(), qPrintable(invalid));
         }
+        // unter Windows reservierte Namen, auch klein geschrieben oder mit Endung
+        for (const auto &reserved : {QStringLiteral("CON"), QStringLiteral("nul"), QStringLiteral("COM1"), QStringLiteral("lpt9.txt"),
+                 QStringLiteral("System Volume Information")}) {
+            QVERIFY2(!FolderWizardRemotePath::checkNewFolderName(reserved).isEmpty(), qPrintable(reserved));
+        }
+        // Namen, die der Client selbst nie synchronisiert
+        for (const auto &excluded : {QStringLiteral("._versteckt"), QStringLiteral("Download.part"), QStringLiteral(".sync_1234.db"),
+                 QStringLiteral("desktop.ini")}) {
+            QVERIFY2(!FolderWizardRemotePath::checkNewFolderName(excluded).isEmpty(), qPrintable(excluded));
+        }
+        // ähnlich, aber erlaubt
+        QVERIFY(FolderWizardRemotePath::checkNewFolderName(QStringLiteral("Console")).isEmpty());
+        QVERIFY(FolderWizardRemotePath::checkNewFolderName(QStringLiteral("COM10")).isEmpty());
     }
 
     // ein Serverordner, der schon (auch als Teil der Wurzel) gespiegelt wird, sperrt „Weiter“ mit klarer Meldung

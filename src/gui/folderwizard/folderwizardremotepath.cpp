@@ -17,8 +17,10 @@
 #include "ui_folderwizardtargetpage.h"
 
 #include "common/utility.h"
+#include "csync_exclude.h"
 #include "gui/folderman.h"
 #include "libsync/account.h"
+#include "libsync/configfile.h"
 #include "libsync/networkjobs.h"
 #include "libsync/theme.h"
 #include "resources/iconresources.h"
@@ -32,6 +34,9 @@
 #include <QTreeWidget>
 
 #include <optional>
+
+// csync_exclude.cpp, exportiert: Gerätenamen wie CON, NUL, COM1 (auch mit Endung) und Windows-Systemordner
+extern bool csync_is_windows_reserved_word(QStringView filename);
 
 using namespace OCC;
 
@@ -174,6 +179,17 @@ QString FolderWizardRemotePath::checkNewFolderName(const QString &name)
     // Windows schneidet einen Punkt am Ende ab, der Ordner hieße dort anders als auf dem Server
     if (trimmed.endsWith(QLatin1Char('.'))) {
         return tr("The folder name must not end with a dot.");
+    }
+    // unter Windows nicht anlegbar, auch wenn der Server ihn annimmt
+    if (csync_is_windows_reserved_word(trimmed)) {
+        return tr("The folder name %1 is reserved by Windows.").arg(trimmed);
+    }
+    // ein Ordner, den der Client selbst ausschließt (etwa „._…“ oder „….part“), würde nie synchronisiert
+    ExcludedFiles excludes;
+    ConfigFile::setupDefaultExcludeFilePaths(excludes);
+    const QString remotePath = QLatin1Char('/') + trimmed;
+    if (excludes.reloadExcludeFiles() && excludes.isExcludedRemote(remotePath, QStringLiteral("/"), false, ItemTypeDirectory)) {
+        return tr("Folders named %1 are excluded from synchronization.").arg(trimmed);
     }
     return {};
 }
