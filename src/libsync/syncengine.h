@@ -82,13 +82,17 @@ public:
     void setPromptRemoveAllFiles(bool prompt) { _promptRemoveAllFiles = prompt; }
     bool promptRemoveAllFiles() const { return _promptRemoveAllFiles; }
 
-    /** Antwort „Löschen“: der nächste Lauf führt die Löschungen ohne erneute Rückfrage aus. */
-    void allowRemoveAllFilesOnce() { _allowRemoveAllFilesOnce = true; }
+    /**
+     * Antwort „Löschen“: die zuletzt gemeldeten Löschungen (beide Richtungen) sind bestätigt, der nächste Lauf führt sie
+     * ohne erneute Rückfrage aus. Nur diese: was bis dahin dazukommt, prüft der Schutz wieder. Die Bestätigung gilt, bis
+     * ein Lauf die Propagation beginnt.
+     */
+    void allowRemoveAllFilesOnce();
 
     /**
-     * Antwort „Behalten“: die zuletzt gemeldeten Löschungen werden verworfen. Die Einträge der betroffenen Dateien
-     * verschwinden aus dem Journal, der nächste Lauf stellt sie deshalb von der anderen Seite wieder her (Hochladen
-     * bzw. Herunterladen). Lokal muss der nächste Lauf vollständig suchen, das veranlasst der Aufrufer.
+     * Antwort „Behalten“: die zuletzt gemeldeten Löschungen (beide Richtungen) werden verworfen. Die Einträge der
+     * betroffenen Dateien verschwinden aus dem Journal, der nächste Lauf stellt sie deshalb von der anderen Seite wieder
+     * her (Hochladen bzw. Herunterladen). Lokal muss der nächste Lauf vollständig suchen, das veranlasst der Aufrufer.
      */
     void keepFilesOfRemoveAllPrompt();
 
@@ -310,11 +314,21 @@ private:
 
     // Löschschutz (siehe setPromptRemoveAllFiles)
     bool _promptRemoveAllFiles = false;
-    bool _allowRemoveAllFilesOnce = false;
-    // wie 2.x: mindestens ein Eintrag bleibt, wie er ist (unverändert, nur Metadaten, umbenannt)
+    // wie 2.x: mindestens ein Eintrag bleibt erhalten (unverändert, nur Metadaten, umbenannt, unverändert auf dem Server)
     bool _hasNoneFiles = false;
-    // Pfade der zuletzt gemeldeten Löschungen, für „Behalten“
-    QStringList _removeAllFilesPromptPaths;
+
+    /** eine Löschung, die der Schutz meldet: oberster gelöschter Pfad und Richtung */
+    struct RemoveAllFilesEntry
+    {
+        QString path;
+        SyncFileItem::Direction direction;
+    };
+    /** liegt path (oder ein Ordner darüber) mit dieser Richtung unter den bestätigten Löschungen? */
+    bool isApprovedRemoval(const QString &path, SyncFileItem::Direction direction) const;
+    // die zuletzt gemeldeten Löschungen beider Richtungen, für „Behalten“ und „Löschen“
+    QList<RemoveAllFilesEntry> _removeAllFilesPromptEntries;
+    // mit „Löschen“ bestätigt, bis ein Lauf die Propagation beginnt
+    QList<RemoveAllFilesEntry> _approvedRemovals;
 };
 }
 

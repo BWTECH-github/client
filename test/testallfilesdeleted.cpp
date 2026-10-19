@@ -362,6 +362,95 @@ private Q_SLOTS:
         QCOMPARE(spy->count(), 1);
     }
 
+    // Wie 2.x: eine lokal geänderte Datei, die hochgeladen wird, bleibt auf beiden Seiten erhalten. Ohne diese Regel hieße es
+    // „alle Dateien gelöscht“, und „Behalten“ holte die mit Absicht gelöschten Dateien zurück.
+    void testModifiedFileCountsAsRemaining()
+    {
+        FakeFolder fakeFolder{FileInfo{}};
+        fakeFolder.syncEngine()->setPromptRemoveAllFiles(true);
+        auto spy = removeAllSpy(fakeFolder);
+        for (const auto &name : {QStringLiteral("a.txt"), QStringLiteral("b.txt"), QStringLiteral("c.txt")}) {
+            fakeFolder.localModifier().insert(name);
+        }
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        fakeFolder.localModifier().remove(QStringLiteral("a.txt"));
+        fakeFolder.localModifier().remove(QStringLiteral("b.txt"));
+        fakeFolder.localModifier().appendByte(QStringLiteral("c.txt"));
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+
+        QCOMPARE(spy->count(), 0);
+        QCOMPARE(fakeFolder.currentRemoteState(), fakeFolder.currentLocalState());
+        QCOMPARE(fakeFolder.currentRemoteState().children.count(), 1);
+    }
+
+    // „Behalten“ gilt für alle Löschungen des Laufs, auch für die der anderen Richtung: sonst löschte der nächste Lauf
+    // diesen Teil ohne Rückfrage, weil er für sich allein unter den Schwellen bleibt
+    void testKeepRestoresBothDirections()
+    {
+        FakeFolder fakeFolder{bigTree(300)};
+        fakeFolder.syncEngine()->setPromptRemoveAllFiles(true);
+        const auto initialState = fakeFolder.currentLocalState();
+        auto spy = removeAllSpy(fakeFolder);
+
+        for (int i = 0; i < 150; ++i) {
+            fakeFolder.localModifier().remove(QStringLiteral("Big/f%1").arg(i));
+            fakeFolder.remoteModifier().remove(QStringLiteral("Big/f%1").arg(i + 150));
+        }
+        QVERIFY(fakeFolder.applyLocalModificationsWithoutSync());
+        QVERIFY(!fakeFolder.syncOnce());
+        QCOMPARE(spy->count(), 1);
+
+        fakeFolder.syncEngine()->keepFilesOfRemoveAllPrompt();
+        OperationCounter counter(fakeFolder);
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(counter.nDELETE, 0);
+        QCOMPARE(fakeFolder.currentLocalState(), initialState);
+        QCOMPARE(fakeFolder.currentRemoteState(), initialState);
+        QCOMPARE(spy->count(), 1);
+    }
+
+    // „Löschen“ gilt nur für die gemeldeten Löschungen. Was bis zum nächsten Lauf dazukommt, prüft der Schutz wieder;
+    // die schon bestätigten Löschungen bleiben bestätigt, bis ein Lauf sie ausführt.
+    void testApprovalCoversOnlyPromptedRemovals()
+    {
+        FakeFolder fakeFolder{bigTree(300)};
+        fakeFolder.syncEngine()->setPromptRemoveAllFiles(true);
+        auto spy = removeAllSpy(fakeFolder);
+
+        fakeFolder.localModifier().remove(QStringLiteral("Big"));
+        QVERIFY(fakeFolder.applyLocalModificationsWithoutSync());
+        QVERIFY(!fakeFolder.syncOnce());
+        QCOMPARE(spy->count(), 1);
+        QCOMPARE(spy->at(0).at(0).value<SyncFileItem::Direction>(), SyncFileItem::Up);
+        fakeFolder.syncEngine()->allowRemoveAllFilesOnce();
+
+        // bevor der nächste Lauf beginnt, verschwindet der Rest auf dem Server
+        fakeFolder.remoteModifier().remove(QStringLiteral("Small"));
+        QVERIFY(!fakeFolder.syncOnce());
+        QCOMPARE(spy->count(), 2);
+        QCOMPARE(spy->at(1).at(0).value<SyncFileItem::Direction>(), SyncFileItem::Down);
+        QCOMPARE(spy->at(1).at(2).toInt(), 10);
+        // nichts gelöscht: Big liegt noch auf dem Server, Small noch lokal
+        QVERIFY(fakeFolder.currentRemoteState().find(QStringLiteral("Big")));
+        QVERIFY(fakeFolder.currentLocalState().find(QStringLiteral("Small")));
+
+        // auch das bestätigt: der nächste Lauf führt beides aus
+        fakeFolder.syncEngine()->allowRemoveAllFilesOnce();
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(spy->count(), 2);
+        QCOMPARE(fakeFolder.currentLocalState().children.count(), 0);
+        QCOMPARE(fakeFolder.currentRemoteState().children.count(), 0);
+
+        // die Bestätigung ist verbraucht: neue Löschungen fragen wieder
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("Neu"));
+        fakeFolder.remoteModifier().insert(QStringLiteral("Neu/n1"));
+        QVERIFY(fakeFolder.syncOnce());
+        fakeFolder.remoteModifier().remove(QStringLiteral("Neu"));
+        QVERIFY(!fakeFolder.syncOnce());
+        QCOMPARE(spy->count(), 3);
+    }
+
     // Auf dem Server gelöscht, lokal nur Platzhalter ohne Inhalt: es geht nichts verloren, keine Rückfrage
     void testDehydratedPlaceholdersDoNotCount()
     {
