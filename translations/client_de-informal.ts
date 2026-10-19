@@ -340,9 +340,44 @@ Datei Synchronisations-Applikation.</translation>
         <translation>Über</translation>
     </message>
     <message>
+        <location line="+72"/>
+        <source>Updates</source>
+        <translation>Updates</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Update channel:</source>
+        <translation>Update-Kanal:</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Check for updates now</source>
+        <translation>Jetzt nach Updates suchen</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Restart and update</source>
+        <translation>Neu starten und aktualisieren</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Beta versions bring new features earlier but are less tested. There are no downgrades: after switching back to Stable, the next stable version that is newer than the installed one is offered.</source>
+        <translation>Beta-Versionen bringen neue Funktionen früher, sind aber weniger getestet. Eine ältere Version wird nie installiert: Nach dem Wechsel zurück auf „Stabil“ kommt die nächste stabile Version, die neuer ist als die installierte.</translation>
+    </message>
+    <message>
         <location line="+73"/>
         <source>Versions</source>
         <translation>Versionen</translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+53"/>
+        <source>Stable</source>
+        <translation>Stabil</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Beta</source>
+        <translation>Beta</translation>
     </message>
 </context>
 <context>
@@ -2148,6 +2183,11 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Bandbreite</translation>
     </message>
     <message>
+        <location line="+4"/>
+        <source>The automatic limit of an earlier version is no longer supported. Currently not limited.</source>
+        <translation>Die automatische Begrenzung einer früheren Version wird nicht mehr unterstützt. Derzeit nicht begrenzt.</translation>
+    </message>
+    <message>
         <location line="+3"/>
         <source>Limit upload speed to</source>
         <translation>Upload-Geschwindigkeit begrenzen auf</translation>
@@ -3009,6 +3049,19 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
 </context>
 <context>
+    <name>OCC::PublicLinkCreator</name>
+    <message>
+        <location filename="../src/gui/shareapi.cpp" line="+337"/>
+        <source>Context menu link %1</source>
+        <translation>Link aus dem Kontextmenü %1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Context menu link</source>
+        <translation>Link aus dem Kontextmenü</translation>
+    </message>
+</context>
+<context>
     <name>OCC::QuotaInfo</name>
     <message>
         <location filename="../src/gui/quotainfo.cpp" line="+107"/>
@@ -3434,6 +3487,16 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Auf dem Server gelöschte Dateien in den lokalen Papierkorb verschieben statt sie zu löschen</translation>
     </message>
     <message>
+        <location line="+7"/>
+        <source>HTTP/2 reuses a single connection for many requests, which can speed up syncing on high-latency links and with many small files. Off by default, because transfers can stall with some servers and proxies; turn it on only if your server handles HTTP/2 reliably. Takes effect after a restart.</source>
+        <translation>HTTP/2 nutzt eine einzige Verbindung für viele Anfragen und kann so die Synchronisierung bei hohen Latenzen und vielen kleinen Dateien beschleunigen. Standardmäßig aus, weil Übertragungen mit manchen Servern und Proxys hängen bleiben können; nur einschalten, wenn dein Server zuverlässig mit HTTP/2 umgeht. Wirksam nach einem Neustart.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Use HTTP/2 (optional, requires restart)</source>
+        <translation>HTTP/2 verwenden (optional, erfordert Neustart)</translation>
+    </message>
+    <message>
         <location line="+19"/>
         <source>Edit Ignored Files</source>
         <translation>Ignorierte Dateien bearbeiten</translation>
@@ -3477,16 +3540,6 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <location filename="../src/gui/mainwindow/settingsview.ui" line="-193"/>
         <source>Show window on startup</source>
         <translation>Fenster beim Start anzeigen</translation>
-    </message>
-    <message>
-        <location line="+84"/>
-        <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
-        <translation>HTTP/2 nutzt eine einzige Verbindung für viele Anfragen und beschleunigt so die Synchronisierung bei hohen Latenzen und vielen kleinen Dateien. Standardmäßig aktiv; nur abwählen, wenn dein Server oder Proxy Probleme mit HTTP/2 hat. Wirksam nach einem Neustart.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Use HTTP/2 (recommended, requires restart)</source>
-        <translation>HTTP/2 verwenden (empfohlen, erfordert Neustart)</translation>
     </message>
     <message>
         <location line="+43"/>
@@ -3819,14 +3872,44 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Teilen mit %1 beenden</translation>
     </message>
     <message>
+        <location line="+85"/>
+        <source>More</source>
+        <translation>Mehr</translation>
+    </message>
+    <message>
         <location line="+121"/>
         <source>Stop sharing with %1?</source>
         <translation>Teilen mit %1 beenden?</translation>
     </message>
     <message>
+        <location line="+112"/>
+        <source>You are not allowed to create public links on this server.</source>
+        <translation>Du darfst auf diesem Server keine öffentlichen Links anlegen.</translation>
+    </message>
+    <message>
         <location line="+114"/>
         <source>The server allows only one public link per item.</source>
         <translation>Der Server erlaubt nur einen öffentlichen Link pro Element.</translation>
+    </message>
+    <message>
+        <location line="+123"/>
+        <source>Open in browser</source>
+        <translation>Im Browser öffnen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copy direct download link</source>
+        <translation>Direkt-Download-Link kopieren</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send by email…</source>
+        <translation>Per E-Mail senden…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>I shared %1 with you</source>
+        <translation>Ich habe %1 mit dir geteilt</translation>
     </message>
     <message>
         <location line="-4"/>
@@ -3943,6 +4026,26 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Neuen Ort wählen…</translation>
     </message>
     <message>
+        <location line="-210"/>
+        <source>Public link copied</source>
+        <translation>Öffentlicher Link kopiert</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>The public link to %1 is in the clipboard.</source>
+        <translation>Der öffentliche Link zu %1 liegt in der Zwischenablage.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The public link could not be created automatically.</source>
+        <translation>Der öffentliche Link konnte nicht automatisch erstellt werden.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Server message: %1</source>
+        <translation>Meldung des Servers: %1</translation>
+    </message>
+    <message>
         <location line="+87"/>
         <location line="+30"/>
         <source>Share…</source>
@@ -3963,6 +4066,21 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <location line="+0"/>
         <source>Resharing this folder is not allowed</source>
         <translation>Weiteres Teilen des Ordners ist nicht erlaubt.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Create public link…</source>
+        <translation>Öffentlichen Link erstellen…</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Create and copy public link to clipboard</source>
+        <translation>Öffentlichen Link erstellen und in die Zwischenablage kopieren</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Manage public links…</source>
+        <translation>Öffentliche Links verwalten…</translation>
     </message>
     <message>
         <location line="+75"/>

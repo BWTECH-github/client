@@ -191,14 +191,22 @@ class ClientContract(unittest.TestCase):
         self.assertEqual(root, [feed.ROOT_ELEMENT])
         self.assertEqual(sorted(fields), sorted(feed.FIELDS))
 
+    def function_body(self, source, signature):
+        body = source[source.index(signature):]
+        return body[:body.index("\n}\n")]
+
     def test_channel_rule_is_the_one_of_update_channel(self):
         source = self.read_source("src/gui/updater/updater.cpp")
-        body = source[source.index("QString updateChannel()"):]
-        body = body[:body.index("\n}\n")]
-        prefixes = re.findall(r'suffix\.startsWith\(QLatin1String\("(\w+)"\)\)', body)
+        # ohne Wahl im Über-Fenster: Vorgabe nach dem Versionssuffix
+        body = self.function_body(source, "QString Updater::defaultChannel(")
+        prefixes = re.findall(r'[sS]uffix\.startsWith\(QLatin1String\("(\w+)"\)\)', body)
         self.assertEqual(sorted(prefixes), sorted(feed.BETA_SUFFIX_PREFIXES))
         self.assertIn('QStringLiteral("beta")', body)
         self.assertIn('QStringLiteral("stable")', body)
+        # eine gespeicherte Wahl gilt nur, wenn es den Kanal im Feed gibt
+        chosen = re.findall(r'storedChoice == QLatin1String\("(\w+)"\)', self.function_body(source, "QString Updater::channel("))
+        self.assertEqual(sorted(chosen), sorted(feed.CHANNELS))
+        self.assertIn("Updater::channel(", self.function_body(source, "QString updateChannel()"))
 
     def test_client_compares_with_the_prerelease_suffix(self):
         source = self.read_source("src/gui/updater/ocupdater.cpp")

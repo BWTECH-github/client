@@ -180,6 +180,10 @@ public:
     // how often the check about new versions runs
     std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
 
+    /// vom Nutzer gewählter Update-Kanal (Über-Fenster), leer ohne Wahl; Updater::channel() prüft den Wert
+    QString updateChannel() const;
+    void setUpdateChannel(const QString &channel);
+
     QString uiLanguage() const;
     void setUiLanguage(const QString &uiLanguage);
 

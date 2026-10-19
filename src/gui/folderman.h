@@ -299,6 +299,12 @@ public:
     void setUserSyncPaused(bool paused);
     bool isUserSyncPaused() const { return _userSyncPaused; }
 
+    /**
+     * Alle Ordner eines Kontos anhalten oder fortsetzen (Tray-Menü je Konto). Wie die Pause eines Ordners im
+     * Hauptfenster wird sie gespeichert und gilt bis zum Fortsetzen; laufende Synchronisationen des Kontos brechen ab.
+     */
+    void setAccountSyncPaused(const QUuid &accountId, bool paused);
+
     SyncScheduler *scheduler() { return _scheduler; }
 
     void setDirtyProxy();

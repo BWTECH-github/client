@@ -158,10 +158,10 @@
             <item>
              <widget class="QCheckBox" name="enableHttp2CheckBox">
               <property name="toolTip">
-               <string>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</string>
+               <string>HTTP/2 reuses a single connection for many requests, which can speed up syncing on high-latency links and with many small files. Off by default, because transfers can stall with some servers and proxies; turn it on only if your server handles HTTP/2 reliably. Takes effect after a restart.</string>
               </property>
               <property name="text">
-               <string>Use HTTP/2 (recommended, requires restart)</string>
+               <string>Use HTTP/2 (optional, requires restart)</string>
               </property>
              </widget>
             </item>

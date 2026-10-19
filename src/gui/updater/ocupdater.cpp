@@ -295,23 +295,106 @@ QString OCUpdater::availableVersionString() const
     return _updateInfo.versionString();
 }
 
+void OCUpdater::setUpdateUrl(const QUrl &url)
+{
+    qCInfo(lcUpdater) << "Update url changed to" << url.toDisplayString();
+    _updateUrl = url;
+}
+
+bool OCUpdater::canCheckNow() const
+{
+    switch (downloadState()) {
+    case CheckingServer:
+    case Downloading:
+    case DownloadComplete:
+        return false;
+    case Unknown:
+    case UpToDate:
+    case DownloadFailed:
+    case DownloadTimedOut:
+    case UpdateOnlyAvailableThroughSystem:
+        break;
+    }
+    return true;
+}
+
+void OCUpdater::switchChannel(const QUrl &url)
+{
+    setUpdateUrl(url);
+    // die Antwort des alten Kanals zählt nicht mehr
+    if (abortVersionCheck()) {
+        setDownloadState(Unknown);
+    }
+    discardDownloadedUpdate();
+    checkNow();
+}
+
+void OCUpdater::checkNow()
+{
+    if (canCheckNow()) {
+        qCInfo(lcUpdater) << "Checking for available update on request";
+        checkForUpdate();
+        // auf Wunsch zählt auch eine früher übersprungene Version, sonst hieße es fälschlich „keine Updates verfügbar“
+        _checkRequestedByUser = true;
+    }
+}
+
+bool OCUpdater::isSafeWebUrl(const QUrl &url)
+{
+    // der Feed ist fremder Inhalt: kein file:, kein Programmaufruf über ein anderes Schema
+    return url.isValid() && url.scheme() == QLatin1String("https") && !url.host().isEmpty() && url.userInfo().isEmpty();
+}
+
 void OCUpdater::checkForUpdate()
 {
+    // eine frühere Prüfung (etwa nach einer Zeitüberschreitung) zählt nie mehr
+    abortVersionCheck();
+    _checkRequestedByUser = false;
+
     QNetworkRequest request(_updateUrl);
     // GitHub leitet Release-Downloads per 302 auf release-assets.githubusercontent.com um. Ohne diese Angabe setzt der
     // AccessManager ManualRedirectPolicy: Die Antwort wäre die leere Weiterleitung, der Feed nie lesbar.
     request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
-    QNetworkReply *reply = _accessManager->get(request);
-    connect(_timeoutWatchdog, &QTimer::timeout, this, &OCUpdater::slotTimedOut);
+    _versionCheckReply = _accessManager->get(request);
+    // einmal verbinden: sonst meldete jede frühere Prüfung die Zeitüberschreitung noch einmal
+    connect(_timeoutWatchdog, &QTimer::timeout, this, &OCUpdater::slotTimedOut, Qt::UniqueConnection);
     _timeoutWatchdog->start(30s);
-    connect(reply, &QNetworkReply::finished, this, &OCUpdater::slotVersionInfoArrived);
+    connect(_versionCheckReply, &QNetworkReply::finished, this, &OCUpdater::slotVersionInfoArrived);
 
     setDownloadState(CheckingServer);
 }
 
+bool OCUpdater::abortVersionCheck()
+{
+    _timeoutWatchdog->stop();
+    if (!_versionCheckReply) {
+        return false;
+    }
+    QNetworkReply *reply = std::exchange(_versionCheckReply, nullptr);
+    // vor abort() trennen: abort() meldet finished() sofort
+    reply->disconnect(this);
+    reply->abort();
+    reply->deleteLater();
+    return true;
+}
+
+void OCUpdater::discardDownloadedUpdate()
+{
+}
+
+QString OCUpdater::skippedVersionForThisCheck() const
+{
+    return _checkRequestedByUser ? QString() : previouslySkippedVersion();
+}
+
 void OCUpdater::slotOpenUpdateUrl()
 {
-    QDesktopServices::openUrl(QUrl(_updateInfo.web()));
+    const QUrl url(_updateInfo.web());
+    if (!isSafeWebUrl(url)) {
+        qCWarning(lcUpdater) << "Not opening the update page from the feed, it is not an https address:" << url.toDisplayString();
+        return;
+    }
+    QDesktopServices::openUrl(url);
 }
 
 bool OCUpdater::updateSucceeded() const
@@ -324,9 +407,14 @@ bool OCUpdater::updateSucceeded() const
 
 void OCUpdater::slotVersionInfoArrived()
 {
-    _timeoutWatchdog->stop();
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     reply->deleteLater();
+    if (reply != _versionCheckReply) {
+        // eine aufgegebene Prüfung (Zeitüberschreitung, Kanalwechsel)
+        return;
+    }
+    _versionCheckReply = nullptr;
+    _timeoutWatchdog->stop();
     if (reply->error() != QNetworkReply::NoError) {
         qCWarning(lcUpdater) << "Failed to reach version check url: " << reply->errorString();
         setDownloadState(OCUpdater::Unknown);
@@ -351,6 +439,9 @@ void OCUpdater::slotVersionInfoArrived()
 
 void OCUpdater::slotTimedOut()
 {
+    qCWarning(lcUpdater) << "The update check timed out";
+    // die hängende Anfrage aufgeben: sonst beendete ihre späte Antwort eine neue Prüfung und würde doppelt ausgewertet
+    abortVersionCheck();
     setDownloadState(DownloadTimedOut);
 }
 
@@ -393,9 +484,26 @@ void WindowsUpdater::wipeUpdateData()
     settings.remove(autoUpdateAttemptedC);
 }
 
+void WindowsUpdater::discardDownloadedUpdate()
+{
+    if (_downloadReply) {
+        QNetworkReply *reply = std::exchange(_downloadReply, nullptr);
+        reply->disconnect(this);
+        reply->abort();
+        reply->deleteLater();
+        _file.reset();
+    }
+    if (downloadState() == Downloading || downloadState() == DownloadComplete) {
+        qCInfo(lcUpdater) << "Discarding the update of the previous channel";
+        wipeUpdateData();
+        setDownloadState(Unknown);
+    }
+}
+
 void WindowsUpdater::slotDownloadFinished()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    _downloadReply = nullptr;
     const QUrl url(reply->url());
     reply->deleteLater();
     _file->close();
@@ -446,7 +554,7 @@ void WindowsUpdater::versionInfoArrived(const UpdateInfo &info)
 {
     auto settings = ConfigFile::makeQSettings();
     const QString installed = installedVersion();
-    const QString previouslySkippedVersion = this->previouslySkippedVersion();
+    const QString previouslySkippedVersion = skippedVersionForThisCheck();
     qCInfo(lcUpdater) << "Version info arrived:"
                       << "Your version:" << installed
                       << "Skipped version:" << previouslySkippedVersion
@@ -477,6 +585,7 @@ void WindowsUpdater::versionInfoArrived(const UpdateInfo &info)
                 auto request = QNetworkRequest(QUrl(url));
                 request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
                 QNetworkReply *reply = qnam()->get(request);
+                _downloadReply = reply;
                 connect(reply, &QIODevice::readyRead, this, &WindowsUpdater::slotWriteFile);
                 connect(reply, &QNetworkReply::finished, this, &WindowsUpdater::slotDownloadFinished);
                 setDownloadState(Downloading);

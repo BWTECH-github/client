@@ -14,6 +14,7 @@
 
 #include <QtTest>
 
+#include "gui/guiutility.h"
 #include "gui/shareapi.h"
 #include "libsync/abstractnetworkjob.h"
 #include "libsync/capabilities.h"
@@ -559,6 +560,245 @@ private Q_SLOTS:
         QVERIFY(requestBody.contains("share-permissions"));
         QCOMPARE(receivedFolder, isFolder);
         QCOMPARE(receivedPermissions.toInt(), maxPermissions);
+    }
+
+    void testDirectDownloadUrl_data()
+    {
+        QTest::addColumn<QString>("url");
+        QTest::addColumn<int>("type");
+        QTest::addColumn<int>("permissions");
+        QTest::addColumn<QString>("expected");
+
+        const int link = Share::Link;
+        QTest::newRow("file link") << QStringLiteral("https://cloud.example/index.php/s/AbC") << link << 1
+                                   << QStringLiteral("https://cloud.example/index.php/s/AbC/download");
+        QTest::newRow("folder link with upload") << QStringLiteral("https://cloud.example/s/AbC/") << link << 5
+                                                 << QStringLiteral("https://cloud.example/s/AbC/download");
+        // Datei-Ablage: Empfänger dürfen nichts herunterladen
+        QTest::newRow("upload only") << QStringLiteral("https://cloud.example/s/AbC") << link << 4 << QString();
+        QTest::newRow("no public link address") << QStringLiteral("https://cloud.example/index.php/apps/files/?dir=/") << link << 1 << QString();
+        QTest::newRow("token in query") << QStringLiteral("https://cloud.example/s/AbC?x=1") << link << 1 << QString();
+        QTest::newRow("user share") << QStringLiteral("https://cloud.example/s/AbC") << int(Share::User) << 1 << QString();
+        QTest::newRow("empty") << QString() << link << 1 << QString();
+        QTest::newRow("not http") << QStringLiteral("ftp://cloud.example/s/AbC") << link << 1 << QString();
+    }
+
+    void testDirectDownloadUrl()
+    {
+        QFETCH(QString, url);
+        QFETCH(int, type);
+        QFETCH(int, permissions);
+        QFETCH(QString, expected);
+
+        Share share;
+        share.type = type;
+        share.url = url;
+        share.permissions = SharePermissions::fromInt(permissions);
+        QCOMPARE(ShareApi::directDownloadUrl(share).toString(), expected);
+    }
+
+    // „Per E-Mail senden“: Dateinamen mit & # % + dürfen die mailto-Adresse nicht zerlegen
+    void testEmailComposerUrl()
+    {
+        const QString subject = QStringLiteral("I shared Q4 & #1 50%25 + mehr with you");
+        const QString body = QStringLiteral("https://cloud.example/s/AbC?x=1&y=2");
+        const QUrl url = Utility::emailComposerUrl(subject, body);
+        QVERIFY(url.isValid());
+        QCOMPARE(url.scheme(), QStringLiteral("mailto"));
+        QVERIFY(!url.hasFragment());
+        const QUrlQuery query(url);
+        QCOMPARE(query.queryItems().size(), 2);
+        QCOMPARE(query.queryItemValue(QStringLiteral("subject"), QUrl::FullyDecoded), subject);
+        QCOMPARE(query.queryItemValue(QStringLiteral("body"), QUrl::FullyDecoded), body);
+    }
+
+    void testPublicLinkNeedsUserInput()
+    {
+        const auto publicCaps = [](const QVariantMap &values) { return sharingCapabilities({{QStringLiteral("public"), values}}); };
+        const auto passwordFor = [](const QString &role) {
+            return QVariantMap{{QStringLiteral("password"), QVariantMap{{QStringLiteral("enforced_for"), QVariantMap{{role, true}}}}}};
+        };
+        QVERIFY(!PublicLinkCreator::needsUserInput(sharingCapabilities({})));
+        QVERIFY(PublicLinkCreator::needsUserInput(publicCaps(passwordFor(QStringLiteral("read_only")))));
+        // nur für Upload-Links vorgeschrieben: der Leselink kommt ohne Passwort aus
+        QVERIFY(!PublicLinkCreator::needsUserInput(publicCaps(passwordFor(QStringLiteral("upload_only")))));
+        QVERIFY(PublicLinkCreator::needsUserInput(publicCaps({{QStringLiteral("expire_date"),
+            QVariantMap{{QStringLiteral("enabled"), true}, {QStringLiteral("days"), QStringLiteral("7")}, {QStringLiteral("enforced"), true}}}})));
+
+        // ein vorgegebenes, nicht erzwungenes Ablaufdatum setzt der Client beim Anlegen (der Server setzt es nur, wenn er es
+        // erzwingt): dann je Tag ein eigener Link
+        const auto defaultExpire =
+            publicCaps({{QStringLiteral("expire_date"), QVariantMap{{QStringLiteral("enabled"), true}, {QStringLiteral("days"), QStringLiteral("7")}}}});
+        QVERIFY(!PublicLinkCreator::needsUserInput(defaultExpire));
+        QCOMPARE(PublicLinkCreator::linkName(defaultExpire, QDate(2026, 10, 16)), QStringLiteral("Context menu link 2026-10-16"));
+        QCOMPARE(PublicLinkCreator::linkName(sharingCapabilities({}), QDate(2026, 10, 16)), QStringLiteral("Context menu link"));
+    }
+
+    void testPublicLinkCreator_data()
+    {
+        QTest::addColumn<QJsonArray>("existing");
+        QTest::addColumn<bool>("multipleLinks");
+        // vorgegebenes, nicht erzwungenes Ablaufdatum in Tagen, 0: keins
+        QTest::addColumn<int>("defaultExpireDays");
+        QTest::addColumn<QStringList>("verbs");
+        // leer: kein Link kopiert, der Teilen-Dialog übernimmt
+        QTest::addColumn<QString>("copiedUrl");
+
+        const QDate today = QDate::currentDate();
+        const auto defaultExpireCapabilities = sharingCapabilities({{QStringLiteral("public"),
+            QVariantMap{{QStringLiteral("expire_date"), QVariantMap{{QStringLiteral("enabled"), true}, {QStringLiteral("days"), QStringLiteral("7")}}}}}});
+        const auto contextMenuLink = [today](const QString &name, const QString &id, int permissions, bool withPassword, const QString &url,
+                                         const QDate &expiration = {}) {
+            auto share = publicLinkWithoutPassword();
+            share.insert(QStringLiteral("id"), id);
+            share.insert(QStringLiteral("name"), name);
+            share.insert(QStringLiteral("permissions"), permissions);
+            share.insert(QStringLiteral("url"), url);
+            if (withPassword)
+                share.insert(QStringLiteral("share_with"), QStringLiteral("$2y$10$passwordhash"));
+            if (expiration.isValid())
+                share.insert(QStringLiteral("expiration"), expiration.toString(QStringLiteral("yyyy-MM-dd 00:00:00")));
+            return share;
+        };
+        const QString name = PublicLinkCreator::linkName(sharingCapabilities({}), today);
+        const QString dailyName = PublicLinkCreator::linkName(defaultExpireCapabilities, today);
+        const QString created = QStringLiteral("https://cloud.example/s/New");
+        const QStringList fetchAndCreate{QStringLiteral("GET"), QStringLiteral("POST")};
+        const QStringList fetchOnly{QStringLiteral("GET")};
+
+        // Nutzer-Shares und anders benannte Links zählen nicht
+        QTest::newRow("no own link yet") << QJsonArray{userShareJson(), linkShareJson()} << true << 0 << fetchAndCreate << created;
+        // ein im Dialog auf Bearbeiten gestellter Link wird übergangen, der unveränderte wiederverwendet
+        QTest::newRow("reuses unchanged link") << QJsonArray{contextMenuLink(name, QStringLiteral("30"), 15, false, QStringLiteral("https://cloud.example/s/Edited")),
+            contextMenuLink(name, QStringLiteral("31"), 1, false, QStringLiteral("https://cloud.example/s/Old"))}
+                                               << true << 0 << fetchOnly << QStringLiteral("https://cloud.example/s/Old");
+        // nachträglich mit Passwort versehen: ein neuer Link, sonst bekäme der Empfänger eine Passwortabfrage
+        QTest::newRow("password added later") << QJsonArray{contextMenuLink(name, QStringLiteral("32"), 1, true, QStringLiteral("https://cloud.example/s/Locked"))}
+                                              << true << 0 << fetchAndCreate << created;
+        // im Dialog mit Ablaufdatum versehen: ein neuer, unbefristeter Link wie ohne Vorgabe üblich
+        QTest::newRow("expiration added later") << QJsonArray{contextMenuLink(name, QStringLiteral("33"), 1, false, QStringLiteral("https://cloud.example/s/Soon"), today.addDays(2))}
+                                                << true << 0 << fetchAndCreate << created;
+        // Vorgabe des Servers (nicht erzwungen): der neue Link läuft nach 7 Tagen ab
+        QTest::newRow("default expiration date") << QJsonArray{userShareJson()} << true << 7 << fetchAndCreate << created;
+        QTest::newRow("reuses link of today") << QJsonArray{contextMenuLink(dailyName, QStringLiteral("34"), 1, false, QStringLiteral("https://cloud.example/s/Today"), today.addDays(7))}
+                                              << true << 7 << fetchOnly << QStringLiteral("https://cloud.example/s/Today");
+        // im Dialog verkürzt: nie einen Link weitergeben, der früher abläuft als ein neuer
+        QTest::newRow("shortened link is not reused") << QJsonArray{contextMenuLink(dailyName, QStringLiteral("35"), 1, false, QStringLiteral("https://cloud.example/s/Short"), today.addDays(1))}
+                                                      << true << 7 << fetchAndCreate << created;
+        // im Dialog das Ablaufdatum entfernt: läuft nicht früher ab als ein neuer
+        QTest::newRow("link without expiration is reused") << QJsonArray{contextMenuLink(dailyName, QStringLiteral("36"), 1, false, QStringLiteral("https://cloud.example/s/Open"))}
+                                                           << true << 7 << fetchOnly << QStringLiteral("https://cloud.example/s/Open");
+        // nur ein Link je Element erlaubt: ein vorhandener Leselink ohne Passwort gilt
+        QTest::newRow("single link server") << QJsonArray{publicLinkWithoutPassword()} << false << 0 << fetchOnly << QStringLiteral("https://cloud.example/s/AbC");
+        // mit Bearbeiten-Rechten und Passwort nie still kopieren: der Teilen-Dialog zeigt den Link
+        QTest::newRow("single link server with edit link") << QJsonArray{linkShareJson()} << false << 0 << fetchOnly << QString();
+        QTest::newRow("single link server without link") << QJsonArray{userShareJson()} << false << 0 << fetchAndCreate << created;
+    }
+
+    void testPublicLinkCreator()
+    {
+        QFETCH(QJsonArray, existing);
+        QFETCH(bool, multipleLinks);
+        QFETCH(int, defaultExpireDays);
+        QFETCH(QStringList, verbs);
+        QFETCH(QString, copiedUrl);
+
+        // Arrange
+        FakeFolder fakeFolder({});
+        auto capabilities = TestUtils::testCapabilities();
+        QVariantMap publicCapabilities{{QStringLiteral("multiple"), multipleLinks}};
+        if (defaultExpireDays > 0) {
+            publicCapabilities.insert(QStringLiteral("expire_date"),
+                QVariantMap{{QStringLiteral("enabled"), true}, {QStringLiteral("days"), QString::number(defaultExpireDays)}, {QStringLiteral("enforced"), false}});
+        }
+        capabilities.insert(QStringLiteral("files_sharing"), QVariantMap{{QStringLiteral("public"), publicCapabilities}});
+        fakeFolder.account()->setCapabilities({fakeFolder.account()->url(), capabilities});
+        QStringList requestedVerbs;
+        QUrlQuery fetchQuery;
+        QUrlQuery createBody;
+        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *outgoingData) -> QNetworkReply * {
+            if (!request.url().path().endsWith(QLatin1String("/apps/files_sharing/api/v1/shares")))
+                return nullptr;
+            const QString verb = QString::fromUtf8(HttpLogger::requestVerb(op, request));
+            requestedVerbs.append(verb);
+            if (verb == QLatin1String("GET")) {
+                fetchQuery = QUrlQuery(request.url());
+                return new FakePayloadReply(op, request, ocsReply(existing), this);
+            }
+            createBody = bodyQuery(outgoingData);
+            auto share = publicLinkWithoutPassword();
+            share.insert(QStringLiteral("id"), QStringLiteral("40"));
+            share.insert(QStringLiteral("name"), queryValue(createBody, QStringLiteral("name")));
+            share.insert(QStringLiteral("url"), QStringLiteral("https://cloud.example/s/New"));
+            return new FakePayloadReply(op, request, ocsReply(share), this);
+        });
+
+        // Act: Pfad ohne führenden Schrägstrich, wie ihn ein Aufrufer liefern könnte
+        PublicLinkCreator creator(fakeFolder.account(), QStringLiteral("Docs/Q4 & Plan.odt"));
+        QSignalSpy ready(&creator, &PublicLinkCreator::linkReady);
+        QSignalSpy failed(&creator, &PublicLinkCreator::failed);
+        creator.start();
+
+        // Assert
+        if (copiedUrl.isEmpty()) {
+            QVERIFY(failed.wait());
+            QCOMPARE(failed.size(), 1);
+            QCOMPARE(ready.size(), 0);
+        } else {
+            QVERIFY(ready.wait());
+            QCOMPARE(ready.size(), 1);
+            QCOMPARE(ready.first().first().toString(), copiedUrl);
+            QCOMPARE(failed.size(), 0);
+        }
+        QCOMPARE(requestedVerbs, verbs);
+        QCOMPARE(queryValue(fetchQuery, QStringLiteral("path")), QStringLiteral("/Docs/Q4 & Plan.odt"));
+        if (verbs.contains(QStringLiteral("POST"))) {
+            // Standardrechte: nur lesen, ohne Passwort; das Ablaufdatum nach der Vorgabe des Servers
+            QCOMPARE(queryValue(createBody, QStringLiteral("path")), QStringLiteral("/Docs/Q4 & Plan.odt"));
+            QCOMPARE(queryValue(createBody, QStringLiteral("shareType")), QStringLiteral("3"));
+            QCOMPARE(queryValue(createBody, QStringLiteral("permissions")), QStringLiteral("1"));
+            QCOMPARE(queryValue(createBody, QStringLiteral("name")), PublicLinkCreator::linkName(fakeFolder.account()->capabilities(), QDate::currentDate()));
+            QVERIFY(!createBody.hasQueryItem(QStringLiteral("password")));
+            if (defaultExpireDays > 0) {
+                QCOMPARE(queryValue(createBody, QStringLiteral("expireDate")),
+                    QDate::currentDate().addDays(defaultExpireDays).toString(QStringLiteral("yyyy-MM-dd")));
+            } else {
+                QVERIFY(!createBody.hasQueryItem(QStringLiteral("expireDate")));
+            }
+        }
+    }
+
+    // Ohne Erlaubnis des Servers (Allowlist für Link-Ersteller) bietet das Kontextmenü keinen neuen Link an
+    void testPublicLinkCanCreate()
+    {
+        QVERIFY(sharingCapabilities({}).sharePublicLinkCanCreate());
+        QVERIFY(sharingCapabilities({{QStringLiteral("public"), QVariantMap{{QStringLiteral("can_create_public_link"), true}}}}).sharePublicLinkCanCreate());
+        QVERIFY(!sharingCapabilities({{QStringLiteral("public"), QVariantMap{{QStringLiteral("can_create_public_link"), false}}}}).sharePublicLinkCanCreate());
+        // abgeschaltete Links: ohnehin nicht
+        QVERIFY(!sharingCapabilities({{QStringLiteral("public"), QVariantMap{{QStringLiteral("enabled"), false}}}}).sharePublicLinkCanCreate());
+    }
+
+    void testPublicLinkCreatorReportsServerMessage()
+    {
+        // eine Passwort-Richtlinie, die der Server nicht in den Capabilities meldet, lehnt den Link ab
+        FakeFolder fakeFolder({});
+        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            if (!request.url().path().endsWith(QLatin1String("/apps/files_sharing/api/v1/shares")))
+                return nullptr;
+            if (HttpLogger::requestVerb(op, request) == "GET")
+                return new FakePayloadReply(op, request, ocsReply(QJsonArray{}), this);
+            return new FakePayloadReply(op, request, ocsReply(QJsonArray{}, 403, QStringLiteral("Passwords are enforced for link shares")), this);
+        });
+
+        PublicLinkCreator creator(fakeFolder.account(), QStringLiteral("/Docs/item"));
+        QSignalSpy ready(&creator, &PublicLinkCreator::linkReady);
+        QSignalSpy failed(&creator, &PublicLinkCreator::failed);
+        creator.start();
+
+        QVERIFY(failed.wait());
+        QCOMPARE(failed.size(), 1);
+        QCOMPARE(failed.first().first().toString(), QStringLiteral("Passwords are enforced for link shares"));
+        QCOMPARE(ready.size(), 0);
     }
 };
 

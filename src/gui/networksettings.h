@@ -15,12 +15,14 @@
 #ifndef MIRALL_NETWORKSETTINGS_H
 #define MIRALL_NETWORKSETTINGS_H
 
+#include "gui/owncloudguilib.h"
 #include "libsync/creds/credentialmanager.h"
 
 #include <QWidget>
 
 
 class QCheckBox;
+class QLabel;
 class QSpinBox;
 
 namespace OCC {
@@ -33,7 +35,7 @@ namespace Ui {
  * @brief The NetworkSettings class
  * @ingroup gui
  */
-class NetworkSettings : public QWidget
+class OWNCLOUDGUI_EXPORT NetworkSettings : public QWidget
 {
     Q_OBJECT
 
@@ -44,7 +46,9 @@ public:
 private Q_SLOTS:
     void saveProxySettings();
     void saveMeteredSettings();
-    void saveBWLimitSettings();
+    // je Richtung getrennt: eine Änderung am Hochladen schreibt das Herunterladen nicht mit (und umgekehrt)
+    void saveUploadLimitSettings();
+    void saveDownloadLimitSettings();
 
     /// Red marking of host field if empty and enabled
     void checkEmptyProxyHost();
@@ -69,6 +73,9 @@ private:
     QSpinBox *_uploadLimitSpinBox = nullptr;
     QCheckBox *_downloadLimitCheckBox = nullptr;
     QSpinBox *_downloadLimitSpinBox = nullptr;
+    // Hinweis auf den Altwert -1 („automatisch“ aus Client 2.x/6.0.3), den es nicht mehr gibt
+    QLabel *_uploadLegacyHint = nullptr;
+    QLabel *_downloadLegacyHint = nullptr;
 };
 
 

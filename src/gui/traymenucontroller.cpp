@@ -543,10 +543,13 @@ void TrayMenuController::addAccountMenu(AccountState *accountState)
     menu->addSeparator();
     const QUrl url = account->url();
     menu->addAction(tr("Open in browser"), this, [url] { Utility::openBrowser(url, nullptr); });
+    // Pause nur dieses Kontos bis zum Fortsetzen (bleibt über einen Neustart erhalten, wie im Hauptfenster je Ordner);
+    // die zeitlich begrenzte Pause aller Konten steuert der Haupteintrag
+    const QUuid accountId = account->uuid();
     if (onePaused) {
-        // einzeln pausierte Ordner (Hauptfenster); die zeitliche Pause steuert der Haupteintrag
-        const QUuid accountId = account->uuid();
-        menu->addAction(tr("Resume synchronization"), this, [this, accountId] { resumeAccountFolders(accountId); });
+        menu->addAction(tr("Resume synchronization"), this, [this, accountId] { setAccountSyncPaused(accountId, false); });
+    } else if (!folders.isEmpty()) {
+        menu->addAction(tr("Pause synchronization"), this, [this, accountId] { setAccountSyncPaused(accountId, true); });
     }
     if (accountState->isSignedOut()) {
         menu->addAction(tr("Log in…"), accountState, &AccountState::signIn);
@@ -894,14 +897,10 @@ void TrayMenuController::checkPauseEnd()
     }
 }
 
-void TrayMenuController::resumeAccountFolders(const QUuid &accountId)
+void TrayMenuController::setAccountSyncPaused(const QUuid &accountId, bool paused)
 {
-    for (auto *folder : FolderMan::instance()->foldersForAccount(accountId)) {
-        if (folder->syncPaused()) {
-            folder->slotNextSyncFullLocalDiscovery(); // lokale Änderungen während der Pause nicht übersehen
-            folder->setSyncPaused(false);
-        }
-    }
+    qCInfo(lcApplication) << (paused ? "Pausing" : "Resuming") << "sync for account" << accountId;
+    FolderMan::instance()->setAccountSyncPaused(accountId, paused);
     slotComputeOverallSyncStatus();
 }
 
@@ -935,7 +934,7 @@ void TrayMenuController::slotShowShareInBrowser(const QString &sharePath, const 
     }
 }
 
-void TrayMenuController::slotShowShareDialog(const QString &sharePath, const QString &localPath)
+void TrayMenuController::slotShowShareDialog(const QString &sharePath, const QString &localPath, ShareDialogStartPage startPage, const QString &errorMessage)
 {
     QString file;
     const auto folder = FolderMan::instance()->folderForPath(localPath, &file);
@@ -962,7 +961,10 @@ void TrayMenuController::slotShowShareDialog(const QString &sharePath, const QSt
     if (_shareDialog) {
         _shareDialog->close();
     }
-    _shareDialog = new ShareDialog(folder->accountState(), folder->webDavUrl(), sharePath, localPath, nullptr);
+    _shareDialog = new ShareDialog(folder->accountState(), folder->webDavUrl(), sharePath, localPath, startPage, nullptr);
+    if (!errorMessage.isEmpty()) {
+        _shareDialog->showError(errorMessage);
+    }
     // eigenständiges Fenster: erbt die Palette des Hauptfensters nicht, den Akzent deshalb selbst setzen
     ColorManager::applyAccent(_shareDialog);
     _shareDialog->show();

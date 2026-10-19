@@ -60,13 +60,16 @@ bool Utility::openBrowser(const QUrl &url, QWidget *errorWidgetParent)
     return true;
 }
 
+QUrl Utility::emailComposerUrl(const QString &subject, const QString &body)
+{
+    // selbst kodieren: QUrlQuery erwartet bereits kodierte Werte, ein „#“ oder „&“ im Dateinamen zerlegte sonst die Adresse
+    const auto encode = [](const QString &value) { return QString::fromLatin1(QUrl::toPercentEncoding(value)); };
+    return QUrl(QStringLiteral("mailto:?subject=%1&body=%2").arg(encode(subject), encode(body)), QUrl::StrictMode);
+}
+
 bool Utility::openEmailComposer(const QString &subject, const QString &body, QWidget *errorWidgetParent)
 {
-    QUrl url(QStringLiteral("mailto:"));
-    QUrlQuery query;
-    query.setQueryItems({ { QLatin1String("subject"), subject },
-        { QLatin1String("body"), body } });
-    url.setQuery(query);
+    const QUrl url = emailComposerUrl(subject, body);
 
     if (!QDesktopServices::openUrl(url)) {
         if (errorWidgetParent) {

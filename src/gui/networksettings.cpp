@@ -26,6 +26,7 @@
 #include <QCheckBox>
 #include <QGridLayout>
 #include <QGroupBox>
+#include <QLabel>
 #include <QList>
 #include <QNetworkProxy>
 #include <QSpinBox>
@@ -111,21 +112,39 @@ void NetworkSettings::setupBWLimitUi()
     auto *group = new QGroupBox(tr("Bandwidth"), this);
     auto *grid = new QGridLayout(group);
 
+    // Altwert -1: nur ein Hinweis, gespeichert wird erst eine Änderung des Nutzers an dieser Richtung
+    const QString legacyHintText = tr("The automatic limit of an earlier version is no longer supported. Currently not limited.");
+    const auto createLegacyHint = [group, &legacyHintText](const QString &objectName) {
+        auto *hint = new QLabel(legacyHintText, group);
+        hint->setObjectName(objectName);
+        hint->setWordWrap(true);
+        hint->setVisible(false);
+        return hint;
+    };
+
     _uploadLimitCheckBox = new QCheckBox(tr("Limit upload speed to"), group);
+    _uploadLimitCheckBox->setObjectName(QStringLiteral("uploadLimitCheckBox"));
     _uploadLimitSpinBox = new QSpinBox(group);
+    _uploadLimitSpinBox->setObjectName(QStringLiteral("uploadLimitSpinBox"));
     _uploadLimitSpinBox->setRange(1, 100000);
     _uploadLimitSpinBox->setSuffix(tr(" kB/s"));
     _uploadLimitSpinBox->setValue(100);
+    _uploadLegacyHint = createLegacyHint(QStringLiteral("uploadLimitLegacyHint"));
     grid->addWidget(_uploadLimitCheckBox, 0, 0);
     grid->addWidget(_uploadLimitSpinBox, 0, 1);
+    grid->addWidget(_uploadLegacyHint, 0, 2);
 
     _downloadLimitCheckBox = new QCheckBox(tr("Limit download speed to"), group);
+    _downloadLimitCheckBox->setObjectName(QStringLiteral("downloadLimitCheckBox"));
     _downloadLimitSpinBox = new QSpinBox(group);
+    _downloadLimitSpinBox->setObjectName(QStringLiteral("downloadLimitSpinBox"));
     _downloadLimitSpinBox->setRange(1, 100000);
     _downloadLimitSpinBox->setSuffix(tr(" kB/s"));
     _downloadLimitSpinBox->setValue(100);
+    _downloadLegacyHint = createLegacyHint(QStringLiteral("downloadLimitLegacyHint"));
     grid->addWidget(_downloadLimitCheckBox, 1, 0);
     grid->addWidget(_downloadLimitSpinBox, 1, 1);
+    grid->addWidget(_downloadLegacyHint, 1, 2);
 
     grid->setColumnStretch(2, 1);
 
@@ -135,10 +154,10 @@ void NetworkSettings::setupBWLimitUi()
     // save fired from that programmatic toggle would overwrite the stored
     // state of the not-yet-loaded other checkbox (same pattern as the
     // metered checkbox above)
-    connect(_uploadLimitCheckBox, &QAbstractButton::clicked, this, &NetworkSettings::saveBWLimitSettings);
-    connect(_downloadLimitCheckBox, &QAbstractButton::clicked, this, &NetworkSettings::saveBWLimitSettings);
-    connect(_uploadLimitSpinBox, &QAbstractSpinBox::editingFinished, this, &NetworkSettings::saveBWLimitSettings);
-    connect(_downloadLimitSpinBox, &QAbstractSpinBox::editingFinished, this, &NetworkSettings::saveBWLimitSettings);
+    connect(_uploadLimitCheckBox, &QAbstractButton::clicked, this, &NetworkSettings::saveUploadLimitSettings);
+    connect(_downloadLimitCheckBox, &QAbstractButton::clicked, this, &NetworkSettings::saveDownloadLimitSettings);
+    connect(_uploadLimitSpinBox, &QAbstractSpinBox::editingFinished, this, &NetworkSettings::saveUploadLimitSettings);
+    connect(_downloadLimitSpinBox, &QAbstractSpinBox::editingFinished, this, &NetworkSettings::saveDownloadLimitSettings);
 
     // Place the bandwidth group right below the metered checkbox.
     if (auto *boxLayout = qobject_cast<QBoxLayout *>(layout())) {
@@ -151,26 +170,43 @@ void NetworkSettings::setupBWLimitUi()
 void NetworkSettings::loadBWLimitSettings()
 {
     ConfigFile cfg;
-    _uploadLimitCheckBox->setChecked(cfg.useUploadLimit() == 1);
+    // 1 = fester Wert, 0 = aus; negativ war in Client 2.x/6.0.3 „automatisch“ und wirkt hier nicht (owncloudpropagator.cpp)
+    const int useUploadLimit = cfg.useUploadLimit();
+    _uploadLimitCheckBox->setChecked(useUploadLimit == 1);
     if (cfg.uploadLimit() > 0) {
         _uploadLimitSpinBox->setValue(static_cast<int>(cfg.uploadLimit()));
     }
     _uploadLimitSpinBox->setEnabled(_uploadLimitCheckBox->isChecked());
+    _uploadLegacyHint->setVisible(useUploadLimit < 0);
+    _uploadLimitCheckBox->setAccessibleDescription(useUploadLimit < 0 ? _uploadLegacyHint->text() : QString());
 
-    _downloadLimitCheckBox->setChecked(cfg.useDownloadLimit() == 1);
+    const int useDownloadLimit = cfg.useDownloadLimit();
+    _downloadLimitCheckBox->setChecked(useDownloadLimit == 1);
     if (cfg.downloadLimit() > 0) {
         _downloadLimitSpinBox->setValue(static_cast<int>(cfg.downloadLimit()));
     }
     _downloadLimitSpinBox->setEnabled(_downloadLimitCheckBox->isChecked());
+    _downloadLegacyHint->setVisible(useDownloadLimit < 0);
+    _downloadLimitCheckBox->setAccessibleDescription(useDownloadLimit < 0 ? _downloadLegacyHint->text() : QString());
 }
 
-void NetworkSettings::saveBWLimitSettings()
+void NetworkSettings::saveUploadLimitSettings()
 {
     ConfigFile cfg;
     cfg.setUseUploadLimit(_uploadLimitCheckBox->isChecked() ? 1 : 0);
     cfg.setUploadLimit(_uploadLimitSpinBox->value());
+    // der Nutzer hat entschieden: der Altwert ist ersetzt
+    _uploadLegacyHint->setVisible(false);
+    _uploadLimitCheckBox->setAccessibleDescription(QString());
+}
+
+void NetworkSettings::saveDownloadLimitSettings()
+{
+    ConfigFile cfg;
     cfg.setUseDownloadLimit(_downloadLimitCheckBox->isChecked() ? 1 : 0);
     cfg.setDownloadLimit(_downloadLimitSpinBox->value());
+    _downloadLegacyHint->setVisible(false);
+    _downloadLimitCheckBox->setAccessibleDescription(QString());
 }
 
 

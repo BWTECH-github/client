@@ -431,6 +431,47 @@ private Q_SLOTS:
         QVERIFY(folderman->checkPathValidity(dirPath + QStringLiteral("/OurSpacesSyncRoot/OurSpacesFolder"), FolderMan::NewFolderType::SpacesFolder, ourUuid)
                 .isNull());
     }
+
+    // Tray-Menü je Konto: hält nur die Ordner dieses Kontos an und setzt sie wieder fort
+    void testAccountSyncPause()
+    {
+        // Arrange: zwei Ordner des einen Kontos, einer eines anderen
+        auto dir = TestUtils::createTempDir();
+        QVERIFY(dir.isValid());
+        QDir dir2(dir.path());
+        for (const auto &name : {QStringLiteral("a1"), QStringLiteral("a2"), QStringLiteral("b1")}) {
+            QVERIFY(dir2.mkpath(name));
+        }
+        const QString dirPath = dir2.canonicalPath();
+        auto accountA = createDummyAccount();
+        auto accountB = createDummyAccount();
+        FolderMan *folderman = TestUtils::folderMan();
+        Folder *a1 = folderman->addFolder(accountA.get(), TestUtils::createDummyFolderDefinition(accountA->account(), dirPath + QStringLiteral("/a1")));
+        Folder *a2 = folderman->addFolder(accountA.get(), TestUtils::createDummyFolderDefinition(accountA->account(), dirPath + QStringLiteral("/a2")));
+        Folder *b1 = folderman->addFolder(accountB.get(), TestUtils::createDummyFolderDefinition(accountB->account(), dirPath + QStringLiteral("/b1")));
+        QVERIFY(a1 && a2 && b1);
+        // einer schon einzeln im Hauptfenster pausiert
+        a2->setSyncPaused(true);
+        QSignalSpy pausedChanged(a1, &Folder::syncPausedChanged);
+
+        // Act
+        folderman->setAccountSyncPaused(accountA->account()->uuid(), true);
+
+        // Assert: nur das eine Konto hält an, der schon pausierte Ordner meldet nichts doppelt
+        QVERIFY(a1->syncPaused());
+        QVERIFY(a2->syncPaused());
+        QVERIFY(!b1->syncPaused());
+        QCOMPARE(pausedChanged.size(), 1);
+
+        // Act: fortsetzen
+        folderman->setAccountSyncPaused(accountA->account()->uuid(), false);
+
+        // Assert
+        QVERIFY(!a1->syncPaused());
+        QVERIFY(!a2->syncPaused());
+        QVERIFY(!b1->syncPaused());
+        QCOMPARE(pausedChanged.size(), 2);
+    }
 };
 
 QTEST_GUILESS_MAIN(TestFolderMan)

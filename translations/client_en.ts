@@ -338,8 +338,43 @@ File synchronization desktop utility.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+72"/>
+        <source>Updates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>Update channel:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Check for updates now</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Restart and update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Beta versions bring new features earlier but are less tested. There are no downgrades: after switching back to Stable, the next stable version that is newer than the installed one is offered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+73"/>
         <source>Versions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/gui/mainwindow/aboutview.cpp" line="+53"/>
+        <source>Stable</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Beta</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2128,6 +2163,11 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+4"/>
+        <source>The automatic limit of an earlier version is no longer supported. Currently not limited.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+3"/>
         <source>Limit upload speed to</source>
         <translation type="unfinished"></translation>
@@ -2988,6 +3028,19 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::PublicLinkCreator</name>
+    <message>
+        <location filename="../src/gui/shareapi.cpp" line="+337"/>
+        <source>Context menu link %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Context menu link</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>OCC::QuotaInfo</name>
     <message>
         <location filename="../src/gui/quotainfo.cpp" line="+107"/>
@@ -3419,12 +3472,12 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+7"/>
-        <source>HTTP/2 reuses a single connection for many requests, which speeds up syncing on high-latency links and with many small files. On by default; uncheck only if your server or proxy has HTTP/2 problems. Takes effect after a restart.</source>
+        <source>HTTP/2 reuses a single connection for many requests, which can speed up syncing on high-latency links and with many small files. Off by default, because transfers can stall with some servers and proxies; turn it on only if your server handles HTTP/2 reliably. Takes effect after a restart.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Use HTTP/2 (recommended, requires restart)</source>
+        <source>Use HTTP/2 (optional, requires restart)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3773,6 +3826,11 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="-287"/>
+        <source>More</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+6"/>
         <source>Edit</source>
         <translation type="unfinished"></translation>
@@ -3813,6 +3871,11 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+25"/>
+        <source>You are not allowed to create public links on this server.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+23"/>
         <source>The server requires a password for this kind of link.</source>
         <translation type="unfinished"></translation>
@@ -3835,6 +3898,26 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+30"/>
         <source>Please enter a password, or uncheck the password option.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+93"/>
+        <source>Open in browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Copy direct download link</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Send by email…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>I shared %1 with you</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3920,6 +4003,26 @@ Note that using any logging command line options will override the settings.</so
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="-210"/>
+        <source>Public link copied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>The public link to %1 is in the clipboard.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The public link could not be created automatically.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Server message: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location line="+87"/>
         <location line="+30"/>
         <source>Share…</source>
@@ -3939,6 +4042,21 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+0"/>
         <source>Resharing this folder is not allowed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Create public link…</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Create and copy public link to clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Manage public links…</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

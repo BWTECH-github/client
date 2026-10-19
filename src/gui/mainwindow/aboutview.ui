@@ -115,6 +115,85 @@
          </item>
         </layout>
        </item>
+       <item>
+        <widget class="QGroupBox" name="updaterGroup">
+         <property name="title">
+          <string>Updates</string>
+         </property>
+         <layout class="QVBoxLayout" name="updaterLayout">
+          <item>
+           <widget class="QLabel" name="updateStatusLabel">
+            <property name="text">
+             <string notr="true"/>
+            </property>
+            <property name="textFormat">
+             <enum>Qt::TextFormat::RichText</enum>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="textInteractionFlags">
+             <set>Qt::TextInteractionFlag::LinksAccessibleByKeyboard|Qt::TextInteractionFlag::LinksAccessibleByMouse|Qt::TextInteractionFlag::TextSelectableByMouse</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="updateActionsLayout">
+            <item>
+             <widget class="QLabel" name="updateChannelLabel">
+              <property name="text">
+               <string>Update channel:</string>
+              </property>
+              <property name="buddy">
+               <cstring>updateChannel</cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="updateChannel"/>
+            </item>
+            <item>
+             <spacer name="updateActionsSpacer">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="checkForUpdatesButton">
+              <property name="text">
+               <string>Check for updates now</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="restartButton">
+              <property name="text">
+               <string>Restart and update</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="updateChannelHint">
+            <property name="text">
+             <string>Beta versions bring new features earlier but are less tested. There are no downgrades: after switching back to Stable, the next stable version that is newer than the installed one is offered.</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_2">
@@ -140,6 +219,9 @@
  </widget>
  <tabstops>
   <tabstop>tabWidget</tabstop>
+  <tabstop>updateChannel</tabstop>
+  <tabstop>checkForUpdatesButton</tabstop>
+  <tabstop>restartButton</tabstop>
   <tabstop>versionInfo</tabstop>
  </tabstops>
  <resources/>

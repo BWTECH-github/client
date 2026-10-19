@@ -91,6 +91,9 @@ struct OWNCLOUDGUI_EXPORT LinkSettings
     QDate expireDate;
 };
 
+/// Reiter, mit dem sich der Teilen-Dialog öffnet
+enum class ShareDialogStartPage { UsersAndGroups, PublicLinks };
+
 /**
  * @brief Zugriff auf die OCS-Share-API v1 (oC10/owncloud.online) für den Teilen-Dialog.
  *
@@ -131,6 +134,12 @@ public:
     static SharePermissions defaultUserSharePermissions(const Capabilities &capabilities, bool isFolder, SharePermissions maxPermissions);
     static bool linkPasswordEnforced(const Capabilities &capabilities, SharePermissions linkPermissions);
 
+    /**
+     * Direkt-Download-Adresse eines öffentlichen Links (…/s/<token>/download), leer, wenn der Link das
+     * Herunterladen nicht erlaubt (Datei-Ablage) oder keine oC10-Linkadresse ist.
+     */
+    static QUrl directDownloadUrl(const Share &share);
+
 Q_SIGNALS:
     void itemInfoFetched(bool isFolder, OCC::SharePermissions maxPermissions);
     void sharesFetched(const QList<OCC::Share> &shares);
@@ -148,6 +157,51 @@ private:
 
     QPointer<Account> _account;
     quint64 _fetchGeneration = 0;
+};
+
+/**
+ * @brief „Öffentlichen Link erstellen und kopieren“ aus dem Explorer-Kontextmenü.
+ *
+ * Nimmt einen früher so angelegten, unveränderten Link wieder (gleicher Name, nur lesen, ohne Passwort, läuft nicht
+ * früher ab als ein neuer) oder legt einen mit den Standardrechten an: nur lesen, ohne Passwort, mit dem Ablaufdatum,
+ * das der Server vorgibt (defaultExpireDate()). Erlaubt der Server nur einen Link je Element, gilt der vorhandene,
+ * sofern er nicht mehr erlaubt als ein neuer; sonst entscheidet der Nutzer im Teilen-Dialog. Erzwingt der Server
+ * Passwort oder Ablaufdatum, geht es nur über den Teilen-Dialog (needsUserInput()).
+ *
+ * @ingroup gui
+ */
+class OWNCLOUDGUI_EXPORT PublicLinkCreator : public QObject
+{
+    Q_OBJECT
+public:
+    /// path: Serverpfad des Elements ("/Documents/report.odt")
+    PublicLinkCreator(Account *account, const QString &path, QObject *parent = nullptr);
+
+    /// true, wenn der Server für einen Link mit Standardrechten ein Passwort oder ein Ablaufdatum verlangt
+    static bool needsUserInput(const Capabilities &capabilities);
+    /// Name der so angelegten Links; gibt der Server ein Ablaufdatum vor, je Tag ein eigener, damit nie ein fast abgelaufener Link weitergegeben wird
+    static QString linkName(const Capabilities &capabilities, const QDate &today);
+    /// Ablaufdatum eines neuen Links: heute plus die vorgegebenen Tage, ungültig ohne Vorgabe
+    static QDate defaultExpireDate(const Capabilities &capabilities, const QDate &today);
+    /// darf share statt eines neuen Links (Ablaufdatum expireDate) kopiert werden?
+    static bool isReusable(const Share &share, const QDate &expireDate);
+
+    /// genau eines von linkReady() und failed() folgt
+    void start();
+
+Q_SIGNALS:
+    void linkReady(const QString &url);
+    /// serverMessage: Meldung des Servers bzw. Netzfehler, kann leer sein
+    void failed(const QString &serverMessage);
+
+private:
+    void onSharesFetched(const QList<OCC::Share> &shares);
+
+    QPointer<Account> _account;
+    ShareApi *_api;
+    QString _path;
+    QString _name;
+    QDate _expireDate;
 };
 
 } // namespace OCC

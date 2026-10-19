@@ -15,6 +15,7 @@
 #pragma once
 
 #include "gui/owncloudguilib.h"
+#include "gui/shareapi.h"
 #include "syncresult.h"
 
 #include <QDateTime>
@@ -102,8 +103,10 @@ public Q_SLOTS:
      * Teilen aus dem Explorer-Kontextmenü: nativer Dialog für öffentliche Links, wenn der Server die
      * OCS-Teilen-API anbietet, sonst die Teilen-Ansicht des Servers im Browser (owncloud.online/oC10;
      * slotShowShareInBrowser wirkt nur mit oCIS-sharing_roles).
+     * errorMessage erscheint im Dialog, z.B. wenn ein Link nicht ohne Rückfrage angelegt werden konnte.
      */
-    void slotShowShareDialog(const QString &sharePath, const QString &localPath);
+    void slotShowShareDialog(const QString &sharePath, const QString &localPath,
+        OCC::ShareDialogStartPage startPage = OCC::ShareDialogStartPage::UsersAndGroups, const QString &errorMessage = QString());
 
 private:
     /** letzter Fortschrittsstand einer laufenden Synchronisation */
@@ -141,7 +144,7 @@ private:
 
     void onProgressInfo(Folder *folder, const ProgressInfo &progress);
     void checkPauseEnd();
-    void resumeAccountFolders(const QUuid &accountId);
+    void setAccountSyncPaused(const QUuid &accountId, bool paused);
 
     QSystemTrayIcon *_tray;
     QMenu *_menu = nullptr;

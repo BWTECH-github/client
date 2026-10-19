@@ -18,6 +18,7 @@
 
 #include "common/syncfilestatus.h"
 #include "common/syncjournalfilerecord.h"
+#include "gui/shareapi.h"
 #include "libsync/account.h"
 #include "syncfileitem.h"
 
@@ -70,7 +71,8 @@ public Q_SLOTS:
     void broadcastStatusPushMessage(const QString &systemPath, SyncFileStatus fileStatus);
 
 Q_SIGNALS:
-    void shareCommandReceived(const QString &sharePath, const QString &localPath);
+    /// errorMessage: warum der Dialog statt einer direkten Aktion kommt, sonst leer
+    void shareCommandReceived(const QString &sharePath, const QString &localPath, OCC::ShareDialogStartPage startPage, const QString &errorMessage);
 
 private Q_SLOTS:
     void slotNewConnection();
@@ -115,6 +117,8 @@ private:
 
     // The context menu actions
     Q_INVOKABLE void command_SHARE(const QString &localFile, SocketListener *listener);
+    Q_INVOKABLE void command_MANAGE_PUBLIC_LINKS(const QString &localFile, SocketListener *listener);
+    Q_INVOKABLE void command_COPY_PUBLIC_LINK(const QString &localFile, SocketListener *listener);
     Q_INVOKABLE void command_COPY_PRIVATE_LINK(const QString &localFile, SocketListener *listener);
     Q_INVOKABLE void command_EMAIL_PRIVATE_LINK(const QString &localFile, SocketListener *listener);
     Q_INVOKABLE void command_OPEN_PRIVATE_LINK(const QString &localFile, SocketListener *listener);
@@ -132,6 +136,9 @@ private:
     // Argument is a SocketApiJobV2 job which contains an id and the required icon size in Json format
     // e.g. { "id" : "1", "arguments" : { "size" : 16 } }
     Q_INVOKABLE void command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> &job) const;
+
+    // Teilen-Dialog für localFile öffnen, sofern das Element geteilt werden kann; meldet das Ergebnis an listener
+    void processShareRequest(const QString &localFile, SocketListener *listener, ShareDialogStartPage startPage);
 
     // Fetch the private link and call targetFun
     void fetchPrivateLinkUrlHelper(const QString &localFile, const std::function<void(const QUrl &url)> &targetFun);

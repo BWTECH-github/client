@@ -20,6 +20,7 @@
 #include <QJsonArray>
 #include <QNetworkReply>
 #include <QLoggingCategory>
+#include <QRegularExpression>
 #include <QSet>
 
 using namespace std::chrono_literals;
@@ -286,6 +287,117 @@ bool ShareApi::linkPasswordEnforced(const Capabilities &capabilities, SharePermi
     if (linkPermissions == readWrite)
         return capabilities.sharePublicLinkEnforcePasswordForReadWrite();
     return capabilities.sharePublicLinkEnforcePasswordForReadOnly();
+}
+
+QUrl ShareApi::directDownloadUrl(const Share &share)
+{
+    // eine Datei-Ablage (nur hochladen) erlaubt kein Herunterladen
+    if (!share.isLink() || !share.permissions.testFlag(SharePermission::Read))
+        return {};
+    QUrl url(share.url);
+    // nur die oC10-Form …/s/<token>; andere Adressen kennen /download nicht
+    static const QRegularExpression publicLinkPath(QStringLiteral("/s/[^/]+/?$"));
+    const bool isWeb = url.scheme() == QLatin1String("https") || url.scheme() == QLatin1String("http");
+    if (!url.isValid() || !isWeb || url.hasQuery() || url.hasFragment() || !publicLinkPath.match(url.path()).hasMatch())
+        return {};
+    QString path = url.path();
+    if (path.endsWith(QLatin1Char('/')))
+        path.chop(1);
+    url.setPath(path + QStringLiteral("/download"));
+    return url;
+}
+
+PublicLinkCreator::PublicLinkCreator(Account *account, const QString &path, QObject *parent)
+    : QObject(parent)
+    , _account(account)
+    , _api(new ShareApi(account, this))
+    , _path(path.startsWith(QLatin1Char('/')) ? path : QLatin1Char('/') + path)
+{
+    connect(_api, &ShareApi::sharesFetched, this, &PublicLinkCreator::onSharesFetched);
+    connect(_api, &ShareApi::shareCreated, this, [this](const Share &share) {
+        if (share.url.isEmpty()) {
+            // ohne Adresse gibt es nichts zu kopieren; der Teilen-Dialog zeigt den Link trotzdem
+            qCWarning(lcShareApi) << "link share created without url for" << _path;
+            Q_EMIT failed(QString());
+            return;
+        }
+        Q_EMIT linkReady(share.url);
+    });
+    connect(_api, &ShareApi::requestFailed, this, [this](ShareApi::Operation, const QString &serverMessage) { Q_EMIT failed(serverMessage); });
+}
+
+bool PublicLinkCreator::needsUserInput(const Capabilities &capabilities)
+{
+    return ShareApi::linkPasswordEnforced(capabilities, SharePermission::Read) || capabilities.sharePublicLinkEnforceExpireDate();
+}
+
+QString PublicLinkCreator::linkName(const Capabilities &capabilities, const QDate &today)
+{
+    if (capabilities.sharePublicLinkDefaultExpire())
+        return tr("Context menu link %1").arg(today.toString(Qt::ISODate));
+    return tr("Context menu link");
+}
+
+QDate PublicLinkCreator::defaultExpireDate(const Capabilities &capabilities, const QDate &today)
+{
+    // ein nicht erzwungenes Ablaufdatum setzt der Server nicht selbst: wie 6.0.3 und der Teilen-Dialog mitschicken
+    const int days = capabilities.sharePublicLinkDefaultExpire() ? capabilities.sharePublicLinkDefaultExpireDateDays() : 0;
+    return days > 0 ? today.addDays(days) : QDate();
+}
+
+bool PublicLinkCreator::isReusable(const Share &share, const QDate &expireDate)
+{
+    // nur lesen, ohne Passwort, und nie einer, der früher abläuft als ein neuer (ohne Vorgabe: nur ein unbefristeter)
+    if (!share.isLink() || share.url.isEmpty() || share.permissions != SharePermissions(SharePermission::Read) || share.hasPassword)
+        return false;
+    return !share.expireDate.isValid() || (expireDate.isValid() && share.expireDate >= expireDate);
+}
+
+void PublicLinkCreator::start()
+{
+    if (!_account) {
+        Q_EMIT failed(QString());
+        return;
+    }
+    const QDate today = QDate::currentDate();
+    _name = linkName(_account->capabilities(), today);
+    _expireDate = defaultExpireDate(_account->capabilities(), today);
+    _api->fetchShares(_path);
+}
+
+void PublicLinkCreator::onSharesFetched(const QList<Share> &shares)
+{
+    if (!_account) {
+        Q_EMIT failed(QString());
+        return;
+    }
+    const Share *firstLink = nullptr;
+    for (const auto &share : shares) {
+        if (!share.isLink() || share.url.isEmpty())
+            continue;
+        // nur einen unveränderten Link wiederverwenden: wer ihn im Dialog auf Bearbeiten gestellt, mit Passwort versehen
+        // oder verkürzt hat, bekommt einen neuen
+        if (share.name == _name && isReusable(share, _expireDate)) {
+            Q_EMIT linkReady(share.url);
+            return;
+        }
+        if (!firstLink)
+            firstLink = &share;
+    }
+    if (firstLink && !_account->capabilities().sharePublicLinkMultiple()) {
+        // nur ein Link je Element: den vorhandenen nur still kopieren, wenn er nicht mehr erlaubt als ein neuer, sonst zeigt
+        // der Teilen-Dialog ihn mit seinen Rechten
+        if (isReusable(*firstLink, _expireDate)) {
+            Q_EMIT linkReady(firstLink->url);
+        } else {
+            Q_EMIT failed(QString());
+        }
+        return;
+    }
+    LinkSettings settings;
+    settings.name = _name;
+    settings.expireDate = _expireDate;
+    _api->createLinkShare(_path, settings);
 }
 
 } // namespace OCC

@@ -39,16 +39,34 @@ QString updateChannel()
 {
     // Kanalnamen sind branding-spezifisch. Der Upstream-Hardcode 'ocis'/'ocis-beta'
     // passt nicht zum owncloud.online-oc10-Fork; hier werden generische Kanaele
-    // 'stable'/'beta' verwendet (der frueher bei jedem Aufruf ungefragt gesetzte
-    // deprecated Config-Key entfaellt). Vorabversionen -> Beta-Kanal, sonst stable.
-    const QString suffix = OCC::Version::suffix();
-    const bool preRelease = suffix.startsWith(QLatin1String("daily"))
-        || suffix.startsWith(QLatin1String("nightly"))
-        || suffix.startsWith(QLatin1String("alpha"))
-        || suffix.startsWith(QLatin1String("rc"))
-        || suffix.startsWith(QLatin1String("beta"));
+    // 'stable'/'beta' verwendet. Ohne Wahl im Über-Fenster entscheidet das Versionssuffix.
+    return Updater::channel(ConfigFile().updateChannel(), OCC::Version::suffix());
+}
+
+QString Updater::defaultChannel(const QString &versionSuffix)
+{
+    const bool preRelease = versionSuffix.startsWith(QLatin1String("daily"))
+        || versionSuffix.startsWith(QLatin1String("nightly"))
+        || versionSuffix.startsWith(QLatin1String("alpha"))
+        || versionSuffix.startsWith(QLatin1String("rc"))
+        || versionSuffix.startsWith(QLatin1String("beta"));
 
     return preRelease ? QStringLiteral("beta") : QStringLiteral("stable");
+}
+
+QString Updater::channel(const QString &storedChoice, const QString &versionSuffix)
+{
+    if (storedChoice == QLatin1String("stable") || storedChoice == QLatin1String("beta")) {
+        return storedChoice;
+    }
+    return defaultChannel(versionSuffix);
+}
+
+bool Updater::setChannelChoice(const QString &channel)
+{
+    const QString before = updateChannel();
+    ConfigFile().setUpdateChannel(channel);
+    return updateChannel() != before;
 }
 
 Updater *Updater::_instance = nullptr;
