@@ -57,6 +57,36 @@ class CheckCatalogsTest(unittest.TestCase):
         self.assertEqual(self.check('fr', message('Help', 'Aide https://example.com')), ['URL ohne Vorbild in der Quelle'])
         self.assertEqual(len(self.check('fr', message('Help', 'Aide https://owncloud.com'))), 2)
 
+    def test_german_text_in_other_catalog_fails(self):
+        german = message('The sync operation is running.&lt;br/&gt;Do you want to stop it?', 'Die sync Operation läuft gerade.&lt;br/&gt;Wollen Sie sie stoppen?')
+        self.assertEqual(self.check('es', german), ["deutscher Text: ['Sie', 'gerade', 'läuft', 'wollen']"])
+        self.assertEqual(len(self.check('es', message('Aborted due to %1', 'Abgebrochen wegen %1'))), 1)
+        # in den deutschen Katalogen selbst und bei ähnlichen Wörtern anderer Sprachen nicht
+        self.assertEqual(self.check('de', german), [])
+        self.assertEqual(self.check('es', message('Aborted due to %1', 'Cancelado debido a %1')), [])
+        self.assertEqual(self.check('nl', message('Until tomorrow', 'Tot morgen')), [])
+        self.assertEqual(self.check('sv', message('Account', 'Konto')), [])
+        self.assertEqual(self.check('pt', message('Name of the files', 'Nome das pastas die')), [])
+
+    def test_wrong_chinese_script_fails(self):
+        self.assertEqual(self.check('zh_TW', message('Failed to rename file', '重命名文件失败')), ['falsche Schriftvariante: 败'])
+        self.assertEqual(self.check('zh_HK', message('Use system proxy', '使用系统代理')), ['falsche Schriftvariante: 统'])
+        self.assertEqual(self.check('zh-Hans', message('Update Failed', '更新失敗')), ['falsche Schriftvariante: 敗'])
+        self.assertEqual(self.check('zh_CN', message('Hide', '隱藏')), ['falsche Schriftvariante: 隱'])
+        # richtige Schrift, auch regionale Formen wie 群 in Taiwan und Hongkong
+        self.assertEqual(self.check('zh_TW', message('Failed to rename file', '重新命名檔案失敗')), [])
+        self.assertEqual(self.check('zh_HK', message('Users and groups', '使用者與群組')), [])
+        self.assertEqual(self.check('zh_CN', message('Update Failed', '更新失败')), [])
+        # andere Sprachen prüft die Schriftvariante nicht
+        self.assertEqual(self.check('ja', message('Hide', '非表示')), [])
+
+    def test_escaped_angle_brackets_must_match_source(self):
+        source = '&amp;lt;not specified&amp;gt;'
+        self.assertEqual(self.check('lo', message(source, '&lt;ບໍ່ໄດ້ລະບຸ&gt;')),
+                         ['maskierte spitze Klammern (&lt; &gt;) anders als in der Quelle', 'spitze Klammer ohne HTML-Tag'])
+        self.assertEqual(self.check('ar', message(source, 'غير محدد؛')), ['maskierte spitze Klammern (&lt; &gt;) anders als in der Quelle'])
+        self.assertEqual(self.check('lo', message(source, '&amp;lt;ບໍ່ໄດ້ລະບຸ&amp;gt;')), [])
+
 
 if __name__ == '__main__':
     unittest.main()
