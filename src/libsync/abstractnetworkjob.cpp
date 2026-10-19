@@ -154,8 +154,14 @@ void AbstractNetworkJob::sendRequest(const QByteArray &verb,
     _request.setPriority(_priority);
     _request.setTransferTimeout(duration_cast<milliseconds>(_timeout).count());
 
-    if (!_isAuthenticationJob && _account->jobQueue()->enqueue(this)) {
-        return;
+    if (!_isAuthenticationJob) {
+        // ein nach der Uhr abgelaufenes Token (Ruhezustand) zuerst erneuern: das hält die Warteschlange an
+        if (auto *credentials = _account->credentials()) {
+            credentials->refreshIfExpired();
+        }
+        if (_account->jobQueue()->enqueue(this)) {
+            return;
+        }
     }
 
     auto reply = _account->sendRawRequest(verb, _request.url(), _request, requestBody);

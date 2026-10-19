@@ -91,6 +91,13 @@ public:
      */
     virtual bool refreshAccessToken() = 0;
 
+    /**
+     * Vor jedem Auftrag über die Warteschlange des Kontos (AbstractNetworkJob::sendRequest): Ist das Token nach der Uhr
+     * schon abgelaufen, etwa nach dem Ruhezustand, die Erneuerung jetzt beginnen und die Aufträge anhalten
+     * (authenticationStarted()), statt eine Ablehnung (401) abzuwarten.
+     */
+    virtual void refreshIfExpired() { }
+
 Q_SIGNALS:
     /** Emitted when fetchFromKeychain() is done.
      *
@@ -102,6 +109,13 @@ Q_SIGNALS:
 
     void authenticationStarted();
     void authenticationFailed();
+
+    /**
+     * Die Erneuerung der Anmeldung ist vorübergehend gescheitert (Netz, Zeitüberschreitung, Serverfehler; maintenance:
+     * Wartung). Das ist kein Grund für eine neue Anmeldung: Die Credentials versuchen es nach einer Pause selbst wieder,
+     * bis dahin bleiben die Aufträge angehalten. Es folgt später fetched() oder authenticationFailed().
+     */
+    void authenticationDelayed(bool maintenance, const QString &errorString);
 
     /*
      * Request to log out.

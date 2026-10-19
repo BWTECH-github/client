@@ -163,13 +163,28 @@ public:
 
     void startAuthentication() override;
 
+    /**
+     * Erneuert das Access-Token mit dem Refresh-Token. Es folgt genau eines der Signale refreshFinished(),
+     * refreshRejected() oder refreshFailed().
+     */
     void refreshAuthentication(const QString &refreshToken);
 
 Q_SIGNALS:
-    // this can either come from refreshAuthentication or the fetchWellKnown's
-    // checkServerJob
-    void refreshError(QNetworkReply::NetworkError error, const QString &errorString);
-    void refreshFinished(const QString &accessToken, const QString &refreshToken);
+    /**
+     * Neue Tokens. refreshToken ist das bisherige, wenn der Server kein neues schickt (RFC 6749, Abschnitt 6);
+     * expiresIn ist die Lebensdauer des Access-Tokens in Sekunden, 0, wenn der Server sie nicht nennt.
+     */
+    void refreshFinished(const QString &accessToken, const QString &refreshToken, qint64 expiresIn);
+
+    /** Der Server nimmt das Refresh-Token nicht mehr an (invalid_grant): nur eine neue Anmeldung hilft. */
+    void refreshRejected(const QString &errorString);
+
+    /**
+     * Die Erneuerung ist vorübergehend gescheitert: Netz, Zeitüberschreitung, Serverfehler, Wartung (maintenance) oder eine
+     * unerwartete Antwort. Das Refresh-Token gilt weiter; newRefreshToken ist gesetzt, wenn der Server trotzdem schon ein
+     * neues geschickt hat.
+     */
+    void refreshFailed(const QString &errorString, bool maintenance, const QString &newRefreshToken);
 
 protected:
     void fetchWellKnown() override;

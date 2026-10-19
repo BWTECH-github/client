@@ -175,6 +175,7 @@ protected Q_SLOTS:
     void slotFetchServerSettingsResult(OCC::FetchServerSettingsRunner::Result result);
     void slotInvalidCredentials();
     void slotCredentialsFetched();
+    void slotAuthenticationDelayed(bool maintenance, const QString &errorString);
 
 private:
     Account *accountForQml() const;

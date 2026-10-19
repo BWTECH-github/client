@@ -19,11 +19,18 @@
 #include "gui/owncloudguilib.h"
 #include "oauth.h"
 
+#include <QElapsedTimer>
 #include <QMap>
 #include <QSslCertificate>
 #include <QSslKey>
 #include <QNetworkRequest>
+#include <QTimer>
 
+#include <chrono>
+#include <functional>
+#include <optional>
+
+class QEventLoop;
 class QNetworkReply;
 class QAuthenticator;
 
@@ -31,6 +38,24 @@ namespace OCC {
 class OAuth;
 class RequestAuthenticationController;
 
+/**
+ * OAuth2-Anmeldung eines Kontos: das Access-Token geht mit jeder Anfrage mit, das Refresh-Token liegt im Schlüsselbund.
+ *
+ * Erneuert wird mit dem Refresh-Token, ohne den Nutzer zu fragen: vorbeugend nach 80 % der Lebensdauer (expires_in),
+ * vor einer Anfrage, deren Token nach der Uhr schon abgelaufen ist (nach dem Ruhezustand), nach einer Ablehnung (401)
+ * und auf Wunsch des Kontos (refreshAccessToken()). Es läuft immer höchstens eine Erneuerung. Taugt das aktuelle Token
+ * nicht mehr, hält das Konto seine Aufträge an (authenticationStarted()) und schickt sie mit dem neuen erneut
+ * (fetched()); eine vorbeugende Erneuerung hält nichts an.
+ *
+ * Scheitert eine Erneuerung vorübergehend (Netz, Zeitüberschreitung, Serverfehler, Wartung, unerwartete Antwort),
+ * bleibt das Refresh-Token, und nach einer wachsenden Pause (30 s bis 5 min) folgt der nächste Versuch
+ * (authenticationDelayed()). Nur wenn der Server das Refresh-Token ablehnt (invalid_grant), muss sich der Nutzer neu
+ * anmelden (fetched() ohne Token, das Konto fragt dann über askFromUser()).
+ *
+ * Ein neues Refresh-Token kommt zuerst in den Schlüsselbund, erst danach wird das neue Access-Token benutzt. Scheitert
+ * das Speichern, bleibt es im Speicher und wird nach wenigen Versuchen trotzdem benutzt; das Speichern wird wiederholt,
+ * beim Beenden des Programms ein letztes Mal abgewartet.
+ */
 class OWNCLOUDGUI_EXPORT Credentials : public AbstractCredentials
 {
     Q_OBJECT
@@ -50,7 +75,7 @@ public:
     // and other factors that mean we don't want to use the account's nam directly.
     AccessManager *createAccessManager() const override;
 
-    // todo: DC-112 I think this needs a naming update.
+    /** Ein Access-Token liegt vor und ist nach der Uhr nicht abgelaufen. */
     bool ready() const override;
 
     // this is invoked by AccountState::checkConnectivity. Totally uncool.
@@ -65,20 +90,40 @@ public:
     void invalidateToken() override;
     void forgetSensitiveData() override;
 
-
     /* If we don't have a valid refresh token, return false.
      * otherwise:
      *   if the refresh routine is running, return true
      *   if it is not running, start the refresh and return true.
+     * Das Konto bekommt in jedem Fall fetched() oder authenticationDelayed(); wartet nach einem Fehlschlag gerade eine
+     * Pause, folgt der nächste Versuch bald (höchstens alle 10 s).
      */
     bool refreshAccessToken() override;
 
+    void refreshIfExpired() override;
+
+    /** Pause vor dem n-ten Versuch nach vorübergehend gescheiterten Erneuerungen: 30 s, 60 s, 120 s, 240 s, dann 5 min. */
+    static std::chrono::milliseconds defaultRefreshRetryDelay(int failedAttempts);
+
 protected:
+    enum class KeychainResult { Ok, NotFound, Error };
+    using ReadCallback = std::function<void(KeychainResult result, const QString &refreshToken, const QString &error)>;
+    using StoreCallback = std::function<void(bool ok, const QString &error)>;
+
+    // Zugriffe auf den Schlüsselbund; die Tests ersetzen sie
+    virtual void readRefreshToken(const ReadCallback &done);
+    virtual void storeRefreshToken(const QString &refreshToken, const StoreCallback &done);
+    virtual void removeRefreshToken();
+
+    // Pausen vor dem nächsten Versuch nach n Fehlschlägen in Folge (Erneuern; Lesen und Schreiben im Schlüsselbund); die
+    // Tests verkürzen sie
+    virtual std::chrono::milliseconds refreshRetryDelay(int failedAttempts) const;
+    virtual std::chrono::milliseconds keychainRetryDelay(int failedAttempts) const;
+
     bool networkAvailable();
 
-
-    void handleRefreshError(QNetworkReply::NetworkError error, const QString &message);
-    void handleRefreshSuccess(const QString &accessToken, const QString &refreshToken);
+    void handleRefreshSuccess(const QString &accessToken, const QString &refreshToken, qint64 expiresIn);
+    void handleRefreshRejected(const QString &message);
+    void handleRefreshError(const QString &message, bool maintenance, const QString &newRefreshToken);
     void finishFailedRefresh();
     void handleKeychainError(const QString &message);
 
@@ -89,15 +134,63 @@ protected:
     void askFromUserSucceeded(const QString &token, const QString &refreshToken);
     void askFromUserLogout();
 
+    /** Läuft gerade eine Erneuerung, wartet sie auf den Schlüsselbund oder auf den nächsten Versuch? */
+    bool refreshPending() const;
+    /** Bricht eine Erneuerung samt Pausen ab; ihr Ergebnis zählt nicht mehr. */
+    void stopRefresh();
+    /** Das aktuelle Access-Token taugt nicht: die Aufträge des Kontos anhalten, bis fetched() oder authenticationFailed() folgt. */
+    void blockJobs();
+    void emitFetched();
+    void setAccessTokenLifetime(qint64 expiresIn);
+    void commitPendingTokens();
+    void writeRefreshToken();
+    void waitForStoredRefreshToken();
+
     QString _accessToken;
     QString _refreshToken;
+    // das Refresh-Token, das der Schlüsselbund bestätigt hat
+    QString _storedRefreshToken;
+
+    // Ablauf des Access-Tokens nach der Uhr des Rechners (Sekunden seit 1970, 0: unbekannt): ab _accessTokenStaleAt gilt es
+    // als abgelaufen, ab _proactiveRefreshAt wird es vorbeugend erneuert
+    qint64 _accessTokenStaleAt = 0;
+    qint64 _proactiveRefreshAt = 0;
+    QElapsedTimer _sinceAccessToken;
+    // der Server hat das aktuelle Access-Token schon einmal angenommen: eine spätere Ablehnung heißt abgelaufen oder
+    // widerrufen, nicht „kommt beim Server nie an“
+    bool _accessTokenWorked = false;
 
     QString _fetchErrorString;
     bool _ready = false;
     const OpenIdConfig _openIdConfig;
+    // vorübergehend gescheiterte Erneuerungen in Folge
     int _tokenRefreshRetriesCount = 0;
 
     QPointer<AccountBasedOAuth> _oAuthJob;
+    QTimer _refreshRetryTimer;
+    QTimer _proactiveRefreshTimer;
+    QElapsedTimer _sinceRefreshAttempt;
+    QString _refreshErrorString;
+    bool _refreshMaintenance = false;
+    // authenticationStarted() ist gesendet, fetched() oder authenticationFailed() steht aus
+    bool _jobsBlocked = false;
+    // das Konto wartet auf fetched()
+    bool _fetchRequested = false;
+
+    // vom Server erhalten, warten darauf, dass der Schlüsselbund das neue Refresh-Token bestätigt
+    struct PendingTokens
+    {
+        QString accessToken;
+        qint64 expiresIn = 0;
+    };
+    std::optional<PendingTokens> _pendingTokens;
+    QTimer _pendingTokensTimer;
+
+    bool _storeRunning = false;
+    int _storeFailures = 0;
+    QTimer _storeRetryTimer;
+    QEventLoop *_storeWaitLoop = nullptr;
+    int _keychainReadFailures = 0;
 
     RequestAuthenticationController *_requestAuth = nullptr;
 };
