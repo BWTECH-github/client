@@ -1205,21 +1205,28 @@ void Folder::slotAboutToRemoveAllFiles(SyncFileItem::Direction direction, bool a
     keepButton->setObjectName(QStringLiteral("keepFilesButton"));
     QPushButton *removeButton = msgBox->addButton(tr("Delete files"), QMessageBox::DestructiveRole);
     removeButton->setObjectName(QStringLiteral("removeFilesButton"));
-    // Eingabe und Escape behalten: gelöscht wird nur auf ausdrücklichen Klick
+    QPushButton *laterButton = msgBox->addButton(tr("Decide later"), QMessageBox::RejectRole);
+    laterButton->setObjectName(QStringLiteral("decideLaterButton"));
+    // Eingabe behält, gelöscht wird nur auf ausdrücklichen Klick. Escape und Schließen entscheiden nichts: „Behalten“
+    // holte sonst ungefragt alles zurück, etwa auf die Systemplatte, wenn nur ein Laufwerk fehlt. Der Ordner bleibt
+    // angehalten; nach dem Fortsetzen fragt der nächste Lauf erneut.
     msgBox->setDefaultButton(keepButton);
-    msgBox->setEscapeButton(keepButton);
+    msgBox->setEscapeButton(laterButton);
     msgBox->setAttribute(Qt::WA_DeleteOnClose);
     _removeAllFilesDialog = msgBox;
 
-    connect(msgBox, &QMessageBox::finished, this, [this, msgBox, removeButton] {
+    connect(msgBox, &QMessageBox::finished, this, [this, msgBox, removeButton, keepButton] {
         if (msgBox->clickedButton() == removeButton) {
             qCInfo(lcFolder) << "User confirmed removing the files of" << path();
             _engine->allowRemoveAllFilesOnce();
-        } else {
+        } else if (msgBox->clickedButton() == keepButton) {
             qCInfo(lcFolder) << "User keeps the files of" << path() << "- they are restored by the next sync";
             _engine->keepFilesOfRemoveAllPrompt();
             // wiederherzustellende lokale Dateien findet nur eine vollständige lokale Suche
             slotNextSyncFullLocalDiscovery();
+        } else {
+            qCInfo(lcFolder) << "No decision about removing the files of" << path() << "- the folder stays paused";
+            return;
         }
         // weiter wie vor der Rückfrage; FolderMan plant den Ordner beim Fortsetzen ein
         setSyncPaused(false);
