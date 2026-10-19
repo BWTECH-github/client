@@ -14,6 +14,8 @@
 #include "updater/updateinfo.h"
 #include "updater/updater.h"
 
+#include <QPointer>
+#include <QScopeGuard>
 #include <QTcpServer>
 #include <QTcpSocket>
 
@@ -25,6 +27,9 @@ class FeedServer : public QTcpServer
 public:
     QByteArray feed;
     QStringList requestedPaths;
+    // hold: Anfragen annehmen, aber erst mit release() beantworten (ein Server, der hängt)
+    bool hold = false;
+    QList<QPointer<QTcpSocket>> held;
 
     FeedServer()
     {
@@ -34,6 +39,16 @@ public:
                 connect(socket, &QTcpSocket::readyRead, this, [this, socket] { answer(socket); });
             }
         });
+    }
+
+    void release()
+    {
+        for (const auto &socket : std::as_const(held)) {
+            if (socket) {
+                respond(socket, socket->property("path").toByteArray());
+            }
+        }
+        held.clear();
     }
 
 private:
@@ -47,6 +62,16 @@ private:
         // "GET /feed.xml HTTP/1.1"
         const QByteArray path = request.split(' ').value(1);
         requestedPaths.append(QString::fromLatin1(path));
+        if (hold) {
+            socket->setProperty("path", path);
+            held.append(socket);
+            return;
+        }
+        respond(socket, path);
+    }
+
+    void respond(QTcpSocket *socket, const QByteArray &path)
+    {
         QByteArray head;
         QByteArray body;
         if (path == "/feed.xml") {
@@ -67,10 +92,17 @@ class FeedProbe : public OCUpdater
 {
 public:
     using OCUpdater::OCUpdater;
+    using OCUpdater::setPreviouslySkippedVersion;
     QList<UpdateInfo> received;
+    // die übersprungene Version, die für die jeweilige Prüfung galt
+    QStringList skipped;
 
 protected:
-    void versionInfoArrived(const UpdateInfo &info) override { received.append(info); }
+    void versionInfoArrived(const UpdateInfo &info) override
+    {
+        received.append(info);
+        skipped.append(skippedVersionForThisCheck());
+    }
 };
 
 class TestUpdater : public QObject
@@ -170,6 +202,131 @@ private Q_SLOTS:
             updater.setDownloadState(state);
             QVERIFY2(!updater.canCheckNow(), QMetaEnum::fromType<OCUpdater::DownloadState>().valueToKey(state));
         }
+    }
+
+    // Zeitüberschreitung: die hängende Anfrage wird abgebrochen. Käme ihre Antwort später doch noch, stoppte sie den
+    // Wächter einer neuen Prüfung und würde doppelt ausgewertet (zwei Downloads in dieselbe Datei).
+    void testTimeoutAbortsRequest()
+    {
+        // Arrange
+        FeedServer server;
+        server.feed = QByteArrayLiteral("<owncloudclient><version>11.0.0-beta3</version></owncloudclient>");
+        server.hold = true;
+        QVERIFY(server.listen(QHostAddress::LocalHost));
+        FeedProbe updater(QUrl(QStringLiteral("http://127.0.0.1:%1/feed.xml").arg(server.serverPort())));
+        updater.checkForUpdate();
+        QTRY_COMPARE(server.held.size(), 1);
+
+        // Act
+        QVERIFY(QMetaObject::invokeMethod(&updater, "slotTimedOut"));
+
+        // Assert: abgebrochen, der Server sieht die Verbindung schließen
+        QCOMPARE(updater.downloadState(), OCUpdater::DownloadTimedOut);
+        QTRY_VERIFY(server.held.first().isNull());
+
+        // eine neue Prüfung auf Wunsch kommt durch, die alte Antwort nie mehr
+        server.hold = false;
+        QVERIFY(updater.canCheckNow());
+        updater.checkNow();
+        QTRY_COMPARE(updater.received.size(), 1);
+        server.release();
+        QTest::qWait(500);
+        QCOMPARE(updater.received.size(), 1);
+    }
+
+    // „Jetzt nach Updates suchen“ bietet auch eine früher übersprungene Version an; sonst hieße es „Keine Updates
+    // verfügbar“, obwohl eine neuere Version existiert
+    void testManualCheckIgnoresSkippedVersion()
+    {
+        FeedServer server;
+        server.feed = QByteArrayLiteral("<owncloudclient><version>99.0.0</version></owncloudclient>");
+        QVERIFY(server.listen(QHostAddress::LocalHost));
+        FeedProbe updater(QUrl(QStringLiteral("http://127.0.0.1:%1/feed.xml").arg(server.serverPort())));
+        FeedProbe::setPreviouslySkippedVersion(QStringLiteral("99.0.0"));
+        const auto reset = qScopeGuard([] { FeedProbe::setPreviouslySkippedVersion(QString()); });
+
+        // die regelmäßige Prüfung beachtet die übersprungene Version weiter
+        updater.checkForUpdate();
+        QTRY_COMPARE(updater.received.size(), 1);
+        QCOMPARE(updater.skipped.last(), QStringLiteral("99.0.0"));
+
+        updater.setDownloadState(OCUpdater::UpToDate);
+        updater.checkNow();
+        QTRY_COMPARE(updater.received.size(), 2);
+        QCOMPARE(updater.skipped.last(), QString());
+    }
+
+    // Wer die Vorgabe ausdrücklich wählt (etwa „Beta“ auf einer Beta), behält sie auch nach dem finalen Release
+    void testChoosingTheDefaultChannelPinsIt()
+    {
+        ConfigFile().setUpdateChannel(QString());
+        const auto reset = qScopeGuard([] { ConfigFile().setUpdateChannel(QString()); });
+        const QString current = updateChannel();
+        const QString other = current == QLatin1String("beta") ? QStringLiteral("stable") : QStringLiteral("beta");
+
+        QVERIFY(!Updater::setChannelChoice(current));
+        QCOMPARE(ConfigFile().updateChannel(), current);
+        // gilt unabhängig vom Versionssuffix
+        QCOMPARE(Updater::channel(ConfigFile().updateChannel(), QString()), current);
+        QCOMPARE(Updater::channel(ConfigFile().updateChannel(), QStringLiteral("beta3")), current);
+
+        QVERIFY(Updater::setChannelChoice(other));
+        QCOMPARE(updateChannel(), other);
+    }
+
+    // Kanalwechsel: ein bereitliegendes Update des alten Kanals wird verworfen, sonst installierte „Neu starten und
+    // aktualisieren“ weiter dessen Bau (etwa die Beta nach dem Rückwechsel auf Stabil)
+    void testChannelSwitchDiscardsDownloadedUpdate()
+    {
+        // Arrange: ein heruntergeladenes Setup des alten Kanals
+        QTemporaryDir dir;
+        QVERIFY(dir.isValid());
+        const QString setup = dir.filePath(QStringLiteral("owncloud.online-client-99.0.0-beta1-win-x64-Setup.exe"));
+        {
+            QFile file(setup);
+            QVERIFY(file.open(QIODevice::WriteOnly));
+            file.write("MZ");
+        }
+        {
+            auto settings = ConfigFile::makeQSettings();
+            settings.setValue(QStringLiteral("Updater/updateAvailable"), setup);
+            settings.setValue(QStringLiteral("Updater/updateTargetVersion"), QStringLiteral("99.0.0-beta1"));
+        }
+        FeedServer server;
+        // der neue Kanal hat nichts Neueres
+        server.feed = QByteArrayLiteral("<owncloudclient><version>1.0.0</version></owncloudclient>");
+        QVERIFY(server.listen(QHostAddress::LocalHost));
+        WindowsUpdater updater(QUrl(QStringLiteral("http://127.0.0.1:%1/old-channel.xml").arg(server.serverPort())));
+        updater.setDownloadState(OCUpdater::DownloadComplete);
+        QVERIFY(!updater.canCheckNow());
+
+        // Act
+        updater.switchChannel(QUrl(QStringLiteral("http://127.0.0.1:%1/feed.xml").arg(server.serverPort())));
+
+        // Assert
+        QVERIFY(!QFile::exists(setup));
+        QVERIFY(!ConfigFile::makeQSettings().contains(QStringLiteral("Updater/updateAvailable")));
+        QTRY_COMPARE(updater.downloadState(), OCUpdater::UpToDate);
+        QCOMPARE(server.requestedPaths.value(0), QStringLiteral("/feed.xml"));
+    }
+
+    void testSafeWebUrl_data()
+    {
+        QTest::addColumn<QString>("url");
+        QTest::addColumn<bool>("safe");
+        QTest::newRow("release page") << QStringLiteral("https://github.com/BWTECH-github/client/releases/tag/v11.0.0") << true;
+        QTest::newRow("http") << QStringLiteral("http://example.com/") << false;
+        QTest::newRow("file") << QStringLiteral("file:///C:/Windows/System32/calc.exe") << false;
+        QTest::newRow("user info") << QStringLiteral("https://user@example.com/") << false;
+        QTest::newRow("no host") << QStringLiteral("https:///path") << false;
+        QTest::newRow("empty") << QString() << false;
+    }
+
+    void testSafeWebUrl()
+    {
+        QFETCH(QString, url);
+        QFETCH(bool, safe);
+        QCOMPARE(OCUpdater::isSafeWebUrl(QUrl(url)), safe);
     }
 
     void testDefaultUpdateUrl()

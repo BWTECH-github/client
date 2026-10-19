@@ -20,7 +20,6 @@
 
 #ifdef WITH_AUTO_UPDATER
 #include "config/appconfig.h"
-#include "configfile.h"
 #include "updater/ocupdater.h"
 #endif
 
@@ -54,15 +53,13 @@ void AboutView::setupUpdater()
     ui->updateChannel->addItem(tr("Stable"), QStringLiteral("stable"));
     ui->updateChannel->addItem(tr("Beta"), QStringLiteral("beta"));
     ui->updateChannel->setCurrentIndex(ui->updateChannel->findData(updateChannel()));
-    // activated statt currentIndexChanged: nur eine Wahl des Nutzers wird gespeichert, nie die Vorgabe beim Füllen
+    // activated statt currentIndexChanged: nur eine Wahl des Nutzers wird gespeichert, nie die Vorgabe beim Füllen.
+    // Auch die Vorgabe wird ausdrücklich gespeichert; ändert sich der Kanal, gilt ein Update des alten nicht mehr.
     connect(ui->updateChannel, &QComboBox::activated, this, [this, updater](int index) {
         const QString channel = ui->updateChannel->itemData(index).toString();
-        if (channel.isEmpty() || channel == updateChannel()) {
-            return;
+        if (!channel.isEmpty() && Updater::setChannelChoice(channel)) {
+            updater->switchChannel(Updater::updateUrl());
         }
-        ConfigFile().setUpdateChannel(channel);
-        updater->setUpdateUrl(Updater::updateUrl());
-        updater->checkNow();
     });
 
     const auto refresh = [this, updater] {
@@ -73,8 +70,12 @@ void AboutView::setupUpdater()
     connect(updater, &OCUpdater::downloadStateChanged, this, refresh);
     connect(ui->checkForUpdatesButton, &QPushButton::clicked, updater, &OCUpdater::checkNow);
     connect(ui->restartButton, &QPushButton::clicked, updater, &Updater::applyUpdateAndRestart);
-    // „hier herunterladen“ nach einem gescheiterten Download
-    connect(ui->updateStatusLabel, &QLabel::linkActivated, this, &AboutView::openBrowser);
+    // „hier herunterladen“ nach einem gescheiterten Download; die Adresse stammt aus dem Feed, deshalb nur https
+    connect(ui->updateStatusLabel, &QLabel::linkActivated, this, [this](const QString &link) {
+        if (OCUpdater::isSafeWebUrl(QUrl(link))) {
+            openBrowser(link);
+        }
+    });
     refresh();
 #else
     ui->updaterGroup->hide();

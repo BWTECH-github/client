@@ -62,6 +62,13 @@ QString Updater::channel(const QString &storedChoice, const QString &versionSuff
     return defaultChannel(versionSuffix);
 }
 
+bool Updater::setChannelChoice(const QString &channel)
+{
+    const QString before = updateChannel();
+    ConfigFile().setUpdateChannel(channel);
+    return updateChannel() != before;
+}
+
 Updater *Updater::_instance = nullptr;
 
 Updater *Updater::instance()

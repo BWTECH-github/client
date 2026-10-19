@@ -48,6 +48,11 @@ public:
     static QString defaultChannel(const QString &versionSuffix);
     // die gespeicherte Wahl, wenn sie "stable" oder "beta" ist, sonst defaultChannel()
     static QString channel(const QString &storedChoice, const QString &versionSuffix);
+    /**
+     * Wahl im Über-Fenster speichern, auch wenn sie der Vorgabe entspricht: Wer auf einer Beta „Beta“ wählt, bleibt
+     * dort, wenn das finale Release kein Suffix mehr trägt. true, wenn sich der gültige Kanal dadurch ändert.
+     */
+    static bool setChannelChoice(const QString &channel);
 
     virtual void checkForUpdate() = 0;
     virtual void backgroundCheckForUpdate() = 0;
