@@ -16,6 +16,7 @@
 #include <QDir>
 #include <QScopeGuard>
 #include <QThread>
+#include <QUuid>
 
 #include <filesystem>
 
@@ -92,6 +93,43 @@ void normalizeNavPaneFolderValueFlags(const std::wstring &registrationId)
         RegSetValueExW(h, L"FolderValueFlags", 0, REG_DWORD, reinterpret_cast<const BYTE *>(&flags), sizeof(flags));
         RegCloseKey(h);
         SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+    }
+}
+
+// owncloud.online: Register() legt die CLSID des Explorer-Eintrags (NamespaceCLSID) in beiden
+// Registry-Sichten an, in HKCU\Software\Classes\CLSID und für 32-Bit-Programme in
+// HKCU\Software\Classes\WOW6432Node\CLSID. Unregister() entfernt den Eintrag samt Desktop\NameSpace,
+// lässt die Kopie in der 32-Bit-Sicht aber stehen (Windows Server 2022 und 2025 geprüft). Ohne
+// removeWow64NavPaneEntry() bliebe sie nach jedem entfernten Ordner und jedem Wechsel zur
+// klassischen Synchronisation zurück.
+std::wstring navPaneClsid(const std::wstring &registrationId)
+{
+    const std::wstring srmKey =
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\SyncRootManager\\" + registrationId;
+    wchar_t clsid[64] {};
+    DWORD cb = sizeof(clsid);
+    if (RegGetValueW(HKEY_LOCAL_MACHINE, srmKey.c_str(), L"NamespaceCLSID", RRF_RT_REG_SZ, nullptr, clsid, &cb) != ERROR_SUCCESS) {
+        return {};
+    }
+    // der Wert wird Teil eines Schlüssels, der gelöscht wird: nur eine echte CLSID
+    const QUuid uuid = QUuid::fromString(QString::fromWCharArray(clsid));
+    if (uuid.isNull()) {
+        return {};
+    }
+    return uuid.toString(QUuid::WithBraces).toUpper().toStdWString();
+}
+
+void removeWow64NavPaneEntry(const std::wstring &clsid)
+{
+    if (clsid.empty()) {
+        return;
+    }
+    const std::wstring key = L"Software\\Classes\\WOW6432Node\\CLSID\\" + clsid;
+    const LSTATUS status = RegDeleteTreeW(HKEY_CURRENT_USER, key.c_str());
+    if (status == ERROR_SUCCESS) {
+        qCInfo(lcVfs) << "Removed the 32-bit navigation pane entry" << QString::fromStdWString(clsid);
+    } else if (status != ERROR_FILE_NOT_FOUND) {
+        qCWarning(lcVfs) << "Could not remove the 32-bit navigation pane entry" << QString::fromStdWString(clsid) << Utility::formatWinError(status);
     }
 }
 
@@ -874,12 +912,17 @@ void VfsWin::unregisterFolder()
 
     // Final step: unregister the path. We're now completely done with it.
     using SyncRootManager = winrt::Windows::Storage::Provider::StorageProviderSyncRootManager;
+    // vor Unregister() lesen: der Schlüssel mit der CLSID geht dabei weg
+    const std::wstring navPane = navPaneClsid(d->_registrationId);
     try {
         QMutexLocker registrationLock(&d->registrationMutex);
         SyncRootManager::Unregister(d->_registrationId);
     } catch (winrt::hresult_error const &ex) {
         qCWarning(lcVfs) << "Could not Unregister() sync root:" << hstringToQString(ex.message());
+        // noch angemeldet: der Eintrag gehört weiter zum Sync-Root
+        return;
     }
+    removeWow64NavPaneEntry(navPane);
 }
 
 OCC::Result<OCC::Vfs::ConvertToPlaceholderResult, QString> VfsWin::updateMetadata(const SyncFileItem &item, const QString &filePath, const QString &replacesFile)

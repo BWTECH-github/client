@@ -14,9 +14,14 @@
 #include "testutils/syncenginetestutils.h"
 #include <syncengine.h>
 
+#include <QDir>
 #include <QtTest>
 
 #include <chrono>
+
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Windows.Storage.h>
+#include <winrt/Windows.Storage.Provider.h>
 
 using namespace std::chrono_literals;
 
@@ -109,6 +114,38 @@ bool setPinState(FakeFolder &folder, const QString &path, CF_PIN_STATE state, CF
 
     HRESULT ok = CfSetPinState(handle.get(), state, flag, nullptr);
     return ok == 0;
+}
+
+// owncloud.online: CLSID des Explorer-Eintrags, den Windows zum Sync-Root eines Ordners angelegt hat
+// (NamespaceCLSID im SyncRootManager); leer, solange kein Sync-Root für den Ordner angemeldet ist
+QString syncRootNavPaneClsid(const QString &folder)
+{
+    using winrt::Windows::Storage::Provider::StorageProviderSyncRootManager;
+    const QString wanted = QDir::toNativeSeparators(QDir::cleanPath(folder));
+    for (const auto &info : StorageProviderSyncRootManager::GetCurrentSyncRoots()) {
+        // ein Sync-Root, dessen Ordner nicht mehr existiert, hat keinen Pfad
+        const auto path = info.Path();
+        if (!path || CfAPIUtil::hstringToQString(path.Path()).compare(wanted, Qt::CaseInsensitive) != 0) {
+            continue;
+        }
+        const std::wstring key = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\SyncRootManager\\" + std::wstring(info.Id().c_str());
+        wchar_t clsid[64] {};
+        DWORD size = sizeof(clsid);
+        if (RegGetValueW(HKEY_LOCAL_MACHINE, key.c_str(), L"NamespaceCLSID", RRF_RT_REG_SZ, nullptr, clsid, &size) == ERROR_SUCCESS) {
+            return QString::fromWCharArray(clsid);
+        }
+    }
+    return {};
+}
+
+bool currentUserKeyExists(const QString &path)
+{
+    HKEY key {};
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, reinterpret_cast<const wchar_t *>(path.utf16()), 0, KEY_READ, &key) != ERROR_SUCCESS) {
+        return false;
+    }
+    RegCloseKey(key);
+    return true;
 }
 
 
@@ -821,6 +858,26 @@ private Q_SLOTS:
         CF_CALLBACK_INFO plain = {};
         plain.StructSize = sizeof(plain);
         QVERIFY(!CfAPIUtil::CfOpdata(&plain).toOpinfo().CorrelationVector);
+    }
+
+    // owncloud.online: Windows legt den Explorer-Eintrag eines Sync-Roots in beiden Registry-Sichten an und lässt beim
+    // Abmelden die Kopie in der 32-Bit-Sicht (WOW6432Node) stehen. Nach dem Entfernen des Ordners darf keine bleiben.
+    void testUnregisterRemovesNavPaneEntry()
+    {
+        FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
+        const QString clsid = syncRootNavPaneClsid(fakeFolder.localPath());
+        QVERIFY(!clsid.isEmpty());
+        const QString entry = QStringLiteral("Software\\Classes\\CLSID\\") + clsid;
+        const QString wow64Entry = QStringLiteral("Software\\Classes\\WOW6432Node\\CLSID\\") + clsid;
+        QVERIFY(currentUserKeyExists(entry));
+        QVERIFY(currentUserKeyExists(wow64Entry));
+
+        fakeFolder.vfs()->stop();
+        fakeFolder.vfs()->unregisterFolder();
+
+        QVERIFY(syncRootNavPaneClsid(fakeFolder.localPath()).isEmpty());
+        QVERIFY(!currentUserKeyExists(entry));
+        QVERIFY(!currentUserKeyExists(wow64Entry));
     }
 };
 
