@@ -561,6 +561,8 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
     // the ConnectionValidator used to delete itself which was really not healthy.
     // that was removed so now we are *fully* responsible and also able to safely clean the pointer up
     resetConnectionValidator();
+    // ab hier bestimmt die Verbindungsprüfung den Zustand, nicht mehr eine verzögerte Erneuerung der Anmeldung
+    _authenticationDelayed = false;
 
     if (isSignedOut()) {
         qCWarning(lcAccountState) << "Signed out, ignoring" << status << _account->url().toString();
@@ -685,6 +687,8 @@ void AccountState::slotAuthenticationDelayed(bool maintenance, const QString &er
     qCInfo(lcAccountState) << "Renewing the sign-in is delayed for" << _account->url().toString() << (maintenance ? QStringLiteral("(maintenance)") : errorString);
     _waitingForNewCredentials = false;
     _connectionErrors = errorString.isEmpty() ? QStringList() : QStringList{errorString};
+    // vor setState(): wer auf stateChanged reagiert (NewAccountBuilder), unterscheidet so einen vorübergehenden Zustand
+    _authenticationDelayed = true;
     setState(maintenance ? MaintenanceMode : NetworkError);
 }
 

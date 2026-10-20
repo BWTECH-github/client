@@ -174,6 +174,13 @@ public:
      */
     QString keychainWarning() const { return _keychainWarning; }
 
+    /**
+     * NetworkError bzw. MaintenanceMode stammt von einer vorübergehend gescheiterten Erneuerung der Anmeldung
+     * (slotAuthenticationDelayed), nicht von der Verbindungsprüfung: Die Credentials versuchen es selbst wieder. Gilt bis zum
+     * nächsten Ergebnis der Verbindungsprüfung.
+     */
+    bool isAuthenticationDelayed() const { return _authenticationDelayed; }
+
 private:
     void setState(State state);
 
@@ -202,6 +209,7 @@ private:
     bool _waitingForNewCredentials;
     QDateTime _timeOfLastETagCheck;
     bool _settingUp = false;
+    bool _authenticationDelayed = false;
 
     ConnectionValidator *_connectionValidator;
     void resetConnectionValidator();
