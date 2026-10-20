@@ -121,11 +121,15 @@ void WinPlatform::startShutdownWatcher()
                     // block the windows shutdown until we are done
                     const QString description = QApplication::translate("Utility", "Shutting down %1").arg(Theme::instance()->appNameGUI());
                     qCDebug(lcPlatform) << "Block shutdown until we are ready" << description;
-                    OC_ASSERT(ShutdownBlockReasonCreate(hwnd, reinterpret_cast<const wchar_t *>(description.utf16())));
+                    // Windows kann das ablehnen; dann wartet es eben nicht auf uns. Die früheren OC_ASSERTs beendeten mit
+                    // FORCE_ASSERTS (Beta) das Programm mitten im Abmelden.
+                    if (!ShutdownBlockReasonCreate(hwnd, reinterpret_cast<const wchar_t *>(description.utf16()))) {
+                        qCWarning(lcPlatform) << "ShutdownBlockReasonCreate failed:" << Utility::formatWinError(GetLastError());
+                    }
                 }
                 WaitForSingleObject(watchWMCtx.windowMessageWatcherEvent, INFINITE);
-                if (lParam == ENDSESSION_LOGOFF) {
-                    OC_ASSERT(ShutdownBlockReasonDestroy(hwnd));
+                if (lParam == ENDSESSION_LOGOFF && !ShutdownBlockReasonDestroy(hwnd)) {
+                    qCWarning(lcPlatform) << "ShutdownBlockReasonDestroy failed:" << Utility::formatWinError(GetLastError());
                 }
                 qCInfo(lcPlatform) << "WM_ENDSESSION successfully shut down" << (steady_clock::now() - start);
                 watchWMCtx.windowMessageWatcherRun = false;
@@ -133,11 +137,19 @@ void WinPlatform::startShutdownWatcher()
             }
             return DefWindowProc(hwnd, msg, wParam, lParam);
         };
-        OC_ASSERT(RegisterClass(&wc));
+        // Beides kann an Windows scheitern (etwa ein erschöpfter Desktop-Heap auf Terminalservern). Ohne das Fenster beendet sich
+        // der Client beim Abmelden nur nicht geordnet; die früheren OC_ASSERTs beendeten mit FORCE_ASSERTS (Beta) das Programm
+        // schon beim Start.
+        if (!RegisterClass(&wc)) {
+            qCWarning(lcPlatform) << "Could not register the window class of the shutdown watcher:" << Utility::formatWinError(GetLastError());
+        }
 
         auto watcherWindow = CreateWindowW(wc.lpszClassName, reinterpret_cast<const wchar_t *>(Theme::instance()->appNameGUI().utf16()), WS_OVERLAPPED,
             CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, nullptr, nullptr, wc.hInstance, nullptr);
-        OC_ASSERT_X(watcherWindow, Utility::formatWinError(GetLastError()).toUtf8().constData());
+        if (!watcherWindow) {
+            qCWarning(lcPlatform) << "Could not create the window of the shutdown watcher:" << Utility::formatWinError(GetLastError());
+            return;
+        }
 
         MSG msg;
         while (watchWMCtx.windowMessageWatcherRun) {

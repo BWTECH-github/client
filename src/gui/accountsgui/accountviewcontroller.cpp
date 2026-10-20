@@ -191,7 +191,12 @@ void AccountViewController::finishAccountModalWidget(AccountModalWidget *widget)
     _view->removeStackWidget(widget);
     widget->deleteLater();
 
-    Q_ASSERT(_accountState && _accountState->account());
+    // Der Dialog kann enden, nachdem das Konto schon weg ist (Entfernen oder Beenden, während er offen ist): dann gibt es
+    // nichts mehr zu melden. Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (!_accountState || !_accountState->account()) {
+        qCInfo(lcAccountViewController) << "Account modal widget finished after the account was removed";
+        return;
+    }
 
     emit accountEndModal(_accountState->account()->uuid());
 }

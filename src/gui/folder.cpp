@@ -184,8 +184,10 @@ Folder::~Folder()
     // final eval needs to be a future todo.
     if (_vfs)
         _vfs->stop();
-    if (_engine)
-        Q_ASSERT(!_engine->isSyncRunning());
+    // Das Warten in FolderMan lässt sich beim Beenden abkürzen (Tray, --quit, Abmelden von Windows), dann läuft hier noch ein
+    // Abbruch. ~SyncEngine bricht ihn ab; das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (_engine && _engine->isSyncRunning())
+        qCCritical(lcFolder) << "Deleting folder" << _definition.localPath() << "while its sync is still running";
     if (_journal)
         _journal->close();
 }
@@ -268,9 +270,11 @@ QUrl Folder::webDavUrl() const
     // this doesn't make sense to me - the definition should always carry the correct webdav url so I'm
     // changing this to a reality check against the space instead of relying on the space value first, if it exists,
     GraphApi::Space *sp = space();
-    if (sp) {
-        QUrl spUrl = sp->webDavUrl();
-        Q_ASSERT(spUrl == _definition.webDavUrl());
+    // Die Adresse des Space nennt der Server; weicht sie ab (etwa nach einem Umzug des Servers), gilt die gespeicherte. Das
+    // frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm; hier nur Debug, die Funktion läuft bei jeder Anfrage.
+    if (sp && sp->webDavUrl() != _definition.webDavUrl()) {
+        qCDebug(lcFolder) << "The WebDAV URL of space" << _definition.spaceId() << "differs from the folder definition:" << sp->webDavUrl()
+                          << _definition.webDavUrl();
     }
     return _definition.webDavUrl();
 }
@@ -550,9 +554,12 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
     }
     bool needSync = false;
     for (const auto &path : paths) {
-        Q_ASSERT(FileSystem::isChildPathOf(path, this->path()));
-        if (!FileSystem::isChildPathOf(path, this->path()))
+        // Die Pfade melden das Dateisystem und der Sperr-Wächter (Schreibweise, Kurznamen, Verknüpfungen): Fremdes überspringen.
+        // Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+        if (!FileSystem::isChildPathOf(path, this->path())) {
+            qCWarning(lcFolder) << "Ignoring the change of" << path << "outside of" << this->path();
             continue;
+        }
         const QString relativePath = path.mid(this->path().size());
         if (reason == ChangeReason::UnLock) {
             journalDb()->wipeErrorBlacklistEntry(relativePath, SyncJournalErrorBlacklistRecord::Category::LocalSoftError);

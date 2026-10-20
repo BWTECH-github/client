@@ -176,8 +176,13 @@ void propagatePinState(const QString &newFile, const QString &oldFile)
     if (state == CF_PIN_STATE_EXCLUDED || state == CF_PIN_STATE_UNPINNED)
         state = CF_PIN_STATE_UNSPECIFIED;
 
+    // Die Datei kann gesperrt, schon wieder weg oder ohne Rechte sein. Das frühere OC_ASSERT beendete mit FORCE_ASSERTS (Beta) das
+    // Programm, ohne Assert folgte der Zugriff auf ein ungültiges Ergebnis.
     const auto handle = getFileHandle(newFile, WRITE_DAC);
-    OC_ASSERT(handle);
+    if (!handle) {
+        qCWarning(lcVfs) << Q_FUNC_INFO << ": couldn't open" << newFile << Utility::formatWinError(handle.error());
+        return;
+    }
     const HRESULT ok = CfSetPinState(*handle, state, CF_SET_PIN_FLAG_NONE, nullptr);
     if (FAILED(ok)) {
         qCWarning(lcVfs) << Q_FUNC_INFO << ": couldn't write pin state to file" << Utility::formatWinError(ok);
@@ -284,7 +289,12 @@ void VfsWinPrivate::startFetchData(CfOpdata opdata, const QString &targetPath, q
     auto journal = params.journal;
     SyncJournalFileRecord record;
     journal->getFileRecordsByFileId(fileId, [&](const SyncJournalFileRecord &r) {
-        Q_ASSERT(!record.isValid());
+        // Mehrere Einträge mit derselben ID kommen vor (etwa ein veralteter nach einem Verschieben, ein übernommenes Journal); es
+        // gilt wie bisher ohne Assert der letzte. Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm, sobald die
+        // Datei geöffnet wurde.
+        if (record.isValid()) {
+            qCWarning(lcVfs) << "Several records for the file id" << fileId << ":" << record._path << r._path;
+        }
         record = r;
         // TODO: How about multiple results?
     });
@@ -367,7 +377,8 @@ void HydrationContext::downloadJobDone()
             transferDataError(STATUS_CLOUD_FILE_NOT_IN_SYNC);
             // TODO: schedule a sync
         } else if (job->contentLength() != -1 && job->contentLength() != job->expectedContentLength()) {
-            Q_ASSERT(job->resumeStart() == 0);
+            // Auch eine fortgesetzte Hydrierung (Windows verlangt ab einem Versatz) trifft auf eine inzwischen geänderte Datei; das
+            // frühere Q_ASSERT(resumeStart() == 0) beendete dann mit FORCE_ASSERTS (Beta) das Programm.
             const auto newFileSize = job->resumeStart() + job->contentLength();
             if (newFileSize == 0 && record._fileSize != 0) {
                 // the file might now be a folder
@@ -393,7 +404,7 @@ void HydrationContext::downloadJobDone()
 
     // Update etag and mtime, similar to PropagateDownload
     if (!job->etag().isEmpty()) {
-        Q_ASSERT(job->etag() == Utility::normalizeEtag(job->etag()));
+        // schon normalisiert; normalizeEtag() ist nicht idempotent (siehe PropagateDownloadFile), daher kein Q_ASSERT darauf
         record._etag = job->etag().toUtf8();
     }
     if (job->lastModified()) {

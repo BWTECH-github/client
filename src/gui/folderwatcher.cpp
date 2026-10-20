@@ -110,7 +110,8 @@ void FolderWatcher::startNotificationTestWhenReady()
         return;
     }
 
-    if (OC_ENSURE(QFile::exists(_testNotificationPath))) {
+    // Fehlt die Datei, legt der else-Zweig sie an: kein Fehler, also kein OC_ENSURE (beendete mit FORCE_ASSERTS das Programm)
+    if (QFile::exists(_testNotificationPath)) {
         const auto mtime = FileSystem::getModTime(_testNotificationPath);
         FileSystem::setModTime(_testNotificationPath, mtime + 1);
     } else {

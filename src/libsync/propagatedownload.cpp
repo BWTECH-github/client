@@ -799,7 +799,8 @@ void PropagateDownloadFile::slotGetFinished()
     if (!job->etag().isEmpty()) {
         // The etag will be empty if we used a direct download URL.
         // (If it was really empty by the server, the GETFileJob will have errored
-        Q_ASSERT(job->etag() == Utility::normalizeEtag(job->etag()));
+        // Das ETag ist schon normalisiert (getEtagFromReply). normalizeEtag() ist aber nicht idempotent („W/"W/x"“, „x-gzip-gzip“
+        // vom Server oder Proxy): Das frühere Q_ASSERT darauf beendete mit FORCE_ASSERTS (Beta) das Programm.
         _item->_etag = job->etag();
     }
     if (job->lastModified()) {

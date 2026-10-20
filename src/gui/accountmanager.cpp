@@ -171,10 +171,14 @@ Account *AccountManager::createAccount(const NewAccountModel &model)
     QString syncRoot = model.defaultSyncRoot();
     if (!syncRoot.isEmpty()) {
         account->setDefaultSyncRoot(syncRoot);
-        if (!QFileInfo::exists(syncRoot)) {
-            OC_ASSERT(QDir().mkpath(syncRoot));
+        // Scheitert das Anlegen (keine Schreibrechte, Laufwerk getrennt, Datenträger voll), entsteht das Konto trotzdem, nur ohne
+        // Ordnerpaar; einen Ordner legt der Ordner-Assistent dann an anderer Stelle an. Das frühere OC_ASSERT beendete mit
+        // FORCE_ASSERTS (Beta) das Programm direkt nach „Abschließen“.
+        if (!QFileInfo::exists(syncRoot) && !QDir().mkpath(syncRoot)) {
+            qCWarning(lcAccountManager) << "Could not create the default sync root" << syncRoot;
+        } else {
+            Utility::markDirectoryAsSyncRoot(syncRoot, account->uuid());
         }
-        Utility::markDirectoryAsSyncRoot(syncRoot, account->uuid());
     }
 
     account->setCapabilities(model.capabilities());

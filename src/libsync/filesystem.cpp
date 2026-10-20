@@ -90,9 +90,10 @@ bool FileSystem::setModTime(const QString &filename, time_t modTime)
     times[0].tv_usec = times[1].tv_usec = 0;
     int rc = c_utimes(filename, times);
     if (rc != 0) {
+        // etwa wenn ein anderes Programm (Virenscanner, Office) die Datei offen hält oder die Rechte fehlen: Das meldet der
+        // Rückgabewert. Das frühere Q_ASSERT(false) beendete mit FORCE_ASSERTS (Beta) das Programm.
         qCWarning(lcFileSystem) << "Error setting mtime for" << filename
                                 << "failed: rc" << rc << ", error message:" << strerror(errno);
-        Q_ASSERT(false);
         return false;
     }
     return true;

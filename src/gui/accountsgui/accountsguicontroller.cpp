@@ -360,7 +360,8 @@ void AccountsGuiController::endModal(QUuid accountId)
         Account *account = _accountMgr->accountState(accountId)->account();
         action->setIcon(account->avatar());
     }
-    // I don't think we need to set the action checked again
-    Q_ASSERT(action->isChecked());
+    // Nicht erneut auswählen: Der Nutzer kann inzwischen ein anderes Konto gewählt haben, und ein Dialog endet auch ohne Klick
+    // in diesem Konto (etwa wenn die Anmeldung im Browser fertig wird). Ein Q_ASSERT(action->isChecked()) beendete dann mit
+    // FORCE_ASSERTS (Beta) das Programm.
 }
 }

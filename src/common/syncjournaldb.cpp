@@ -206,9 +206,10 @@ void SyncJournalDb::commitTransaction()
 bool SyncJournalDb::sqlFail(const QString &log, const SqlQuery &query)
 {
     commitTransaction();
+    // Datenträger voll, Datei gesperrt oder beschädigt, Laufwerk getrennt: Die Aufrufer melden den Fehler (der Ordner wird nicht
+    // eingerichtet). Das frühere OC_ASSERT(false) beendete mit FORCE_ASSERTS (Beta) das Programm.
     qCWarning(lcDb) << "SQL Error" << log << query.error();
     _db.close();
-    OC_ASSERT(false);
     return false;
 }
 
@@ -847,7 +848,12 @@ Result<void, QString> SyncJournalDb::setFileRecord(const SyncJournalFileRecord &
             }
         }
     }
-    OC_ASSERT(!record._remotePerm.isNull());
+    // Ohne Rechte gespeicherte Einträge (von Versionen ohne Asserts, aus dem übernommenen Journal des offiziellen Clients) liest
+    // auch dieser Client, und schreibt sie etwa beim Herunterladen eines Platzhalters zurück. Das frühere OC_ASSERT beendete dann mit
+    // FORCE_ASSERTS (Beta) das Programm; geschrieben wird wie ohne Assert.
+    if (record._remotePerm.isNull()) {
+        qCWarning(lcDb) << "Writing the file record of" << record._path << "without remote permissions";
+    }
     qCDebug(lcDb) << "Updating file record for path:" << record._path << "inode:" << record._inode
                  << "modtime:" << record._modtime << "type:" << record._type
                  << "etag:" << record._etag << "fileId:" << record._fileId << "remotePerm:" << record._remotePerm.toString()
@@ -1971,7 +1977,11 @@ void SyncJournalDb::setConflictRecord(const ConflictRecord &record)
     query->bindValue(3, record.baseModtime);
     query->bindValue(4, record.baseEtag);
     query->bindValue(5, record.initialBasePath);
-    OC_ASSERT(query->exec());
+    // Schreiben scheitert etwa bei vollem Datenträger oder gesperrter Datei; SqlQuery protokolliert den Fehler. Das frühere
+    // OC_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm, hier und in den Funktionen unten.
+    if (!query->exec()) {
+        qCWarning(lcDb) << "Could not store the conflict record for" << record.path;
+    }
 }
 
 ConflictRecord SyncJournalDb::conflictRecord(const QByteArray &path)
@@ -1985,8 +1995,7 @@ ConflictRecord SyncJournalDb::conflictRecord(const QByteArray &path)
     const auto query = _queryManager.get(PreparedSqlQueryManager::GetConflictRecordQuery, QByteArrayLiteral("SELECT baseFileId, baseModtime, baseEtag, basePath FROM conflicts WHERE path=?1;"), _db);
     OC_ASSERT(query);
     query->bindValue(1, path);
-    OC_ASSERT(query->exec());
-    if (!query->next().hasData)
+    if (!query->exec() || !query->next().hasData)
         return entry;
 
     entry.path = path;
@@ -2006,7 +2015,9 @@ void SyncJournalDb::deleteConflictRecord(const QByteArray &path)
     const auto query = _queryManager.get(PreparedSqlQueryManager::DeleteConflictRecordQuery, QByteArrayLiteral("DELETE FROM conflicts WHERE path=?1;"), _db);
     OC_ASSERT(query);
     query->bindValue(1, path);
-    OC_ASSERT(query->exec());
+    if (!query->exec()) {
+        qCWarning(lcDb) << "Could not delete the conflict record for" << path;
+    }
 }
 
 QByteArrayList SyncJournalDb::conflictRecordPaths()
@@ -2017,7 +2028,9 @@ QByteArrayList SyncJournalDb::conflictRecordPaths()
 
     SqlQuery query(_db);
     query.prepare("SELECT path FROM conflicts");
-    OC_ASSERT(query.exec());
+    if (!query.exec()) {
+        return {};
+    }
 
     QByteArrayList paths;
     while (query.next().hasData)
@@ -2266,12 +2279,12 @@ const QVector<SyncJournalFileRecord> SyncJournalDb::getFileRecordsWithDirtyPlace
 {
     QMutexLocker locker(&_mutex);
 
-    if (OC_ENSURE(isOpen())) {
+    // Ein Fehler der Datenbank (Datenträger voll, Laufwerk getrennt) kann sie seit der Prüfung des Aufrufers geschlossen haben:
+    // dann gibt es eben keine Einträge. Die früheren OC_ENSUREs beendeten mit FORCE_ASSERTS (Beta) das Programm.
+    if (isOpen()) {
         const auto query = _queryManager.get(PreparedSqlQueryManager::GetFileReocrdsWithDirtyPlaceholdersQuery, getFileRecordQueryC + QByteArrayLiteral("WHERE hasDirtyPlaceholder=TRUE"), const_cast<SyncJournalDb *>(this)->_db);
-        if (!OC_ENSURE(query)) {
-            return {};
-        }
-        if (!OC_ENSURE(query->exec())) {
+        if (!query || !query->exec()) {
+            qCWarning(lcDb) << "Could not read the file records with dirty placeholders";
             return {};
         }
         QVector<SyncJournalFileRecord> out;

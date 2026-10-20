@@ -45,8 +45,10 @@ void ResourceJob::finished()
 
     // storing the file on disk enables Qt to apply some optimizations, e.g., in QIcon
     // also, specifically for icons, loading from disk allows easy management of scalable and non-scalable entities
-    if (httpStatusCode() == 200 && reply()->size() > 0) {
-        const QString path = _cache->path(_cacheKey);
+    // Ein Netzfehler nach dem Status 200 (Verbindung abgerissen) hinterlässt keinen Schlüssel, ein nicht anlegbarer Zwischenspeicher
+    // keinen Pfad: dann nichts speichern
+    const QString path = _cache->path(_cacheKey);
+    if (httpStatusCode() == 200 && reply()->size() > 0 && !path.isEmpty()) {
 
         qCDebug(lcResources) << "cache file path:" << path;
 
@@ -78,7 +80,11 @@ QIcon ResourceJob::asIcon() const
     }
 
     // storing the file on disk enables Qt to apply some optimizations (e.g., caching of rendered pixmaps)
-    return QIcon(_cache->path(_cacheKey));
+    const QString path = _cache->path(_cacheKey);
+    if (path.isEmpty()) {
+        return {};
+    }
+    return QIcon(path);
 }
 
 ResourceJob::ResourceJob(ResourcesCache *cache, const QUrl &rootUrl, const QString &path, QObject *parent)
@@ -93,7 +99,11 @@ ResourcesCache::ResourcesCache(const QString &cacheDirectory, Account *account)
     , _account(account)
     , _cacheDirectory(QStringLiteral("%1/tmp.XXXXXX").arg(cacheDirectory))
 {
-    Q_ASSERT(_cacheDirectory.isValid());
+    // Der Zwischenspeicher liegt im Profil des Nutzers; fehlen Rechte oder Platz, gibt es eben keine Bilder (Avatar, Space).
+    // Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm bei jedem Start, schon beim Laden des Kontos.
+    if (!_cacheDirectory.isValid()) {
+        qCCritical(lcResources) << "Could not create the resources cache in" << cacheDirectory << ":" << _cacheDirectory.errorString();
+    }
 }
 
 ResourceJob *ResourcesCache::makeGetJob(const QUrl &rootUrl, QObject *parent)
@@ -108,8 +118,10 @@ Account *ResourcesCache::account() const
 
 QString ResourcesCache::path(const QString &cacheKey) const
 {
-    Q_ASSERT(!cacheKey.isEmpty());
-    Q_ASSERT(_cacheDirectory.isValid());
+    // leer, wenn es nichts zu speichern gibt: kein Schlüssel (Netzfehler) oder kein Zwischenspeicher (siehe Konstruktor)
+    if (cacheKey.isEmpty() || !_cacheDirectory.isValid()) {
+        return {};
+    }
     return _cacheDirectory.filePath(cacheKey);
 }
 

@@ -40,6 +40,13 @@ QPixmap SpaceImageProvider::requestPixmap(const QString &id, QSize *size, const 
             icon = space->image()->image();
         }
     }
-    Q_ASSERT(!icon.isNull());
+    // Der Space kann inzwischen auf dem Server entfernt sein, sein Bild fehlen: dann das Platzhalterbild. Das frühere Q_ASSERT
+    // beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (icon.isNull()) {
+        icon = IconResources::getCoreIcon(QStringLiteral("defaultSpaceImage"));
+    }
+    if (icon.isNull()) {
+        return {};
+    }
     return Resources::pixmap(requestedSize, icon, QIcon::Normal, size);
 }

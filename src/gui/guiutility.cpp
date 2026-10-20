@@ -99,8 +99,17 @@ QString Utility::vfsFreeSpaceActionText()
 
 void Utility::markDirectoryAsSyncRoot(const QString &path, const QUuid &accountUuid)
 {
-    Q_ASSERT(getDirectorySyncRootMarkings(path).first.isEmpty());
-    Q_ASSERT(getDirectorySyncRootMarkings(path).second.isNull());
+    // Der Assistent prüft den Ordner (FolderMan::checkPathValidity), aber zwischen Prüfung und „Abschließen“ kann ihn noch etwas
+    // anderes gekennzeichnet haben. Eine fremde Kennzeichnung bleibt stehen, statt (wie mit dem früheren Q_ASSERT unter
+    // FORCE_ASSERTS) das Programm zu beenden.
+    const auto existing = getDirectorySyncRootMarkings(path);
+    if (!existing.first.isEmpty() || !existing.second.isNull()) {
+        if (existing.first != Theme::instance()->orgDomainName() || existing.second != accountUuid) {
+            qCWarning(lcGuiUtility) << "Not marking" << path << "as sync root of" << accountUuid << "- it is already marked by" << existing.first
+                                    << existing.second;
+        }
+        return;
+    }
 
     auto result1 = FileSystem::Tags::set(path, dirTag(), Theme::instance()->orgDomainName().toUtf8());
     if (!result1) {

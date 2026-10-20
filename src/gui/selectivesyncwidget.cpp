@@ -261,7 +261,12 @@ void SelectiveSyncWidget::slotUpdateDirectories(QStringList list)
     QStringList relativeList;
     relativeList.reserve(list.size());
     for (const QString &path : std::as_const(list)) {
-        Q_ASSERT(path.startsWith(rootPath));
+        // Die Pfade nennt der Server; PropfindJob prüft nur ein gemeinsames Präfix ohne Trennzeichen („…/u“ passt auch auf
+        // „…/u2/“). Fremdes überspringen, das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+        if (!path.startsWith(rootPath)) {
+            qCWarning(lcSelectiveSync) << "Ignoring" << path << "outside of" << rootPath;
+            continue;
+        }
         const QString relativePath = path.mid(rootPath.size());
         if (!relativePath.isEmpty()) {
             relativeList.append(relativePath);

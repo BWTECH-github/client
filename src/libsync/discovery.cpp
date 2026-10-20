@@ -1051,8 +1051,13 @@ void ProcessDirectoryJob::processFileConflict(const SyncFileItemPtr &item, const
         if (item->instruction() == CSYNC_INSTRUCTION_UPDATE_METADATA) {
             // Update the etag and other server metadata in the journal already
             Q_ASSERT(item->_file == path._original);
-            Q_ASSERT(item->_size == serverEntry.size);
-            Q_ASSERT(item->_modtime == serverEntry.modtime);
+            // Größe und Zeit des Eintrags können noch aus dem Journal stammen (angeforderter Download eines Platzhalters, der
+            // lokal ersetzt wurde): kein Programmierfehler, sondern ein Zustand auf Datenträger und Server. Die früheren
+            // Q_ASSERTs beendeten mit FORCE_ASSERTS (Beta) das Programm.
+            if (item->_size != serverEntry.size || item->_modtime != serverEntry.modtime) {
+                qCWarning(lcDisco) << "Upload info for" << path._original << "matches the server, but the item has size/mtime" << item->_size
+                                   << item->_modtime << "and the server" << serverEntry.size << serverEntry.modtime;
+            }
             Q_ASSERT(!serverEntry.etag.isEmpty());
             item->_etag = serverEntry.etag;
             item->_fileId = serverEntry.fileId;

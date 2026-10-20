@@ -35,7 +35,10 @@ Q_LOGGING_CATEGORY(lcFolderManagementUtils, "gui.foldermanagementutils", QtInfoM
 bool FolderManagementUtils::prepareFolder(const QString &path)
 {
     if (!QFileInfo::exists(path)) {
-        if (!OC_ENSURE(QDir().mkpath(path))) {
+        // keine Schreibrechte, Laufwerk getrennt, Datenträger voll: Der Aufrufer legt dann keinen Ordner an. Mit OC_ENSURE
+        // beendete das unter FORCE_ASSERTS (Beta) das Programm.
+        if (!QDir().mkpath(path)) {
+            qCWarning(lcFolderManagementUtils) << "Could not create the folder" << path;
             return false;
         }
 #ifdef Q_OS_WIN

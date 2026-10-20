@@ -54,8 +54,16 @@ OAuth::PromptValuesSupportedFlags defaultOauthPromptValue(const OpenIdConfig& co
         auto prompt = config.prompt();
         OAuth::PromptValuesSupportedFlags out = OAuth::PromptValuesSupported::none;
         // convert the legacy openIdConnectPrompt() to QFlags
-        for (const auto &x : prompt.split(QLatin1Char(' '))) {
-            out |= Utility::stringToEnum<OAuth::PromptValuesSupported>(x);
+        // Der Wert kann aus der Systemkonfiguration des Administrators kommen: Unbekanntes und doppelte Leerzeichen überspringen,
+        // statt (wie mit dem Q_ASSERT in stringToEnum unter FORCE_ASSERTS) bei der ersten Anmeldung abzustürzen
+        for (const auto &x : prompt.split(QLatin1Char(' '), Qt::SkipEmptyParts)) {
+            bool ok = false;
+            const auto value = Utility::stringToEnum<OAuth::PromptValuesSupported>(x, &ok);
+            if (ok) {
+                out |= value;
+            } else {
+                qCWarning(lcOauth) << "Ignoring the unknown prompt value" << x << "from the configuration";
+            }
         }
         return out;
     }();
@@ -268,7 +276,12 @@ void OAuth::handleSocketReadyRead()
     }
     QPointer<QTcpSocket> candidateSocket(connected);
 
-    Q_ASSERT(connected->state() == QAbstractSocket::ConnectedState);
+    // Daten können noch ankommen, wenn die Gegenseite schon getrennt hat (Browser geschlossen, ein anderes Programm prüft den
+    // Port): Darauf lässt sich nicht mehr antworten. Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (connected->state() != QAbstractSocket::ConnectedState) {
+        qCDebug(lcOauth) << "Ignoring data from a connection that is no longer connected:" << connected->state();
+        return;
+    }
 
     const QByteArray peek = candidateSocket->peek(qMin(connected->bytesAvailable(), 4000LL)); // The code should always be within the first 4K
 
@@ -525,9 +538,13 @@ void OAuth::fetchWellKnown()
             if (!promptValuesSupported.isEmpty()) {
                 _supportedPromptValues = PromptValuesSupported::none;
                 for (const auto &x : promptValuesSupported) {
-                    const auto flag = Utility::stringToEnum<PromptValuesSupported>(x.toString());
+                    // Werte, die der Client nicht kennt (eigene des Anbieters, neuere Spezifikationen), überspringen: Das frühere
+                    // Q_ASSERT in stringToEnum beendete mit FORCE_ASSERTS (Beta) das Programm schon wegen dieser Serverantwort, ohne
+                    // Assert setzte der ungültige Wert (-1) alle Bits
+                    bool ok = false;
+                    const auto flag = Utility::stringToEnum<PromptValuesSupported>(x.toString(), &ok);
                     // only use flags present in _openIdConfig->openIdConnectPrompt()
-                    if (flag & defaultOauthPromptValue(_openIdConfig))
+                    if (ok && (flag & defaultOauthPromptValue(_openIdConfig)))
                         _supportedPromptValues |= flag;
                 }
             }

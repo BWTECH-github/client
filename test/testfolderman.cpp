@@ -430,6 +430,11 @@ private Q_SLOTS:
         // But in our sync root that should just be fine
         QVERIFY(folderman->checkPathValidity(dirPath + QStringLiteral("/OurSpacesSyncRoot/OurSpacesFolder"), FolderMan::NewFolderType::SpacesFolder, ourUuid)
                 .isNull());
+
+        // Ein schon gekennzeichneter Ordner behält seine Kennzeichnung; früher beendete ein Q_ASSERT das Programm (FORCE_ASSERTS)
+        Utility::markDirectoryAsSyncRoot(dir2.filePath(QStringLiteral("OurSpacesSyncRoot")), QUuid::createUuid());
+        QVERIFY(folderman->checkPathValidity(dirPath + QStringLiteral("/OurSpacesSyncRoot/OurSpacesFolder"), FolderMan::NewFolderType::SpacesFolder, ourUuid)
+                .isNull());
     }
 
     // Tray-Menü je Konto: hält nur die Ordner dieses Kontos an und setzt sie wieder fort

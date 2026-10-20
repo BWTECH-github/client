@@ -102,7 +102,12 @@ QKeychain::Job *CredentialManager::set(const QString &key, const QVariant &data)
 
 QKeychain::Job *CredentialManager::remove(const QString &key)
 {
-    OC_ASSERT(contains(key));
+    // Die Liste liegt in der Konfigurationsdatei, der Eintrag im Schlüsselbund des Systems: Beides kann sich außerhalb des
+    // Clients ändern (Datei bearbeitet, Eintrag in der Anmeldeinformationsverwaltung gelöscht). Löschen bleibt trotzdem
+    // richtig; die früheren OC_ASSERTs beendeten mit FORCE_ASSERTS (Beta) das Programm beim Abmelden oder Entfernen des Kontos.
+    if (!contains(key)) {
+        qCWarning(lcCredentialsManager) << "Removing" << key << "which is not in the list of stored credentials";
+    }
     // remove immediately to prevent double invocation by clear()
     credentialsList().remove(key);
     const QString scoped = scopedKey(key);
@@ -110,9 +115,10 @@ QKeychain::Job *CredentialManager::remove(const QString &key)
     auto keychainJob = new QKeychain::DeletePasswordJob(Theme::instance()->appName());
     keychainJob->setKey(scoped);
     connect(keychainJob, &QKeychain::DeletePasswordJob::finished, this, [keychainJob, scoped] {
-        OC_ASSERT(keychainJob->error() != QKeychain::EntryNotFound);
         if (keychainJob->error() == QKeychain::NoError) {
             qCInfo(lcCredentialsManager) << "removed" << scoped;
+        } else if (keychainJob->error() == QKeychain::EntryNotFound) {
+            qCInfo(lcCredentialsManager) << "already gone from the keychain:" << scoped;
         } else {
             qCWarning(lcCredentialsManager) << "Failed to remove:" << scoped << keychainJob->errorString();
         }
@@ -227,7 +233,11 @@ void CredentialJob::start()
                 return;
             }
             _data = obj.toVariant();
-            OC_ASSERT(_data.isValid());
+            // Ein Eintrag ohne verwertbaren Wert (etwa von einem anderen Programm geschrieben) zählt wie ein leerer: Die Aufrufer
+            // verlangen dann eine neue Anmeldung. Das frühere OC_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+            if (!_data.isValid()) {
+                qCWarning(lcCredentialsManager) << "The keychain entry" << _scopedKey << "holds no usable value";
+            }
         } else {
             qCWarning(lcCredentialsManager) << "Failed to get password" << _scopedKey << _job->errorString();
             _error = _job->error();

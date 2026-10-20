@@ -84,8 +84,9 @@ void FetchServerSettingsRunner::start()
                 } else if (userJob->ocsSuccess()) {
                     const auto userData = userJob->data().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject();
                     const QString user = userData.value(QStringLiteral("id")).toString();
-                    Q_ASSERT(!_account->davUser().isEmpty());
                     // davUser should never change.
+                    // Ein leerer davUser (Konto aus einer Serverantwort ohne Benutzer-ID) wird unten übergangen; das frühere Q_ASSERT
+                    // beendete mit FORCE_ASSERTS (Beta) das Programm.
                     if (!user.isEmpty() && !_account->davUser().isEmpty() && user != _account->davUser()) {
                         Q_EMIT finishedSignal(Result::InvalidCredentials);
                         return;

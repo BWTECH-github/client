@@ -22,6 +22,7 @@
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
+#include <QPointer>
 
 #include <QJsonArray>
 #include <QJsonObject>
@@ -62,11 +63,18 @@ WebFingerLookupResult WebFingerLookupAdapter::getResult()
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 
     QEventLoop waitLoop;
-    QNetworkReply *reply = _nam->get(req);
-    connect(reply, &QNetworkReply::finished, &waitLoop, &QEventLoop::quit);
+    QPointer<QNetworkReply> reply = _nam->get(req);
+    connect(reply.data(), &QNetworkReply::finished, &waitLoop, &QEventLoop::quit);
     waitLoop.exec();
 
-    Q_ASSERT(reply->isFinished());
+    // Das Beenden des Programms (Tray, --quit) beendet auch diese Warteschleife, bevor die Antwort da ist. Das frühere
+    // Q_ASSERT(reply->isFinished()) beendete dann mit FORCE_ASSERTS (Beta) das Programm.
+    if (!reply || !reply->isFinished()) {
+        qCWarning(lcWebFingerLookupAdapter) << "The WebFinger lookup was interrupted before the reply arrived";
+        delete reply;
+        result.error = tr("Failed to retrieve user info");
+        return result;
+    }
 
     const auto statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 

@@ -53,7 +53,11 @@ AbstractNetworkJob::AbstractNetworkJob(Account *account, const QUrl &baseUrl, co
     , _path(path)
 {
     Q_ASSERT(account != parent);
-    Q_ASSERT(baseUrl.isValid());
+    // Die Adresse stammt aus der Konfiguration oder vom Server (Spaces): Eine ungültige lässt die Anfrage mit einem Fehler
+    // enden. Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm, bei einer kaputten Konfiguration bei jedem Start.
+    if (!baseUrl.isValid()) {
+        qCWarning(lcNetworkJob) << "Network job for" << path << "with the invalid base URL" << baseUrl;
+    }
 }
 
 QUrl AbstractNetworkJob::url() const
