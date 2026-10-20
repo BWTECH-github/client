@@ -35,11 +35,21 @@ name: Install-Probe
 # ASSISTENT_SERVER, Kennwort an ASSISTENT_OHNE_OAUTH2 mit Ordner-Assistent), Beenden über das Menü,
 # Neustart aus dem Schlüsselbund, dann mindestens 13 Minuten Betrieb mit zweitem Ordner, Datei vom
 # Server als Platzhalter, Lesen der Platzhalter, Aktivität, Einstellungen, Konto entfernen und neu
-# anlegen. Am Ende muss der Client leben, ohne Speicherabbild und ohne ASSERT im Protokoll.
+# anlegen. Dazu das Tray-Symbol (beim ersten Start "Konto hinzufügen…" bei offenem Assistenten, Menü
+# mit beiden Konten, Pause und Fortsetzen, Ordner öffnen, Einstellungen), "Serveradresse ändern…"
+# auf ASSISTENT_UMZUG (dieselbe Instanz wie ASSISTENT_SERVER) und zurück, und der Umstieg des Kontos
+# mit Kennwort vom offiziellen Client bis zum übernommenen Ordner. Am Ende muss der Client leben, ohne
+# Speicherabbild und ohne ASSERT im Protokoll.
+#
+# Ebenso nur einzeln: dauerlauf-lang - beide Testkonten, dann 70 Minuten Betrieb (länger als das
+# Access-Token von ASSISTENT_SERVER gilt): alle 5 Minuten lebt der Prozess, das Hauptfenster antwortet,
+# beide Konten sind verbunden; nach 65 Minuten Dateien in beide Richtungen; die Erneuerung des Tokens
+# ohne neue Anmeldung, keine Sync-Schleife und der Arbeitsspeicher kommen aus dem Protokoll.
 #
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=assistent
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=assistent-basic
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=dauerlauf
+#   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=dauerlauf-lang
 
 on:
   workflow_dispatch:
@@ -48,9 +58,9 @@ on:
         description: "ID des CI-Laufs (ownCloud CI), dessen Artefakt windows-cl-x86_64 geprüft wird"
         required: true
       szenario:
-        description: "frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic, dauerlauf (die drei nur einzeln) oder alle (je Szenario ein eigener Runner)"
+        description: "frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic, dauerlauf, dauerlauf-lang (die vier nur einzeln) oder alle (je Szenario ein eigener Runner)"
         type: choice
-        options: [alle, frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic, dauerlauf]
+        options: [alle, frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic, dauerlauf, dauerlauf-lang]
         default: alle
   # GitHub nimmt workflow_dispatch für einen Workflow, der nicht auf dem Standardzweig
   # liegt, erst nach einem ersten Lauf an. Dieser Auslöser registriert ihn nur; der Job
@@ -71,7 +81,8 @@ jobs:
     if: github.event_name == 'workflow_dispatch'
     # Server 2025 entspricht dem Windows-11-24H2-Kern
     runs-on: windows-2025
-    timeout-minutes: 75
+    # dauerlauf-lang: 70 min Betrieb nach dem Einrichten, dazu Installation, Konten und Auswertung
+    timeout-minutes: ${{ matrix.szenario == 'dauerlauf-lang' && 120 || 75 }}
     strategy:
       fail-fast: false
       matrix:
@@ -93,8 +104,11 @@ jobs:
       # assistent, dauerlauf: Server mit der App "OAuth2" (Browser-Anmeldung) und ohne sie (Kennwortseite, Konto des
       # offiziellen Clients)
       ASSISTENT_SERVER: https://testoo.bw.tech
-      # assistent-basic, dauerlauf: dort meldet sich das Testkonto mit Benutzername und Kennwort an
+      # assistent-basic, dauerlauf, dauerlauf-lang: dort meldet sich das Testkonto mit Benutzername und Kennwort an
       ASSISTENT_OHNE_OAUTH2: https://testool.bw.tech
+      # dauerlauf: dieselbe Instanz wie ASSISTENT_SERVER unter anderem Namen (gleiche Adresse, gleiches Zertifikat), Ziel von
+      # "Serveradresse ändern…"
+      ASSISTENT_UMZUG: https://brightlemur685.staging.bwtcloud.net
     steps:
       - name: Check out probe scripts
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -173,9 +187,9 @@ jobs:
           if ($hash -ne $expected) { throw "SHA256 der Vorversion stimmt nicht: $hash statt $expected" }
           "PROBE_VORVERSION=$($setup[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
-      # assistent, dauerlauf: Browser-Anmeldung wie in der Sync-E2E-Suite (Datei unverändert aus dem Zweig sync-e2e)
+      # assistent, dauerlauf, dauerlauf-lang: Browser-Anmeldung wie in der Sync-E2E-Suite (Datei unverändert aus dem Zweig sync-e2e)
       - name: Check out OAuth login helper (sync-e2e)
-        if: matrix.szenario == 'assistent' || matrix.szenario == 'dauerlauf'
+        if: matrix.szenario == 'assistent' || startsWith(matrix.szenario, 'dauerlauf')
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: sync-e2e
@@ -190,13 +204,13 @@ jobs:
           # Speicherabbild im Artefakt)
           # assistent-basic: Testkonto wie online-2 (Server ohne OAuth2); die Probe gibt das Kennwort nur über die
           # Oberfläche an den Client
-          # dauerlauf: beide - online-1 für die Browser-Anmeldung (OC_*), online-2 mit Kennwort (OC_*_2)
-          OC_URL: ${{ (matrix.szenario == 'assistent' || matrix.szenario == 'dauerlauf') && secrets.E2E_ONLINE_URL_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_URL_2 || '' }}
-          OC_USER: ${{ (matrix.szenario == 'assistent' || matrix.szenario == 'dauerlauf') && secrets.E2E_ONLINE_USER_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_USER_2 || '' }}
-          OC_PASS: ${{ (matrix.szenario == 'assistent' || matrix.szenario == 'dauerlauf') && secrets.E2E_ONLINE_PASS_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_PASS_2 || '' }}
-          OC_URL_2: ${{ matrix.szenario == 'dauerlauf' && secrets.E2E_ONLINE_URL_2 || '' }}
-          OC_USER_2: ${{ matrix.szenario == 'dauerlauf' && secrets.E2E_ONLINE_USER_2 || '' }}
-          OC_PASS_2: ${{ matrix.szenario == 'dauerlauf' && secrets.E2E_ONLINE_PASS_2 || '' }}
+          # dauerlauf, dauerlauf-lang: beide - online-1 für die Browser-Anmeldung (OC_*), online-2 mit Kennwort (OC_*_2)
+          OC_URL: ${{ (matrix.szenario == 'assistent' || startsWith(matrix.szenario, 'dauerlauf')) && secrets.E2E_ONLINE_URL_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_URL_2 || '' }}
+          OC_USER: ${{ (matrix.szenario == 'assistent' || startsWith(matrix.szenario, 'dauerlauf')) && secrets.E2E_ONLINE_USER_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_USER_2 || '' }}
+          OC_PASS: ${{ (matrix.szenario == 'assistent' || startsWith(matrix.szenario, 'dauerlauf')) && secrets.E2E_ONLINE_PASS_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_PASS_2 || '' }}
+          OC_URL_2: ${{ startsWith(matrix.szenario, 'dauerlauf') && secrets.E2E_ONLINE_URL_2 || '' }}
+          OC_USER_2: ${{ startsWith(matrix.szenario, 'dauerlauf') && secrets.E2E_ONLINE_USER_2 || '' }}
+          OC_PASS_2: ${{ startsWith(matrix.szenario, 'dauerlauf') && secrets.E2E_ONLINE_PASS_2 || '' }}
         run: |
           $parameters = @{ Scenario = $env:SZENARIO; Setup = $env:PROBE_SETUP; OutDir = $env:PROBE_OUT }
           if ($env:PROBE_VERSION) { $parameters.ExpectedVersion = $env:PROBE_VERSION }
@@ -212,11 +226,13 @@ jobs:
             $parameters.BasicServerUrl = $env:ASSISTENT_OHNE_OAUTH2
             if ($env:PROBE_BEKANNTER_ABSTURZ) { $parameters.KnownCrash = $env:PROBE_BEKANNTER_ABSTURZ }
           }
-          if ($env:SZENARIO -eq 'dauerlauf') {
+          if ($env:SZENARIO -like 'dauerlauf*') {
             $parameters.LoginScript = Join-Path $env:GITHUB_WORKSPACE 'e2e-oauth\test\e2e\oauth\login.py'
             $parameters.ServerUrl = $env:ASSISTENT_SERVER
             $parameters.BasicServerUrl = $env:ASSISTENT_OHNE_OAUTH2
           }
+          if ($env:SZENARIO -eq 'dauerlauf') { $parameters.MoveServerUrl = $env:ASSISTENT_UMZUG }
+          if ($env:SZENARIO -eq 'dauerlauf-lang') { $parameters.RunMinutes = 70 }
           & .\admin\win\test\probe.ps1 @parameters
           exit $LASTEXITCODE
 

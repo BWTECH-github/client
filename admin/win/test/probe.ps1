@@ -135,12 +135,51 @@
                   herunterlädt, ein Platzhalter des Kontos mit
                   Browser-Anmeldung, "Aktivität", "Einstellungen" öffnen
                   und schließen, das Konto mit Browser-Anmeldung entfernen
-                  und neu anlegen. Am Ende muss der Prozess leben und
+                  und neu anlegen. Dazu das Tray-Symbol wie von Hand (UI
+                  Automation der Shell, Rechtsklick, notfalls über den
+                  Überlauf "Ausgeblendete Symbole anzeigen"): beim ersten
+                  Start bei offenem Assistenten "Konto hinzufügen…" - es
+                  darf kein zweiter Assistent entstehen, der offene muss
+                  nach vorn kommen; später Menü mit beiden Konten,
+                  "Synchronisation pausieren" -> "Bis zum Fortsetzen" (eine
+                  Datei vom Server kommt dann nicht an) und "Synchronisation
+                  fortsetzen" (sie kommt an), "Ordner … öffnen" (Explorer),
+                  "Einstellungen…". Ist das Tray-Symbol nicht erreichbar,
+                  nimmt die Probe die gleichwertigen Befehle im Hauptfenster
+                  (Menü des Ordners, "Mehr") und meldet das als
+                  Einschränkung. Weiter: "Konto verwalten" -> "Serveradresse
+                  ändern…" für das Konto mit Browser-Anmeldung auf
+                  -MoveServerUrl (dieselbe Instanz unter anderem Namen),
+                  Browser-Anmeldung dort, verbunden, der Ordner
+                  synchronisiert, eine Datei vom Server kommt an; dann
+                  zurück auf -ServerUrl. Zuletzt der Umstieg für das Konto
+                  mit Kennwort: eine Konfiguration des offiziellen Clients
+                  (vor dem Neustart geschrieben, Konto des Testkontos 2 mit
+                  einem klassisch synchronisierten Ordner) wird über "Mehr"
+                  -> "Vom offiziellen Client übernehmen…" übernommen -
+                  Kennwortseite mit vorbelegtem Anmeldenamen, Kennwort aus
+                  OC_PASS_2, das Konto entsteht, der Ordner wird
+                  übernommen (Datei lokal -> Server und Server -> lokal),
+                  Abschlussbericht. Am Ende muss der Prozess leben und
                   reagieren, WER darf kein Speicherabbild geschrieben haben,
                   die Protokolle kein ASSERT enthalten; Ende über --quit
-                  mit Exit-Code 0. Die Serverordner löscht die Probe
-                  danach. Fotos schwärzen beide Anmeldenamen, kein
+                  mit Exit-Code 0. Die Serverordner und Dateien löscht die
+                  Probe danach. Fotos schwärzen beide Anmeldenamen, kein
                   Speicherabbild kommt ins Artefakt.
+      dauerlauf-lang  Nur auf Anforderung: beide Konten wie im dauerlauf
+                  (Browser-Anmeldung an -ServerUrl, Kennwort an
+                  -BasicServerUrl mit einem Ordner der Probe), dann
+                  -RunMinutes Minuten Betrieb (Vorgabe hier 70) - lang
+                  genug, dass das erste Access-Token abläuft. Alle 5 min:
+                  Prozess lebt, das Hauptfenster antwortet, beide Konten
+                  zeigen „Verbunden“, keine Anmeldung verlangt (Foto). 5 min
+                  vor dem Ende je eine Datei per WebDAV auf beiden Servern
+                  (muss lokal ankommen) und je eine lokale Datei (muss auf
+                  dem Server ankommen). Aus dem Protokoll: Erneuerung des
+                  Tokens ohne neue Anmeldung (Lebensdauer aus expires_in),
+                  keine Sync-Schleife, kein ASSERT; Arbeitsspeicher am
+                  Anfang und am Ende; kein Speicherabbild, Ende über --quit
+                  mit Exit-Code 0.
 
     Client-Spuren, nachgebildet nach dem Client-Code (Geheimnis = Zufallswert,
     wird nie ausgegeben): Anmeldeinformation <app>_credentials:<host>:<uuid>:
@@ -165,7 +204,8 @@
 
 .PARAMETER Scenario
     frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2,
-    deinstall-policies, assistent, assistent-basic oder dauerlauf.
+    deinstall-policies, assistent, assistent-basic, dauerlauf oder
+    dauerlauf-lang.
 
 .PARAMETER Setup
     Setup des Prüflings (*-Setup.exe aus dem CI-Artefakt windows-cl-x86_64).
@@ -182,26 +222,35 @@
     vorher installiert (und im ersten Durchgang gestartet).
 
 .PARAMETER LoginScript
-    assistent, dauerlauf: test/e2e/oauth/login.py aus dem Zweig sync-e2e.
-    Benutzer und Kennwort des Testkontos kommen aus OC_USER/OC_PASS; die Probe
-    nimmt sie sofort aus der Umgebung, damit der Client sie nicht erbt.
+    assistent, dauerlauf, dauerlauf-lang: test/e2e/oauth/login.py aus dem
+    Zweig sync-e2e. Benutzer und Kennwort des Testkontos kommen aus
+    OC_USER/OC_PASS; die Probe nimmt sie sofort aus der Umgebung, damit der
+    Client sie nicht erbt.
 
 .PARAMETER ServerUrl
-    assistent, dauerlauf: Server mit der App "OAuth2", an dem das Konto mit der
-    Browser-Anmeldung entsteht.
+    assistent, dauerlauf, dauerlauf-lang: Server mit der App "OAuth2", an dem
+    das Konto mit der Browser-Anmeldung entsteht.
+
+.PARAMETER MoveServerUrl
+    dauerlauf: dieselbe Instanz wie -ServerUrl unter einer anderen Adresse;
+    Ziel von "Serveradresse ändern…" (danach zurück auf -ServerUrl).
 
 .PARAMETER WrongServerUrl
     assistent: Server ohne die App "OAuth2" (seit beta4 die Kennwortseite im
     Assistenten); auch das Konto des offiziellen Clients zeigt dorthin.
 
 .PARAMETER BasicServerUrl
-    assistent-basic, dauerlauf: Server ohne die App "OAuth2", an dem sich das
-    Testkonto mit Benutzername und Kennwort anmeldet (assistent-basic:
-    OC_USER/OC_PASS, dauerlauf: OC_USER_2/OC_PASS_2). Die Adresse aus OC_URL
-    bzw. OC_URL_2 wird nur mit ihr verglichen.
+    assistent-basic, dauerlauf, dauerlauf-lang: Server ohne die App "OAuth2",
+    an dem sich das Testkonto mit Benutzername und Kennwort anmeldet
+    (assistent-basic: OC_USER/OC_PASS, dauerlauf und dauerlauf-lang:
+    OC_USER_2/OC_PASS_2). Die Adresse aus OC_URL bzw. OC_URL_2 wird nur mit
+    ihr verglichen.
 
 .PARAMETER RunMinutes
-    dauerlauf: so viele Minuten läuft der Client nach dem Neustart mindestens.
+    dauerlauf: so viele Minuten läuft der Client nach dem Neustart mindestens
+    (Vorgabe 13). dauerlauf-lang: so viele Minuten Betrieb, nachdem beide
+    Konten eingerichtet sind (Vorgabe 70, länger als die Lebensdauer des
+    Access-Tokens).
 
 .PARAMETER KnownCrash
     assistent-basic: account-parent, wenn die Quelle des CI-Laufs den Absturz
@@ -223,7 +272,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2', 'deinstall-policies', 'assistent', 'assistent-basic', 'dauerlauf')]
+    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2', 'deinstall-policies', 'assistent', 'assistent-basic', 'dauerlauf', 'dauerlauf-lang')]
     [string] $Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -246,9 +295,11 @@ param(
 
     [string] $BasicServerUrl = 'https://testool.bw.tech',
 
+    [string] $MoveServerUrl = 'https://brightlemur685.staging.bwtcloud.net',
+
     [string] $KnownCrash = '',
 
-    [ValidateRange(1, 50)]
+    [ValidateRange(1, 120)]
     [int] $RunMinutes = 13,
 
     [ValidateRange(1, 120)]
@@ -259,6 +310,9 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
+
+# dauerlauf-lang: ohne Angabe länger als die Lebensdauer des Access-Tokens (oauth2: 3600 s)
+if ($Scenario -eq 'dauerlauf-lang' -and -not $PSBoundParameters.ContainsKey('RunMinutes')) { $RunMinutes = 70 }
 
 # assistent: Zugang des Testkontos sofort aus der Umgebung nehmen. Gestartete Programme erben sie sonst, und
 # ein Speicherabbild des Clients trüge sie ins (öffentliche) Artefakt; dasselbe gilt für das Token des Jobs.
@@ -710,6 +764,7 @@ namespace OcProbe
         [DllImport("user32.dll", EntryPoint = "PostMessageW")]
         private static extern bool PostMessage(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam);
 
+        private const uint WM_NULL = 0x0000;
         private const uint WM_GETTEXT = 0x000D;
         private const uint WM_COMMAND = 0x0111;
         private const uint BM_GETCHECK = 0x00F0;
@@ -768,6 +823,13 @@ namespace OcProbe
             IntPtr result;
             if (SendMessageTimeout(hwnd, BM_GETCHECK, IntPtr.Zero, IntPtr.Zero, SMTO_ABORTIFHUNG, 2000, out result) == IntPtr.Zero) { return false; }
             return result.ToInt64() == 1;
+        }
+
+        // antwortet der Thread des Fensters? WM_NULL wie der Task-Manager ("Keine Rückmeldung")
+        public static bool Responds(IntPtr hwnd, uint timeoutMs)
+        {
+            IntPtr result;
+            return SendMessageTimeout(hwnd, WM_NULL, IntPtr.Zero, IntPtr.Zero, SMTO_ABORTIFHUNG, timeoutMs, out result) != IntPtr.Zero;
         }
 
         // wie ein Klick: WM_COMMAND/BN_CLICKED an den Dialog, der die Schaltfläche enthält
@@ -2166,6 +2228,8 @@ function Protect-Text {
     param([string] $Text)
     if (-not $Text) { return $Text }
     $Text = [regex]::Replace($Text, '(?i)([?&]code=)[^&\s"''<>]+', '$1[entfernt]')
+    # Anmeldelink im Dialog "Serveradresse ändern": state und PKCE-Challenge gehören nicht ins Artefakt
+    $Text = [regex]::Replace($Text, '(?i)([?&](?:state|code_challenge)=)[^&\s"''<>]+', '$1[entfernt]')
     $Text = [regex]::Replace($Text, '(?i)((?:access_token|refresh_token|id_token|code_verifier|client_secret|password)["'']?\s*[:=]\s*["'']?)[^"''&\s,}<>]+', '$1[entfernt]')
     $Text = [regex]::Replace($Text, '(?i)\b(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{8,}', '$1 [entfernt]')
     foreach ($secret in @($loginToken, $loginPass, $loginToken2, $loginPass2)) {
@@ -2612,10 +2676,11 @@ function Get-Python {
     return $null
 }
 
-# Anmelde-Link, den der Client öffnet: aus der Befehlszeile des Browsers, sonst über "Anmelde-URL kopieren"
+# Anmelde-Link, den der Client öffnet: aus der Befehlszeile des Browsers, sonst über "Anmelde-URL kopieren" (Assistent) bzw. aus der Zeile
+# "Anmeldelink: …" (Dialog "Serveradresse ändern"). -ServerHost: der Server, an dem die Anmeldung stattfindet
 function Get-AuthorizeUrl {
-    param($Ctx)
-    $serverHost = ([uri]$ServerUrl).Host
+    param($Ctx, [string] $ServerHost = ([uri]$ServerUrl).Host)
+    $serverHost = $ServerHost
     $deadline = (Get-Date).AddSeconds(45)
     while ((Get-Date) -lt $deadline -and -not $Ctx.Process.HasExited) {
         foreach ($browser in @(Get-CimInstance -ClassName Win32_Process -Filter "Name='msedge.exe' OR Name='chrome.exe' OR Name='firefox.exe'" -ErrorAction SilentlyContinue)) {
@@ -2628,6 +2693,14 @@ function Get-AuthorizeUrl {
             }
         }
         if ($Ctx.Uia) {
+            $label = @((Get-UiItems $Ctx.Process.Id -IncludeMain) | Where-Object { $_.Visible -and $_.Id -like '*signInLinkLabel' -and $_.Name -match 'https://' }) | Select-Object -First 1
+            if ($label) {
+                $match = [regex]::Match($label.Name, 'https://\S+')
+                $uri = $null
+                if ($match.Success -and [uri]::TryCreate($match.Value, [UriKind]::Absolute, [ref] $uri) -and $uri.Host -eq $serverHost -and $match.Value -match '[?&]redirect_uri=') {
+                    return @{ Url = $match.Value; Source = 'Zeile „Anmeldelink“ im Dialog „Serveradresse ändern“' }
+                }
+            }
             $copy = Find-UiButton (Get-UiItems $Ctx.Process.Id) '*CopyUrlToClipboardButton*' $copyLinkPattern
             if ($copy) {
                 try { [System.Windows.Forms.Clipboard]::Clear() } catch { }
@@ -2649,14 +2722,16 @@ function Get-AuthorizeUrl {
 # Browser-Anmeldung mit dem Link des Clients (assistent-anmeldung.py). Der Zugang geht nur in die Umgebung
 # dieses einen Prozesses; die Ausgabe enthält weder Code noch Tokens.
 function Invoke-BrowserLogin {
-    param($Ctx, [string] $AuthorizeUrl)
+    param($Ctx, [string] $AuthorizeUrl, [string] $Label = '')
     $result = @{ Ok = $false; Summary = ''; ExitCode = $null }
     $wrapper = Join-Path $PSScriptRoot 'assistent-anmeldung.py'
     if (-not $LoginScript -or -not (Test-Path -LiteralPath $LoginScript -PathType Leaf)) { $result.Summary = 'login.py aus dem Zweig sync-e2e fehlt (-LoginScript)'; return $result }
     if (-not $loginUser -or -not $loginPass) { $result.Summary = 'Zugang des Testkontos fehlt (Secrets E2E_ONLINE_USER_1, E2E_ONLINE_PASS_1)'; return $result }
     $python = Get-Python
     if (-not $python) { $result.Summary = 'kein Python gefunden'; return $result }
-    $urlFile = Join-Path $rawRoot ('{0}-anmeldelink.txt' -f $Ctx.Name)
+    # mehrere Anmeldungen eines Durchgangs (Serverumzug hin und zurück) je mit eigener Ausgabe
+    $suffix = if ($Label) { '-' + $Label } else { '' }
+    $urlFile = Join-Path $rawRoot ('{0}{1}-anmeldelink.txt' -f $Ctx.Name, $suffix)
     [IO.File]::WriteAllText($urlFile, $AuthorizeUrl)
     $info = New-Object System.Diagnostics.ProcessStartInfo
     $info.FileName = $python
@@ -2681,7 +2756,7 @@ function Invoke-BrowserLogin {
     }
     $process.WaitForExit()
     $output = (Protect-Text ($stdout.Result + $stderr.Result)).Trim()
-    [IO.File]::WriteAllText((Join-Path $OutDir ('{0}-anmeldung.txt' -f $Ctx.Name)), $output + "`r`n", (New-Object System.Text.UTF8Encoding $false))
+    [IO.File]::WriteAllText((Join-Path $OutDir ('{0}{1}-anmeldung.txt' -f $Ctx.Name, $suffix)), $output + "`r`n", (New-Object System.Text.UTF8Encoding $false))
     $result.ExitCode = $process.ExitCode
     $result.Ok = $process.ExitCode -eq 0
     $last = @($output -split "`r?`n" | Where-Object { $_ -match 'Rückruf|Capabilities|Fehler|abgelehnt|ohne oauth2|fehlen' }) | Select-Object -Last 2
@@ -3555,6 +3630,8 @@ namespace OcProbe
 
         private const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
         private const uint MOUSEEVENTF_LEFTUP = 0x0004;
+        private const uint MOUSEEVENTF_RIGHTDOWN = 0x0008;
+        private const uint MOUSEEVENTF_RIGHTUP = 0x0010;
 
         // ohne Skalierung durch Windows: Klickstellen und Bildschirmfotos in denselben Bildpunkten wie UI Automation
         public static bool UsePhysicalPixels()
@@ -3569,6 +3646,16 @@ namespace OcProbe
             mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, UIntPtr.Zero);
             Thread.Sleep(80);
             mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, UIntPtr.Zero);
+        }
+
+        // Kontextmenü wie von Hand (Tray-Symbol, Zeile eines Ordners)
+        public static void RightClick(int x, int y)
+        {
+            SetCursorPos(x, y);
+            Thread.Sleep(150);
+            mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, UIntPtr.Zero);
+            Thread.Sleep(80);
+            mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, UIntPtr.Zero);
         }
     }
 }
@@ -4507,15 +4594,16 @@ function Wait-FolderSync {
     return @{ Path = $logPath; Status = $status }
 }
 
-# WebDAV am Server mit Kennwort-Anmeldung (zweites Testkonto); Rückgabe: HTTP-Status, 0 ohne Antwort
+# WebDAV mit Benutzername und Kennwort, Vorgabe: Server ohne OAuth2 mit dem zweiten Testkonto (-Server/-Token für das erste Testkonto am
+# Server mit OAuth2, sofern der WebDAV mit Kennwort annimmt); Rückgabe: HTTP-Status, 0 ohne Antwort
 function Invoke-Dav {
-    param([string] $Method, [string] $Path, [byte[]] $Body = $null)
+    param([string] $Method, [string] $Path, [byte[]] $Body = $null, [string] $Server = $BasicServerUrl, [string] $Token = $loginToken2)
     $segments = @($Path.Trim('/') -split '/' | Where-Object { $_ } | ForEach-Object { [uri]::EscapeDataString($_) })
-    $request = [System.Net.HttpWebRequest]::Create(('{0}/remote.php/webdav/{1}' -f $BasicServerUrl.TrimEnd('/'), ($segments -join '/')))
+    $request = [System.Net.HttpWebRequest]::Create(('{0}/remote.php/webdav/{1}' -f $Server.TrimEnd('/'), ($segments -join '/')))
     $request.Method = $Method
     $request.Timeout = 60000
     $request.AllowAutoRedirect = $false
-    $request.Headers['Authorization'] = 'Basic ' + $loginToken2
+    $request.Headers['Authorization'] = 'Basic ' + $Token
     try {
         if ($Body) {
             $request.ContentType = 'text/plain; charset=utf-8'
@@ -4820,6 +4908,732 @@ function Complete-FolderWizard {
     return @{ Local = $localPath; Vfs = $vfsOn; VfsOffered = [bool]$vfs }
 }
 
+# --- Tray-Symbol und Explorer (dauerlauf) -------------------------------------
+#
+# Der Infobereich der Taskleiste gehört der Shell (explorer.exe): Symbol und Überlauf "Ausgeblendete Symbole anzeigen" liest die Probe
+# über UI Automation der Shell und klickt mit der Maus. Das Kontextmenü des Symbols ist wieder ein Fenster des Clients (QMenu).
+
+# Tooltip des Symbols "owncloud.online - <Status>" (TrayMenuController::slotComputeOverallSyncStatus)
+$trayIconPattern = '^owncloud\.online( - |$)'
+$trayChevronPattern = '^(Show Hidden Icons|Show hidden icons|Ausgeblendete Symbole anzeigen)$'
+# Einträge des Tray-Menüs (TrayMenuController::rebuildMenu); der erste ist immer da
+$trayShowPattern = '^(Zeige|Show) owncloud\.online$'
+$trayAddAccountPattern = '^(Konto hinzufügen|Add account)…$'
+$trayPausePattern = '^(Synchronisation pausieren|Pause synchronization)$'
+$trayUntilResumedPattern = '^(Bis zum Fortsetzen|Until I resume)$'
+$trayResumePattern = '^(Synchronisation fortsetzen|Resume synchronization)( \(|$)'
+$trayOpenFolderPattern = '^(Ordner „(?<name>.+)“ öffnen|Open folder "(?<name>.+)") \('
+$traySettingsPattern = '^(Einstellungen|Settings) ?…$'
+# Menü eines Ordners in der Kontoansicht (AccountFoldersController), gleichwertig im Hauptfenster
+$folderPausePattern = '^(Synchronisation pausieren|Pause sync)$'
+$folderResumePattern = '^(Synchronisation fortsetzen|Resume sync)$'
+$folderShowPattern = '^(In .+ anzeigen|Show in .+)$'
+# "Konto verwalten" und "Mehr"
+$changeServerEntryPattern = '^(Serveradresse ändern|Change server address)…$'
+$legacyMenuEntryPattern = '^(Vom offiziellen Client übernehmen|Import from official client)'
+
+# Fenster der Shell mit dem Infobereich: Taskleiste und Überlauf (Windows 11: XAML-Insel, Windows 10: NotifyIconOverflowWindow)
+function Get-TrayAreas {
+    $root = [System.Windows.Automation.AutomationElement]::RootElement
+    foreach ($class in 'Shell_TrayWnd', 'TopLevelWindowForOverflowXamlIsland', 'NotifyIconOverflowWindow') {
+        $condition = New-Object System.Windows.Automation.PropertyCondition -ArgumentList ([System.Windows.Automation.AutomationElement]::ClassNameProperty), $class
+        $found = $null
+        try { $found = $root.FindAll([System.Windows.Automation.TreeScope]::Children, $condition) } catch { $found = $null }
+        if ($null -eq $found) { continue }
+        foreach ($window in $found) {
+            [pscustomobject]@{ Where = $(if ($class -eq 'Shell_TrayWnd') { 'Taskleiste' } else { 'Überlauf' }); Class = $class; Element = $window }
+        }
+    }
+}
+
+function Get-ShellElements {
+    param($Element)
+    $all = $null
+    try { $all = $Element.FindAll([System.Windows.Automation.TreeScope]::Descendants, [System.Windows.Automation.Condition]::TrueCondition) } catch { $all = $null }
+    if ($null -eq $all) { return }
+    foreach ($element in $all) { $element }
+}
+
+function ConvertTo-ShellItem {
+    param($Element, [string] $Where)
+    try {
+        $current = $Element.Current
+        return [pscustomobject]@{
+            Element = $Element; Where = $Where; Name = [string]$current.Name; Class = [string]$current.ClassName; Id = [string]$current.AutomationId
+            Type = ([string]$current.ControlType.ProgrammaticName).Replace('ControlType.', ''); Rect = $current.BoundingRectangle; Offscreen = [bool]$current.IsOffscreen
+        }
+    } catch {
+        return $null
+    }
+}
+
+# Tray-Symbol des Clients, sichtbar in der Taskleiste oder im geöffneten Überlauf; sonst $null
+function Find-TrayIcon {
+    foreach ($area in @(Get-TrayAreas)) {
+        foreach ($element in @(Get-ShellElements $area.Element)) {
+            $name = ''
+            try { $name = [string]$element.Current.Name } catch { continue }
+            if ($name -notmatch $trayIconPattern) { continue }
+            $item = ConvertTo-ShellItem $element $area.Where
+            # der Knopf des laufenden Programms heißt ebenso ("owncloud.online - 1 ausgeführtes Fenster")
+            if (-not $item -or $item.Class -match 'TaskList' -or $item.Id -like 'Appid:*') { continue }
+            if ($item.Offscreen -or $item.Rect.IsEmpty -or $item.Rect.Width -le 0 -or $item.Rect.Height -le 0) { continue }
+            return $item
+        }
+    }
+    return $null
+}
+
+# Knopf "Ausgeblendete Symbole anzeigen" in der Taskleiste
+function Find-TrayChevron {
+    foreach ($area in @(Get-TrayAreas | Where-Object { $_.Class -eq 'Shell_TrayWnd' })) {
+        foreach ($element in @(Get-ShellElements $area.Element)) {
+            $name = ''
+            $class = ''
+            try { $name = [string]$element.Current.Name; $class = [string]$element.Current.ClassName } catch { continue }
+            if ($name -notmatch $trayChevronPattern -and $class -notmatch 'Chevron') { continue }
+            $item = ConvertTo-ShellItem $element $area.Where
+            if ($item -and -not $item.Rect.IsEmpty -and $item.Rect.Width -gt 0 -and $item.Rect.Height -gt 0) { return $item }
+        }
+    }
+    return $null
+}
+
+# alle Elemente des Infobereichs in eine Datei, zum Nachsehen, wenn das Symbol nicht zu finden war; Rückgabe: Dateiname
+function Save-TrayTree {
+    param([string] $Label)
+    $lines = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($area in @(Get-TrayAreas)) {
+        foreach ($element in @(Get-ShellElements $area.Element)) {
+            $item = ConvertTo-ShellItem $element $area.Where
+            if ($item) { $lines.Add(('{0} | {1} | "{2}" | class={3} | id={4} | {5} | offscreen={6}' -f $item.Where, $item.Type, (Protect-Text $item.Name), $item.Class, $item.Id, $item.Rect, $item.Offscreen)) }
+        }
+    }
+    $file = Join-Path $OutDir ('tray-{0}.txt' -f $Label)
+    [IO.File]::WriteAllLines($file, [string[]]$lines.ToArray(), (New-Object System.Text.UTF8Encoding $false))
+    return ('{0} ({1} Elemente)' -f (Split-Path -Leaf $file), $lines.Count)
+}
+
+# Mausklick auf die Mitte eines Elements der Shell; Rückgabe: die Stelle
+function Invoke-ShellClick {
+    param($Item, [switch] $Right)
+    $x = [int][Math]::Round($Item.Rect.Left + $Item.Rect.Width / 2)
+    $y = [int][Math]::Round($Item.Rect.Top + $Item.Rect.Height / 2)
+    if ($Right) { [OcProbe.Mouse]::RightClick($x, $y) } else { [OcProbe.Mouse]::Click($x, $y) }
+    return ('{0},{1}' -f $x, $y)
+}
+
+# Kontextmenü des Tray-Symbols wie von Hand: Symbol im Infobereich suchen (sonst den Überlauf "Ausgeblendete Symbole anzeigen" öffnen)
+# und mit der rechten Maustaste anklicken. Rückgabe: @{ Where; Tooltip } oder $null, der Grund steht dann in $Dl.TrayWhy
+function Open-TrayMenu {
+    param($Ctx, $Dl, [string] $Step)
+    $icon = Find-TrayIcon
+    $chevron = $null
+    if (-not $icon) {
+        $chevron = Find-TrayChevron
+        if ($chevron) {
+            $at = Invoke-ShellClick $chevron
+            Add-Timeline ('Klick: "{0}" im Infobereich (Mausklick bei {1})' -f $chevron.Name, $at)
+            $icon = Wait-Ui $Ctx { Find-TrayIcon } 8
+        }
+    }
+    if (-not $icon) {
+        $tree = Save-TrayTree $Step
+        $Dl.TrayWhy = 'Tray-Symbol per UI Automation nicht gefunden ({0}; Elemente des Infobereichs: {1})' -f $(if ($chevron) { 'weder in der Taskleiste noch im Überlauf' } else { 'nicht in der Taskleiste, kein Knopf „Ausgeblendete Symbole anzeigen“' }), $tree
+        if ($chevron) { $null = Invoke-ShellClick $chevron }
+        return $null
+    }
+    $at = Invoke-ShellClick $icon -Right
+    Add-Timeline ('Rechtsklick: Tray-Symbol "{0}" ({1}, Mausklick bei {2})' -f $icon.Name, $icon.Where, $at)
+    $entry = Wait-Ui $Ctx { Find-UiElement (Get-UiItems $Ctx.Process.Id -IncludeMain) '' $trayShowPattern 'MenuItem' } 10
+    if (-not $entry) {
+        $tree = Save-TrayTree $Step
+        $Dl.TrayWhy = 'Tray-Symbol gefunden ({0}, „{1}“), nach dem Rechtsklick aber kein Menü des Clients (10 s; Elemente des Infobereichs: {2})' -f $icon.Where, $icon.Name, $tree
+        return $null
+    }
+    return @{ Where = $icon.Where; Tooltip = $icon.Name; Overflow = [bool]$chevron }
+}
+
+# offene Menüs des Clients mit Esc schließen, je Untermenü einmal - nie ohne offenes Menü, Esc schlösse sonst einen Dialog
+function Close-ClientMenu {
+    param($Ctx)
+    for ($round = 0; $round -lt 4; $round++) {
+        if ($Ctx.Process.HasExited) { return }
+        if (@((Get-UiItems $Ctx.Process.Id -IncludeMain) | Where-Object { $_.Visible -and $_.Type -eq 'MenuItem' }).Count -eq 0) { return }
+        $null = [OcProbe.Desk]::Press(0x1B, $false)
+        Start-Sleep -Milliseconds 400
+    }
+}
+
+# sichtbare Einträge der offenen Menüs des Clients (Texte ohne Anmeldenamen)
+function Get-OpenMenuEntries {
+    param($Ctx)
+    return @((Get-UiItems $Ctx.Process.Id -IncludeMain) | Where-Object { $_.Visible -and $_.Type -eq 'MenuItem' -and $_.Name } | ForEach-Object { Protect-Text $_.Name })
+}
+
+# Eintrag eines offenen Menüs mit der Maus anklicken, wahlweise erst ein Untermenü öffnen; Rückgabe: der Eintrag
+function Invoke-MenuEntry {
+    param($Ctx, [string] $EntryPattern, [string] $SubmenuPattern = '', [string] $Where = 'im Tray-Menü')
+    if ($SubmenuPattern) {
+        $sub = Find-UiElement (Get-UiItems $Ctx.Process.Id -IncludeMain) '' $SubmenuPattern 'MenuItem'
+        if (-not $sub) {
+            Close-ClientMenu $Ctx
+            Stop-Step ('Untermenü {0} {1} nicht gefunden' -f $SubmenuPattern, $Where)
+        }
+        $how = Invoke-UiClick $Ctx $sub -NoActivate -NoInvoke
+        if (-not $how) {
+            Close-ClientMenu $Ctx
+            Stop-Step ('Untermenü "{0}" {1} nicht anklickbar' -f (Protect-Text $sub.Name), $Where)
+        }
+        Add-Timeline ('Klick: Untermenü "{0}" {1} ({2})' -f $sub.Name, $Where, $how)
+    }
+    $entry = Wait-Ui $Ctx { $e = Find-UiElement (Get-UiItems $Ctx.Process.Id -IncludeMain) '' $EntryPattern 'MenuItem'; if ($e -and $e.Enabled) { $e } } 10
+    if (-not $entry) {
+        Close-ClientMenu $Ctx
+        Stop-Step ('Eintrag {0} {1} nicht gefunden oder gesperrt' -f $EntryPattern, $Where)
+    }
+    $how = Invoke-UiClick $Ctx $entry -NoActivate -NoInvoke
+    if (-not $how) {
+        Close-ClientMenu $Ctx
+        Stop-Step ('Eintrag "{0}" {1} nicht anklickbar' -f (Protect-Text $entry.Name), $Where)
+    }
+    Add-Timeline ('Klick: "{0}" {1} ({2})' -f $entry.Name, $Where, $how)
+    return $entry
+}
+
+# Explorer-Fenster der Shell (CabinetWClass): Titel und Handle
+function Get-ExplorerWindows {
+    $root = [System.Windows.Automation.AutomationElement]::RootElement
+    $condition = New-Object System.Windows.Automation.PropertyCondition -ArgumentList ([System.Windows.Automation.AutomationElement]::ClassNameProperty), 'CabinetWClass'
+    $found = $null
+    try { $found = $root.FindAll([System.Windows.Automation.TreeScope]::Children, $condition) } catch { $found = $null }
+    if ($null -eq $found) { return }
+    foreach ($window in $found) {
+        try { [pscustomobject]@{ Element = $window; Name = [string]$window.Current.Name; Handle = [long]$window.Current.NativeWindowHandle } } catch { }
+    }
+}
+
+function Close-ExplorerWindow {
+    param($Window)
+    if (-not $Window) { return }
+    try { $Window.Element.GetCurrentPattern([System.Windows.Automation.WindowPattern]::Pattern).Close() } catch { }
+}
+
+# wartet auf ein Explorer-Fenster, das nicht in $Before (Handles) war
+function Wait-NewExplorerWindow {
+    param($Ctx, [long[]] $Before, [int] $Seconds)
+    return (Wait-Ui $Ctx { @(Get-ExplorerWindows | Where-Object { $Before -notcontains $_.Handle }) | Select-Object -First 1 } $Seconds)
+}
+
+# ein Explorer-Fenster nach vorn, wie bei einem Tester, der zwischendurch etwas anderes tut; Rückgabe: das Fenster oder $null
+function Open-CoverWindow {
+    param($Ctx, [string] $Path)
+    $before = [long[]]@(Get-ExplorerWindows | ForEach-Object { $_.Handle })
+    Start-Process -FilePath 'explorer.exe' -ArgumentList ('"{0}"' -f $Path)
+    $window = Wait-NewExplorerWindow $Ctx $before 20
+    if ($window) {
+        $null = [OcProbe.Desk]::Activate([IntPtr]$window.Handle)
+        Start-Sleep -Milliseconds 700
+        Add-Timeline ('Explorer-Fenster „{0}“ nach vorn geholt' -f $window.Name)
+    }
+    return $window
+}
+
+# Titel und Prozess des Fensters im Vordergrund, für den Bericht
+function Get-ForegroundNote {
+    $handle = [OcProbe.Desk]::GetForegroundWindow()
+    if ($handle -eq [IntPtr]::Zero) { return 'keins' }
+    $title = [OcProbe.Ui]::Text($handle)
+    $owner = '?'
+    try { $owner = ([System.Windows.Automation.AutomationElement]::FromHandle($handle)).Current.ProcessId } catch { }
+    $name = '?'
+    try { $name = (Get-Process -Id $owner -ErrorAction Stop).ProcessName } catch { }
+    return ('„{0}“ ({1})' -f (Protect-Text $title), $name)
+}
+
+# Zeile eines Ordners in der Kontoansicht mit der rechten Maustaste: sein Menü - im Hauptfenster gleichwertig zu den Einträgen des Tray-Menüs
+function Open-FolderMenu {
+    param($Ctx, [string] $FolderName)
+    $row = Wait-Ui $Ctx { @((Get-UiItems $Ctx.Process.Id -IncludeMain) | Where-Object { $_.Visible -and $_.Type -in 'TreeItem', 'DataItem', 'ListItem' -and $_.Name -and $_.Name.Contains($FolderName) }) | Select-Object -First 1 } 20
+    if (-not $row) { Stop-Step ('Zeile des Ordners {0} in der Kontoansicht nicht gefunden (20 s)' -f $FolderName) }
+    $main = @([OcProbe.Ui]::TopWindows($Ctx.Process.Id) | Where-Object { $_.Text -eq $appName }) | Select-Object -First 1
+    if ($main) {
+        $null = [OcProbe.Desk]::Activate($main.Handle)
+        Start-Sleep -Milliseconds 250
+    }
+    $x = [int][Math]::Round($row.Rect.Left + [Math]::Min(120, $row.Rect.Width / 2))
+    $y = [int][Math]::Round($row.Rect.Top + $row.Rect.Height / 2)
+    [OcProbe.Mouse]::RightClick($x, $y)
+    Add-Timeline ('Rechtsklick: Zeile des Ordners "{0}" (Mausklick bei {1},{2})' -f $FolderName, $x, $y)
+    $menu = Wait-Ui $Ctx { if (@((Get-UiItems $Ctx.Process.Id -IncludeMain) | Where-Object { $_.Visible -and $_.Type -eq 'MenuItem' }).Count -gt 0) { $true } } 10
+    if (-not $menu) { Stop-Step ('nach dem Rechtsklick auf den Ordner {0} kein Menü (10 s)' -f $FolderName) }
+}
+
+# --- Konten (dauerlauf, dauerlauf-lang) ---------------------------------------
+
+# erster Start: Assistent, -ServerUrl mit Browser-Anmeldung, "Abschließen" mit den Vorgaben (virtuelle Dateien), verbunden, erster Sync.
+# Setzt OAuthRoot und OAuthUuid; Rückgabe: Detail
+function Add-FirstOAuthAccount {
+    param($Ctx, $Dl)
+    $found = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; if ((Get-BasicWizardState $i) -eq 'adresse') { @{ Items = $i } } } 90
+    if (-not $found) { Stop-Step 'Adressseite des Assistenten erschien nicht innerhalb von 90 s' }
+    $null = Write-BasicStep $Ctx 'assistent' 'erster Start: Assistent, Adressseite'
+    $mark = Complete-OAuthWizard $Ctx
+    if (-not (Wait-LogSince $Ctx (Get-ConnectedPattern $ServerUrl) $mark 120)) { Stop-Step ('Konto an {0} nach "Abschließen" nicht verbunden (120 s)' -f $ServerUrl) }
+    $sync = Wait-FolderSync $Ctx $mark
+    $Dl.OAuthRoot = $sync.Path
+    Start-Sleep -Seconds 2
+    $Dl.OAuthUuid = Get-VisibleAccountId (Get-UiItems $Ctx.Process.Id -IncludeMain)
+    $shot = Write-BasicStep $Ctx 'konto-1' 'Konto mit Browser-Anmeldung verbunden, erster Sync fertig'
+    if (-not $Dl.OAuthUuid) { Stop-Step 'Kontoansicht des neuen Kontos nicht zu sehen' }
+    return ('verbunden; Ordner {0}, erster Sync: {1}; Foto {2}' -f $sync.Path, $sync.Status, $shot)
+}
+
+# "Mehr" → "Konto hinzufügen…": -BasicServerUrl mit Kennwort, "Erweitert" → "Ordner manuell", Ordner-Assistent mit dem Serverordner
+# $RemoteFolder, erster Sync. Setzt BasicUuid und Folder1Path; Rückgabe: Detail
+function Add-BasicAccountManual {
+    param($Ctx, $Dl, [string] $RemoteFolder)
+    Invoke-MoreMenu $Ctx $addAccountEntryPattern 'konto-2'
+    $found = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; if ((Get-BasicWizardState $i) -eq 'adresse') { @{ Items = $i } } } 60
+    if (-not $found) { Stop-Step 'Assistent erschien nach "Konto hinzufügen…" nicht innerhalb von 60 s' }
+    $null = Write-BasicStep $Ctx 'assistent-2' 'zweites Konto: Assistent, Adressseite'
+    $mark = Complete-BasicWizardManual $Ctx
+    if (-not (Wait-LogSince $Ctx (Get-ConnectedPattern $BasicServerUrl) $mark 120)) { Stop-Step ('Konto an {0} nach "Abschließen" nicht verbunden (120 s)' -f $BasicServerUrl) }
+    # "Ordner manuell": NewAccountBuilder öffnet den Ordner-Assistenten in der Kontoansicht
+    $wizard = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id -IncludeMain; if (@($i | Where-Object { $_.Visible -and $_.Id -like '*AddFolderSyncWizard*' }).Count -gt 0) { @{ Items = $i } } } 60
+    if (-not $wizard) { Stop-Step 'Ordner-Assistent öffnete sich nach "Abschließen" nicht (60 s)' }
+    $Dl.BasicUuid = Get-VisibleAccountId $wizard.Items
+    $mark = Get-LogMark $Ctx
+    $folder = Complete-FolderWizard $Ctx $RemoteFolder
+    $sync = Wait-FolderSync $Ctx $mark $folder.Local
+    $Dl.Folder1Path = $folder.Local
+    Start-Sleep -Seconds 2
+    $shot = Write-BasicStep $Ctx 'ordner-1' 'zweites Konto verbunden, Ordner eingerichtet, erster Sync fertig'
+    return ('verbunden; Ordner {0} (virtuelle Dateien: {1}), erster Sync: {2}; Foto {3}' -f $folder.Local, $(if ($folder.Vfs) { 'an' } else { 'aus' }), $sync.Status, $shot)
+}
+
+# "Konto verwalten" → "Entfernen" → "Zugang löschen" für das Konto $Uuid; Rückgabe: Detail
+function Remove-AccountByUi {
+    param($Ctx, [string] $Uuid, [string] $What, [string] $Step)
+    if (-not (Select-AccountView $Ctx $Uuid)) { Stop-Step ('Kontoansicht des Kontos {0} nicht wählbar' -f $What) }
+    $before = @(Get-AccountButtons (Get-UiItems $Ctx.Process.Id -IncludeMain)).Count
+    $null = Write-BasicStep $Ctx ('kontoansicht-' + $Step) ('Kontoansicht des Kontos {0}' -f $What)
+    if (-not (Invoke-AccountMenu $Ctx $removeEntryPattern $Step)) { Stop-Step $Ctx.Problem }
+    $confirm = Wait-Ui $Ctx { $b = @((Get-UiItems $Ctx.Process.Id) | Where-Object { $_.Visible -and $_.Type -eq 'Button' -and $_.Id -like '*removeAccountButton' }) | Select-Object -First 1; if ($b) { $b } } 20
+    if (-not $confirm) { Stop-Step 'Rückfrage zum Entfernen erschien nicht (20 s)' }
+    $shot = Write-BasicStep $Ctx $Step 'Rückfrage zum Entfernen des Kontos'
+    $how = Invoke-UiClick $Ctx $confirm
+    if (-not $how) { Stop-Step '"Zugang löschen" nicht auslösbar' }
+    Add-Timeline ('Klick: "{0}" ({1})' -f $confirm.Name, $how)
+    $gone = Wait-Ui $Ctx { if (@(Get-AccountButtons (Get-UiItems $Ctx.Process.Id -IncludeMain)).Count -lt $before) { $true } } 30
+    if (-not $gone) { Stop-Step ('Knopf des Kontos nach "Zugang löschen" noch da (30 s); Foto {0}' -f $shot) }
+    Start-Sleep -Seconds 3
+    $shot2 = Write-BasicStep $Ctx ($Step + '-weg') 'nach dem Entfernen des Kontos'
+    return ('Konten vorher {0}, nachher {1}; Fotos {2}, {3}' -f $before, @(Get-AccountButtons (Get-UiItems $Ctx.Process.Id -IncludeMain)).Count, $shot, $shot2)
+}
+
+# Statuszeile der Kontoansicht (connectionStatusLabel, etwa "Verbunden"), nach Wahl des Kontos in der Werkzeugleiste; leer, wenn nicht lesbar
+function Get-AccountStatus {
+    param($Ctx, [string] $Uuid)
+    if (-not $Uuid -or -not (Select-AccountView $Ctx $Uuid)) { return '' }
+    $items = Get-UiItems $Ctx.Process.Id -IncludeMain
+    $label = @($items | Where-Object { $_.Visible -and $_.Id -like ('*accountView_' + $Uuid + '*connectionStatusLabel') }) | Select-Object -First 1
+    if (-not $label) { $label = Find-UiElement $items '*connectionStatusLabel' '' '' }
+    if ($label) { return [string]$label.Name }
+    return ''
+}
+
+# lokaler Pfad eines Ordners, wie ihn das Protokoll nennt ("C:/Users/…/") oder der Ordner-Assistent ("C:\Users\…")
+function ConvertTo-LocalPath {
+    param([string] $Path)
+    return ($Path.TrimEnd('/', '\') -replace '/', '\')
+}
+
+# Datei vom Server: per WebDAV anlegen und warten, bis sie im lokalen Ordner liegt; Rückgabe: @{ Ok; Detail; Seconds; Local }
+function Test-ServerFileArrives {
+    param($Ctx, [string] $Server, [string] $Token, [string] $RemotePath, [string] $LocalDir, [int] $Seconds = 180)
+    $name = Split-Path -Leaf ($RemotePath -replace '/', '\')
+    $bytes = [Text.Encoding]::UTF8.GetBytes((("owncloud.online Probe {0} {1}`r`n" -f $name, [guid]::NewGuid()) * 20))
+    $code = Invoke-Dav 'PUT' $RemotePath $bytes -Server $Server -Token $Token
+    $result = @{ Ok = $false; Detail = ''; Seconds = $null; Local = (Join-Path (ConvertTo-LocalPath $LocalDir) $name); Bytes = $bytes; Code = $code; Put = ($code -in 201, 204) }
+    if (-not $result.Put) {
+        $result.Detail = 'PUT {0}: HTTP {1}' -f $RemotePath, $code
+        return $result
+    }
+    $start = Get-Date
+    $seen = Wait-Ui $Ctx { if (Test-Path -LiteralPath $result.Local) { $true } } $Seconds
+    if (-not $seen) {
+        $result.Detail = '{0}: HTTP {1}, nach {2} s nicht lokal' -f $name, $code, $Seconds
+        return $result
+    }
+    $result.Seconds = [int]((Get-Date) - $start).TotalSeconds
+    $result.Ok = $true
+    $result.Detail = '{0}: HTTP {1}, lokal nach {2} s ({3})' -f $name, $code, $result.Seconds, (Get-PlaceholderState $result.Local).Text
+    return $result
+}
+
+# lokale Datei anlegen und warten, bis der Server sie hat (WebDAV GET 200); Rückgabe: @{ Ok; Detail; Unchecked }
+function Test-LocalFileArrives {
+    param($Ctx, [string] $Server, [string] $Token, [string] $LocalDir, [string] $RemoteDir, [string] $Name, [int] $Seconds = 180)
+    $local = Join-Path (ConvertTo-LocalPath $LocalDir) $Name
+    [IO.File]::WriteAllText($local, ("owncloud.online Probe {0} {1}`r`n" -f $Name, [guid]::NewGuid()), (New-Object System.Text.UTF8Encoding $false))
+    $remote = if ($RemoteDir) { '{0}/{1}' -f $RemoteDir.Trim('/'), $Name } else { $Name }
+    $start = Get-Date
+    $last = 0
+    $deadline = $start.AddSeconds($Seconds)
+    while ((Get-Date) -lt $deadline -and -not $Ctx.Process.HasExited) {
+        $last = Invoke-Dav 'GET' $remote -Server $Server -Token $Token
+        if ($last -eq 200 -or $last -eq 401) { break }
+        Start-Sleep -Seconds 5
+    }
+    if ($last -eq 200) { return @{ Ok = $true; Unchecked = $false; Detail = ('{0}: nach {1} s auf dem Server' -f $Name, [int]((Get-Date) - $start).TotalSeconds) } }
+    if ($last -eq 401) {
+        # WebDAV mit Kennwort abgelehnt (Server nur mit OAuth2): dann belegt das Protokoll des Clients den Upload
+        $done = Wait-LogSince $Ctx ('Completed propagation of [^\r\n]*' + [regex]::Escape($Name) + '[^\r\n]*with status [^\r\n]*') 0 ([Math]::Max(10, $Seconds - [int]((Get-Date) - $start).TotalSeconds))
+        $status = if ($done -and $done -match 'Success') { 'Success' } elseif ($done) { 'anderer Status' } else { 'nicht im Protokoll' }
+        return @{ Ok = ($status -eq 'Success'); Unchecked = $true; Detail = ('{0}: WebDAV mit Kennwort am Server abgelehnt (HTTP 401), Upload laut Protokoll des Clients: {1}' -f $Name, $status) }
+    }
+    return @{ Ok = $false; Unchecked = $false; Detail = ('{0}: nach {1} s nicht auf dem Server (zuletzt HTTP {2})' -f $Name, $Seconds, $last) }
+}
+
+# --- Serveradresse ändern (dauerlauf) -----------------------------------------
+
+# "Konto verwalten" → "Serveradresse ändern…" für das Konto mit Browser-Anmeldung, wie ein Tester: neue Adresse, "Prüfen und anmelden",
+# Anmeldung im Browser an der neuen Adresse (assistent-anmeldung.py). Danach muss das Konto an der neuen Adresse verbunden sein, der Ordner
+# synchronisieren und eine Datei ankommen, die erst nach dem Umzug auf dem Server entstand. Rückgabe: Detail
+function Invoke-ServerMove {
+    param($Ctx, $Dl, [string] $To, [string] $Step)
+    $toHost = ([uri]$To).Host
+    if (-not $Dl.OAuthUuid -or -not $Dl.OAuthRoot) { Stop-Step 'kein Konto mit Browser-Anmeldung' }
+    if (-not (Select-AccountView $Ctx $Dl.OAuthUuid)) { Stop-Step 'Kontoansicht des Kontos mit Browser-Anmeldung nicht wählbar' }
+    if (-not (Invoke-AccountMenu $Ctx $changeServerEntryPattern $Step)) { Stop-Step $Ctx.Problem }
+    $edit = Wait-Ui $Ctx { $e = Find-UiElement (Get-UiItems $Ctx.Process.Id -IncludeMain) '*newServerUrlEdit' '' 'Edit'; if ($e -and $e.Enabled) { $e } } 20
+    if (-not $edit) { Stop-Step 'Dialog „Serveradresse ändern“ erschien nicht (20 s)' }
+    if (-not (Set-UiValue $edit $To)) { Stop-Step ('Adresse {0} nicht eintragbar' -f $To) }
+    Start-Sleep -Milliseconds 300
+    $shotDialog = Write-BasicStep $Ctx ($Step + '-dialog') ('„Serveradresse ändern“: {0} eingetragen (Feld zeigt "{1}")' -f $To, (Get-UiValue $edit))
+    $check = Find-UiElement (Get-UiItems $Ctx.Process.Id -IncludeMain) '*checkAndSignInButton' '' 'Button'
+    $mark = Get-LogMark $Ctx
+    $how = Invoke-UiClick $Ctx $check
+    if (-not $how) { Stop-Step '„Prüfen und anmelden“ nicht gefunden oder nicht auslösbar' }
+    Add-Timeline ('Klick: "{0}" mit {1} ({2})' -f $check.Name, $To, $how)
+    $link = Get-AuthorizeUrl $Ctx -ServerHost $toHost
+    if (-not $link) {
+        $message = Find-UiElement (Get-UiItems $Ctx.Process.Id -IncludeMain) '*messageLabel' '' 'Text'
+        $null = Write-BasicStep $Ctx ($Step + '-kein-link') 'kein Anmeldelink'
+        Stop-Step ('kein Anmeldelink für {0} (45 s); Meldung im Dialog: „{1}“' -f $toHost, $(if ($message) { $message.Name } else { '-' }))
+    }
+    Add-Timeline ('Anmelde-Link aus {0}' -f $link.Source)
+    $shotWait = Write-BasicStep $Ctx ($Step + '-anmeldung') ('„Serveradresse ändern“ wartet auf die Anmeldung an {0}' -f $toHost)
+    Stop-Browsers
+    $login = Invoke-BrowserLogin $Ctx $link.Url $Step
+    Add-Timeline ('Browser-Anmeldung an {0} (assistent-anmeldung.py): {1}' -f $toHost, $login.Summary)
+    if (-not $login.Ok) { Stop-Step ('Browser-Anmeldung an {0}: {1}' -f $toHost, $login.Summary) }
+    $outcome = Wait-Ui $Ctx {
+        $text = Get-LogSince $Ctx $mark
+        $moved = [regex]::Match($text, 'moving account [^\r\n]*')
+        $refused = [regex]::Match($text, 'server move failed: [^\r\n]*')
+        if ($moved.Success) { @{ State = 'umgestellt'; Line = $moved.Value } } elseif ($refused.Success) { @{ State = 'abgelehnt'; Line = $refused.Value } }
+    } 120
+    if (-not $outcome) {
+        $message = Find-UiElement (Get-UiItems $Ctx.Process.Id -IncludeMain) '*messageLabel' '' 'Text'
+        $null = Write-BasicStep $Ctx ($Step + '-ohne-ergebnis') 'nach der Anmeldung weder umgestellt noch abgelehnt'
+        Stop-Step ('nach der Anmeldung in 120 s weder umgestellt noch abgelehnt; Meldung im Dialog: „{0}“' -f $(if ($message) { $message.Name } else { '-' }))
+    }
+    if ($outcome.State -ne 'umgestellt') {
+        $null = Write-BasicStep $Ctx ($Step + '-abgelehnt') 'Umzug abgelehnt'
+        Stop-Step ('Umzug abgelehnt: ' + $outcome.Line)
+    }
+    if (-not (Wait-LogSince $Ctx (Get-ConnectedPattern $To) $mark 120)) { Stop-Step ('nach dem Umzug nicht mit {0} verbunden (120 s); {1}' -f $toHost, $outcome.Line) }
+    $closed = [bool](Wait-Ui $Ctx { if (-not (Find-UiElement (Get-UiItems $Ctx.Process.Id -IncludeMain) '*newServerUrlEdit' '' 'Edit')) { $true } } 30)
+    $root = ConvertTo-LogPath $Dl.OAuthRoot
+    $sync = Wait-LogSince $Ctx ('(?i)Sync finished for "' + [regex]::Escape($root) + '" with status [^\r\n]+') $mark 240
+    if (-not $sync) { Stop-Step ('nach dem Umzug kein Sync des Ordners {0} (240 s)' -f $root) }
+    $status = [regex]::Match($sync, 'with status (\S+)').Groups[1].Value
+    # Datei, die erst jetzt auf dem Server entsteht (über die neue Adresse): kommt sie an, synchronisiert der Ordner über die neue Adresse
+    $file = Test-ServerFileArrives $Ctx $To $loginToken ('probe-{0}-{1}.txt' -f $Step, [guid]::NewGuid().ToString('N').Substring(0, 8)) $Dl.OAuthRoot 180
+    if ($file.Put) { $Dl.TestooFiles.Add([IO.Path]::GetFileName($file.Local)) }
+    $shotDone = Write-BasicStep $Ctx ($Step + '-fertig') ('nach dem Umzug auf {0}' -f $toHost)
+    $detail = '{0}; verbunden mit {1}; Dialog geschlossen: {2}; Sync des Ordners: {3}; Datei vom Server: {4}; Fotos {5}, {6}, {7}' -f $outcome.Line, $toHost, $(if ($closed) { 'ja' } else { 'nein' }), $status,
+        $file.Detail, $shotDialog, $shotWait, $shotDone
+    if (-not $closed) { Stop-Step ('Dialog nach dem Umzug noch offen (30 s); ' + $detail) }
+    if ($status -notmatch 'Success|Problem') { Stop-Step ('Sync nach dem Umzug endete mit {0}; {1}' -f $status, $detail) }
+    if ($file.Put -and -not $file.Ok) { Stop-Step ('Datei vom Server kam nach dem Umzug nicht an; ' + $detail) }
+    return $detail
+}
+
+# --- Umstieg vom offiziellen Client mit Kennwort (dauerlauf) -----------------
+
+# Konfiguration des offiziellen Clients (6.0.3) mit dem Konto des Testkontos 2 und einem klassisch synchronisierten Ordner auf einen
+# Serverordner der Probe; ohne davUrl und ohne Journal wie bei einem Ordner, den 6.0.3 nie synchronisiert hat
+function Write-LegacyConfigBasic {
+    param([string] $Server, [string] $User, [string] $LocalDir, [string] $TargetPath)
+    New-Item -ItemType Directory -Force -Path $LocalDir, (Split-Path -Parent $legacyConfigPath) | Out-Null
+    $content = @(
+        '[General]'
+        'clientVersion=6.0.3.18040'
+        ''
+        '[Accounts]'
+        ('0\url={0}' -f $Server.TrimEnd('/'))
+        ('0\dav_user={0}' -f $User)
+        ('0\http_user={0}' -f $User)
+        '0\display-name=Umstieg'
+        ('0\Folders\1\localPath={0}/' -f ($LocalDir -replace '\\', '/'))
+        '0\Folders\1\journalPath=.sync_journal.db'
+        ('0\Folders\1\targetPath={0}' -f $TargetPath)
+        '0\Folders\1\displayString=Umstieg'
+        '0\Folders\1\paused=false'
+        '0\Folders\1\virtualFilesMode=off'
+        'version=13'
+    )
+    [IO.File]::WriteAllText($legacyConfigPath, ($content -join "`r`n") + "`r`n")
+}
+
+# Umstieg, Konto mit Kennwort: Adressseite mit vorbelegter Adresse, "Anmelden", Kennwortseite mit dem Anmeldenamen aus dem offiziellen
+# Client, Kennwort, "Anmelden", Erfolgsseite, "Abschließen". Rückgabe: @{ PresetUrl; PresetUser (ja/nein/leer); Mark (vor "Abschließen") }
+function Complete-ImportPassword {
+    param($Ctx, [string] $User, [string] $Password)
+    $found = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; if ((Get-BasicWizardState $i) -eq 'adresse') { @{ Items = $i } } } 60
+    if (-not $found) { Stop-Step 'Assistent des Umstiegs erschien nicht innerhalb von 60 s' }
+    $field = Get-UrlField $found.Items
+    $presetUrl = if ($field) { Get-UiValue $field } else { '' }
+    $null = Write-BasicStep $Ctx 'umstieg-adresse' ('Assistent des Umstiegs, Adresse vorbelegt: "{0}"' -f $presetUrl)
+    $next = Find-UiButton $found.Items '*wizardbutton1' $nextPattern
+    $how = Invoke-UiClick $Ctx $next
+    if (-not $how) { Stop-Step '„Anmelden“ auf der Adressseite des Umstiegs nicht auslösbar' }
+    Add-Timeline ('Klick: "{0}" mit der vorbelegten Adresse ({1})' -f $next.Name, $how)
+    Start-Sleep -Milliseconds 700
+    $outcome = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; $s = Get-BasicWizardState $i; if ($s -and $s -ne 'adresse') { @{ State = $s; Items = $i } } } 150
+    if (-not $outcome) { Stop-Step 'keine Kennwortseite im Umstieg (150 s nach „Anmelden“)' }
+    if ($outcome.State -ne 'kennwort') { Stop-Step ('Zustand „{0}“ statt der Kennwortseite im Umstieg' -f $outcome.State) }
+    Start-Sleep -Milliseconds 500
+    $items = Get-UiItems $Ctx.Process.Id
+    $userField = Find-UiElement $items '*LoginUserLineEdit' '' 'Edit'
+    $passwordField = Find-UiElement $items '*PasswordLineEdit' '' 'Edit'
+    if (-not $userField -or -not $passwordField) { Stop-Step 'Felder für Benutzername oder Kennwort im Umstieg nicht gefunden' }
+    $preset = Get-UiValue $userField
+    $presetUser = if (-not $preset) { 'leer' } elseif ($preset -ceq $User) { 'ja' } else { 'nein (anderer Name)' }
+    $null = Write-BasicStep $Ctx 'umstieg-kennwortseite' ('Kennwortseite des Umstiegs, Anmeldename aus dem offiziellen Client vorbelegt: {0}' -f $presetUser)
+    if ($presetUser -ne 'ja' -and -not ((Set-UiValue $userField $User) -and ((Get-UiValue $userField) -ceq $User))) { Stop-Step 'Benutzername im Umstieg nicht eintragbar' }
+    # ab hier kennt der Client das Kennwort
+    $Ctx.SecretEntered = $true
+    $Ctx.TokensPossible = $true
+    if (-not (Set-PasswordField $Ctx $passwordField $Password)) { Stop-Step 'Kennwort im Umstieg nicht eintragbar' }
+    Start-Sleep -Milliseconds 300
+    $null = Write-BasicStep $Ctx 'umstieg-eingaben' 'Kennwort eingetragen (Anmeldename geschwärzt, Kennwortfeld geschwärzt)'
+    $next = Find-UiButton (Get-UiItems $Ctx.Process.Id) '*wizardbutton1' $nextPattern
+    $how = Invoke-UiClick $Ctx $next
+    if (-not $how) { Stop-Step '„Anmelden“ auf der Kennwortseite des Umstiegs nicht auslösbar' }
+    Add-Timeline ('Klick: "{0}" auf der Kennwortseite des Umstiegs ({1})' -f $next.Name, $how)
+    Start-Sleep -Milliseconds 700
+    $outcome = Wait-Ui $Ctx {
+        $i = Get-UiItems $Ctx.Process.Id
+        $state = Get-BasicWizardState $i
+        if ($state -eq 'kennwort') {
+            $message = Find-UiElement $i '*ErrorLabel' '' 'Text'
+            $nextNow = Find-UiButton $i '*wizardbutton1' $nextPattern
+            if ($message -and $message.Name -and $nextNow -and $nextNow.Enabled) { @{ State = 'abgelehnt'; Items = $i; Message = $message.Name } }
+        } elseif ($state) {
+            @{ State = $state; Items = $i }
+        }
+    } 120
+    if (-not $outcome) { Stop-Step 'weder Erfolgsseite noch Meldung im Umstieg (120 s nach „Anmelden“)' }
+    if ($outcome.State -eq 'abgelehnt') { Stop-Step ('Anmeldung im Umstieg abgelehnt: ' + $outcome.Message) }
+    if ($outcome.State -ne 'erfolg') { Stop-Step ('Zustand „{0}“ statt der Erfolgsseite im Umstieg' -f $outcome.State) }
+    $null = Write-BasicStep $Ctx 'umstieg-erfolgsseite' 'Erfolgsseite des Umstiegs'
+    $finish = Find-UiButton $outcome.Items '*qt_wizard_finish*' $finishPattern
+    $mark = Get-LogMark $Ctx
+    $how = Invoke-UiClick $Ctx $finish
+    if (-not $how) { Stop-Step '„Abschließen“ im Umstieg nicht gefunden oder nicht auslösbar' }
+    Add-Timeline ('Klick: "{0}" im Umstieg ({1})' -f $finish.Name, $how)
+    return @{ PresetUrl = $presetUrl; PresetUser = $presetUser; Mark = $mark }
+}
+
+# Abschlussbericht des Umstiegs: Text (ohne Anmeldenamen), Foto, "OK"; Rückgabe: @{ Text; Shot }
+function Close-ImportReport {
+    param($Ctx, [int] $Seconds = 120)
+    $found = Wait-Ui $Ctx { if (Find-TopWindow $Ctx.Process.Id $importReportPattern) { @{ Items = (Get-UiItems $Ctx.Process.Id) } } } $Seconds
+    if (-not $found) { Stop-Step ('Abschlussbericht des Umstiegs erschien nicht innerhalb von {0} s' -f $Seconds) }
+    $items = @($found.Items | Where-Object { $_.Window -match $importReportPattern })
+    $text = Limit-Text (Protect-Text ((@($items | Where-Object { $_.Visible -and $_.Type -eq 'Text' -and $_.Name } | ForEach-Object { $_.Name })) -join ' / ')) 1200
+    $shot = Write-BasicStep $Ctx 'umstieg-bericht' 'Abschlussbericht des Umstiegs'
+    $ok = Find-UiButton $items '' '^&?OK$'
+    $how = Invoke-UiClick $Ctx $ok
+    if (-not $how) { Stop-Step 'Knopf „OK“ im Abschlussbericht nicht auslösbar' }
+    Add-Timeline ('Klick: "{0}" im Abschlussbericht ({1})' -f $ok.Name, $how)
+    Start-Sleep -Seconds 2
+    return @{ Text = $text; Shot = $shot }
+}
+
+# --- Ende und Auswertung (dauerlauf, dauerlauf-lang) ----------------------------
+
+# Ende über --quit; ein Absturz oder Hänger dabei zählt wie einer im Betrieb. Danach Speicherabbilder einsammeln
+function Stop-DauerClient {
+    param($Ctx, [string] $Exe, [string] $Label)
+    if ($Ctx.Process -and -not $Ctx.Process.HasExited) {
+        $Ctx.Quitting = $true
+        $null = Invoke-Step ('Prüfling beenden (--quit, {0})' -f $Label) $Exe '--quit'
+        if ($Ctx.Process.WaitForExit(90 * 1000)) {
+            $Ctx.ExitCode = $Ctx.Process.ExitCode
+            Add-Timeline ('nach --quit beendet, Exit-Code {0}' -f (Format-ExitCode $Ctx.ExitCode))
+        } else {
+            $null = & taskkill.exe /PID $Ctx.Process.Id /T /F
+            $Ctx.QuitHung = $true
+            Add-Timeline 'nach --quit nicht in 90 s beendet, abgebrochen'
+        }
+    }
+    Stop-Client
+    Stop-Browsers
+    Start-Sleep -Seconds 3
+    $deadline = (Get-Date).AddSeconds(120)
+    while ((Get-Date) -lt $deadline -and @(Get-Process -Name 'WerFault', 'WerFaultSecure' -ErrorAction SilentlyContinue).Count -gt 0) { Start-Sleep -Seconds 1 }
+    if ($Ctx.Crashed -and $Ctx.Evidence.Count -eq 0) {
+        Get-CrashEvidence $Ctx
+    }
+    foreach ($dump in @(Get-ChildItem -LiteralPath $dumpDir -Filter '*.dmp' -File -ErrorAction SilentlyContinue | Where-Object { -not $knownDumps.Contains($_.FullName) })) {
+        $null = $knownDumps.Add($dump.FullName)
+        $Ctx.Dumps.Add($dump.FullName)
+    }
+    foreach ($line in $Ctx.Evidence) { Add-Timeline "Beleg: $line" }
+}
+
+# Zeilen mit ASSERT/ENFORCE/ENSURE/fatal aus den Protokollen und dem Absturzprotokoll
+function Get-FatalLines {
+    param($Ctx)
+    $fatal = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($log in $Ctx.Logs) {
+        foreach ($line in @((Read-SharedText $log) -split "`r?`n" | Where-Object { $_ -match $fatalPattern })) { $fatal.Add(('{0}: {1}' -f (Split-Path -Leaf $log), (Limit-Text (Protect-Text $line) 500))) }
+    }
+    $crashLog = Read-SharedText (Join-Path ([IO.Path]::GetTempPath()) "$appName-crash.log")
+    foreach ($line in @($crashLog -split "`r?`n" | Where-Object { $_ -match $fatalPattern })) { $fatal.Add(('Absturzprotokoll: {0}' -f (Limit-Text (Protect-Text $line) 500))) }
+    return , $fatal
+}
+
+# kein Absturz: Prozess, Speicherabbilder, ASSERT im Protokoll, Ende über --quit
+function Add-NoCrashCheck {
+    param($Ctx, [string] $Id, $Fatal)
+    $problems = @()
+    if ($Ctx.Crashed) { $problems += ('Absturz während: {0}' -f $Ctx.CrashStep) }
+    if ($Ctx.ShutdownCrash) { $problems += ('Absturz beim Beenden vor dem Neustart: {0}' -f $Ctx.ShutdownCrash) }
+    if ($Ctx.Dumps.Count -gt 0) { $problems += ('WER hat Speicherabbilder geschrieben: {0}' -f ((@($Ctx.Dumps | ForEach-Object { Split-Path -Leaf $_ })) -join ', ')) }
+    if ($Fatal.Count -gt 0) { $problems += ('{0} Zeile(n) mit ASSERT/ENFORCE/ENSURE/fatal, zuletzt: {1}' -f $Fatal.Count, $Fatal[$Fatal.Count - 1]) }
+    if ($Ctx.QuitHung) { $problems += 'nach --quit nicht in 90 s beendet' } elseif ($null -ne $Ctx.ExitCode -and $Ctx.ExitCode -ne 0) { $problems += ('Exit-Code {0}' -f (Format-ExitCode $Ctx.ExitCode)) }
+    $title = 'Kein Absturz: kein Speicherabbild (WER LocalDumps), kein ASSERT im Protokoll, Ende über --quit mit Exit-Code 0'
+    if ($problems.Count -gt 0) {
+        Add-Check $Id $title 'FEHLER' (Protect-Text ((@($problems) + @($Ctx.Evidence | Select-Object -First 5)) -join '; ')) ''
+    } else {
+        Add-Check $Id $title 'OK' ('Protokolle: {0}; Exit-Code nach --quit 0' -f ((@($Ctx.Logs | ForEach-Object { Split-Path -Leaf $_ })) -join ', ')) ''
+    }
+}
+
+function Add-LogSecretsCheck {
+    param($Ctx, [string] $Id)
+    $logCheck = Test-ClientLogSecrets $Ctx
+    $detail = 'Kennwort: {0} Treffer; base64(Benutzer:Kennwort): {1}; Authorization: Basic mit Wert: {2}; maskiert ("Basic [redacted]"): {3}; Protokolle: {4} Zeilen' -f $logCheck.Password, $logCheck.Token, $logCheck.Unmasked, $logCheck.Masked, $logCheck.Lines
+    $status = if ($logCheck.Lines -eq 0) { 'FEHLER' } elseif ($logCheck.Password + $logCheck.Token + $logCheck.Unmasked -eq 0) { 'OK' } else { 'FEHLER' }
+    Add-Check $Id 'Protokolle des Clients ohne Kennwort und ohne Basic-Zugang' $status $(if ($logCheck.Lines -eq 0) { 'kein Protokoll des Clients' } else { $detail }) ''
+}
+
+# Protokolle ins Artefakt, Auswertung eines Speicherabbilds, Listen, Ablauf; letzte Sicherung gegen Kennwörter im Artefakt
+function Complete-DauerArtifacts {
+    param($Ctx, $Fatal, [string] $DumpId, [string] $LeakId, [string] $Title, [string] $TimelineFile)
+    foreach ($log in $Ctx.Logs) { $null = Copy-Protected $log (Join-Path $OutDir (Split-Path -Leaf $log)) }
+    if ($Ctx.Dumps.Count -gt 0) {
+        Invoke-DumpAnalysis $Ctx
+        Add-Check $DumpId 'Auswertung des Speicherabbilds' 'INFO' (($Ctx.Analysis | Select-Object -First 12) -join '; ') ''
+        Add-List ('{0}: Auswertung des Speicherabbilds' -f $Title) $Ctx.Analysis.ToArray()
+    }
+    if ($Ctx.Crashed) {
+        Add-List ('{0}: Belege des Absturzes' -f $Title) $Ctx.Evidence.ToArray()
+        Add-List ('{0}: Ende des Protokolls (ohne Zugangsdaten)' -f $Title) $Ctx.LogTail
+    }
+    if ($Fatal.Count -gt 0) { Add-List ('{0}: ASSERT, ENFORCE, ENSURE, fatal' -f $Title) $Fatal.ToArray() }
+    Add-List 'Ablauf' $timeline.ToArray()
+    [IO.File]::WriteAllLines((Join-Path $OutDir $TimelineFile), [string[]]$timeline.ToArray(), (New-Object System.Text.UTF8Encoding $false))
+    $leaked = @(Protect-OutDir)
+    if ($leaked.Count -gt 0) {
+        Add-Check $LeakId 'Artefakt ohne Kennwort' 'FEHLER' ('Kennwort oder Basic-Zugang stand in {0} - vor dem Hochladen maskiert' -f ($leaked -join ', ')) ''
+    }
+}
+
+# Zeitpunkt einer Protokollzeile ("26-10-20 20:31:45:605 [ info …"), sonst $null
+function Get-LogLineTime {
+    param([string] $Line)
+    $match = [regex]::Match($Line, '^(\d{2}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})')
+    if (-not $match.Success) { return $null }
+    try { return [datetime]::ParseExact($match.Groups[1].Value, 'yy-MM-dd HH:mm:ss', [Globalization.CultureInfo]::InvariantCulture) } catch { return $null }
+}
+
+# --- Stichproben im langen Lauf (dauerlauf-lang) -------------------------------
+
+# Stichprobe: lebt der Prozess, antwortet das Hauptfenster (WM_NULL, 5 s), zeigen beide Konten „Verbunden“, ist keine Anmeldung verlangt.
+# Ein anderer Status zählt erst, wenn er 15 s später noch da ist (die Erneuerung des Tokens kann ihn kurz ändern).
+function Get-RunSample {
+    param($Ctx, $Dl, [string] $Label)
+    $sample = [ordered]@{ Zeit = (Get-Date); Minuten = 0.0; Lebt = $false; Reagiert = $false; WorkingSetMB = 0; PrivatMB = 0; Konten = ''; Verbunden = $false; Anmeldung = ''; Foto = '' }
+    if ($Dl.T0) { $sample.Minuten = [Math]::Round(((Get-Date) - $Dl.T0).TotalMinutes, 1) }
+    if ($Ctx.Process.HasExited) { return [pscustomobject]$sample }
+    $sample.Lebt = $true
+    $Ctx.Process.Refresh()
+    $sample.WorkingSetMB = [int]($Ctx.Process.WorkingSet64 / 1MB)
+    $sample.PrivatMB = [int]($Ctx.Process.PrivateMemorySize64 / 1MB)
+    $main = @([OcProbe.Ui]::TopWindows($Ctx.Process.Id) | Where-Object { $_.Text -eq $appName }) | Select-Object -First 1
+    $sample.Reagiert = [bool]($main -and [OcProbe.Ui]::Responds($main.Handle, 5000))
+    $states = @()
+    $allConnected = $true
+    foreach ($account in @(@{ Name = ([uri]$ServerUrl).Host; Uuid = $Dl.OAuthUuid }, @{ Name = ([uri]$BasicServerUrl).Host; Uuid = $Dl.BasicUuid })) {
+        $status = Get-AccountStatus $Ctx $account.Uuid
+        if ($status -notmatch '^(Verbunden|Connected)\b') {
+            Start-Sleep -Seconds 15
+            $status = Get-AccountStatus $Ctx $account.Uuid
+        }
+        if ($status -notmatch '^(Verbunden|Connected)\b') { $allConnected = $false }
+        $states += ('{0}: {1}' -f $account.Name, $(if ($status) { Limit-Text $status 160 } else { 'nicht lesbar' }))
+    }
+    $sample.Konten = $states -join '; '
+    $sample.Verbunden = $allConnected
+    $asked = @((Get-UiItems $Ctx.Process.Id -IncludeMain) | Where-Object { $_.Visible -and ($_.Id -match 'RequestAuthenticationWidget|BasicAuthenticationWidget|StayLoggedOutButton|PasswordLineEdit' -or $_.Name -match '^(Anmeldung erforderlich|Sign in required)$') })
+    $browser = @(Get-CimInstance -ClassName Win32_Process -Filter "Name='msedge.exe' OR Name='chrome.exe' OR Name='firefox.exe'" -ErrorAction SilentlyContinue | Where-Object { [string]$_.CommandLine -match '[?&]redirect_uri=' })
+    $notes = @()
+    if ($asked.Count -gt 0) { $notes += 'Anmeldung verlangt (Kontoansicht)' }
+    if ($browser.Count -gt 0) { $notes += 'Browser mit Anmelde-Link offen' }
+    $sample.Anmeldung = $notes -join ', '
+    $sample.Foto = Write-BasicStep $Ctx 'stichprobe' ('{0}: {1:N1} min nach dem Einrichten; {2}' -f $Label, $sample.Minuten, $sample.Konten)
+    return [pscustomobject]$sample
+}
+
+function Format-RunSample {
+    param($Sample)
+    return ('{0:N1} min | lebt: {1} | Hauptfenster antwortet: {2} | Working Set {3} MB, privat {4} MB | {5} | Anmeldung verlangt: {6} | Foto {7}' -f $Sample.Minuten, $(if ($Sample.Lebt) { 'ja' } else { 'nein' }),
+        $(if ($Sample.Reagiert) { 'ja' } else { 'nein' }), $Sample.WorkingSetMB, $Sample.PrivatMB, $Sample.Konten, $(if ($Sample.Anmeldung) { $Sample.Anmeldung } else { 'nein' }), $Sample.Foto)
+}
+
+# Betrieb mit einer Stichprobe zu jeder vollen 5. Minute nach T0 von $FromMinute bis $UntilMinute; Rückgabe: Liste der Probleme
+function Invoke-RunPhase {
+    param($Ctx, $Dl, [int] $FromMinute, [int] $UntilMinute)
+    $problems = New-Object 'System.Collections.Generic.List[string]'
+    $minute = $FromMinute
+    while ($minute -le $UntilMinute) {
+        $due = $Dl.T0.AddMinutes($minute)
+        while ((Get-Date) -lt $due -and -not $Ctx.Process.HasExited) { Start-Sleep -Seconds 5 }
+        if ($Ctx.Process.HasExited) {
+            $problems.Add('Prozess beendet')
+            break
+        }
+        $sample = Get-RunSample $Ctx $Dl ('Stichprobe {0} min' -f $minute)
+        $Dl.Samples.Add($sample)
+        Add-Timeline ('Stichprobe: ' + (Format-RunSample $sample))
+        if (-not $sample.Lebt) { $problems.Add(('{0:N1} min: Prozess beendet' -f $sample.Minuten)) }
+        elseif (-not $sample.Reagiert) { $problems.Add(('{0:N1} min: Hauptfenster antwortet nicht (5 s) oder ist nicht zu sehen' -f $sample.Minuten)) }
+        if ($sample.Lebt -and -not $sample.Verbunden) { $problems.Add(('{0:N1} min: {1}' -f $sample.Minuten, $sample.Konten)) }
+        if ($sample.Anmeldung) { $problems.Add(('{0:N1} min: {1}' -f $sample.Minuten, $sample.Anmeldung)) }
+        Write-Report $null
+        if ($minute -eq $UntilMinute) { break }
+        $minute = [Math]::Min($minute + 5, $UntilMinute)
+    }
+    return , $problems
+}
+
 # ein Schritt des Dauerlaufs als Prüfung. Der Körper wirft (Stop-Step) mit dem Grund oder gibt das Detail zurück (Text, oder
 # @{ Status; Detail }). Endet der Prozess dabei ungewollt, ist das ein Absturz: dann folgt kein weiterer Schritt.
 function Invoke-DauerStep {
@@ -4877,7 +5691,10 @@ function Start-DauerClient {
     Add-Timeline ('Prüfling gestartet, PID {0} ({1})' -f $Ctx.Process.Id, ($arguments -join ' '))
 }
 
-function Invoke-Dauerlauf {
+# gemeinsamer Anfang von dauerlauf und dauerlauf-lang: Oberfläche, WER, Umgebung (A0, A1), Prüfling still installieren (A3, A4).
+# Rückgabe: Programmdatei des Prüflings
+function Initialize-DauerRun {
+    param([string] $Duration)
     Initialize-Desktop
     if (-not ('OcProbe.Mouse' -as [type])) { Add-Type -TypeDefinition $mouseSource -Language CSharp }
     Add-Type -AssemblyName WindowsBase
@@ -4906,9 +5723,9 @@ function Invoke-Dauerlauf {
         } catch { }
     }
     $uptime = [int]([Environment]::TickCount / 60000)
-    Add-Check 'A1' 'Umgebung' $(if ($host1 -eq 'nein' -or $host2 -eq 'nein') { 'WARNUNG' } else { 'INFO' }) ('Bildschirm {0}x{1} (Bildpunkte ohne Skalierung: {2}); Testkonto 1 (E2E_ONLINE_USER_1/_PASS_1, Browser-Anmeldung): {3}, Adresse aus E2E_ONLINE_URL_1 mit dem Host von {4}: {5}; Testkonto 2 (E2E_ONLINE_USER_2/_PASS_2, Kennwort): {6}, Adresse aus E2E_ONLINE_URL_2 mit dem Host von {7}: {8}; login.py: {9}; Python: {10}; Windows läuft seit {11} min (ab 30 min fragt der Client nach dem Neustart von Windows); Mindestdauer nach dem Neustart: {12} min; CI-Lauf {13}' -f $bounds.Width, $bounds.Height, $physical,
+    Add-Check 'A1' 'Umgebung' $(if ($host1 -eq 'nein' -or $host2 -eq 'nein') { 'WARNUNG' } else { 'INFO' }) ('Bildschirm {0}x{1} (Bildpunkte ohne Skalierung: {2}); Testkonto 1 (E2E_ONLINE_USER_1/_PASS_1, Browser-Anmeldung): {3}, Adresse aus E2E_ONLINE_URL_1 mit dem Host von {4}: {5}; Testkonto 2 (E2E_ONLINE_USER_2/_PASS_2, Kennwort): {6}, Adresse aus E2E_ONLINE_URL_2 mit dem Host von {7}: {8}; login.py: {9}; Python: {10}; Windows läuft seit {11} min (ab 30 min fragt der Client beim Start nach dem Neustart von Windows); {12}; CI-Lauf {13}' -f $bounds.Width, $bounds.Height, $physical,
         $(if ($loginUser -and $loginPass) { 'vorhanden' } else { 'fehlt' }), $ServerUrl, $host1, $(if ($loginUser2 -and $loginPass2) { 'vorhanden' } else { 'fehlt' }), $BasicServerUrl, $host2,
-        $(if ($LoginScript -and (Test-Path -LiteralPath $LoginScript)) { 'vorhanden' } else { 'fehlt' }), $(if (Get-Python) { Get-Python } else { 'fehlt' }), $uptime, $RunMinutes, $ciRun) ''
+        $(if ($LoginScript -and (Test-Path -LiteralPath $LoginScript)) { 'vorhanden' } else { 'fehlt' }), $(if (Get-Python) { Get-Python } else { 'fehlt' }), $uptime, $Duration, $ciRun) ''
     if (-not ($loginUser -and $loginPass -and $loginUser2 -and $loginPass2)) { throw 'Zugänge der Testkonten fehlen (Secrets E2E_ONLINE_USER_1/_PASS_1 und E2E_ONLINE_USER_2/_PASS_2)' }
 
     Install-Candidate 'A3'
@@ -4916,11 +5733,14 @@ function Invoke-Dauerlauf {
     if (-not $exe) { throw 'Programmdatei des Prüflings nicht gefunden' }
     Add-Check 'A4' 'Prüfling' 'INFO' ('{0}, Version {1}, Signatur {2}' -f $exe, (Get-VersionWithBuild $exe), (Get-SignatureNote $exe)) ''
     Stop-Client
+    return $exe
+}
 
-    $runId = if ($env:GITHUB_RUN_ID) { $env:GITHUB_RUN_ID } else { [string](Get-Random) }
-    $prefix = 'oco-probe-{0}-{1}' -f $runId, $(if ($env:GITHUB_RUN_ATTEMPT) { $env:GITHUB_RUN_ATTEMPT } else { '1' })
-    $ctx = @{
-        Name = 'd1'; Uia = $true; Masked = $true; Quitting = $false; Process = $null; Log = ''; Since = (Get-Date); Step = 0
+# Kontext des Prozesses für dauerlauf und dauerlauf-lang (Fotos mit geschwärzten Anmeldenamen)
+function New-DauerContext {
+    param([string] $Name)
+    return @{
+        Name = $Name; Uia = $true; Masked = $true; Quitting = $false; Process = $null; Log = ''; Since = (Get-Date); Step = 0
         Logs = New-Object 'System.Collections.Generic.List[string]'
         Shots = New-Object 'System.Collections.Generic.List[string]'
         Dumps = New-Object 'System.Collections.Generic.List[string]'
@@ -4931,18 +5751,56 @@ function Invoke-Dauerlauf {
         Crashed = $false; CrashStep = ''; ExitCode = $null; QuitHung = $false; ShutdownCrash = ''; Problem = ''; Reached = 'Start'
         TokensPossible = $false; SecretEntered = $false; LoginSummary = ''; LoginDone = $false
     }
-    $dl = @{
-        Ctx = $ctx; Stopped = ''; Folders = @("$prefix-1", "$prefix-2"); OAuthUuid = ''; BasicUuid = ''; OAuthRoot = ''
-        Folder1Path = ''; Folder2Path = ''; RestartAt = $null; ServerFileName = ''; ServerFileLocal = ''; ServerFileBytes = $null
+}
+
+# Kennzeichen dieses Laufs für Serverordner und Dateien (mehrere Läufe teilen sich die Testkonten)
+function Get-RunPrefix {
+    $runId = if ($env:GITHUB_RUN_ID) { $env:GITHUB_RUN_ID } else { [string](Get-Random) }
+    return ('oco-probe-{0}-{1}' -f $runId, $(if ($env:GITHUB_RUN_ATTEMPT) { $env:GITHUB_RUN_ATTEMPT } else { '1' }))
+}
+
+# Untermenü eines offenen Menüs mit der Maus öffnen; Rückgabe: seine Einträge (neu sichtbar gegenüber $Baseline), $null ohne Untermenü
+function Open-Submenu {
+    param($Ctx, [string] $Pattern, [string[]] $Baseline)
+    $sub = Find-UiElement (Get-UiItems $Ctx.Process.Id -IncludeMain) '' $Pattern 'MenuItem'
+    if (-not $sub) { return $null }
+    $how = Invoke-UiClick $Ctx $sub -NoActivate -NoInvoke
+    if (-not $how) { return $null }
+    Add-Timeline ('Klick: Untermenü "{0}" ({1})' -f $sub.Name, $how)
+    return (Wait-Ui $Ctx { $added = @(Get-OpenMenuEntries $Ctx | Where-Object { $Baseline -notcontains $_ }); if ($added.Count -gt 0) { , $added } } 6)
+}
+
+# Menü eines Untermenüs schließen (eine Ebene): Esc, solange ein Menü offen ist
+function Close-Submenu {
+    param($Ctx)
+    if (@((Get-UiItems $Ctx.Process.Id -IncludeMain) | Where-Object { $_.Visible -and $_.Type -eq 'MenuItem' }).Count -gt 0) {
+        $null = [OcProbe.Desk]::Press(0x1B, $false)
+        Start-Sleep -Milliseconds 500
     }
-    $title = 'Konten an {0} (Browser-Anmeldung) und {1} (Kennwort, Ordner manuell), Beenden über das Menü, Neustart, {2} min Betrieb mit Ordner-Assistent, Datei vom Server, Platzhaltern, Aktivität, Einstellungen, Konto entfernen und neu anlegen (Maus)' -f $ServerUrl, $BasicServerUrl, $RunMinutes
+}
+
+function Invoke-Dauerlauf {
+    $exe = Initialize-DauerRun ('Mindestdauer nach dem Neustart: {0} min; Serverumzug auf {1} und zurück' -f $RunMinutes, $MoveServerUrl)
+    $prefix = Get-RunPrefix
+    $tag = [guid]::NewGuid().ToString('N').Substring(0, 8)
+    $ctx = New-DauerContext 'd1'
+    $dl = @{
+        Ctx = $ctx; Stopped = ''; Folders = @("$prefix-1", "$prefix-2", "$prefix-3"); OAuthUuid = ''; BasicUuid = ''; OAuthRoot = ''
+        Folder1Path = ''; Folder2Path = ''; RestartAt = $null; ServerFileName = ''; ServerFileLocal = ''; ServerFileBytes = $null
+        TrayReachable = $null; TrayWhy = ''; TestooFiles = (New-Object 'System.Collections.Generic.List[string]')
+        LegacyDir = ''; LegacyLocalFile = ('umstieg-lokal-{0}.txt' -f $tag); LegacyServerFile = ('umstieg-server-{0}.txt' -f $tag); LegacyServerBytes = $null
+    }
+    $title = 'Konten an {0} (Browser-Anmeldung) und {1} (Kennwort, Ordner manuell), Tray-Symbol, Beenden über das Menü, Neustart, {2} min Betrieb mit Ordner-Assistent, Datei vom Server, Platzhaltern, Aktivität, Einstellungen, Tray-Menü, Konto entfernen und neu anlegen, Serverumzug auf {3} und zurück, Umstieg des Kontos mit Kennwort (Maus)' -f $ServerUrl, $BasicServerUrl, $RunMinutes, $MoveServerUrl
     Write-Annotation 'notice' "Dauerlauf: $title"
     Add-Timeline "== Dauerlauf: $title"
 
-    $null = Invoke-DauerStep $dl 'D0' ('Serverordner {0} und {1} per WebDAV an {2} angelegt (Testkonto 2)' -f $dl.Folders[0], $dl.Folders[1], $BasicServerUrl) {
+    $null = Invoke-DauerStep $dl 'D0' ('Serverordner {0}, {1} und {2} per WebDAV an {3} angelegt (Testkonto 2), im dritten eine Datei für den Umstieg' -f $dl.Folders[0], $dl.Folders[1], $dl.Folders[2], $BasicServerUrl) {
         $codes = @(foreach ($folder in $dl.Folders) { '{0}: HTTP {1}' -f $folder, (Invoke-Dav 'MKCOL' $folder) })
         if (@($codes | Where-Object { $_ -notmatch 'HTTP (201|405)$' }).Count -gt 0) { Stop-Step ($codes -join '; ') }
-        return ($codes -join '; ')
+        $dl.LegacyServerBytes = [Text.Encoding]::UTF8.GetBytes(("owncloud.online Umstieg vom Server {0}`r`n" -f [guid]::NewGuid()))
+        $put = Invoke-Dav 'PUT' ('{0}/{1}' -f $dl.Folders[2], $dl.LegacyServerFile) $dl.LegacyServerBytes
+        if ($put -notin 201, 204) { Stop-Step ('{0}; PUT {1}/{2}: HTTP {3}' -f ($codes -join '; '), $dl.Folders[2], $dl.LegacyServerFile, $put) }
+        return ('{0}; {1}/{2}: HTTP {3}' -f ($codes -join '; '), $dl.Folders[2], $dl.LegacyServerFile, $put)
     }
 
     Reset-ClientState
@@ -4952,39 +5810,48 @@ function Invoke-Dauerlauf {
     $ctx.Since = Get-Date
     Start-DauerClient $ctx $exe 'd1-client.log'
 
-    $null = Invoke-DauerStep $dl 'D1' ('Erster Start: Assistent, {0} mit Browser-Anmeldung, "Abschließen" mit den Vorgaben (virtuelle Dateien), verbunden, erster Sync' -f $ServerUrl) {
+    $null = Invoke-DauerStep $dl 'T1' 'Tray-Symbol beim ersten Start, Assistent offen und von einem Explorer-Fenster verdeckt: „Konto hinzufügen…“ im Tray-Menü öffnet keinen zweiten Assistenten, der offene kommt nach vorn (ab00b1106)' {
         $found = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id; if ((Get-BasicWizardState $i) -eq 'adresse') { @{ Items = $i } } } 90
         if (-not $found) { Stop-Step 'Adressseite des Assistenten erschien nicht innerhalb von 90 s' }
-        $null = Write-BasicStep $ctx 'assistent' 'erster Start: Assistent, Adressseite'
-        $mark = Complete-OAuthWizard $ctx
-        if (-not (Wait-LogSince $ctx (Get-ConnectedPattern $ServerUrl) $mark 120)) { Stop-Step ('Konto an {0} nach "Abschließen" nicht verbunden (120 s)' -f $ServerUrl) }
-        $sync = Wait-FolderSync $ctx $mark
-        $dl.OAuthRoot = $sync.Path
-        Start-Sleep -Seconds 2
-        $dl.OAuthUuid = Get-VisibleAccountId (Get-UiItems $ctx.Process.Id -IncludeMain)
-        $shot = Write-BasicStep $ctx 'konto-1' 'Konto mit Browser-Anmeldung verbunden, erster Sync fertig'
-        if (-not $dl.OAuthUuid) { Stop-Step 'Kontoansicht des neuen Kontos nicht zu sehen' }
-        return ('verbunden; Ordner {0}, erster Sync: {1}; Foto {2}' -f $sync.Path, $sync.Status, $shot)
+        $wizards = @([OcProbe.Ui]::TopWindows($ctx.Process.Id) | Where-Object { $_.Text -match $wizardTitlePattern })
+        if ($wizards.Count -ne 1) { Stop-Step ('vor dem Klick {0} Fenster des Assistenten statt einem' -f $wizards.Count) }
+        # ein anderes Fenster vor den Assistenten, wie bei einem Tester, der zwischendurch etwas anderes tut
+        $cover = Open-CoverWindow $ctx $env:USERPROFILE
+        $coverNote = if ($cover) { 'Explorer-Fenster davor, im Vordergrund vor dem Klick: ' + (Get-ForegroundNote) } else { 'kein Explorer-Fenster zum Verdecken (20 s)' }
+        $menu = Open-TrayMenu $ctx $dl 'erster-start'
+        if (-not $menu) {
+            $dl.TrayReachable = $false
+            Close-ExplorerWindow $cover
+            return @{ Status = 'NICHT GEPRÜFT'; Detail = ('Einschränkung: {0}. Im Hauptfenster gibt es dazu nichts Gleichwertiges, es ist gesperrt, solange der Assistent offen ist; {1}' -f $dl.TrayWhy, $coverNote) }
+        }
+        $dl.TrayReachable = $true
+        $entries = (Get-OpenMenuEntries $ctx) -join ' | '
+        $shotMenu = Write-BasicStep $ctx 'tray-menue' ('Tray-Menü beim ersten Start ({0}, Tooltip „{1}“)' -f $menu.Where, $menu.Tooltip)
+        $mark = Get-LogMark $ctx
+        $null = Invoke-MenuEntry $ctx $trayAddAccountPattern
+        Start-Sleep -Seconds 3
+        $after = @([OcProbe.Ui]::TopWindows($ctx.Process.Id) | Where-Object { $_.Text -match $wizardTitlePattern })
+        $foreground = [OcProbe.Desk]::GetForegroundWindow()
+        $front = @($after | Where-Object { $_.Handle -eq $foreground }).Count -gt 0
+        $foregroundNote = Get-ForegroundNote
+        $raised = [regex]::IsMatch((Get-LogSince $ctx $mark), 'A wizard or dialog is already open, bringing it to the front')
+        $shot = Write-BasicStep $ctx 'tray-konto' 'nach „Konto hinzufügen…“ im Tray-Menü'
+        Close-ExplorerWindow $cover
+        $detail = 'Symbol: {0}, Tooltip „{1}“; Menü: {2}; {3}; danach Fenster des Assistenten: {4}, im Vordergrund: {5}; Protokoll „A wizard or dialog is already open, bringing it to the front…“: {6}; Fotos {7}, {8}' -f $menu.Where, $menu.Tooltip, $entries,
+            $coverNote, $after.Count, $foregroundNote, $(if ($raised) { 'ja' } else { 'nein' }), $shotMenu, $shot
+        $problems = @()
+        if ($after.Count -ne 1) { $problems += ('{0} Fenster des Assistenten' -f $after.Count) }
+        if (-not $front) { $problems += 'der offene Assistent kam nicht nach vorn' }
+        if ($problems.Count -gt 0) { Stop-Step (($problems -join '; ') + '; ' + $detail) }
+        return $detail
+    }
+
+    $null = Invoke-DauerStep $dl 'D1' ('Erster Start: Assistent, {0} mit Browser-Anmeldung, "Abschließen" mit den Vorgaben (virtuelle Dateien), verbunden, erster Sync' -f $ServerUrl) {
+        Add-FirstOAuthAccount $ctx $dl
     }
 
     $null = Invoke-DauerStep $dl 'D2' ('"Mehr" → "Konto hinzufügen…": {0} mit Kennwort, "Erweitert" → "Ordner manuell synchronisieren", Ordner-Assistent mit {1}, erster Sync' -f $BasicServerUrl, $dl.Folders[0]) {
-        Invoke-MoreMenu $ctx $addAccountEntryPattern 'konto-2'
-        $found = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id; if ((Get-BasicWizardState $i) -eq 'adresse') { @{ Items = $i } } } 60
-        if (-not $found) { Stop-Step 'Assistent erschien nach "Konto hinzufügen…" nicht innerhalb von 60 s' }
-        $null = Write-BasicStep $ctx 'assistent-2' 'zweites Konto: Assistent, Adressseite'
-        $mark = Complete-BasicWizardManual $ctx
-        if (-not (Wait-LogSince $ctx (Get-ConnectedPattern $BasicServerUrl) $mark 120)) { Stop-Step ('Konto an {0} nach "Abschließen" nicht verbunden (120 s)' -f $BasicServerUrl) }
-        # "Ordner manuell": NewAccountBuilder öffnet den Ordner-Assistenten in der Kontoansicht
-        $wizard = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id -IncludeMain; if (@($i | Where-Object { $_.Visible -and $_.Id -like '*AddFolderSyncWizard*' }).Count -gt 0) { @{ Items = $i } } } 60
-        if (-not $wizard) { Stop-Step 'Ordner-Assistent öffnete sich nach "Abschließen" nicht (60 s)' }
-        $dl.BasicUuid = Get-VisibleAccountId $wizard.Items
-        $mark = Get-LogMark $ctx
-        $folder = Complete-FolderWizard $ctx $dl.Folders[0]
-        $sync = Wait-FolderSync $ctx $mark $folder.Local
-        $dl.Folder1Path = $folder.Local
-        Start-Sleep -Seconds 2
-        $shot = Write-BasicStep $ctx 'ordner-1' 'zweites Konto verbunden, Ordner eingerichtet, erster Sync fertig'
-        return ('verbunden; Ordner {0} (virtuelle Dateien: {1}), erster Sync: {2}; Foto {3}' -f $folder.Local, $(if ($folder.Vfs) { 'an' } else { 'aus' }), $sync.Status, $shot)
+        Add-BasicAccountManual $ctx $dl $dl.Folders[0]
     }
 
     $null = Invoke-DauerStep $dl 'D3' 'Beenden über "Mehr" → "Beenden" → "Ja": der Prozess endet mit Exit-Code 0' {
@@ -5021,6 +5888,11 @@ function Invoke-Dauerlauf {
             }
         }
         Stop-Browsers
+        # Umstieg (U1): "Vom offiziellen Client übernehmen…" bietet "Mehr" nur an, wenn dessen Konfiguration beim Start da ist
+        $dl.LegacyDir = Join-Path $env:USERPROFILE 'ownCloud-umstieg'
+        Write-LegacyConfigBasic $BasicServerUrl $loginUser2 $dl.LegacyDir ('/' + $dl.Folders[2])
+        [IO.File]::WriteAllText((Join-Path $dl.LegacyDir $dl.LegacyLocalFile), ("owncloud.online Umstieg lokal {0}`r`n" -f [guid]::NewGuid()), (New-Object System.Text.UTF8Encoding $false))
+        Add-Timeline ('Konfiguration des offiziellen Clients geschrieben: Konto an {0} (Testkonto 2), klassischer Ordner {1} auf /{2}' -f $BasicServerUrl, $dl.LegacyDir, $dl.Folders[2])
         $ctx.Name = 'd2'
         $ctx.Step = 0
         $dl.RestartAt = Get-Date
@@ -5117,7 +5989,7 @@ function Invoke-Dauerlauf {
 
     $null = Invoke-DauerStep $dl 'D8' ('Platzhalter im Konto an {0} (Browser-Anmeldung) durch Lesen heruntergeladen' -f $ServerUrl) {
         if (-not $dl.OAuthRoot) { Stop-Step 'kein Ordner des Kontos mit Browser-Anmeldung (D1)' }
-        $root = $dl.OAuthRoot.TrimEnd('/') -replace '/', '\'
+        $root = ConvertTo-LocalPath $dl.OAuthRoot
         $files = @(Get-ChildItem -LiteralPath $root -File -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch '^(\.sync_.*|\.owncloudsync\.log|desktop\.ini|\._sync_.*)$' })
         $placeholder = @($files | Where-Object { (Get-PlaceholderState $_.FullName).Dehydrated }) | Select-Object -First 1
         if (-not $placeholder) { return @{ Status = 'INFO'; Detail = ('kein Platzhalter im Ordner {0} ({1} Dateien)' -f $root, $files.Count) } }
@@ -5164,22 +6036,138 @@ function Invoke-Dauerlauf {
         return ('Fotos {0}, {1}' -f $shot, $shot2)
     }
 
+    $null = Invoke-DauerStep $dl 'T2' 'Tray-Symbol: Rechtsklick öffnet das Menü, beide Konten mit Untermenü und Status „Verbunden“' {
+        $menu = Open-TrayMenu $ctx $dl 'menue'
+        if (-not $menu) {
+            $dl.TrayReachable = $false
+            return @{ Status = 'WARNUNG'; Detail = ('Einschränkung: {0} - T3 bis T5 nehmen die gleichwertigen Befehle im Hauptfenster' -f $dl.TrayWhy) }
+        }
+        $dl.TrayReachable = $true
+        $top = @(Get-OpenMenuEntries $ctx)
+        $shot = Write-BasicStep $ctx 'tray-menue' ('Tray-Menü ({0}, Tooltip „{1}“)' -f $menu.Where, $menu.Tooltip)
+        $accounts = @()
+        $problems = @()
+        foreach ($url in $ServerUrl, $BasicServerUrl) {
+            $hostName = ([uri]$url).Host
+            $entries = Open-Submenu $ctx ([regex]::Escape($hostName) + ' \(') $top
+            if (-not $entries) {
+                $problems += ('kein Untermenü für {0}' -f $hostName)
+                continue
+            }
+            $state = @($entries | Where-Object { $_ -match '^(Verbunden|Connected|Nicht verbunden|Abgemeldet|Netzwerkfehler|Wartet auf Anmeldung|Verbindung wird hergestellt…|Server .+|Fehler .+)$' }) | Select-Object -First 1
+            $subShot = Write-BasicStep $ctx 'tray-konto' ('Tray-Menü, Untermenü des Kontos an {0}' -f $hostName)
+            $accounts += ('{0}: Status „{1}“, Einträge: {2}; Foto {3}' -f $hostName, $state, ($entries -join ' | '), $subShot)
+            if ($state -notmatch '^(Verbunden|Connected)$') { $problems += ('{0}: Status „{1}“' -f $hostName, $state) }
+            Close-Submenu $ctx
+        }
+        Close-ClientMenu $ctx
+        $detail = 'Symbol: {0}, Tooltip „{1}“; Menü: {2}; {3}; Foto {4}' -f $menu.Where, $menu.Tooltip, ($top -join ' | '), ($accounts -join '; '), $shot
+        if ($problems.Count -gt 0) { Stop-Step (($problems -join '; ') + '; ' + $detail) }
+        return $detail
+    }
+
+    $null = Invoke-DauerStep $dl 'T3' ('Synchronisation pausieren (Tray-Menü „Synchronisation pausieren“ → „Bis zum Fortsetzen“): eine Datei vom Server ({0}) kommt währenddessen nicht an; „Synchronisation fortsetzen“: sie kommt an' -f $BasicServerUrl) {
+        if (-not $dl.Folder1Path) { Stop-Step 'kein Ordner des Kontos mit Kennwort (D2)' }
+        $mark = Get-LogMark $ctx
+        $way = ''
+        if ($dl.TrayReachable) {
+            if (-not (Open-TrayMenu $ctx $dl 'pause')) { Stop-Step ('Tray-Menü nicht zu öffnen: ' + $dl.TrayWhy) }
+            $null = Invoke-MenuEntry $ctx $trayUntilResumedPattern $trayPausePattern
+            if (-not (Wait-LogSince $ctx 'Sync paused by user until [^\r\n]*' $mark 20)) { Stop-Step 'nach „Bis zum Fortsetzen“ keine Pause im Protokoll (20 s)' }
+            $way = 'Tray-Menü'
+        } else {
+            if (-not (Select-AccountView $ctx $dl.BasicUuid)) { Stop-Step 'Kontoansicht des Kontos mit Kennwort nicht wählbar' }
+            Open-FolderMenu $ctx $dl.Folders[0]
+            $null = Invoke-MenuEntry $ctx $folderPausePattern '' 'im Menü des Ordners'
+            $way = 'Menü des Ordners in der Kontoansicht (gleichwertig, Tray nicht erreichbar)'
+        }
+        $tooltip = '-'
+        if ($dl.TrayReachable) {
+            Start-Sleep -Seconds 2
+            $icon = Find-TrayIcon
+            if ($icon) { $tooltip = $icon.Name } else { $tooltip = 'Symbol nicht sichtbar (Überlauf geschlossen)' }
+        }
+        $name = 'probe-pause-{0}.txt' -f [guid]::NewGuid().ToString('N').Substring(0, 8)
+        $local = Join-Path $dl.Folder1Path $name
+        $code = Invoke-Dav 'PUT' ('{0}/{1}' -f $dl.Folders[0], $name) ([Text.Encoding]::UTF8.GetBytes("owncloud.online Pause`r`n"))
+        if ($code -notin 201, 204) { Stop-Step ('PUT {0}/{1}: HTTP {2}' -f $dl.Folders[0], $name, $code) }
+        $early = [bool](Wait-Ui $ctx { if (Test-Path -LiteralPath $local) { $true } } 45)
+        $shotPaused = Write-BasicStep $ctx 'pausiert' ('Synchronisation pausiert, Datei vom Server lokal: {0}' -f $(if ($early) { 'ja' } else { 'nein' }))
+        $resumeMark = Get-LogMark $ctx
+        if ($dl.TrayReachable) {
+            if (-not (Open-TrayMenu $ctx $dl 'fortsetzen')) { Stop-Step ('Tray-Menü zum Fortsetzen nicht zu öffnen: ' + $dl.TrayWhy) }
+            $null = Invoke-MenuEntry $ctx $trayResumePattern
+            if (-not (Wait-LogSince $ctx 'Sync resumed by user' $resumeMark 20)) { Stop-Step 'nach „Synchronisation fortsetzen“ kein Fortsetzen im Protokoll (20 s)' }
+        } else {
+            Open-FolderMenu $ctx $dl.Folders[0]
+            $null = Invoke-MenuEntry $ctx $folderResumePattern '' 'im Menü des Ordners'
+        }
+        $start = Get-Date
+        $arrived = [bool](Wait-Ui $ctx { if (Test-Path -LiteralPath $local) { $true } } 120)
+        $seconds = [int]((Get-Date) - $start).TotalSeconds
+        $shotResumed = Write-BasicStep $ctx 'fortgesetzt' ('fortgesetzt, Datei vom Server lokal: {0}' -f $(if ($arrived) { 'ja' } else { 'nein' }))
+        $notStarted = [regex]::Matches((Get-LogSince $ctx $mark), 'Scheduler is paused, next sync is not started').Count
+        $detail = 'über {0}; Tooltip während der Pause: „{1}“; Datei {2} während der Pause (45 s) lokal: {3}; nach dem Fortsetzen lokal: {4}{5}; Protokoll „Scheduler is paused…“: {6}x; Fotos {7}, {8}' -f $way, $tooltip, $name,
+            $(if ($early) { 'ja' } else { 'nein' }), $(if ($arrived) { 'ja' } else { 'nein' }), $(if ($arrived) { " nach $seconds s" } else { ' (120 s)' }), $notStarted, $shotPaused, $shotResumed
+        if ($early) { Stop-Step ('die Datei kam trotz Pause an; ' + $detail) }
+        if (-not $arrived) { Stop-Step ('die Datei kam nach dem Fortsetzen nicht an; ' + $detail) }
+        return $detail
+    }
+
+    $null = Invoke-DauerStep $dl 'T4' ('Ordner öffnen (Tray-Menü, Konto an {0} → „Ordner „…“ öffnen“): der Ordner erscheint im Explorer' -f $BasicServerUrl) {
+        if (-not $dl.Folder1Path) { Stop-Step 'kein Ordner des Kontos mit Kennwort (D2)' }
+        $before = [long[]]@(Get-ExplorerWindows | ForEach-Object { $_.Handle })
+        $way = ''
+        $entryName = ''
+        if ($dl.TrayReachable) {
+            if (-not (Open-TrayMenu $ctx $dl 'ordner')) { Stop-Step ('Tray-Menü nicht zu öffnen: ' + $dl.TrayWhy) }
+            $top = @(Get-OpenMenuEntries $ctx)
+            $entries = Open-Submenu $ctx ([regex]::Escape(([uri]$BasicServerUrl).Host) + ' \(') $top
+            if (-not $entries) {
+                Close-ClientMenu $ctx
+                Stop-Step ('kein Untermenü für {0} im Tray-Menü' -f ([uri]$BasicServerUrl).Host)
+            }
+            $entry = Invoke-MenuEntry $ctx $trayOpenFolderPattern
+            $entryName = Protect-Text $entry.Name
+            $way = 'Tray-Menü'
+        } else {
+            if (-not (Select-AccountView $ctx $dl.BasicUuid)) { Stop-Step 'Kontoansicht des Kontos mit Kennwort nicht wählbar' }
+            Open-FolderMenu $ctx $dl.Folders[0]
+            $entry = Invoke-MenuEntry $ctx $folderShowPattern '' 'im Menü des Ordners'
+            $entryName = $entry.Name
+            $way = 'Menü des Ordners in der Kontoansicht (gleichwertig, Tray nicht erreichbar)'
+        }
+        $window = Wait-NewExplorerWindow $ctx $before 20
+        if (-not $window) { Stop-Step ('nach „{0}“ kein neues Explorer-Fenster (20 s)' -f $entryName) }
+        Start-Sleep -Seconds 2
+        $shot = Write-BasicStep $ctx 'explorer' ('Explorer-Fenster „{0}“' -f $window.Name)
+        Close-ExplorerWindow $window
+        $leaves = @($dl.Folder1Path, $dl.Folder2Path | Where-Object { $_ } | ForEach-Object { Split-Path -Leaf (ConvertTo-LocalPath $_) })
+        $matching = @($leaves | Where-Object { $window.Name -like ('*' + $_ + '*') }).Count -gt 0
+        $detail = 'über {0}: „{1}“; Explorer-Fenster „{2}“ (erwartet einer von: {3}); Foto {4}' -f $way, $entryName, $window.Name, ($leaves -join ', '), $shot
+        if (-not $matching) { return @{ Status = 'WARNUNG'; Detail = ('Titel des Explorer-Fensters passt zu keinem Ordner des Kontos; ' + $detail) } }
+        return $detail
+    }
+
+    $null = Invoke-DauerStep $dl 'T5' 'Einstellungen über das Tray-Menü („Einstellungen…“) geöffnet und mit „Schließen“ geschlossen' {
+        if (-not $dl.TrayReachable) { return @{ Status = 'INFO'; Detail = ('gleichwertig im Hauptfenster: „Mehr“ → „Einstellungen …“, siehe D10 (Tray nicht erreichbar: {0})' -f $dl.TrayWhy) } }
+        if (-not (Open-TrayMenu $ctx $dl 'einstellungen')) { Stop-Step ('Tray-Menü nicht zu öffnen: ' + $dl.TrayWhy) }
+        $null = Invoke-MenuEntry $ctx $traySettingsPattern
+        $close = Wait-Ui $ctx { $b = Find-UiElement (Get-UiItems $ctx.Process.Id -IncludeMain) '*closeButton' '' 'Button'; if ($b -and $b.Enabled) { $b } } 20
+        if (-not $close) { Stop-Step 'Einstellungen erschienen nicht ("Schließen" fehlt, 20 s)' }
+        Start-Sleep -Seconds 1
+        $shot = Write-BasicStep $ctx 'tray-einstellungen' 'Einstellungen über das Tray-Menü'
+        $close = Find-UiElement (Get-UiItems $ctx.Process.Id -IncludeMain) '*closeButton' '' 'Button'
+        $how = Invoke-UiClick $ctx $close
+        if (-not $how) { Stop-Step '"Schließen" nicht auslösbar' }
+        Add-Timeline ('Klick: "Schließen" ({0})' -f $how)
+        $closed = Wait-Ui $ctx { if (-not (Find-UiElement (Get-UiItems $ctx.Process.Id -IncludeMain) '*closeButton' '' 'Button')) { $true } } 20
+        if (-not $closed) { Stop-Step 'Einstellungen nach "Schließen" noch offen (20 s)' }
+        return ('Foto {0}' -f $shot)
+    }
+
     $null = Invoke-DauerStep $dl 'D11' ('Konto an {0} entfernen: "Konto verwalten" → "Entfernen" → "Zugang löschen"' -f $ServerUrl) {
-        if (-not (Select-AccountView $ctx $dl.OAuthUuid)) { Stop-Step ('Kontoansicht des Kontos an {0} nicht wählbar' -f $ServerUrl) }
-        $before = @(Get-AccountButtons (Get-UiItems $ctx.Process.Id -IncludeMain)).Count
-        $null = Write-BasicStep $ctx 'kontoansicht-1' 'Kontoansicht des Kontos mit Browser-Anmeldung'
-        if (-not (Invoke-AccountMenu $ctx $removeEntryPattern 'entfernen')) { Stop-Step $ctx.Problem }
-        $confirm = Wait-Ui $ctx { $b = @((Get-UiItems $ctx.Process.Id) | Where-Object { $_.Visible -and $_.Type -eq 'Button' -and $_.Id -like '*removeAccountButton' }) | Select-Object -First 1; if ($b) { $b } } 20
-        if (-not $confirm) { Stop-Step 'Rückfrage zum Entfernen erschien nicht (20 s)' }
-        $shot = Write-BasicStep $ctx 'entfernen' 'Rückfrage zum Entfernen des Kontos'
-        $how = Invoke-UiClick $ctx $confirm
-        if (-not $how) { Stop-Step '"Zugang löschen" nicht auslösbar' }
-        Add-Timeline ('Klick: "{0}" ({1})' -f $confirm.Name, $how)
-        $gone = Wait-Ui $ctx { if (@(Get-AccountButtons (Get-UiItems $ctx.Process.Id -IncludeMain)).Count -lt $before) { $true } } 30
-        if (-not $gone) { Stop-Step ('Knopf des Kontos nach "Zugang löschen" noch da (30 s); Foto {0}' -f $shot) }
-        Start-Sleep -Seconds 3
-        $shot2 = Write-BasicStep $ctx 'entfernt' 'nach dem Entfernen des Kontos'
-        return ('Konten vorher {0}, nachher {1}; Fotos {2}, {3}' -f $before, @(Get-AccountButtons (Get-UiItems $ctx.Process.Id -IncludeMain)).Count, $shot, $shot2)
+        Remove-AccountByUi $ctx $dl.OAuthUuid ('an ' + $ServerUrl) 'entfernen'
     }
 
     $null = Invoke-DauerStep $dl 'D12' ('Konto an {0} neu anlegen: "Mehr" → "Konto hinzufügen…", Browser-Anmeldung, "Abschließen", verbunden, erster Sync' -f $ServerUrl) {
@@ -5195,6 +6183,55 @@ function Invoke-Dauerlauf {
         $dl.OAuthUuid = Get-VisibleAccountId (Get-UiItems $ctx.Process.Id -IncludeMain)
         $shot = Write-BasicStep $ctx 'konto-neu' 'Konto mit Browser-Anmeldung neu angelegt, erster Sync fertig'
         return ('verbunden; Ordner {0}, erster Sync: {1}; Foto {2}' -f $sync.Path, $sync.Status, $shot)
+    }
+
+    $null = Invoke-DauerStep $dl 'S1' ('Serveradresse ändern: Konto an {0} → {1} (dieselbe Instanz), Browser-Anmeldung dort, verbunden, Ordner synchronisiert, Datei vom Server kommt an' -f $ServerUrl, $MoveServerUrl) {
+        Invoke-ServerMove $ctx $dl $MoveServerUrl 'umzug-hin'
+    }
+
+    $null = Invoke-DauerStep $dl 'S2' ('Serveradresse ändern zurück: {0} → {1}, Browser-Anmeldung, verbunden, Ordner synchronisiert, Datei vom Server kommt an' -f $MoveServerUrl, $ServerUrl) {
+        Invoke-ServerMove $ctx $dl $ServerUrl 'umzug-zurueck'
+    }
+
+    $null = Invoke-DauerStep $dl 'U1' ('Umstieg vom offiziellen Client für das Konto mit Kennwort: Konto an {0} entfernen, „Mehr“ → „Vom offiziellen Client übernehmen…“, „Übernehmen“, Kennwortseite mit vorbelegtem Anmeldenamen, Kennwort, „Abschließen“: Konto verbunden, Ordner übernommen (lokale Datei auf dem Server, Datei vom Server lokal), Abschlussbericht' -f $BasicServerUrl) {
+        if (-not $dl.LegacyDir) { Stop-Step 'keine Konfiguration des offiziellen Clients (vor dem Neustart nicht geschrieben)' }
+        # das Konto gibt es schon (D2): der Umstieg übernähme es nicht noch einmal ("bereits eingerichtet")
+        $removed = if ($dl.BasicUuid) { Remove-AccountByUi $ctx $dl.BasicUuid ('an ' + $BasicServerUrl) 'umstieg-entfernen' } else { 'kein Konto mit Kennwort (D2)' }
+        Invoke-MoreMenu $ctx $legacyMenuEntryPattern 'umstieg'
+        $question = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id; $b = @($i | Where-Object { $_.Visible -and $_.Type -eq 'Button' -and $_.Window -match $legacyTitlePattern -and $_.Name -match $legacyImportPattern }) | Select-Object -First 1; if ($b) { @{ Button = $b; Items = $i } } } 20
+        if (-not $question) {
+            $texts = (@((Get-UiItems $ctx.Process.Id) | Where-Object { $_.Visible -and $_.Type -eq 'Text' -and $_.Window -match $legacyTitlePattern } | ForEach-Object { $_.Name })) -join ' / '
+            $null = Write-BasicStep $ctx 'umstieg-keine-frage' 'keine Rückfrage mit „Übernehmen“'
+            Stop-Step ('Rückfrage „Vom offiziellen Client übernehmen“ mit „Übernehmen“ erschien nicht (20 s){0}' -f $(if ($texts) { ': ' + $texts } else { '' }))
+        }
+        $listed = Limit-Text (Protect-Text ((@($question.Items | Where-Object { $_.Visible -and $_.Type -eq 'Text' -and $_.Window -match $legacyTitlePattern -and $_.Name } | ForEach-Object { $_.Name })) -join ' / ')) 600
+        $shotQuestion = Write-BasicStep $ctx 'umstieg-frage' 'Rückfrage „Vom offiziellen Client übernehmen“'
+        $how = Invoke-UiClick $ctx $question.Button
+        if (-not $how) { Stop-Step '„Übernehmen“ nicht auslösbar' }
+        Add-Timeline ('Klick: "{0}" ({1})' -f $question.Button.Name, $how)
+        $import = Complete-ImportPassword $ctx $loginUser2 $loginPass2
+        if (-not (Wait-LogSince $ctx (Get-ConnectedPattern $BasicServerUrl) $import.Mark 120)) { Stop-Step ('Konto an {0} nach „Abschließen“ im Umstieg nicht verbunden (120 s)' -f $BasicServerUrl) }
+        $report = Close-ImportReport $ctx 180
+        $logPath = ConvertTo-LogPath $dl.LegacyDir
+        $adopted = Wait-LogSince $ctx ('(?i)Adopted existing sync folder "' + [regex]::Escape($logPath) + '"[^\r\n]*') $import.Mark 30
+        $sync = Wait-FolderSync $ctx $import.Mark $dl.LegacyDir 240
+        Start-Sleep -Seconds 2
+        $dl.BasicUuid = Get-VisibleAccountId (Get-UiItems $ctx.Process.Id -IncludeMain)
+        # übernommen heißt: die Datei, die nur im Ordner des offiziellen Clients lag, ist auf dem Server, die nur auf dem Server lag, ist lokal
+        $up = Invoke-Dav 'GET' ('{0}/{1}' -f $dl.Folders[2], $dl.LegacyLocalFile)
+        $downPath = Join-Path $dl.LegacyDir $dl.LegacyServerFile
+        $down = if (Test-Path -LiteralPath $downPath) { [Convert]::ToBase64String([IO.File]::ReadAllBytes($downPath)) -ceq [Convert]::ToBase64String($dl.LegacyServerBytes) } else { $false }
+        $shotDone = Write-BasicStep $ctx 'umstieg-fertig' 'nach dem Umstieg: Kontoansicht des übernommenen Kontos'
+        $detail = 'entfernt: {0}; Rückfrage: {1}; Adresse vorbelegt: „{2}“; Anmeldename vorbelegt: {3}; Bericht: „{4}“; Protokoll: {5}; erster Sync: {6}; lokale Datei {7} auf dem Server: HTTP {8}; Datei vom Server {9} lokal mit gleichem Inhalt: {10}; Fotos {11}, {12}, {13}' -f $removed, $listed,
+            $import.PresetUrl, $import.PresetUser, $report.Text, $(if ($adopted) { Limit-Text $adopted 300 } else { 'kein „Adopted existing sync folder“' }), $sync.Status, $dl.LegacyLocalFile, $up, $dl.LegacyServerFile,
+            $(if ($down) { 'ja' } else { 'nein' }), $shotQuestion, $report.Shot, $shotDone
+        $problems = @()
+        if ($import.PresetUser -ne 'ja') { $problems += ('Anmeldename nicht aus dem offiziellen Client vorbelegt ({0})' -f $import.PresetUser) }
+        if (-not $adopted) { $problems += 'Ordner nicht übernommen (Protokoll)' }
+        if ($up -ne 200) { $problems += 'lokale Datei nicht auf dem Server' }
+        if (-not $down) { $problems += 'Datei vom Server nicht lokal' }
+        if ($problems.Count -gt 0) { Stop-Step (($problems -join '; ') + '; ' + $detail) }
+        return $detail
     }
 
     $null = Invoke-DauerStep $dl 'D13' ('Betrieb bis {0} min nach dem Neustart: der Prozess lebt und reagiert' -f $RunMinutes) {
@@ -5216,87 +6253,222 @@ function Invoke-Dauerlauf {
         $items = Get-UiItems $ctx.Process.Id -IncludeMain
         $minutes = ((Get-Date) - $dl.RestartAt).TotalMinutes
         $text = Get-LogSince $ctx 0
-        $stats = 'im Protokoll seit dem Neustart: Kontingent {0}x, Aktivitäten {1}x, Benachrichtigungen {2}x, Sync fertig {3}x, Token erneuert {4}x' -f [regex]::Matches($text, 'Quota for ').Count,
-            [regex]::Matches($text, 'cloud/activity').Count, [regex]::Matches($text, 'notifications').Count, [regex]::Matches($text, 'Sync finished for "').Count, [regex]::Matches($text, 'refreshing oauth').Count
+        $stats = 'im Protokoll seit dem Neustart: Kontingent {0}x, Aktivitäten {1}x, Benachrichtigungen {2}x, Sync fertig {3}x, Access-Token erneuert {4}x, nach Ablehnung {5}x' -f [regex]::Matches($text, 'Quota for ').Count,
+            [regex]::Matches($text, 'cloud/activity').Count, [regex]::Matches($text, 'notifications').Count, [regex]::Matches($text, 'Sync finished for "').Count, [regex]::Matches($text, 'Access token refreshed').Count, [regex]::Matches($text, 'refreshing oauth').Count
         $shot = Write-BasicStep $ctx 'ende' 'Ende des Dauerlaufs'
         if (-not $responding) { Stop-Step ('Prozess reagiert nach {0:N1} min nicht (Hänger); {1}; Foto {2}' -f $minutes, $stats, $shot) }
         if ($items.Count -eq 0) { Stop-Step ('Oberfläche nach {0:N1} min nicht lesbar (UI Automation ohne Antwort); Foto {1}' -f $minutes, $shot) }
         return ('{0:N1} min nach dem Neustart: Prozess lebt ({1}), reagiert; {2}{3}; Foto {4}' -f $minutes, (Get-ProcessNote $ctx.Process), $stats, $(if ($prompt) { '; ' + $prompt } else { '' }), $shot)
     }
 
-    # Ende über --quit; ein Absturz oder Hänger dabei zählt wie einer im Betrieb
-    if ($ctx.Process -and -not $ctx.Process.HasExited) {
-        $ctx.Quitting = $true
-        $null = Invoke-Step 'Prüfling beenden (--quit, dauerlauf)' $exe '--quit'
-        if ($ctx.Process.WaitForExit(90 * 1000)) {
-            $ctx.ExitCode = $ctx.Process.ExitCode
-            Add-Timeline ('nach --quit beendet, Exit-Code {0}' -f (Format-ExitCode $ctx.ExitCode))
-        } else {
-            $null = & taskkill.exe /PID $ctx.Process.Id /T /F
-            $ctx.QuitHung = $true
-            Add-Timeline 'nach --quit nicht in 90 s beendet, abgebrochen'
-        }
-    }
-    Stop-Client
-    Stop-Browsers
-    Start-Sleep -Seconds 3
-    $deadline = (Get-Date).AddSeconds(120)
-    while ((Get-Date) -lt $deadline -and @(Get-Process -Name 'WerFault', 'WerFaultSecure' -ErrorAction SilentlyContinue).Count -gt 0) { Start-Sleep -Seconds 1 }
-    if ($ctx.Crashed -and $ctx.Evidence.Count -eq 0) {
-        Get-CrashEvidence $ctx
-    }
-    foreach ($dump in @(Get-ChildItem -LiteralPath $dumpDir -Filter '*.dmp' -File -ErrorAction SilentlyContinue | Where-Object { -not $knownDumps.Contains($_.FullName) })) {
-        $null = $knownDumps.Add($dump.FullName)
-        $ctx.Dumps.Add($dump.FullName)
-    }
-    foreach ($line in $ctx.Evidence) { Add-Timeline "Beleg: $line" }
+    Stop-DauerClient $ctx $exe 'dauerlauf'
+    $fatal = Get-FatalLines $ctx
+    Add-NoCrashCheck $ctx 'D14' $fatal
+    Add-LogSecretsCheck $ctx 'D15'
 
-    # D14: kein Absturz - Prozess, Speicherabbilder, ASSERT im Protokoll, Ende über --quit
-    $fatal = New-Object 'System.Collections.Generic.List[string]'
-    foreach ($log in $ctx.Logs) {
-        foreach ($line in @((Read-SharedText $log) -split "`r?`n" | Where-Object { $_ -match $fatalPattern })) { $fatal.Add(('{0}: {1}' -f (Split-Path -Leaf $log), (Limit-Text (Protect-Text $line) 500))) }
-    }
-    $crashLog = Read-SharedText (Join-Path ([IO.Path]::GetTempPath()) "$appName-crash.log")
-    foreach ($line in @($crashLog -split "`r?`n" | Where-Object { $_ -match $fatalPattern })) { $fatal.Add(('Absturzprotokoll: {0}' -f (Limit-Text (Protect-Text $line) 500))) }
-    $problems = @()
-    if ($ctx.Crashed) { $problems += ('Absturz während: {0}' -f $ctx.CrashStep) }
-    if ($ctx.ShutdownCrash) { $problems += ('Absturz beim Beenden vor dem Neustart: {0}' -f $ctx.ShutdownCrash) }
-    if ($ctx.Dumps.Count -gt 0) { $problems += ('WER hat Speicherabbilder geschrieben: {0}' -f ((@($ctx.Dumps | ForEach-Object { Split-Path -Leaf $_ })) -join ', ')) }
-    if ($fatal.Count -gt 0) { $problems += ('{0} Zeile(n) mit ASSERT/ENFORCE/ENSURE/fatal, zuletzt: {1}' -f $fatal.Count, $fatal[$fatal.Count - 1]) }
-    if ($ctx.QuitHung) { $problems += 'nach --quit nicht in 90 s beendet' } elseif ($null -ne $ctx.ExitCode -and $ctx.ExitCode -ne 0) { $problems += ('Exit-Code {0}' -f (Format-ExitCode $ctx.ExitCode)) }
-    $title = 'Kein Absturz: kein Speicherabbild (WER LocalDumps), kein ASSERT im Protokoll, Ende über --quit mit Exit-Code 0'
-    if ($problems.Count -gt 0) {
-        Add-Check 'D14' $title 'FEHLER' (Protect-Text ((@($problems) + @($ctx.Evidence | Select-Object -First 5)) -join '; ')) ''
-    } else {
-        Add-Check 'D14' $title 'OK' ('Protokolle: {0}; Exit-Code nach --quit 0' -f ((@($ctx.Logs | ForEach-Object { Split-Path -Leaf $_ })) -join ', ')) ''
-    }
-
-    $logCheck = Test-ClientLogSecrets $ctx
-    $detail = 'Kennwort: {0} Treffer; base64(Benutzer:Kennwort): {1}; Authorization: Basic mit Wert: {2}; maskiert ("Basic [redacted]"): {3}; Protokolle: {4} Zeilen' -f $logCheck.Password, $logCheck.Token, $logCheck.Unmasked, $logCheck.Masked, $logCheck.Lines
-    $status = if ($logCheck.Lines -eq 0) { 'FEHLER' } elseif ($logCheck.Password + $logCheck.Token + $logCheck.Unmasked -eq 0) { 'OK' } else { 'FEHLER' }
-    Add-Check 'D15' 'Protokolle des Clients ohne Kennwort und ohne Basic-Zugang' $status $(if ($logCheck.Lines -eq 0) { 'kein Protokoll des Clients' } else { $detail }) ''
-
-    # Serverordner wieder weg; der Client ist beendet und synchronisiert das Löschen nicht mehr
+    # Serverordner und Dateien der Probe wieder weg; der Client ist beendet und synchronisiert das Löschen nicht mehr
     $codes = @(foreach ($folder in $dl.Folders) { '{0}: HTTP {1}' -f $folder, (Invoke-Dav 'DELETE' $folder) })
-    Add-Check 'D16' 'Serverordner der Probe gelöscht (WebDAV)' $(if (@($codes | Where-Object { $_ -notmatch 'HTTP (204|404)$' }).Count -eq 0) { 'INFO' } else { 'WARNUNG' }) ($codes -join '; ') ''
+    $codes += @(foreach ($file in $dl.TestooFiles) { '{0} an {1}: HTTP {2}' -f $file, ([uri]$ServerUrl).Host, (Invoke-Dav 'DELETE' $file -Server $ServerUrl -Token $loginToken) })
+    Add-Check 'D16' 'Serverordner und Dateien der Probe gelöscht (WebDAV)' $(if (@($codes | Where-Object { $_ -notmatch 'HTTP (204|404)$' }).Count -eq 0) { 'INFO' } else { 'WARNUNG' }) ($codes -join '; ') ''
 
-    foreach ($log in $ctx.Logs) { $null = Copy-Protected $log (Join-Path $OutDir (Split-Path -Leaf $log)) }
-    if ($ctx.Dumps.Count -gt 0) {
-        Invoke-DumpAnalysis $ctx
-        Add-Check 'D14.9' 'Auswertung des Speicherabbilds' 'INFO' (($ctx.Analysis | Select-Object -First 12) -join '; ') ''
-        Add-List 'Dauerlauf: Auswertung des Speicherabbilds' $ctx.Analysis.ToArray()
+    Complete-DauerArtifacts $ctx $fatal 'D14.9' 'D17' 'Dauerlauf' 'dauerlauf-ablauf.txt'
+}
+
+# --- Langer Lauf (dauerlauf-lang) ---------------------------------------------
+#
+# Beide Konten wie im dauerlauf, dann -RunMinutes Minuten Betrieb, länger als die Lebensdauer des ersten Access-Tokens: Der Client muss es
+# erneuern, ohne nach einer Anmeldung zu fragen, und dabei weiter synchronisieren. Alle 5 min eine Stichprobe, 5 min vor dem Ende Dateien
+# in beide Richtungen, danach die Auswertung des Protokolls.
+
+# L7 und L8 aus dem Protokoll des langen Laufs: Erneuerung des Access-Tokens ohne neue Anmeldung, Lebensdauer aus expires_in
+# ("valid for N s"); keine Sync-Schleife (Läufe je Ordner, Anlässe, Ergebnisse)
+function Add-LangLogChecks {
+    param($Ctx, $Dl)
+    $tokenTitle = 'Access-Token erneuert ohne neue Anmeldung (kein Browser, kein „Anmeldung erforderlich“), Lebensdauer aus expires_in'
+    if (-not $Dl.T0) {
+        Add-Check 'L7' $tokenTitle 'NICHT ERREICHT' 'kein Betrieb (L3 nicht erreicht)' ''
+        Add-Check 'L8' 'Keine Sync-Schleife' 'NICHT ERREICHT' 'kein Betrieb (L3 nicht erreicht)' ''
+        return
     }
-    if ($ctx.Crashed) {
-        Add-List 'Dauerlauf: Belege des Absturzes' $ctx.Evidence.ToArray()
-        Add-List 'Dauerlauf: Ende des Protokolls (ohne Zugangsdaten)' $ctx.LogTail
+    $text = Read-SharedText $Ctx.Log
+    $lines = @($text -split "`r?`n" | Where-Object { $_ })
+    $runLines = @($lines | Where-Object { $t = Get-LogLineTime $_; $Dl.T0 -and $t -and $t -ge $Dl.T0.AddSeconds(-1) })
+    $endTime = if ($Dl.Samples.Count -gt 0) { $Dl.Samples[$Dl.Samples.Count - 1].Zeit } else { Get-Date }
+
+    # L7: Access-Token erneuert, ohne dass der Client nach einer Anmeldung fragt; Lebensdauer aus expires_in ("valid for N s")
+    $callback = @($lines | Where-Object { $_ -match 'Browser callback received' }) | Select-Object -First 1
+    $signedInAt = if ($callback) { Get-LogLineTime $callback } else { $null }
+    $refreshed = @($runLines | Where-Object { $_ -match 'Access token refreshed' })
+    $lifetimes = @($lines | ForEach-Object { $m = [regex]::Match($_, 'Access token refreshed "?valid for (\d+) s'); if ($m.Success) { [int]$m.Groups[1].Value } } | Select-Object -Unique)
+    $proactive = @($runLines | Where-Object { $_ -match 'Refreshing the access token before it expires' }).Count
+    $expired = @($runLines | Where-Object { $_ -match 'The access token has expired' }).Count
+    $invalid = @($runLines | Where-Object { $_ -match 'Invalid credentials for' }).Count
+    $asked = @($runLines | Where-Object { $_ -match 'asking user|-> OCC::AccountState::(AskingCredentials|SignedOut)\b' })
+    $rejected = @($runLines | Where-Object { $_ -match 'no longer accepts the refresh token' })
+    $delayed = @($runLines | Where-Object { $_ -match 'Refreshing the access token failed temporarily|Renewing the sign-in is delayed' })
+    $browserAgain = @($runLines | Where-Object { $_ -match 'Waiting for the browser on' })
+    $times = (@($refreshed | ForEach-Object { $t = Get-LogLineTime $_; if ($t) { $t.ToString('HH:mm:ss') } })) -join ', '
+    $lifetime = if ($lifetimes.Count -gt 0) { $lifetimes[0] } else { 0 }
+    $expiry = if ($signedInAt -and $lifetime -gt 0) { $signedInAt.AddSeconds($lifetime) } else { $null }
+    $detail = 'Anmeldung im Browser (Rückruf) um {0}; Lebensdauer laut expires_in: {1}; erstes Token lief ab um {2}, Lauf bis {3}; Erneuerungen im Lauf: {4} ({5}; vorbeugend {6}x, nach Ablauf {7}x, nach Ablehnung durch den Server {8}x); neue Anmeldung verlangt: {9}; Erneuerung abgelehnt: {10}; vorübergehend gescheitert: {11}x; Browser nach dem Einrichten: {12}' -f $(if ($signedInAt) { $signedInAt.ToString('HH:mm:ss') } else { '-' }),
+        $(if ($lifetime -gt 0) { '{0} s (Protokoll „Access token refreshed "valid for {0} s"“)' -f $lifetime } else { 'nicht im Protokoll' }), $(if ($expiry) { $expiry.ToString('HH:mm:ss') } else { '-' }), $endTime.ToString('HH:mm:ss'), $refreshed.Count, $(if ($times) { $times } else { '-' }),
+        $proactive, $expired, $invalid, $(if ($asked.Count) { '{0}x: {1}' -f $asked.Count, (Limit-Text (Protect-Text $asked[0]) 200) } else { 'nein' }), $(if ($rejected.Count) { 'ja' } else { 'nein' }), $delayed.Count, $(if ($browserAgain.Count) { '{0}x' -f $browserAgain.Count } else { 'nein' })
+    $status = 'OK'
+    if ($asked.Count -gt 0 -or $rejected.Count -gt 0 -or $browserAgain.Count -gt 0) { $status = 'FEHLER' }
+    elseif ($refreshed.Count -eq 0) {
+        $status = 'FEHLER'
+        $detail = 'keine Erneuerung des Access-Tokens im Lauf; ' + $detail
+    } elseif ($expiry -and $endTime -lt $expiry) {
+        $status = 'WARNUNG'
+        $detail = 'der Lauf endete vor dem Ablauf des ersten Tokens; ' + $detail
+    } elseif ($delayed.Count -gt 0 -or $invalid -gt 0) { $status = 'WARNUNG' }
+    Add-Check 'L7' $tokenTitle $status (Protect-Text $detail) ''
+
+    # L8: keine Sync-Schleife - Läufe je Ordner, Anlässe und Ergebnisse
+    $perFolder = @{}
+    foreach ($line in $runLines) {
+        $m = [regex]::Match($line, 'Starting sync for "?([^"\r\n]+?)"?\s*$')
+        if ($m.Success) { $perFolder[$m.Groups[1].Value] = 1 + $(if ($perFolder.ContainsKey($m.Groups[1].Value)) { $perFolder[$m.Groups[1].Value] } else { 0 }) }
     }
-    if ($fatal.Count -gt 0) { Add-List 'Dauerlauf: ASSERT, ENFORCE, ENSURE, fatal' $fatal.ToArray() }
-    Add-List 'Ablauf' $timeline.ToArray()
-    [IO.File]::WriteAllLines((Join-Path $OutDir 'dauerlauf-ablauf.txt'), [string[]]$timeline.ToArray(), (New-Object System.Text.UTF8Encoding $false))
-    $leaked = @(Protect-OutDir)
-    if ($leaked.Count -gt 0) {
-        Add-Check 'D17' 'Artefakt ohne Kennwort' 'FEHLER' ('Kennwort oder Basic-Zugang stand in {0} - vor dem Hochladen maskiert' -f ($leaked -join ', ')) ''
+    $results = @{}
+    foreach ($line in $runLines) {
+        $m = [regex]::Match($line, 'Sync finished for "([^"]+)" with status (\S+)')
+        if ($m.Success) { $results[$m.Groups[2].Value] = 1 + $(if ($results.ContainsKey($m.Groups[2].Value)) { $results[$m.Groups[2].Value] } else { 0 }) }
     }
+    $etag = @($runLines | Where-Object { $_ -match 'due to an etag change' }).Count
+    $limit = [Math]::Max(30, [int]($RunMinutes / 2))
+    $folders = (@($perFolder.Keys | Sort-Object | ForEach-Object { '{0}: {1} Läufe' -f $_, $perFolder[$_] })) -join '; '
+    $loop = @($perFolder.Keys | Where-Object { $perFolder[$_] -gt $limit })
+    $detail = 'in {0:N0} min: {1}; Ergebnisse: {2}; Läufe wegen eines geänderten ETags: {3}; Grenze für eine Schleife: mehr als {4} Läufe je Ordner' -f $(if ($Dl.T0) { ($endTime - $Dl.T0).TotalMinutes } else { 0 }), $(if ($folders) { $folders } else { 'keine Läufe' }),
+        $(if ($results.Count) { (@($results.Keys | Sort-Object | ForEach-Object { '{0} {1}x' -f $_, $results[$_] })) -join ', ' } else { '-' }), $etag, $limit
+    Add-Check 'L8' 'Keine Sync-Schleife' $(if ($loop.Count -gt 0) { 'FEHLER' } else { 'OK' }) $detail ''
+}
+
+function Invoke-DauerlaufLang {
+    $exe = Initialize-DauerRun ('Betrieb nach dem Einrichten beider Konten: {0} min, Dateien nach {1} min' -f $RunMinutes, [Math]::Max(0, $RunMinutes - 5))
+    $prefix = Get-RunPrefix
+    $ctx = New-DauerContext 'l1'
+    $dl = @{
+        Ctx = $ctx; Stopped = ''; Folders = @("$prefix-lang"); OAuthUuid = ''; BasicUuid = ''; OAuthRoot = ''; Folder1Path = ''
+        T0 = $null; T0Mark = [long]0; Samples = (New-Object 'System.Collections.Generic.List[object]'); TestooFiles = (New-Object 'System.Collections.Generic.List[string]')
+    }
+    $fileMinute = [Math]::Max(0, $RunMinutes - 5)
+    $title = 'Konten an {0} (Browser-Anmeldung) und {1} (Kennwort, Ordner {2}), dann {3} min Betrieb mit einer Stichprobe alle 5 min, nach {4} min Dateien in beide Richtungen (Maus)' -f $ServerUrl, $BasicServerUrl, $dl.Folders[0], $RunMinutes, $fileMinute
+    Write-Annotation 'notice' "Dauerlauf-lang: $title"
+    Add-Timeline "== Dauerlauf-lang: $title"
+
+    $null = Invoke-DauerStep $dl 'L0' ('Serverordner {0} per WebDAV an {1} angelegt (Testkonto 2)' -f $dl.Folders[0], $BasicServerUrl) {
+        $code = Invoke-Dav 'MKCOL' $dl.Folders[0]
+        if ($code -notin 201, 405) { Stop-Step ('{0}: HTTP {1}' -f $dl.Folders[0], $code) }
+        return ('{0}: HTTP {1}' -f $dl.Folders[0], $code)
+    }
+
+    Reset-ClientState
+    Stop-OfficialClient
+    Write-ClientConfig 'de'
+    Set-LegacyConfig $false
+    $ctx.Since = Get-Date
+    Start-DauerClient $ctx $exe 'l1-client.log'
+
+    $null = Invoke-DauerStep $dl 'L1' ('Assistent: {0} mit Browser-Anmeldung, "Abschließen" mit den Vorgaben (virtuelle Dateien), verbunden, erster Sync' -f $ServerUrl) {
+        Add-FirstOAuthAccount $ctx $dl
+    }
+
+    $null = Invoke-DauerStep $dl 'L2' ('"Mehr" → "Konto hinzufügen…": {0} mit Kennwort, "Ordner manuell", Ordner-Assistent mit {1}, erster Sync' -f $BasicServerUrl, $dl.Folders[0]) {
+        Add-BasicAccountManual $ctx $dl $dl.Folders[0]
+    }
+
+    $null = Invoke-DauerStep $dl 'L3' 'Ausgangslage (Minute 0): Prozess lebt, Hauptfenster antwortet, beide Konten „Verbunden“, Arbeitsspeicher' {
+        $dl.T0 = Get-Date
+        $dl.T0Mark = Get-LogMark $ctx
+        $sample = Get-RunSample $ctx $dl 'Beginn'
+        $dl.Samples.Add($sample)
+        Add-Timeline ('Stichprobe: ' + (Format-RunSample $sample))
+        if (-not $sample.Reagiert -or -not $sample.Verbunden -or $sample.Anmeldung) { Stop-Step (Format-RunSample $sample) }
+        return (Format-RunSample $sample)
+    }
+
+    $null = Invoke-DauerStep $dl 'L4' ('Betrieb bis {0} min: alle 5 min Prozess lebt, Hauptfenster antwortet, beide Konten „Verbunden“, keine Anmeldung verlangt' -f $fileMinute) {
+        if (-not $dl.T0) { Stop-Step 'keine Ausgangslage (L3)' }
+        $problems = Invoke-RunPhase $ctx $dl 5 $fileMinute
+        $count = @($dl.Samples).Count - 1
+        if ($problems.Count -gt 0) { Stop-Step ('{0} Stichproben; {1}' -f $count, ($problems -join '; ')) }
+        return ('{0} Stichproben bis {1} min ohne Befund (Einzelheiten in der Liste „Stichproben“)' -f $count, $fileMinute)
+    }
+
+    $null = Invoke-DauerStep $dl 'L5' ('nach {0} min: je eine Datei per WebDAV an {1} und {2} kommt lokal an (Platzhalter, Lesen lädt herunter), je eine lokale Datei kommt auf dem Server an' -f $fileMinute, $ServerUrl, $BasicServerUrl) {
+        if (-not $dl.OAuthRoot -or -not $dl.Folder1Path) { Stop-Step 'Ordner der Konten fehlen (L1, L2)' }
+        $tag = [guid]::NewGuid().ToString('N').Substring(0, 8)
+        $results = @()
+        $problems = @()
+        $unchecked = @()
+        $targets = @(
+            @{ Host = ([uri]$ServerUrl).Host; Server = $ServerUrl; Token = $loginToken; RemoteDir = ''; Local = $dl.OAuthRoot; Testoo = $true },
+            @{ Host = ([uri]$BasicServerUrl).Host; Server = $BasicServerUrl; Token = $loginToken2; RemoteDir = $dl.Folders[0]; Local = $dl.Folder1Path; Testoo = $false }
+        )
+        foreach ($target in $targets) {
+            $serverName = 'lang-server-{0}.txt' -f $tag
+            $remote = if ($target.RemoteDir) { '{0}/{1}' -f $target.RemoteDir, $serverName } else { $serverName }
+            $arrival = Test-ServerFileArrives $ctx $target.Server $target.Token $remote $target.Local 180
+            if ($arrival.Put -and $target.Testoo) { $dl.TestooFiles.Add($serverName) }
+            if (-not $arrival.Put -and $arrival.Code -eq 401) {
+                $unchecked += ('{0}: Server → lokal nicht prüfbar, WebDAV mit Kennwort abgelehnt (HTTP 401)' -f $target.Host)
+            } elseif (-not $arrival.Ok) {
+                $problems += ('{0}: {1}' -f $target.Host, $arrival.Detail)
+            } else {
+                $read = Read-FileWithTimeout $arrival.Local 120
+                $same = $read.Done -and -not $read.Error -and ([Convert]::ToBase64String($read.Bytes) -ceq [Convert]::ToBase64String($arrival.Bytes))
+                $results += ('{0}: {1}, gelesen und gleich: {2}' -f $target.Host, $arrival.Detail, $(if ($same) { 'ja' } elseif ($read.Error) { 'nein (' + $read.Error + ')' } elseif (-not $read.Done) { 'nein (Lesen nach 120 s nicht fertig)' } else { 'nein (anderer Inhalt)' }))
+                if (-not $same) { $problems += ('{0}: Datei vom Server nicht lesbar oder anderer Inhalt' -f $target.Host) }
+            }
+            $localName = 'lang-lokal-{0}.txt' -f $tag
+            $upload = Test-LocalFileArrives $ctx $target.Server $target.Token $target.Local $target.RemoteDir $localName 180
+            if ($target.Testoo) { $dl.TestooFiles.Add($localName) }
+            $results += ('{0}: {1}' -f $target.Host, $upload.Detail)
+            if (-not $upload.Ok) { $problems += ('{0}: {1}' -f $target.Host, $upload.Detail) }
+            if ($upload.Unchecked) { $unchecked += ('{0}: lokal → Server nur über das Protokoll des Clients belegt' -f $target.Host) }
+        }
+        $shot = Write-BasicStep $ctx 'dateien' ('Dateien nach {0} min' -f $fileMinute)
+        $detail = '{0}{1}; Foto {2}' -f ($results -join '; '), $(if ($unchecked.Count) { '; Einschränkung: ' + ($unchecked -join '; ') } else { '' }), $shot
+        if ($problems.Count -gt 0) { Stop-Step (($problems -join '; ') + '; ' + $detail) }
+        if ($unchecked.Count -gt 0) { return @{ Status = 'WARNUNG'; Detail = $detail } }
+        return $detail
+    }
+
+    $null = Invoke-DauerStep $dl 'L6' ('Betrieb bis {0} min: Prozess lebt, Hauptfenster antwortet, beide Konten „Verbunden“' -f $RunMinutes) {
+        if (-not $dl.T0) { Stop-Step 'keine Ausgangslage (L3)' }
+        $problems = Invoke-RunPhase $ctx $dl $RunMinutes $RunMinutes
+        $last = $dl.Samples[$dl.Samples.Count - 1]
+        if ($problems.Count -gt 0) { Stop-Step ($problems -join '; ') }
+        return (Format-RunSample $last)
+    }
+
+    Stop-DauerClient $ctx $exe 'dauerlauf-lang'
+    Add-LangLogChecks $ctx $dl
+
+    # L9: Arbeitsspeicher am Anfang und am Ende
+    $alive = @($dl.Samples | Where-Object { $_.Lebt })
+    if ($alive.Count -gt 0) {
+        $first = $alive[0]
+        $lastAlive = $alive[$alive.Count - 1]
+        $peakWs = ($alive | Measure-Object -Property WorkingSetMB -Maximum).Maximum
+        $peakPrivate = ($alive | Measure-Object -Property PrivatMB -Maximum).Maximum
+        Add-Check 'L9' 'Arbeitsspeicher (Working Set) am Anfang und am Ende' 'INFO' ('Anfang ({0:N1} min): Working Set {1} MB, privat {2} MB; Ende ({3:N1} min): Working Set {4} MB, privat {5} MB; Höchstwerte der Stichproben: Working Set {6} MB, privat {7} MB' -f $first.Minuten, $first.WorkingSetMB, $first.PrivatMB,
+            $lastAlive.Minuten, $lastAlive.WorkingSetMB, $lastAlive.PrivatMB, $peakWs, $peakPrivate) ''
+    } else {
+        Add-Check 'L9' 'Arbeitsspeicher (Working Set) am Anfang und am Ende' 'NICHT ERREICHT' 'keine Stichprobe' ''
+    }
+
+    $fatal = Get-FatalLines $ctx
+    Add-NoCrashCheck $ctx 'L10' $fatal
+    Add-LogSecretsCheck $ctx 'L11'
+
+    $codes = @(foreach ($folder in $dl.Folders) { '{0}: HTTP {1}' -f $folder, (Invoke-Dav 'DELETE' $folder) })
+    $codes += @(foreach ($file in $dl.TestooFiles) { '{0} an {1}: HTTP {2}' -f $file, ([uri]$ServerUrl).Host, (Invoke-Dav 'DELETE' $file -Server $ServerUrl -Token $loginToken) })
+    Add-Check 'L12' 'Serverordner und Dateien der Probe gelöscht (WebDAV)' $(if (@($codes | Where-Object { $_ -notmatch 'HTTP (204|404)$' }).Count -eq 0) { 'INFO' } else { 'WARNUNG' }) ($codes -join '; ') ''
+
+    Add-List 'Dauerlauf-lang: Stichproben' @($dl.Samples | ForEach-Object { Format-RunSample $_ })
+    Complete-DauerArtifacts $ctx $fatal 'L10.9' 'L13' 'Dauerlauf-lang' 'dauerlauf-lang-ablauf.txt'
 }
 
 # ---------------------------------------------------------------------------
@@ -5345,8 +6517,13 @@ function Write-Report {
         }
     }
     if ($Scenario -eq 'dauerlauf') {
-        $head.Add(('- Server: `{0}` (Browser-Anmeldung, Testkonto aus E2E_ONLINE_USER_1/E2E_ONLINE_PASS_1) und `{1}` (Kennwort, E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2) im selben Profil; mindestens {2} min Betrieb nach dem Neustart' -f $ServerUrl, $BasicServerUrl, $RunMinutes))
+        $head.Add(('- Server: `{0}` (Browser-Anmeldung, Testkonto aus E2E_ONLINE_USER_1/E2E_ONLINE_PASS_1) und `{1}` (Kennwort, E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2) im selben Profil; mindestens {2} min Betrieb nach dem Neustart; Serverumzug auf `{3}` (dieselbe Instanz) und zurück' -f $ServerUrl, $BasicServerUrl, $RunMinutes, $MoveServerUrl))
+        $head.Add('- Tray-Symbol (T1–T5), Serverumzug (S1, S2) und Umstieg des Kontos mit Kennwort (U1) per Maus; Elemente des Infobereichs der Taskleiste (tray-*.txt), wenn das Symbol nicht zu finden war')
         $head.Add('- Bildschirmfotos (foto-*.png, Anmeldenamen geschwärzt), Ablauf (dauerlauf-ablauf.txt) und Protokolle des Clients vor und nach dem Neustart (d1-client.log, d2-client.log, ohne Zugangsdaten) liegen im Artefakt; Speicherabbilder nicht (der Client kannte Kennwort und Tokens), nur ihre Auswertung mit cdb')
+    }
+    if ($Scenario -eq 'dauerlauf-lang') {
+        $head.Add(('- Server: `{0}` (Browser-Anmeldung, E2E_ONLINE_USER_1/E2E_ONLINE_PASS_1) und `{1}` (Kennwort, E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2) im selben Profil; {2} min Betrieb nach dem Einrichten, Stichprobe alle 5 min, Dateien in beide Richtungen nach {3} min' -f $ServerUrl, $BasicServerUrl, $RunMinutes, [Math]::Max(0, $RunMinutes - 5)))
+        $head.Add('- Bildschirmfotos (foto-*.png, Anmeldenamen geschwärzt), Ablauf (dauerlauf-lang-ablauf.txt) und Protokoll des Clients (l1-client.log, ohne Zugangsdaten) liegen im Artefakt; Speicherabbilder nicht, nur ihre Auswertung mit cdb')
     }
     $head.Add(('- Rechner: {0}, Windows PowerShell {1}' -f $os, $PSVersionTable.PSVersion))
     $head.Add(('- Ergebnis: **{0}**, {1} Warnungen' -f $verdict, $warned))
@@ -5419,6 +6596,7 @@ try {
         'assistent' { Invoke-Assistent }
         'assistent-basic' { Invoke-AssistentBasic }
         'dauerlauf' { Invoke-Dauerlauf }
+        'dauerlauf-lang' { Invoke-DauerlaufLang }
     }
 } catch {
     $abort = '{0} (Zeile {1})' -f $_.Exception.Message, $_.InvocationInfo.ScriptLineNumber
