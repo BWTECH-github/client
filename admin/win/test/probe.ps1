@@ -2880,7 +2880,7 @@ function Invoke-KeyboardFlow {
             return
         }
         if ($outcome.State -eq 'warnung') {
-            $Ctx.Warnings.Add(@{ Url = $url; Detail = 'laut Protokoll; Text siehe Foto (ohne UI Automation nicht lesbar)' })
+            $Ctx.Warnings.Add(@{ Url = $url; Detail = 'laut Protokoll; Text siehe Foto (ohne UI Automation nicht lesbar)'; Complete = $null })
             $Ctx.Reached = "Warnung für $url"
             Write-StepRecord $Ctx 'warnung' ('Meldung {0} s nach Enter mit {1}' -f $seconds, $url)
             continue
@@ -3199,7 +3199,7 @@ function Invoke-AssistentPass {
     Write-Annotation 'notice' "Durchgang ${name}: $($Definition.Title)"
     Add-Timeline "== Durchgang ${name}: $($Definition.Title)"
     Reset-ClientState
-    Write-ClientConfig $(if ($Definition.Language) { $Definition.Language } else { 'de' })
+    Write-ClientConfig $Definition.Language
     Set-LegacyConfig $Definition.Legacy ([bool]$Definition.Import)
     if ($Definition.Official -and $OfficialMsi) {
         $running = (Get-OfficialProcess) -or (Start-OfficialClient)
@@ -3284,17 +3284,18 @@ function Invoke-Assistent {
 
     # eingefügt in ein Feld, in dem "https://" schon stand, und mit "/" zu viel: brach bis beta3 beim "Anmelden" ab
     $messyServerUrl = 'https://' + $ServerUrl.TrimEnd('/') + '//'
+    # jede Definition trägt alle Schlüssel (Set-StrictMode: ein fehlender bricht ab)
     # p1 zuerst: nur Tastatur, bevor diese Sitzung UI Automation benutzt - wie ein Tester ohne Hilfsprogramme
     $passes = @(
-        @{ Name = 'p1'; Mode = 'tastatur'; Legacy = $true; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false
+        @{ Name = 'p1'; Mode = 'tastatur'; Legacy = $true; Import = $false; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false; Language = 'de'; Scale = ''
             Title = 'Umstieg-Dialog, "Neues Konto einrichten" (Esc), erst ' + $WrongServerUrl + ' (Warnung), dann ' + $ServerUrl + ', Anmeldung, Fertigstellen - nur Tastatur, ohne UI Automation im Client' },
-        @{ Name = 'p2'; Mode = 'uia'; Legacy = $true; Official = $true; Urls = @($messyServerUrl); Advanced = $true
+        @{ Name = 'p2'; Mode = 'uia'; Legacy = $true; Import = $false; Official = $true; Urls = @($messyServerUrl); Advanced = $true; Language = 'de'; Scale = ''
             Title = 'Umstieg-Dialog (offizieller Client läuft), "Neues Konto einrichten", gleich ' + $messyServerUrl + ' (doppeltes Schema und "//"), Anmeldung, Erweitert, Fertigstellen (UI Automation)' },
-        @{ Name = 'p3'; Mode = 'uia'; Legacy = $true; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false
+        @{ Name = 'p3'; Mode = 'uia'; Legacy = $true; Import = $false; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false; Language = 'de'; Scale = ''
             Title = 'Umstieg-Dialog, "Neues Konto einrichten", erst ' + $WrongServerUrl + ' (Warnung lesen und vermessen), dann ' + $ServerUrl + ', Anmeldung, Fertigstellen (UI Automation)' },
-        @{ Name = 'p4'; Mode = 'uia'; Legacy = $true; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false; Language = 'fr'; Scale = '1.5'
+        @{ Name = 'p4'; Mode = 'uia'; Legacy = $true; Import = $false; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false; Language = 'fr'; Scale = '1.5'
             Title = 'wie p3 auf Französisch (längste Fassung der Meldungen) mit 150 % (QT_SCALE_FACTOR=1.5): Warnung vermessen, dann ' + $ServerUrl + ', Anmeldung, Fertigstellen (UI Automation)' },
-        @{ Name = 'p5'; Mode = 'uia'; Legacy = $true; Import = $true; Official = $false; Urls = @($ServerUrl); Advanced = $false
+        @{ Name = 'p5'; Mode = 'uia'; Legacy = $true; Import = $true; Official = $false; Urls = @($ServerUrl); Advanced = $false; Language = 'de'; Scale = ''
             Title = 'Umstieg mit zwei Konten: ' + $WrongServerUrl + ' als nicht übernehmbar ausgewiesen (App "OAuth2" fehlt), ' + $ServerUrl + ' über "Übernehmen" mit Anmeldung, Fertigstellen und Abschlussbericht (UI Automation)' }
     )
     $contexts = New-Object 'System.Collections.Generic.List[object]'
