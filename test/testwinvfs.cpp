@@ -792,6 +792,36 @@ private Q_SLOTS:
         QVERIFY(!fakeFolder.vfs()->isDehydratedPlaceholder(fakeFolder.localPath() + QStringLiteral("A/Hydrated")));
         QVERIFY(fakeFolder.vfs()->isDehydratedPlaceholder(fakeFolder.localPath() + QStringLiteral("A/DeHydrated")));
     }
+
+    // owncloud.online: CfExecute läuft erst nach dem Rückruf (Daten nach dem Download, Prüfung, Neustart der Hydratation).
+    // CfOpdata darf dann nicht mehr in die Rückrufinformation zeigen, deren Speicher nur während des Rückrufs gilt.
+    void testOpdataOutlivesCallbackInfo()
+    {
+        CORRELATION_VECTOR vector = {};
+        vector.Version = 2;
+        qstrncpy(vector.Vector, "Ab1Cd2Ef3Gh4.1", sizeof(vector.Vector));
+        CF_CALLBACK_INFO info = {};
+        info.StructSize = sizeof(info);
+        info.TransferKey.QuadPart = 4711;
+        info.CorrelationVector = &vector;
+
+        const CfAPIUtil::CfOpdata opdata(&info);
+        // der Rückruf ist vorbei, sein Speicher wird anders genutzt
+        memset(&vector, 0x5a, sizeof(vector));
+        info.CorrelationVector = nullptr;
+
+        const auto opInfo = opdata.toOpinfo();
+        QCOMPARE(opInfo.TransferKey.QuadPart, qint64{4711});
+        QVERIFY(opInfo.CorrelationVector);
+        QVERIFY(opInfo.CorrelationVector != &vector);
+        QCOMPARE(opInfo.CorrelationVector->Version, char{2});
+        QCOMPARE(QByteArray(opInfo.CorrelationVector->Vector), QByteArrayLiteral("Ab1Cd2Ef3Gh4.1"));
+
+        // ohne CorrelationVector im Rückruf auch keiner im Auftrag
+        CF_CALLBACK_INFO plain = {};
+        plain.StructSize = sizeof(plain);
+        QVERIFY(!CfAPIUtil::CfOpdata(&plain).toOpinfo().CorrelationVector);
+    }
 };
 
 QTEST_GUILESS_MAIN(TestWinVfs)

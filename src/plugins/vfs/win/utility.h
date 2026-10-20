@@ -36,11 +36,16 @@ struct CfOpdata
 
     explicit CfOpdata(const CF_CALLBACK_INFO *info);
 
+    /// Der CorrelationVector im Ergebnis zeigt in dieses Objekt: Es muss bis nach CfExecute leben.
     CF_OPERATION_INFO toOpinfo() const;
 
     CF_CONNECTION_KEY connectionKey;
     LARGE_INTEGER transferKey;
-    PCORRELATION_VECTOR correlationVector;
+    // owncloud.online: eine Kopie statt des Zeigers aus CF_CALLBACK_INFO. Die Rückrufinformation gilt nur, solange der
+    // Rückruf läuft; CfExecute kommt aber später im GUI-Thread (Daten nach dem Download, Prüfung, Neustart der
+    // Hydratation). Der gemerkte Zeiger zeigte dann in freigegebenen Speicher, und CfExecute stürzte gelegentlich ab.
+    CORRELATION_VECTOR correlationVector;
+    bool hasCorrelationVector;
 };
 
 inline QString hstringToQString(const winrt::hstring &str)
