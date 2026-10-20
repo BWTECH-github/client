@@ -722,14 +722,16 @@ void Credentials::askFromUserSucceeded(const QString &token, const QString &refr
     }
 }
 
-void Credentials::replaceTokens(const QString &accessToken, const QString &refreshToken)
+void Credentials::replaceTokens(const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt)
 {
     _fetchErrorString.clear();
     // sonst läse checkConnectivity() erst den Schlüsselbund, während der neue Token noch geschrieben wird
     _wasEverFetched = true;
+    // restliche Lebensdauer; schon abgelaufen: bald erneuern (die Lebensdauer 0 hieße „unbekannt“)
+    const qint64 expiresIn = accessTokenExpiresAt > 0 ? std::max<qint64>(1, accessTokenExpiresAt - QDateTime::currentSecsSinceEpoch()) : 0;
     // askFromUserSucceeded() verwirft über stopRefresh() eine Erneuerung gegen die alte Adresse samt Pausen: ihr Ergebnis
     // darf die neuen Token nicht überschreiben
-    askFromUserSucceeded(accessToken, refreshToken, 0);
+    askFromUserSucceeded(accessToken, refreshToken, expiresIn);
 }
 
 void Credentials::askFromUserLogout()

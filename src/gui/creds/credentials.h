@@ -121,9 +121,10 @@ public:
      * Übernimmt Token einer Anmeldung, die außerhalb dieses Objekts lief (Serverumzug: Anmeldung an der neuen Adresse).
      * Bricht eine laufende Erneuerung gegen die alte Adresse samt Pausen ab und schließt eine offene Neuanmeldung, wie
      * nach einer erfolgreichen Anmeldung: Das Refresh-Token kommt zuerst unter der aktuellen Kontoadresse in den
-     * Schlüsselbund, erst danach gilt das Access-Token (fetched()).
+     * Schlüsselbund, erst danach gilt das Access-Token (fetched()). Mit @p accessTokenExpiresAt (wie bei
+     * setAccessTokenExpiresAt(), 0: unbekannt) wird danach vorbeugend erneuert wie nach jeder Anmeldung.
      */
-    void replaceTokens(const QString &accessToken, const QString &refreshToken);
+    void replaceTokens(const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt = 0);
 
     /** Pause vor dem n-ten Versuch nach vorübergehend gescheiterten Erneuerungen: 30 s, 60 s, 120 s, 240 s, dann 5 min. */
     static std::chrono::milliseconds defaultRefreshRetryDelay(int failedAttempts);

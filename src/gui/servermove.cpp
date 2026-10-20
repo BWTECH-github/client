@@ -26,6 +26,7 @@
 #include "libsync/accessmanager.h"
 #include "libsync/account.h"
 
+#include <QDateTime>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QLoggingCategory>
@@ -233,7 +234,8 @@ std::optional<QUrl> ServerMove::rebaseUrl(const QUrl &url, const QUrl &oldBase, 
     return rebased;
 }
 
-QString ServerMove::applyNewServerUrl(AccountState *accountState, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken)
+QString ServerMove::applyNewServerUrl(
+    AccountState *accountState, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt)
 {
     if (!accountState || !accountState->account()) {
         return tr("The account no longer exists.");
@@ -276,7 +278,7 @@ QString ServerMove::applyNewServerUrl(AccountState *accountState, const QUrl &ne
 
     // die neuen Token unter dem neuen Host speichern; schließt auch eine offene Neuanmeldung für die alte Adresse
     if (auto *credentials = qobject_cast<Credentials *>(account->credentials())) {
-        credentials->replaceTokens(accessToken, refreshToken);
+        credentials->replaceTokens(accessToken, refreshToken, accessTokenExpiresAt);
     }
 
     if (accountState->isSignedOut()) {
@@ -565,16 +567,18 @@ void ServerMoveController::startSignIn(const QUrl &newUrl)
         Q_EMIT signInLinkChanged(_oauth->authorisationLink());
         _oauth->openBrowser();
     });
-    connect(_oauth, &OAuth::result, this, [davUser, this](OAuth::Result result, const QString &accessToken, const QString &refreshToken) {
+    connect(_oauth, &OAuth::result, this, [davUser, this](OAuth::Result result, const QString &accessToken, const QString &refreshToken, qint64 expiresIn) {
         switch (result) {
         case OAuth::LoggedIn: {
             const QUrl url = _newUrl;
+            // Ablauf nach der Uhr: bis zum Umstellen vergehen noch die Prüfung und das Warten auf laufende Synchronisationen
+            const qint64 expiresAt = expiresIn > 0 ? QDateTime::currentSecsSinceEpoch() + expiresIn : 0;
             // erst später löschen: das Signal kommt aus dem OAuth-Objekt selbst
             _oauth->disconnect(this);
             _oauth->deleteLater();
             _oauth = nullptr;
             Q_EMIT progress(tr("Checking that this is the same server and the same user…"));
-            verifyAndApply(url, accessToken, refreshToken);
+            verifyAndApply(url, accessToken, refreshToken, expiresAt);
             break;
         }
         case OAuth::NotSupported:
@@ -603,7 +607,7 @@ void ServerMoveController::openBrowserAgain()
     }
 }
 
-void ServerMoveController::verifyAndApply(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken)
+void ServerMoveController::verifyAndApply(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt)
 {
     if (!_accountState || !_accountState->account()) {
         fail(ServerMove::tr("The account no longer exists."));
@@ -622,11 +626,13 @@ void ServerMoveController::verifyAndApply(const QUrl &newUrl, const QString &acc
                                                      "<d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:prop><oc:id/></d:prop></d:propfind>");
     QNetworkReply *reply = accessManager()->sendCustomRequest(request, QByteArrayLiteral("PROPFIND"), body);
     _verificationReply = reply;
-    connect(reply, &QNetworkReply::finished, this,
-        [reply, newUrl, accessToken, refreshToken, this] { finishVerification(reply, newUrl, accessToken, refreshToken); });
+    connect(reply, &QNetworkReply::finished, this, [reply, newUrl, accessToken, refreshToken, accessTokenExpiresAt, this] {
+        finishVerification(reply, newUrl, accessToken, refreshToken, accessTokenExpiresAt);
+    });
 }
 
-void ServerMoveController::finishVerification(QNetworkReply *reply, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken)
+void ServerMoveController::finishVerification(
+    QNetworkReply *reply, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt)
 {
     reply->deleteLater();
     _verificationReply = nullptr;
@@ -688,12 +694,14 @@ void ServerMoveController::finishVerification(QNetworkReply *reply, const QUrl &
     _syncStopTime.start();
     _syncStopPoll = new QTimer(this);
     _syncStopPoll->setInterval(100);
-    connect(_syncStopPoll, &QTimer::timeout, this, [newUrl, accessToken, refreshToken, this] { applyWhenSyncsStopped(newUrl, accessToken, refreshToken); });
+    connect(_syncStopPoll, &QTimer::timeout, this, [newUrl, accessToken, refreshToken, accessTokenExpiresAt, this] {
+        applyWhenSyncsStopped(newUrl, accessToken, refreshToken, accessTokenExpiresAt);
+    });
     _syncStopPoll->start();
-    applyWhenSyncsStopped(newUrl, accessToken, refreshToken);
+    applyWhenSyncsStopped(newUrl, accessToken, refreshToken, accessTokenExpiresAt);
 }
 
-void ServerMoveController::applyWhenSyncsStopped(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken)
+void ServerMoveController::applyWhenSyncsStopped(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt)
 {
     if (!_accountState || !_accountState->account()) {
         fail(ServerMove::tr("The account no longer exists."));
@@ -709,7 +717,7 @@ void ServerMoveController::applyWhenSyncsStopped(const QUrl &newUrl, const QStri
     }
     // erst umstellen, dann die Synchronisation freigeben (reset() bzw. fail()): FolderMan::setSyncEnabled(true) startet
     // sofort den nächsten Lauf aus der Warteschlange, womöglich einen Ordner dieses Kontos
-    const QString error = ServerMove::applyNewServerUrl(_accountState, newUrl, accessToken, refreshToken);
+    const QString error = ServerMove::applyNewServerUrl(_accountState, newUrl, accessToken, refreshToken, accessTokenExpiresAt);
     if (!error.isEmpty()) {
         fail(error);
         return;
