@@ -123,9 +123,11 @@ function Unregister-SyncRoots {
         }
         # Eintrag im Navigationsbereich des Explorers, falls Windows ihn stehen lässt -
         # nur im eigenen Profil erreichbar; die Kennung muss eine CLSID sein, sonst
-        # träfe der Pfad den ganzen CLSID-Zweig
+        # träfe der Pfad den ganzen CLSID-Zweig. Die Kopie der CLSID in der
+        # 32-Bit-Sicht (WOW6432Node) lässt Unregister immer stehen.
         if ($paths.ContainsKey($currentSid) -and $namespace -match '^\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}$') {
             foreach ($path in "HKCU:\Software\Classes\CLSID\$namespace",
+                              "HKCU:\Software\Classes\WOW6432Node\CLSID\$namespace",
                               "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Desktop\NameSpace\$namespace") {
                 if (Test-Path -LiteralPath $path) {
                     Remove-Item -LiteralPath $path -Recurse -Force -ErrorAction SilentlyContinue
