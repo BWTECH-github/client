@@ -47,8 +47,6 @@ const char authenticationFailedC[] = "owncloud-authentication-failed";
 // ein eben ausgestelltes Access-Token, das der Server gleich ablehnt (etwa ein Webserver, der den Authorization-Header
 // nicht weitergibt): nicht in einer Schleife erneuern, sondern wie einen Fehlschlag mit Pause behandeln
 constexpr auto freshAccessTokenGrace = 30s;
-// ausdrücklicher Wunsch des Kontos während einer Pause: frühestens so lange nach dem letzten Versuch
-constexpr auto explicitRetryInterval = 10s;
 // wieder im Netz: der nächste Versuch nach dieser Pause statt nach der vollen
 constexpr auto networkBackRetryDelay = 2s;
 // so lange wartet das neue Access-Token höchstens auf den Schlüsselbund
@@ -142,9 +140,9 @@ Credentials::Credentials(const QString &token, const QString &refreshToken, Acco
 
     // wieder im Netz: nicht die volle Pause abwarten
     connect(NetworkInformation::instance(), &NetworkInformation::reachabilityChanged, this, [this] {
-        if (_refreshRetryTimer.isActive() && networkAvailable() && _refreshRetryTimer.remainingTimeAsDuration() > networkBackRetryDelay) {
+        if (_refreshRetryTimer.isActive() && networkAvailable()) {
             qCInfo(lcCredentials) << "Network is back, retrying the token refresh soon";
-            _refreshRetryTimer.start(networkBackRetryDelay);
+            bringRetryForward(networkBackRetryDelay);
         }
     });
 
@@ -290,6 +288,11 @@ std::chrono::milliseconds Credentials::keychainRetryDelay(int failedAttempts) co
     return std::min<milliseconds>(1s * (1 << std::clamp(failedAttempts - 1, 0, 9)), 5min);
 }
 
+std::chrono::milliseconds Credentials::explicitRetryInterval() const
+{
+    return 10s;
+}
+
 // Lisa todo: this is called periodically, find the trigger. it's coming mostly from the jobs :(
 bool Credentials::stillValid(QNetworkReply *reply)
 {
@@ -347,16 +350,17 @@ bool Credentials::refreshAccessToken()
         return false;
 
     _fetchRequested = true;
+    const bool jobsWereBlocked = _jobsBlocked;
     if (!ready()) {
         blockJobs();
     }
     if (_refreshRetryTimer.isActive()) {
-        // Pause nach einem Fehlschlag: auf Wunsch des Kontos (der Server antwortet wieder, ein Zertifikat ist bestätigt)
-        // bald erneut versuchen, aber nicht öfter als alle 10 s
-        const auto sinceAttempt = _sinceRefreshAttempt.isValid() ? _sinceRefreshAttempt.durationElapsed() : nanoseconds::max();
-        const auto wait = sinceAttempt >= explicitRetryInterval ? 0ms : duration_cast<milliseconds>(explicitRetryInterval - sinceAttempt);
-        if (_refreshRetryTimer.remainingTimeAsDuration() > wait) {
-            _refreshRetryTimer.start(wait);
+        // Pause nach einem Fehlschlag. Die Kontoprüfung, die hierher führt, läuft regelmäßig und meldet nur, dass status.php
+        // antwortet; das tat der Server womöglich auch beim letzten Versuch (Konto deaktiviert, oauth2-App aus). Sie verkürzt
+        // die Pause deshalb nicht, das tun nur echte Anlässe (retryRefreshSoon(), wieder im Netz). Das Konto erfährt aber
+        // erneut, warum es wartet; blockJobs() hat es eben schon gesagt, wenn es die Aufträge erst jetzt anhielt.
+        if (jobsWereBlocked || !_jobsBlocked) {
+            Q_EMIT authenticationDelayed(_refreshMaintenance, _refreshErrorString);
         }
         return true;
     }
@@ -364,6 +368,39 @@ bool Credentials::refreshAccessToken()
         refreshAccessTokenInternal();
     }
     return true;
+}
+
+void Credentials::retryRefreshSoon()
+{
+    if (_refreshRetryTimer.isActive()) {
+        qCInfo(lcCredentials) << "The server answers again or a certificate was accepted, retrying the token refresh soon";
+        bringRetryForward(0ms);
+    }
+}
+
+void Credentials::bringRetryForward(std::chrono::milliseconds delay)
+{
+    // auch bei wiederholtem Anlass (Netz flattert, Server mal da, mal nicht) frühestens explicitRetryInterval() nach dem
+    // letzten Versuch
+    const auto sinceAttempt = _sinceRefreshAttempt.isValid() ? _sinceRefreshAttempt.durationElapsed() : nanoseconds::max();
+    const auto spacing = sinceAttempt >= explicitRetryInterval() ? 0ms : duration_cast<milliseconds>(explicitRetryInterval() - sinceAttempt);
+    const auto wait = std::max(delay, spacing);
+    if (_refreshRetryTimer.isActive() && _refreshRetryTimer.remainingTimeAsDuration() > wait) {
+        _refreshRetryTimer.start(wait);
+    }
+}
+
+void Credentials::setAccessTokenExpiresAt(qint64 expiresAt)
+{
+    const qint64 now = QDateTime::currentSecsSinceEpoch();
+    if (expiresAt <= 0 || expiresAt > now) {
+        setAccessTokenLifetime(expiresAt > 0 ? expiresAt - now : 0);
+        return;
+    }
+    // schon abgelaufen: vor der nächsten Anfrage erneuern (refreshIfExpired()), nicht erst nach einer Ablehnung
+    _proactiveRefreshTimer.stop();
+    _accessTokenStaleAt = now;
+    _proactiveRefreshAt = now;
 }
 
 void Credentials::refreshIfExpired()
@@ -554,6 +591,7 @@ void Credentials::writeRefreshToken()
         if (ok) {
             _storedRefreshToken = token;
             _storeFailures = 0;
+            setKeychainError({});
             if (_refreshToken.isEmpty()) {
                 // inzwischen abgemeldet: nichts im Schlüsselbund zurücklassen
                 removeRefreshToken();
@@ -562,6 +600,11 @@ void Credentials::writeRefreshToken()
         } else {
             ++_storeFailures;
             qCWarning(lcCredentials) << "Could not store the refresh token in the keychain (attempt" << _storeFailures << "):" << error;
+            if (_storeFailures >= storeAttemptsBeforeUse && !_refreshToken.isEmpty()) {
+                // dauerhaft: Endet das Programm, bevor das Speichern doch noch klappt, verlangt der nächste Start eine neue
+                // Anmeldung. Das soll der Nutzer vorher sehen, nicht erst im Log.
+                setKeychainError(error);
+            }
         }
 
         if (_pendingTokens && (_refreshToken == _storedRefreshToken || _storeFailures >= storeAttemptsBeforeUse)) {
@@ -583,6 +626,15 @@ void Credentials::writeRefreshToken()
             _storeWaitLoop->quit();
         }
     });
+}
+
+void Credentials::setKeychainError(const QString &error)
+{
+    if (_keychainError == error) {
+        return;
+    }
+    _keychainError = error;
+    Q_EMIT keychainErrorChanged(error);
 }
 
 void Credentials::waitForStoredRefreshToken()
@@ -645,16 +697,17 @@ void Credentials::askFromUser()
     _requestAuth->startAuthentication(_account);
 }
 
-void Credentials::askFromUserSucceeded(const QString &token, const QString &refreshToken)
+void Credentials::askFromUserSucceeded(const QString &token, const QString &refreshToken, qint64 expiresIn)
 {
     // eine Erneuerung oder Pause von vorher zählt nicht mehr
     stopRefresh();
     _accessToken.clear();
     _ready = false;
     _refreshToken = refreshToken;
-    // wie nach einer Erneuerung: erst das Refresh-Token in den Schlüsselbund, dann benutzen
+    // wie nach einer Erneuerung: erst das Refresh-Token in den Schlüsselbund, dann benutzen; mit der Lebensdauer aus dem
+    // Code-Tausch wird vorbeugend erneuert, ohne sie erst nach einer Ablehnung (401)
     _fetchRequested = true;
-    handleRefreshSuccess(token, refreshToken, 0);
+    handleRefreshSuccess(token, refreshToken, expiresIn);
 
     if (_requestAuth) {
         delete _requestAuth;
@@ -669,7 +722,7 @@ void Credentials::replaceTokens(const QString &accessToken, const QString &refre
     _wasEverFetched = true;
     // askFromUserSucceeded() verwirft über stopRefresh() eine Erneuerung gegen die alte Adresse samt Pausen: ihr Ergebnis
     // darf die neuen Token nicht überschreiben
-    askFromUserSucceeded(accessToken, refreshToken);
+    askFromUserSucceeded(accessToken, refreshToken, 0);
 }
 
 void Credentials::askFromUserLogout()
@@ -735,6 +788,10 @@ void Credentials::forgetSensitiveData()
     // need to be done before invalidateToken, so it actually deletes the refresh_token from the keychain
     // to do, make that more explicit
     _refreshToken.clear();
+    // ein noch nicht gespeichertes Refresh-Token zählt nicht mehr, der Hinweis darauf auch nicht
+    _storeRetryTimer.stop();
+    _storeFailures = 0;
+    setKeychainError({});
     invalidateToken();
     _fetchRequested = false;
     if (_jobsBlocked) {

@@ -75,7 +75,7 @@ QByteArray userInfoJson()
 
 QByteArray tokenJson()
 {
-    return QByteArrayLiteral("{\"access_token\":\"123\",\"refresh_token\":\"456\",\"token_type\":\"Bearer\",\"user_id\":\"admin\"}");
+    return QByteArrayLiteral("{\"access_token\":\"123\",\"refresh_token\":\"456\",\"token_type\":\"Bearer\",\"expires_in\":3600,\"user_id\":\"admin\"}");
 }
 
 }
@@ -1069,6 +1069,7 @@ private Q_SLOTS:
         QSignalSpy success(f.controller, &OAuthPageController::success);
         QVERIFY(!f.controller->validate());
         QTRY_COMPARE(f.openedLinks.size(), 1);
+        const qint64 before = QDateTime::currentSecsSinceEpoch();
 
         browserCallback(f.openedLinks.at(0), &f);
 
@@ -1077,6 +1078,9 @@ private Q_SLOTS:
         QCOMPARE(results.token, QStringLiteral("123"));
         QCOMPARE(results.userId, QStringLiteral("admin"));
         QCOMPARE(f.capabilitiesRequests, 1);
+        // Ablaufzeitpunkt aus expires_in des Code-Tauschs: Das Konto entsteht erst einige Seiten später
+        QVERIFY2(results.accessTokenExpiresAt >= before + 3600 && results.accessTokenExpiresAt <= QDateTime::currentSecsSinceEpoch() + 3600,
+            qPrintable(QString::number(results.accessTokenExpiresAt - before)));
     }
 
     // Zurück und eine andere Adresse (onUrlValidationCompleted): Die Anmeldung für die vorige Adresse endet sofort, ihr
@@ -1193,6 +1197,28 @@ private Q_SLOTS:
         QTRY_COMPARE(succeeded.size(), 1);
         QCOMPARE(succeeded.at(0).at(0).toString(), QStringLiteral("123"));
         QCOMPARE(succeeded.at(0).at(1).toString(), QStringLiteral("456"));
+    }
+
+    // Neuanmeldung: Die Lebensdauer des Access-Tokens aus dem Code-Tausch (expires_in) geht mit, damit die Credentials es vor
+    // dem Ablauf erneuern
+    void testReauthPassesTheTokenLifetime()
+    {
+        // Arrange
+        ReauthFixture f;
+        QSignalSpy succeeded(f.controller, &RequestAuthenticationController::authenticationSucceeded);
+        f.controller->startAuthentication(f.account);
+        QTRY_VERIFY(f.button("SignInButton") && f.button("SignInButton")->isEnabled());
+        f.button("SignInButton")->click();
+        QTRY_COMPARE(f.openedLinks.size(), 1);
+
+        // Act
+        browserCallback(f.openedLinks.at(0), &f);
+
+        // Assert
+        QTRY_COMPARE(succeeded.size(), 1);
+        QCOMPARE(succeeded.at(0).at(0).toString(), QStringLiteral("123"));
+        QCOMPARE(succeeded.at(0).at(1).toString(), QStringLiteral("456"));
+        QCOMPARE(succeeded.at(0).at(2).toLongLong(), 3600);
     }
 
     // Neuanmeldung ohne erreichbaren Server: nicht sofort neu beginnen (bisher eine enge Schleife aus status.php-Anfragen,

@@ -41,7 +41,8 @@ public:
 Q_SIGNALS:
     void requestAccountModal(OCC::AccountModalWidget *widget);
     void requestLogout();
-    void authenticationSucceeded(const QString &token, const QString &refreshToken);
+    // expiresIn: Lebensdauer des Access-Tokens aus dem Code-Tausch in Sekunden, 0: unbekannt
+    void authenticationSucceeded(const QString &token, const QString &refreshToken, qint64 expiresIn);
     // this is only emitted if the controller is running without a widget.
     void authenticationFailed(const QString &errorMessage);
 
@@ -49,7 +50,7 @@ private:
     void handleSignIn();
     void handleLogOut();
     void authUrlReady();
-    void handleOAuthResult(OAuth::Result, const QString &accessToken, const QString &refreshToken);
+    void handleOAuthResult(OAuth::Result, const QString &accessToken, const QString &refreshToken, qint64 expiresIn);
     /** beendet die laufende Anmeldung (Listener zu, Link ungültig) und beginnt nach restartDelay() neu */
     void restartAfterError();
     void discardOAuth();

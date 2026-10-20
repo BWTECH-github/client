@@ -98,6 +98,13 @@ public:
      */
     virtual void refreshIfExpired() { }
 
+    /**
+     * Ein Anlass, nach dem eine vorübergehend gescheiterte Erneuerung jetzt gelingen kann: Der Server antwortet wieder,
+     * nachdem die Kontoprüfung ihn nicht erreichte oder er in Wartung war, oder ein Zertifikat wurde bestätigt. Den
+     * nächsten Versuch vorziehen statt die Pause abzuwarten. Die regelmäßige Kontoprüfung ist kein solcher Anlass.
+     */
+    virtual void retryRefreshSoon() { }
+
 Q_SIGNALS:
     /** Emitted when fetchFromKeychain() is done.
      *
@@ -116,6 +123,12 @@ Q_SIGNALS:
      * bis dahin bleiben die Aufträge angehalten. Es folgt später fetched() oder authenticationFailed().
      */
     void authenticationDelayed(bool maintenance, const QString &errorString);
+
+    /**
+     * Das Refresh-Token ließ sich wiederholt nicht im Schlüsselbund speichern (error: Meldung des Schlüsselbunds), oder es
+     * klappt wieder (leer). Die Anmeldung gilt bis zum Beenden weiter, nach einem Neustart droht eine neue Anmeldung.
+     */
+    void keychainErrorChanged(const QString &error);
 
     /*
      * Request to log out.

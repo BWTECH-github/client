@@ -91,6 +91,7 @@ public:
 
     int statusRequests = 0;
     int tokenRequests = 0;
+    int capabilitiesRequests = 0;
     int unauthorized = 0;
     int expirations = 0;
     QList<QNetworkRequest> tokenRequestList;
@@ -170,6 +171,9 @@ public:
                 onAccepted(authorization);
             }
             if (path.contains(QLatin1String("/ocs/v2.php/cloud/"))) {
+                if (path.endsWith(QLatin1String("/capabilities"))) {
+                    ++capabilitiesRequests;
+                }
                 if (path.endsWith(QLatin1String("/user"))) {
                     return new FakePayloadReply(op, request,
                         ocsPayload({{QStringLiteral("id"), QStringLiteral("admin")}, {QStringLiteral("display-name"), QStringLiteral("Admin")}}), replyParent);
@@ -253,10 +257,13 @@ public:
     }
 
     using Credentials::_accessTokenStaleAt;
+    using Credentials::_pendingTokens;
     using Credentials::_proactiveRefreshAt;
     using Credentials::_proactiveRefreshTimer;
     using Credentials::_refreshToken;
     using Credentials::_sinceAccessToken;
+    using Credentials::askFromUserSucceeded;
+    using Credentials::refreshAccessTokenInternal;
     using Credentials::waitForStoredRefreshToken;
 
     QString accessToken() const { return _accessToken; }
@@ -284,6 +291,8 @@ public:
     std::chrono::milliseconds keychainDelay = 1ms;
     std::chrono::milliseconds retryDelay = 50ms;
     std::chrono::milliseconds keychainRetry = 10ms;
+    // ein echter Anlass zieht den nächsten Versuch frühestens so lange nach dem letzten vor (im Programm 10 s)
+    std::chrono::milliseconds explicitRetry = 10s;
     int askedUser = 0;
 
 protected:
@@ -323,6 +332,7 @@ protected:
 
     std::chrono::milliseconds refreshRetryDelay(int) const override { return retryDelay; }
     std::chrono::milliseconds keychainRetryDelay(int) const override { return keychainRetry; }
+    std::chrono::milliseconds explicitRetryInterval() const override { return explicitRetry; }
 
 private:
     TokenServer *_server;
@@ -357,6 +367,8 @@ bool allFinishedOk(const QList<std::shared_ptr<Request>> &requests)
     return std::all_of(requests.cbegin(), requests.cend(), [](const auto &r) { return r->finished && r->error == QNetworkReply::NoError; });
 }
 
+const QByteArray loginPageHtml = QByteArrayLiteral("<!DOCTYPE html><html><body>Login</body></html>");
+
 // Konto mit den TestCredentials. Ohne Access-Token wie nach einem Neustart (das Refresh-Token liegt im Schlüsselbund),
 // sonst mit einem Token, das schon länger gilt.
 struct Fixture
@@ -386,6 +398,19 @@ struct Fixture
         });
         job->start();
         return result;
+    }
+
+    // AccountState des Kontos, verbunden; nullptr, wenn es sich nicht verbindet
+    std::unique_ptr<AccountState> connectedAccountState()
+    {
+        account->setCapabilities({account->url(), serverCapabilities()});
+        std::ignore = TestUtils::folderMan();
+        auto state = std::make_unique<AccountState>(account.get());
+        state->checkConnectivity();
+        if (!QTest::qWaitFor([&state] { return state->state() == AccountState::Connected; }, 10000)) {
+            return nullptr;
+        }
+        return state;
     }
 };
 
@@ -917,6 +942,219 @@ private Q_SLOTS:
         QTRY_VERIFY_WITH_TIMEOUT(f->server.tokenRequests == 1 && f->credentials->ready(), 10000);
         QCOMPARE(f->credentials->askedUser, 0);
         QVERIFY(state->state() != AccountState::AskingCredentials);
+    }
+
+    // Konto: Scheitert der Token-Endpunkt, während status.php antwortet (Konto deaktiviert, oauth2-App aus, Fehler nur dort),
+    // verkürzt die regelmäßige Kontoprüfung die Pause nicht. Sie läuft weiter, und der Status nennt die Ursache.
+    void testAccountCheckKeepsThePause_data()
+    {
+        QTest::addColumn<int>("status");
+        QTest::addColumn<QByteArray>("body");
+        QTest::addColumn<QString>("cause");
+
+        QTest::newRow("account disabled") << 400
+                                          << toJson({{QStringLiteral("error"), QStringLiteral("unauthorized_client")},
+                                                 {QStringLiteral("error_description"), QStringLiteral("user not enabled")}})
+                                          << QStringLiteral("account on the server is disabled");
+        QTest::newRow("oauth2 app disabled") << 302 << loginPageHtml << QStringLiteral("sign-in service of the server is not available");
+        QTest::newRow("client not accepted") << 400 << toJson({{QStringLiteral("error"), QStringLiteral("invalid_client")}})
+                                             << QStringLiteral("does not accept this application");
+        QTest::newRow("token endpoint 503") << 503 << QByteArrayLiteral("<html>Service Unavailable</html>")
+                                            << QStringLiteral("temporarily unavailable (HTTP 503)");
+        QTest::newRow("temporarily_unavailable") << 503 << toJson({{QStringLiteral("error"), QStringLiteral("temporarily_unavailable")}})
+                                                 << QStringLiteral("temporarily unavailable (temporarily_unavailable)");
+        QTest::newRow("connection closed at the token endpoint") << 0 << QByteArray() << QStringLiteral("Connection closed");
+    }
+
+    void testAccountCheckKeepsThePause()
+    {
+        // Arrange: verbunden; das Token läuft ab, der Token-Endpunkt scheitert, die Pause ist lang
+        QFETCH(int, status);
+        QFETCH(QByteArray, body);
+        QFETCH(QString, cause);
+        Fixture f;
+        const auto state = f.connectedAccountState();
+        QVERIFY(state);
+        f.credentials->retryDelay = 10min;
+        // ein echter Anlass dürfte sofort erneuern: so fiele jedes Vorziehen auf
+        f.credentials->explicitRetry = 0ms;
+        f.server.tokenFailures = {{status, body}};
+        f.server.expireAccessToken();
+        state->freshConnectionAttempt();
+        QTRY_COMPARE_WITH_TIMEOUT(state->state(), AccountState::NetworkError, 10000);
+        QCOMPARE(f.server.tokenRequests, 1);
+
+        // Act: die regelmäßige Prüfung (im Programm alle 62 s), dreimal
+        for (int i = 0; i < 3; ++i) {
+            const int statusRequests = f.server.statusRequests;
+            state->checkConnectivity();
+            QTRY_VERIFY_WITH_TIMEOUT(f.server.statusRequests > statusRequests && state->state() == AccountState::NetworkError, 10000);
+        }
+        QTest::qWait(200);
+
+        // Assert: kein weiterer Versuch am Token-Endpunkt, die Ursache steht im Status
+        QCOMPARE(f.server.tokenRequests, 1);
+        QCOMPARE(state->state(), AccountState::NetworkError);
+        const QString errors = state->connectionErrors().join(QLatin1Char('\n'));
+        QVERIFY2(errors.contains(cause), qPrintable(errors));
+        QCOMPARE(f.credentials->askedUser, 0);
+    }
+
+    // Konto: Während der Pause meldet die Kontoprüfung Wartung. Antwortet der Server danach wieder, kommt der nächste Versuch
+    // gleich statt nach der vollen Pause.
+    void testServerBackEndsThePause()
+    {
+        // Arrange: verbunden, die Erneuerung scheitert mit 503, lange Pause
+        Fixture f;
+        const auto state = f.connectedAccountState();
+        QVERIFY(state);
+        f.credentials->retryDelay = 10min;
+        f.credentials->explicitRetry = 0ms;
+        f.server.tokenFailures = {{503, QByteArrayLiteral("<html>Service Unavailable</html>")}};
+        f.server.expireAccessToken();
+        state->freshConnectionAttempt();
+        QTRY_COMPARE_WITH_TIMEOUT(state->state(), AccountState::NetworkError, 10000);
+
+        // Act: Wartung, danach antwortet der Server wieder
+        f.server.maintenance = true;
+        state->checkConnectivity();
+        QTRY_COMPARE_WITH_TIMEOUT(state->state(), AccountState::MaintenanceMode, 10000);
+        QCOMPARE(f.server.tokenRequests, 1);
+        f.server.maintenance = false;
+        state->checkConnectivity();
+
+        // Assert
+        QTRY_COMPARE_WITH_TIMEOUT(state->state(), AccountState::Connected, 10000);
+        QCOMPARE(f.server.tokenRequests, 2);
+        QCOMPARE(f.credentials->askedUser, 0);
+    }
+
+    // Eine Abfrage der Servereinstellungen läuft noch, da kommt die nächste (das Konto verbindet sich neu, während Aufträge der
+    // vorigen auf ein neues Token warten): keine zweite daneben, die laufende zählt. Mit FORCE_ASSERTS (Beta) beendete das
+    // ASSERT in fetchServerSettings() hier den Client.
+    void testServerSettingsFetchRunsOnce()
+    {
+        // Arrange
+        Fixture f;
+        const auto state = f.connectedAccountState();
+        QVERIFY(state);
+        QTRY_VERIFY_WITH_TIMEOUT(state->readyForSync(), 10000);
+        const int capabilitiesRequests = f.server.capabilitiesRequests;
+
+        // Act
+        state->fetchServerSettings();
+        state->fetchServerSettings();
+
+        // Assert
+        QTRY_COMPARE_WITH_TIMEOUT(f.server.capabilitiesRequests, capabilitiesRequests + 1, 10000);
+        QTest::qWait(300);
+        QCOMPARE(f.server.capabilitiesRequests, capabilitiesRequests + 1);
+        QVERIFY(state->readyForSync());
+    }
+
+    // Mehrere Anstöße zur selben Zeit (Zeitgeber, Ablehnung, Konto), auch während das neue Token auf den Schlüsselbund wartet:
+    // genau eine Anfrage am Token-Endpunkt. Ein zweiter Tausch mit demselben Refresh-Token endete mit invalid_grant und
+    // einer neuen Anmeldung.
+    void testConcurrentRefreshesShareOneRequest()
+    {
+        // Arrange
+        Fixture f;
+        f.credentials->keychainDelay = 500ms;
+        QSignalSpy failedSpy(f.credentials, &AbstractCredentials::authenticationFailed);
+
+        // Act
+        f.credentials->refreshAccessTokenInternal();
+        f.credentials->refreshAccessTokenInternal();
+        QTRY_VERIFY_WITH_TIMEOUT(f.credentials->_pendingTokens.has_value(), 10000);
+        f.credentials->refreshAccessTokenInternal();
+
+        // Assert
+        QTRY_COMPARE_WITH_TIMEOUT(f.credentials->accessToken(), QStringLiteral("access-2"), 10000);
+        QTest::qWait(300);
+        QCOMPARE(f.server.tokenRequests, 1);
+        QCOMPARE(f.server.usedRefreshTokens, QStringList{QStringLiteral("refresh-1")});
+        QCOMPARE(failedSpy.count(), 0);
+        QCOMPARE(f.credentials->keychain, QStringLiteral("refresh-2"));
+    }
+
+    // Nach einer Neuanmeldung gilt die Lebensdauer aus dem Code-Tausch (expires_in): vorbeugend erneuert wie nach einer
+    // Erneuerung, nicht erst nach einer Ablehnung
+    void testSignInTokenIsRefreshedBeforeExpiry()
+    {
+        // Arrange: kein Token im Speicher, der Server stellt Tokens für 2 s aus
+        auto f = Fixture::restart(QString());
+        f->server.expiresIn = 2;
+        f->server.accessTokenAge.restart();
+        QSignalSpy fetchedSpy(f->credentials, &AbstractCredentials::fetched);
+
+        // Act
+        f->credentials->askFromUserSucceeded(QStringLiteral("access-1"), QStringLiteral("refresh-1"), 2);
+
+        // Assert: vor dem Ablauf erneuert, ohne Ablehnung
+        QTRY_COMPARE_WITH_TIMEOUT(fetchedSpy.count(), 1, 5000);
+        QTRY_COMPARE_WITH_TIMEOUT(f->credentials->accessToken(), QStringLiteral("access-2"), 5000);
+        QCOMPARE(f->server.unauthorized, 0);
+        QCOMPARE(f->server.expirations, 0);
+    }
+
+    // Assistent: Das Konto entsteht erst einige Seiten nach dem Code-Tausch. Mit dem Ablaufzeitpunkt aus dem Tausch gilt ein
+    // inzwischen abgelaufenes Token als abgelaufen (erst erneuern, dann senden), ein gültiges wird vorbeugend erneuert.
+    void testWizardTokenExpiry()
+    {
+        // Arrange: das Token aus dem Assistenten ist schon abgelaufen
+        Fixture f;
+        QObject scope;
+        f.server.expireAccessToken();
+
+        // Act
+        f.credentials->setAccessTokenExpiresAt(QDateTime::currentSecsSinceEpoch() - 1);
+
+        // Assert
+        QVERIFY(!f.credentials->ready());
+        const auto request = f.get(&scope);
+        QTRY_VERIFY_WITH_TIMEOUT(request->finished, 10000);
+        QCOMPARE(request->error, QNetworkReply::NoError);
+        QCOMPARE(f.server.unauthorized, 0);
+        QCOMPARE(f.server.tokenRequests, 1);
+
+        // Act: das neue Token gilt laut Assistent noch 2 s
+        f.credentials->setAccessTokenExpiresAt(QDateTime::currentSecsSinceEpoch() + 2);
+
+        // Assert: vorbeugend erneuert
+        QVERIFY(f.credentials->ready());
+        QTRY_COMPARE_WITH_TIMEOUT(f.server.tokenRequests, 2, 5000);
+    }
+
+    // Lässt sich das neue Refresh-Token dauerhaft nicht speichern, zeigt das Konto einen Hinweis (nach einem Neustart droht eine
+    // neue Anmeldung). Klappt es später, verschwindet er.
+    void testPersistentKeychainFailureIsShown()
+    {
+        // Arrange
+        Fixture f;
+        const auto state = f.connectedAccountState();
+        QVERIFY(state);
+        QVERIFY(state->keychainWarning().isEmpty());
+        f.credentials->keychainStoreFailures = 1000;
+        f.credentials->keychainRetry = 50ms;
+        QSignalSpy warningSpy(state.get(), &AccountState::keychainWarningChanged);
+
+        // Act: das Token läuft ab und wird erneuert, der Schlüsselbund scheitert immer wieder
+        f.server.expireAccessToken();
+        state->freshConnectionAttempt();
+
+        // Assert: das Konto arbeitet weiter und zeigt den Hinweis
+        QTRY_VERIFY_WITH_TIMEOUT(!state->keychainWarning().isEmpty(), 10000);
+        QTRY_COMPARE_WITH_TIMEOUT(state->state(), AccountState::Connected, 10000);
+        QVERIFY2(state->keychainWarning().contains(QStringLiteral("could not write")), qPrintable(state->keychainWarning()));
+        QCOMPARE(warningSpy.count(), 1);
+
+        // Act: der Schlüsselbund klappt wieder
+        f.credentials->keychainStoreFailures = 0;
+
+        // Assert
+        QTRY_VERIFY_WITH_TIMEOUT(state->keychainWarning().isEmpty(), 10000);
+        QCOMPARE(f.credentials->keychain, QStringLiteral("refresh-2"));
+        QCOMPARE(warningSpy.count(), 2);
     }
 };
 

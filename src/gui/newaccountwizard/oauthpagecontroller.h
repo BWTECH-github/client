@@ -37,6 +37,9 @@ struct OAuthPageResults
 {
     QString token;
     QString refreshToken;
+    // Ablauf des Access-Tokens nach der Uhr des Rechners (Sekunden seit 1970, 0: unbekannt), aus expires_in des
+    // Code-Tauschs: Das Konto entsteht erst einige Seiten später
+    qint64 accessTokenExpiresAt = 0;
     QUrl webfingerUserUrl;
     QString displayName;
     QString userId;
@@ -148,7 +151,7 @@ private:
     QIcon copyIcon();
     /** displays the error in the page, sets the error value in the results and emits failure(results) */
     void handleError(const QString &error);
-    void handleOauthResult(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString());
+    void handleOauthResult(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString(), qint64 expiresIn = 0);
     void authUrlReady();
     /** öffnet den Anmeldelink im Browser und zeigt den Hinweis, dort die Anmeldung abzuschließen */
     void openBrowser();

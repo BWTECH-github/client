@@ -26,6 +26,7 @@
 
 #include "socketapi/socketapi.h"
 #include "theme.h"
+#include "traymenucontroller.h"
 
 #include <QFontMetrics>
 #include <QMessageBox>
@@ -41,6 +42,24 @@ namespace {
 inline const QLatin1String userExplicitlySignedOutC()
 {
     return QLatin1String("userExplicitlySignedOut");
+}
+
+// Die Kontoprüfung erreichte den Server zuletzt nicht (Netz, Zeitüberschreitung, 503, Wartung, Zertifikat, Captive
+// Portal) oder hat ihn seit dem Start noch nicht geprüft
+bool serverWasUnreachable(OCC::ConnectionValidator::Status status)
+{
+    switch (status) {
+    case OCC::ConnectionValidator::Undefined:
+    case OCC::ConnectionValidator::StatusNotFound:
+    case OCC::ConnectionValidator::Timeout:
+    case OCC::ConnectionValidator::ServiceUnavailable:
+    case OCC::ConnectionValidator::MaintenanceMode:
+    case OCC::ConnectionValidator::SslError:
+    case OCC::ConnectionValidator::CaptivePortal:
+        return true;
+    default:
+        return false;
+    }
 }
 
 } // anonymous namespace
@@ -80,6 +99,7 @@ AccountState::AccountState(Account *account)
 
     connect(_account->credentials(), &AbstractCredentials::requestLogout, this, [this] { setState(State::SignedOut); });
     connect(_account->credentials(), &AbstractCredentials::authenticationDelayed, this, &AccountState::slotAuthenticationDelayed);
+    connect(_account->credentials(), &AbstractCredentials::keychainErrorChanged, this, &AccountState::onKeychainErrorChanged);
 
     // todo: no we should not directly register the account, but let accountAdded signal trigger it
     if (FolderMan::instance()) {
@@ -224,7 +244,13 @@ void AccountState::fetchServerSettings()
         return;
     }
 
-    Q_ASSERT(_fetchServerSettingsRunner == nullptr);
+    if (_fetchServerSettingsRunner) {
+        // Die vorige Abfrage läuft noch, etwa weil ihre Aufträge auf ein neues Token warteten und das Konto sich inzwischen
+        // neu verbunden hat: ihr Ergebnis abwarten, keine zweite daneben. Mit FORCE_ASSERTS (Beta) beendete das ASSERT,
+        // das hier stand, den Client.
+        qCInfo(lcAccountState) << "Server settings are still being fetched for" << _account->displayNameWithHost();
+        return;
+    }
     _fetchServerSettingsRunner = new FetchServerSettingsRunner(_account, this);
 
     connect(_fetchServerSettingsRunner, &FetchServerSettingsRunner::finishedSignal, this, &AccountState::slotFetchServerSettingsResult);
@@ -236,6 +262,8 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsRunner::Resu
     if (_state != Connected) {
         // kill the last runner as something clearly went wrong
         _fetchServerSettingsRunner->deleteLater();
+        // schon jetzt vergessen, nicht erst mit dem Löschen: sonst hielte fetchServerSettings() ihn noch für laufend
+        _fetchServerSettingsRunner = nullptr;
         _needsServerSettingsRefresh = true;
         return;
     }
@@ -271,6 +299,7 @@ void AccountState::slotFetchServerSettingsResult(FetchServerSettingsRunner::Resu
     // value to use the parenting mechanism for the AbstractNetworkJobs inside the FetchServerSettingsJob - I find it really questionable to parent
     // self deleting objects but this needs deeper investigation.
     _fetchServerSettingsRunner->deleteLater();
+    _fetchServerSettingsRunner = nullptr;
 
     if (newState != Connected) {
         setState(newState);
@@ -448,6 +477,8 @@ void AccountState::handleSslConnectionErrors(const QList<QSslError> &errors, boo
         int res = tlsDlg.exec();
         if (res == TlsErrorDialog::Accepted) {
             _account->addApprovedCerts(certs);
+            // mit dem bestätigten Zertifikat kann auch eine gescheiterte Erneuerung gelingen
+            _account->credentials()->retryRefreshSoon();
             // force a new _connectionValidator
             if (_connectionValidator) {
                 resetConnectionValidator();
@@ -535,7 +566,7 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
         qCWarning(lcAccountState) << "Signed out, ignoring" << status << _account->url().toString();
         return;
     }
-
+    const ConnectionStatus previousStatus = _connectionStatus;
 
     if (status == ConnectionValidator::Connected && !_account->hasCapabilities()) {
         // this code should only be needed when upgrading from a < 3.0 release where capabilities where not cached
@@ -592,6 +623,11 @@ void AccountState::slotConnectionValidatorResult(ConnectionValidator::Status sta
     case ConnectionValidator::CredentialsWrong:
         [[fallthrough]];
     case ConnectionValidator::CredentialsNotReady:
+        if (serverWasUnreachable(previousStatus)) {
+            // Der Server antwortet wieder: Das kann eine Erneuerung gelingen lassen, die an seinem Ausfall oder an der Wartung
+            // scheiterte. Antwortete er schon bei der letzten Prüfung, ist das nichts Neues und die Pause bleibt.
+            _account->credentials()->retryRefreshSoon();
+        }
         slotInvalidCredentials();
         break;
     case ConnectionValidator::SslError:
@@ -644,11 +680,37 @@ void AccountState::slotAuthenticationDelayed(bool maintenance, const QString &er
     }
     // Die Erneuerung der Anmeldung scheitert vorübergehend. Die Anmeldung gilt weiter, die Credentials versuchen es nach
     // einer Pause selbst wieder: keine Anmeldeaufforderung, nur zeigen, warum nichts läuft. Die Verbindungsprüfung läuft
-    // weiter; sie meldet Wartung und Zertifikatsfehler und stößt die Erneuerung wieder an, sobald der Server antwortet.
+    // weiter (deshalb wartet das Konto nicht mehr auf neue Anmeldedaten); sie meldet Wartung und Zertifikatsfehler und
+    // zieht die Erneuerung vor, sobald der Server nach einem Ausfall oder einer Wartung wieder antwortet.
     qCInfo(lcAccountState) << "Renewing the sign-in is delayed for" << _account->url().toString() << (maintenance ? QStringLiteral("(maintenance)") : errorString);
     _waitingForNewCredentials = false;
     _connectionErrors = errorString.isEmpty() ? QStringList() : QStringList{errorString};
     setState(maintenance ? MaintenanceMode : NetworkError);
+}
+
+void AccountState::onKeychainErrorChanged(const QString &error)
+{
+    const QString warning = error.isEmpty()
+        ? QString()
+        : tr("The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.")
+              .arg(error);
+    if (warning == _keychainWarning) {
+        return;
+    }
+    const bool newWarning = _keychainWarning.isEmpty();
+    _keychainWarning = warning;
+    Q_EMIT keychainWarningChanged();
+    if (warning.isEmpty() || !newWarning) {
+        return;
+    }
+    qCWarning(lcAccountState) << "The keychain keeps failing for" << _account->displayNameWithHost() << ":" << error;
+    // einmal je Auftreten auch als Benachrichtigung: den Kontobereich öffnet kaum jemand von sich aus. ocAppOrNull(): in den
+    // Tests gibt es keine Application.
+    if (Application *app = ocAppOrNull()) {
+        if (TrayMenuController *tray = app->tray()) {
+            tray->slotShowTrayMessage(_account->displayNameWithHost(), warning);
+        }
+    }
 }
 
 void AccountState::slotCredentialsFetched()

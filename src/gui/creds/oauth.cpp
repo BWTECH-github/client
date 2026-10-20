@@ -233,7 +233,7 @@ void OAuth::finalize(const QString &accessToken, const QString &refreshToken, co
     } else {
         httpReplyAndClose(_socket, true, QStringLiteral("200 OK"), loginSuccessfulTitle, loginSuccessfulHtml);
     }
-    Q_EMIT result(LoggedIn, accessToken, refreshToken);
+    Q_EMIT result(LoggedIn, accessToken, refreshToken, _expiresIn);
 }
 
 // the tcp server handling has to be done async while we wait for a suitable socket with which to communiciate with the
@@ -324,10 +324,13 @@ void OAuth::getTokens()
     connect(postTokenReply, &QNetworkReply::finished, this, [postTokenReply, this] {
         const auto jsonData = postTokenReply->readAll();
         QJsonParseError jsonParseError;
-        const auto data = QJsonDocument::fromJson(jsonData, &jsonParseError).object().toVariantMap();
+        const QJsonObject json = QJsonDocument::fromJson(jsonData, &jsonParseError).object();
+        const auto data = json.toVariantMap();
         QString fieldsError;
         _accessToken = getRequiredField(data, QStringLiteral("access_token"), &fieldsError).toString();
         _refreshToken = getRequiredField(data, QStringLiteral("refresh_token"), &fieldsError).toString();
+        // optional (RFC 6749, Abschnitt 5.1); ohne Angabe erneuern die Credentials erst nach einer Ablehnung
+        _expiresIn = secondsValue(json.value(QStringLiteral("expires_in")));
         const QString tokenType = getRequiredField(data, QStringLiteral("token_type"), &fieldsError).toString().toLower();
         _messageUrl = QUrl::fromEncoded(data[QStringLiteral("message_url")].toByteArray());
 
@@ -672,19 +675,33 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
             }
 
             // Alles andere ist kein Urteil über das Refresh-Token: Netz, Zeitüberschreitung, 5xx, eine Weiterleitung oder
-            // HTML statt JSON (oauth2-App aus), ein gesperrtes Konto (unauthorized_client) oder ein Fehler in der
-            // Einrichtung (invalid_client, invalid_request)
+            // HTML statt JSON (oauth2-App aus), ein deaktiviertes Konto (unauthorized_client) oder ein Fehler in der
+            // Einrichtung (invalid_client, invalid_request). Die Meldung nennt die Ursache für den Kontostatus, die
+            // technische Angabe steht in Klammern.
+            const QString oauthError = description.isEmpty() ? error : QStringLiteral("%1: %2").arg(error, description);
+            const QString httpDetail = jsonParseError.error != QJsonParseError::NoError
+                ? QStringLiteral("HTTP %1: %2").arg(QString::number(httpStatus), jsonParseError.errorString())
+                : QStringLiteral("HTTP %1").arg(QString::number(httpStatus));
             QString reason;
-            if (!error.isEmpty()) {
-                reason = description.isEmpty() ? error : QStringLiteral("%1: %2").arg(error, description);
-            } else if (reply->error() != QNetworkReply::NoError) {
-                reason = networkReplyErrorString(*reply);
-            } else if (jsonParseError.error != QJsonParseError::NoError) {
-                reason = QStringLiteral("HTTP %1: %2").arg(QString::number(httpStatus), jsonParseError.errorString());
+            if (error == QLatin1String("unauthorized_client")) {
+                // die oauth2-App: Konto deaktiviert oder gelöscht („user not enabled“)
+                reason = tr("Your account on the server is disabled (%1). Please contact your system administrator.").arg(oauthError);
+            } else if (error == QLatin1String("invalid_client")) {
+                reason = tr("The sign-in service of the server does not accept this application (%1). Please contact your system administrator.")
+                             .arg(oauthError);
+            } else if (error == QLatin1String("server_error") || error == QLatin1String("temporarily_unavailable") || (error.isEmpty() && httpStatus >= 500)) {
+                // vorübergehende Störung: 5xx oder die Fehlercodes dafür aus RFC 6749
+                reason = tr("The sign-in service of the server is temporarily unavailable (%1).")
+                             .arg(error.isEmpty() ? QStringLiteral("HTTP %1").arg(QString::number(httpStatus)) : oauthError);
+            } else if (!error.isEmpty()) {
+                reason = tr("The sign-in service of the server rejected the request (%1).").arg(oauthError);
+            } else if (httpStatus != 0) {
+                // Weiterleitung auf die Anmeldeseite, HTML statt JSON, 404: die oauth2-App fehlt oder ist abgeschaltet
+                reason = tr("The sign-in service of the server is not available (%1). Please contact your system administrator.").arg(httpDetail);
             } else {
-                reason = QStringLiteral("HTTP %1").arg(QString::number(httpStatus));
+                reason = networkReplyErrorString(*reply);
             }
-            qCWarning(lcOauth) << "Error while refreshing the token:" << reply->error() << httpStatus << reason;
+            qCWarning(lcOauth) << "Error while refreshing the token:" << reply->error() << httpStatus << (oauthError.isEmpty() ? httpDetail : oauthError);
             Q_EMIT refreshFailed(reason, false, newRefreshToken);
         });
     };

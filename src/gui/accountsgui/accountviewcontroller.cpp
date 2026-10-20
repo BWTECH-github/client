@@ -66,6 +66,11 @@ AccountViewController::AccountViewController(AccountView *view, AccountState *st
     connect(foldersController, &AccountFoldersController::requestAccountModalWidget, this, &AccountViewController::addAccountModalWidget);
 
     connect(_accountState, &AccountState::stateChanged, this, &AccountViewController::onAccountStateChanged);
+    connect(_accountState, &AccountState::keychainWarningChanged, this, [this] {
+        if (_accountState) {
+            onAccountStateChanged(_accountState->state());
+        }
+    });
     connect(_accountState, &AccountState::isSettingUpChanged, _view, &AccountView::accountSettingUpChanged);
 
     buildManageAccountMenu();
@@ -333,6 +338,10 @@ void AccountViewController::onAccountStateChanged(AccountState::State state)
     default:
         text = tr("Invalid connection status");
     }
+    // in jedem Zustand: nach einem Neustart droht eine neue Anmeldung
+    if (!_accountState->keychainWarning().isEmpty()) {
+        errors << _accountState->keychainWarning();
+    }
     _view->setConnectionLabel(text, errors);
 
     _view->setConnectionIcon(iconForState(state));
@@ -347,7 +356,7 @@ QIcon AccountViewController::iconForState(AccountState::State state)
 
     switch (state) {
     case AccountState::Connected:
-        if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported) {
+        if (account->serverSupportLevel() != Account::ServerSupportLevel::Supported || !_accountState->keychainWarning().isEmpty()) {
             return IconResources::getCoreIcon("states/warning");
         }
         return IconResources::getCoreIcon("states/ok");

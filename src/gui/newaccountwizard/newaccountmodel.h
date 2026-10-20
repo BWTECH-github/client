@@ -95,6 +95,10 @@ public:
     QString refreshToken() const;
     void setRefreshToken(const QString &newRefreshToken);
 
+    /** Ablauf des Access-Tokens nach der Uhr des Rechners (Sekunden seit 1970, 0: unbekannt), siehe OAuthPageResults */
+    qint64 accessTokenExpiresAt() const { return _accessTokenExpiresAt; }
+    void setAccessTokenExpiresAt(qint64 expiresAt) { _accessTokenExpiresAt = expiresAt; }
+
     Capabilities capabilities() const;
     void setCapabilities(const Capabilities &newCapabilities);
 
@@ -137,6 +141,7 @@ private:
     QString _davUser;
     QString _authToken;
     QString _refreshToken;
+    qint64 _accessTokenExpiresAt = 0;
     Capabilities _capabilities{QUrl(), {}};
     QString _defaultSyncRoot;
     NewAccount::SyncType _syncType = NewAccount::SyncType::NONE;

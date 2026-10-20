@@ -86,9 +86,10 @@ public:
 Q_SIGNALS:
     /**
      * The state has changed.
-     * when logged in, token has the value of the token.
+     * when logged in, token has the value of the token. expiresIn ist die Lebensdauer des Access-Tokens aus dem
+     * Code-Tausch in Sekunden, 0, wenn der Server sie nicht nennt.
      */
-    void result(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString());
+    void result(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString(), qint64 expiresIn = 0);
 
     /**
      * emitted when the call to the well-known endpoint is finished
@@ -127,6 +128,8 @@ private:
     // The actual data we're collecting!
     QString _accessToken;
     QString _refreshToken;
+    // Lebensdauer des Access-Tokens aus dem Code-Tausch in Sekunden, 0: unbekannt
+    qint64 _expiresIn = 0;
     QUrl _messageUrl;
 
     // peripheral deps

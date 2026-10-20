@@ -185,6 +185,7 @@ void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPage
         return;
     _model->setAuthToken(results.token);
     _model->setRefreshToken(results.refreshToken);
+    _model->setAccessTokenExpiresAt(results.accessTokenExpiresAt);
     _model->setDisplayName(results.displayName);
     _model->setDavUser(results.userId);
     _model->setCapabilities(results.capabilities);

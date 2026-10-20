@@ -133,6 +133,8 @@ Account *AccountManager::createAccount(const NewAccountModel &model)
     account->setAccountAlias(account->calculateAlias());
 
     Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), account);
+    // sonst wüsste das Konto in der ersten Stunde nichts vom Ablauf: keine vorbeugende Erneuerung, nur der Weg über 401
+    creds->setAccessTokenExpiresAt(model.accessTokenExpiresAt());
     account->setCredentials(creds);
 
     account->addApprovedCerts(model.trustedCertificates());

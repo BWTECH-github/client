@@ -141,7 +141,7 @@ void RequestAuthenticationController::authUrlReady()
     }
 }
 
-void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, const QString &accessToken, const QString &refreshToken)
+void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, const QString &accessToken, const QString &refreshToken, qint64 expiresIn)
 {
     QString errString;
 
@@ -173,7 +173,7 @@ void RequestAuthenticationController::handleOAuthResult(OAuth::Result result, co
     if (errString.isEmpty()) {
         if (_modalWidget)
             _modalWidget->accept();
-        Q_EMIT authenticationSucceeded(accessToken, refreshToken);
+        Q_EMIT authenticationSucceeded(accessToken, refreshToken, expiresIn);
     } else if (_widget && _account) {
         _widget->setErrorMessage(errString);
         // Browser ließ sich nicht öffnen: Listener, state und angezeigter Link bleiben gültig, die Meldung fordert genau zum

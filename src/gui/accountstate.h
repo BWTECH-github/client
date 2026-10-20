@@ -168,6 +168,12 @@ public:
     QUrl movedServerUrl() const { return _movedServerUrl; }
     void fetchServerSettings();
 
+    /**
+     * Hinweis für die Anzeige, wenn sich die Anmeldung dauerhaft nicht im Schlüsselbund speichern lässt (nach einem Neustart
+     * droht eine neue Anmeldung), sonst leer.
+     */
+    QString keychainWarning() const { return _keychainWarning; }
+
 private:
     void setState(State state);
 
@@ -175,6 +181,7 @@ Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
     void isSettingUpChanged(bool settingUp);
+    void keychainWarningChanged();
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
@@ -191,6 +198,7 @@ private:
     ConnectionStatus _connectionStatus;
     QStringList _connectionErrors;
     QUrl _movedServerUrl;
+    QString _keychainWarning;
     bool _waitingForNewCredentials;
     QDateTime _timeOfLastETagCheck;
     bool _settingUp = false;
@@ -204,6 +212,8 @@ private:
     void onNetworkReachabilityChanged(NetworkInformation::Reachability reachability);
     void onNetworkMeteredChanged(bool isMetered);
     void onBehindCaptivePortalChanged(bool isCaptive);
+    // Hinweis zur Anzeige und einmal je Auftreten als Benachrichtigung
+    void onKeychainErrorChanged(const QString &error);
 
     // this doesn't completely thrill me because it has dependencies on the rest of the gui but for now, it's
     // ok and making it private is pretty sweet, too.

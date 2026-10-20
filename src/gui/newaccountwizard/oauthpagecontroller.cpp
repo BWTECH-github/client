@@ -28,6 +28,7 @@
 
 #include <QBuffer>
 #include <QClipboard>
+#include <QDateTime>
 #include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QImageReader>
@@ -341,7 +342,7 @@ void OAuthPageController::openBrowser()
     _oauth->openBrowser();
 }
 
-void OAuthPageController::handleOauthResult(OAuth::Result result, const QString &token, const QString &refreshToken)
+void OAuthPageController::handleOauthResult(OAuth::Result result, const QString &token, const QString &refreshToken, qint64 expiresIn)
 {
     _statusField->clear();
     QString extraHelp = tr("Please copy the authentication URL using the button above, and provide this information to support.");
@@ -369,6 +370,8 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
         };
         _results.token = token;
         _results.refreshToken = refreshToken;
+        // ab jetzt gezählt: Bis das Konto entsteht, vergehen noch die Prüfungen und die restlichen Seiten des Assistenten
+        _results.accessTokenExpiresAt = expiresIn > 0 ? QDateTime::currentSecsSinceEpoch() + expiresIn : 0;
         // special note: if the original server url does not support webfinger, the _authUrl will equal the _serverUrl
         // HOWEVER, we can't use this fact to determine whether webfinger is in play as some webfinger impls return the original
         // _serverUrl (eg demo) as the authentication url and some don't (eg infinite).

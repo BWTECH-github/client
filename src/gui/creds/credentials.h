@@ -47,14 +47,18 @@ class RequestAuthenticationController;
  * nicht mehr, hält das Konto seine Aufträge an (authenticationStarted()) und schickt sie mit dem neuen erneut
  * (fetched()); eine vorbeugende Erneuerung hält nichts an.
  *
- * Scheitert eine Erneuerung vorübergehend (Netz, Zeitüberschreitung, Serverfehler, Wartung, unerwartete Antwort),
- * bleibt das Refresh-Token, und nach einer wachsenden Pause (30 s bis 5 min) folgt der nächste Versuch
- * (authenticationDelayed()). Nur wenn der Server das Refresh-Token ablehnt (invalid_grant), muss sich der Nutzer neu
- * anmelden (fetched() ohne Token, das Konto fragt dann über askFromUser()).
+ * Scheitert eine Erneuerung vorübergehend (Netz, Zeitüberschreitung, Serverfehler, Wartung, unerwartete Antwort, ein
+ * deaktiviertes Konto oder abgeschalteter Anmeldedienst), bleibt das Refresh-Token, und nach einer wachsenden Pause
+ * (30 s bis 5 min) folgt der nächste Versuch (authenticationDelayed() mit der Ursache). Die regelmäßige Kontoprüfung
+ * verkürzt die Pause nicht; nur echte Anlässe ziehen den nächsten Versuch vor, frühestens 10 s nach dem letzten: wieder
+ * im Netz, der Server antwortet nach einem Ausfall oder einer Wartung wieder, ein Zertifikat ist bestätigt
+ * (retryRefreshSoon()). Nur wenn der Server das Refresh-Token ablehnt (invalid_grant), muss sich der Nutzer neu anmelden
+ * (fetched() ohne Token, das Konto fragt dann über askFromUser()).
  *
  * Ein neues Refresh-Token kommt zuerst in den Schlüsselbund, erst danach wird das neue Access-Token benutzt. Scheitert
  * das Speichern, bleibt es im Speicher und wird nach wenigen Versuchen trotzdem benutzt; das Speichern wird wiederholt,
- * beim Beenden des Programms ein letztes Mal abgewartet.
+ * beim Beenden des Programms ein letztes Mal abgewartet. Ab dann meldet keychainErrorChanged() den Fehler, damit das
+ * Konto ihn anzeigt, bis das Speichern klappt.
  */
 class OWNCLOUDGUI_EXPORT Credentials : public AbstractCredentials
 {
@@ -94,12 +98,23 @@ public:
      * otherwise:
      *   if the refresh routine is running, return true
      *   if it is not running, start the refresh and return true.
-     * Das Konto bekommt in jedem Fall fetched() oder authenticationDelayed(); wartet nach einem Fehlschlag gerade eine
-     * Pause, folgt der nächste Versuch bald (höchstens alle 10 s).
+     * Das Konto bekommt in jedem Fall fetched() oder authenticationDelayed(). Wartet nach einem Fehlschlag gerade eine
+     * Pause, bleibt es dabei, und authenticationDelayed() nennt erneut die Ursache; vorziehen lässt sie sich nur mit
+     * retryRefreshSoon().
      */
     bool refreshAccessToken() override;
 
     void refreshIfExpired() override;
+
+    /** Wartet nach einem Fehlschlag eine Pause, folgt der nächste Versuch bald (frühestens 10 s nach dem letzten). */
+    void retryRefreshSoon() override;
+
+    /**
+     * Ablauf des Access-Tokens aus dem Konstruktor nach der Uhr des Rechners (Sekunden seit 1970, 0: unbekannt), etwa aus
+     * dem Code-Tausch des Assistenten, nach dem noch weitere Seiten kamen. Danach wird wie nach einer Erneuerung
+     * vorbeugend erneuert; ist der Zeitpunkt schon vorbei, vor der nächsten Anfrage.
+     */
+    void setAccessTokenExpiresAt(qint64 expiresAt);
 
     /**
      * Übernimmt Token einer Anmeldung, die außerhalb dieses Objekts lief (Serverumzug: Anmeldung an der neuen Adresse).
@@ -126,6 +141,8 @@ protected:
     // Tests verkürzen sie
     virtual std::chrono::milliseconds refreshRetryDelay(int failedAttempts) const;
     virtual std::chrono::milliseconds keychainRetryDelay(int failedAttempts) const;
+    // ein echter Anlass (retryRefreshSoon(), wieder im Netz) zieht den nächsten Versuch frühestens so lange nach dem letzten vor
+    virtual std::chrono::milliseconds explicitRetryInterval() const;
 
     bool networkAvailable();
 
@@ -139,13 +156,17 @@ protected:
     void fetchCredentialsFromKeychain();
     void refreshAccessTokenInternal();
 
-    void askFromUserSucceeded(const QString &token, const QString &refreshToken);
+    // expiresIn: Lebensdauer des Access-Tokens aus dem Code-Tausch in Sekunden, 0: unbekannt
+    void askFromUserSucceeded(const QString &token, const QString &refreshToken, qint64 expiresIn);
     void askFromUserLogout();
 
     /** Läuft gerade eine Erneuerung, wartet sie auf den Schlüsselbund oder auf den nächsten Versuch? */
     bool refreshPending() const;
     /** Bricht eine Erneuerung samt Pausen ab; ihr Ergebnis zählt nicht mehr. */
     void stopRefresh();
+    /** Wartet eine Pause, kommt der nächste Versuch nach delay, frühestens explicitRetryInterval() nach dem letzten. */
+    void bringRetryForward(std::chrono::milliseconds delay);
+    void setKeychainError(const QString &error);
     /** Das aktuelle Access-Token taugt nicht: die Aufträge des Kontos anhalten, bis fetched() oder authenticationFailed() folgt. */
     void blockJobs();
     void emitFetched();
@@ -196,6 +217,8 @@ protected:
 
     bool _storeRunning = false;
     int _storeFailures = 0;
+    // nach wiederholten Fehlschlägen die Meldung des Schlüsselbunds, sonst leer (keychainErrorChanged())
+    QString _keychainError;
     QTimer _storeRetryTimer;
     QEventLoop *_storeWaitLoop = nullptr;
     int _keychainReadFailures = 0;
