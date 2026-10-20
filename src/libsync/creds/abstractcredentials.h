@@ -19,6 +19,7 @@
 
 #include "accessmanager.h"
 #include "account.h"
+#include "creds/credentialssupport.h"
 #include "owncloudlib.h"
 #include <csync.h>
 
@@ -39,6 +40,18 @@ public:
     // No need for virtual destructor - QObject already has one.
 
     virtual AccessManager *createAccessManager() const = 0;
+
+    /**
+     * Anmeldeart dieser Zugangsdaten (OAuth2 oder Benutzername und Kennwort); das Konto speichert sie in der Konfiguration
+     * (http_oauth) und baut beim nächsten Start die passenden Zugangsdaten. Unknown nur in Tests und in owncloudcmd.
+     */
+    virtual AuthenticationType authenticationType() const { return AuthenticationType::Unknown; }
+
+    /**
+     * Anmeldename bei Benutzername und Kennwort (http_user); er kann vom Benutzernamen des Kontos (dav_user) abweichen,
+     * etwa bei LDAP. Leer bei OAuth2.
+     */
+    virtual QString loginUser() const { return {}; }
 
     /** Whether there are credentials that can be used for a connection attempt. */
     virtual bool ready() const = 0;

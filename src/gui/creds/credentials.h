@@ -79,6 +79,8 @@ public:
     // and other factors that mean we don't want to use the account's nam directly.
     AccessManager *createAccessManager() const override;
 
+    AuthenticationType authenticationType() const override { return AuthenticationType::OAuth; }
+
     /** Ein Access-Token liegt vor und ist nach der Uhr nicht abgelaufen. */
     bool ready() const override;
 
