@@ -3,7 +3,8 @@ Enhancement: Take over accounts and folders from the official desktop client
 On the first start (and via "Import from official client..." in the menu) the
 client offers to take over the accounts and sync folders of the official
 desktop client (owncloud.cfg of 2.x to 6.x). Its configuration and journals
-are only read: every account is signed in again in the browser, classically
+are only read: every account is signed in again (in the browser, or with user
+name and password on servers without the "OAuth2" app), classically
 synchronized folders are adopted in place with a copy of their journal, so
 nothing is downloaded again, and folders with virtual files are set up again
 as virtual files folders (placeholders only). A running official client is
