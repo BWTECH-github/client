@@ -3641,7 +3641,8 @@ function Watch-BasicSetup {
             }
         }
         if ($Ctx.SyncStarted) {
-            $done = [regex]::Match($new, 'Sync finished for [^\r\n]*')
+            # SyncScheduler: mit dem Ergebnis (OCC::SyncResult::Success ...)
+            $done = [regex]::Match($new, 'Sync finished for [^\r\n]*with status [^\r\n]*')
             if ($done.Success) {
                 $Ctx.SyncResult = Limit-Text (Protect-Text $done.Value) 300
                 break
