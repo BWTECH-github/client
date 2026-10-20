@@ -746,6 +746,39 @@ private Q_SLOTS:
         test.test();
     }
 
+    // owncloud.online: authorization_endpoint mit „//“ im Pfad und einem eigenen Parameter des Anbieters (wie „p=…“ bei Azure
+    // AD B2C). Utility::concatUrlPath() brach daran mit Q_ASSERT ab; jetzt bleibt der Endpunkt, wie er ist, samt Parameter.
+    void testAuthEndpointWithDoubledSlashAndQuery()
+    {
+        struct Test : OAuthTestCase {
+            QNetworkReply *wellKnownReply(QNetworkAccessManager::Operation op, const QNetworkRequest &req) override
+            {
+                const QJsonObject data{
+                    {QStringLiteral("authorization_endpoint"), QStringLiteral("oauthtest://auth.example.com//realms/test/auth?p=b2c_1_signin")},
+                    {QStringLiteral("token_endpoint"), QStringLiteral("oauthtest://openidserver/token_endpoint")},
+                    {QStringLiteral("token_endpoint_auth_methods_supported"), QJsonArray{QStringLiteral("client_secret_post")}}};
+                return new FakePayloadReply(op, req, QJsonDocument(data).toJson(), fakeAm);
+            }
+
+            void openBrowserHook(const QUrl &url) override
+            {
+                QCOMPARE(state, StatusPhpState);
+                state = BrowserOpened;
+                QCOMPARE(url.host(), sOpenIdBaseURL.host());
+                QCOMPARE(url.path(), QStringLiteral("//realms/test/auth"));
+                QUrlQuery query(url);
+                QCOMPARE(query.queryItemValue(QStringLiteral("p")), QStringLiteral("b2c_1_signin"));
+                QCOMPARE(query.queryItemValue(QStringLiteral("response_type")), QLatin1String("code"));
+                QCOMPARE(query.queryItemValue(QStringLiteral("client_id")), _expectedClientId);
+                QUrl redirectUri(query.queryItemValue(QStringLiteral("redirect_uri")));
+                QCOMPARE(redirectUri.host(), localHost);
+                redirectUri.setQuery(QStringLiteral("code=%1&state=%2").arg(code, query.queryItemValue(QStringLiteral("state"))));
+                createBrowserReply(QNetworkRequest(redirectUri));
+            }
+        } test;
+        test.test();
+    }
+
     void testTimeout()
     {
         struct Test : OAuthTestCase
