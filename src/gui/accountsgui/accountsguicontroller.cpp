@@ -16,6 +16,8 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QApplication>
+#include <QLoggingCategory>
 #include <QMessageBox>
 #include <QToolBar>
 
@@ -36,6 +38,8 @@
 #include "newaccountwizard/newaccountwizardcontroller.h"
 
 namespace OCC {
+
+Q_LOGGING_CATEGORY(lcAccountsGuiController, "gui.accountsgui.controller", QtInfoMsg)
 
 AccountsGuiController::AccountsGuiController(AccountManager *accountMgr, MainWindow *window, ColorManager *colorManager, QObject *parent)
     : QObject(parent)
@@ -155,10 +159,33 @@ void AccountsGuiController::onAccountAvatarChanged()
     }
 }
 
+bool AccountsGuiController::raiseRunningDialog()
+{
+    // QDialog::exec() sperrt nur die eigenen Fenster; „Konto hinzufügen…“ im Tray-Menü bleibt dabei erreichbar
+    QWidget *modal = QApplication::activeModalWidget();
+    if (!modal && !_legacyImport) {
+        return false;
+    }
+    qCInfo(lcAccountsGuiController) << "A wizard or dialog is already open, bringing it to the front instead of starting another one";
+    if (_window) {
+        _window->ensureVisible();
+    }
+    if (modal) {
+        modal->raise();
+        modal->activateWindow();
+    }
+    return true;
+}
+
 void AccountsGuiController::runAccountWizard()
 {
     if (!_window)
         return;
+    if (raiseRunningDialog()) {
+        // ohne Konto bliebe das Hauptfenster bis dahin leer (etwa nach dem Löschen des letzten Kontos während des Umstiegs)
+        setupAccountPlaceholder();
+        return;
+    }
     NewAccountWizard wizard(_window);
     // owncloud.online: eigenständiges Fenster, erbt den Akzent des Hauptfensters nicht
     _colorManager->keepAccent(&wizard);
@@ -197,7 +224,7 @@ void AccountsGuiController::runFirstStart()
 
 void AccountsGuiController::runLegacyImport()
 {
-    if (!_window) {
+    if (!_window || raiseRunningDialog()) {
         return;
     }
     if (!LegacyClient::findConfig()) {

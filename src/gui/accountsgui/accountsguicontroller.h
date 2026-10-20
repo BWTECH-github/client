@@ -68,6 +68,13 @@ private:
     void setupAccountPlaceholder();
     void removeAccountPlaceholder();
 
+    /**
+     * Läuft schon ein Kontoassistent, der Umstieg vom offiziellen Client oder ein anderer modaler Dialog, holt das diesen nach
+     * vorn und liefert true. Zwei Assistenten zugleich schlügen denselben Sync-Ordner vor, der zweite bräche beim
+     * „Fertigstellen“ ab (Q_ASSERT in Utility::markDirectoryAsSyncRoot).
+     */
+    bool raiseRunningDialog();
+
     /** erster Start ohne Konto: Umstieg vom offiziellen Client anbieten, sonst der Assistent */
     void runFirstStart();
     /** false, wenn nichts übernommen wird */
