@@ -584,6 +584,76 @@ private Q_SLOTS:
         QCOMPARE(n507, 3);
     }
 
+    /**
+     * owncloud.online: Ändert sich die lokale Datei, während sie hochgeladen wird, passt der Inhalt nicht mehr zur
+     * mitgeschickten Prüfsumme, und der Server lehnt mit 400 ab. Das ist eine Änderung während des Syncs: ohne Sperrfrist,
+     * der nächste Lauf lädt den neuen Stand hoch. Ohne lokale Änderung bleibt die Ablehnung ein Fehler mit Sperrfrist.
+     */
+    void testUploadRejectedAfterLocalChange()
+    {
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        const QByteArray checksumMismatch = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                                            "<d:error xmlns:d=\"DAV:\" xmlns:s=\"http://sabredav.org/ns\">"
+                                            "<s:exception>Sabre\\DAV\\Exception\\BadRequest</s:exception>"
+                                            "<s:message>The computed checksum does not match the one received from the client.</s:message>"
+                                            "</d:error>";
+        const QString changing = QStringLiteral("A/changing");
+        const QString stable = QStringLiteral("A/stable");
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
+        ItemCompletedSpy completeSpy(fakeFolder);
+        bool reject = true;
+        bool grown = false;
+        QObject parent;
+        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            if (op != QNetworkAccessManager::PutOperation || !reject) {
+                return nullptr;
+            }
+            if (request.url().path().endsWith(changing)) {
+                // die Datei wächst, während der PUT unterwegs ist
+                QFile file(fakeFolder.localPath() + changing);
+                grown = file.open(QIODevice::Append) && file.write("x") == 1;
+                return new FakeErrorReply(op, request, &parent, 400, checksumMismatch);
+            }
+            if (request.url().path().endsWith(stable)) {
+                return new FakeErrorReply(op, request, &parent, 400, checksumMismatch);
+            }
+            return nullptr;
+        });
+
+        fakeFolder.localModifier().insert(changing, 100_B);
+        fakeFolder.localModifier().insert(stable, 100_B);
+        QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
+        QVERIFY(grown);
+        {
+            // geänderte Datei: Hinweis statt Fehler, keine Sperrfrist, ein weiterer Lauf ist angefordert
+            const auto item = completeSpy.findItem(changing);
+            QVERIFY(item);
+            QCOMPARE(item->_status, SyncFileItem::Message);
+            QVERIFY(!fakeFolder.syncJournal()->errorBlacklistEntry(changing).isValid());
+            QVERIFY(fakeFolder.syncEngine()->isAnotherSyncNeeded());
+        }
+        {
+            // unveränderte Datei: die Ablehnung bleibt ein Fehler mit Sperrfrist
+            const auto item = completeSpy.findItem(stable);
+            QVERIFY(item);
+            QCOMPARE(item->_status, SyncFileItem::NormalError);
+            QVERIFY(fakeFolder.syncJournal()->errorBlacklistEntry(stable).isValid());
+        }
+
+        // der nächste Lauf lädt den neuen Stand hoch; die gesperrte Datei bleibt bis zum Ablauf der Sperrfrist liegen
+        reject = false;
+        completeSpy.clear();
+        QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
+        QVERIFY(itemDidCompleteSuccessfully(completeSpy, changing));
+        const auto remote = fakeFolder.currentRemoteState().find(changing);
+        QVERIFY(remote);
+        QCOMPARE(remote->contentSize, quint64{101});
+        QCOMPARE(completeSpy.findItem(stable)->_status, SyncFileItem::BlacklistedError);
+    }
+
     // Checks whether downloads with bad checksums are accepted
     void testChecksumValidation()
     {

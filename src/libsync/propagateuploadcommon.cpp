@@ -254,6 +254,20 @@ void PropagateUploadCommon::commonErrorHandling(AbstractNetworkJob *job)
     QString errorString = job->errorStringParsingBody(&replyContent);
     qCDebug(lcPropagateUpload) << replyContent; // display the XML error in the debug
 
+    // owncloud.online: Hat sich die lokale Datei während des Hochladens geändert, passen gesendeter Inhalt, Größe und
+    // Prüfsumme nicht mehr zusammen, und der Server lehnt ab (400, etwa „The computed checksum does not match the one
+    // received from the client.“). Das ist eine Änderung während des Syncs wie die vor dem Hochladen erkannte, kein Fehler
+    // mit Sperrfrist: später mit dem neuen Stand weiter. owncloudcmd lädt ohne Mindestalter hoch und trifft das häufiger.
+    if (_item->_httpErrorCode == 400) {
+        const QString fullFilePath = propagator()->fullLocalPath(_item->_file);
+        if (FileSystem::fileExists(fullFilePath) && FileSystem::fileChanged(QFileInfo{fullFilePath}, _item->_size, _item->_modtime)) {
+            qCInfo(lcPropagateUpload) << "The server rejected the upload of" << _item->_file << "after the local file changed:" << errorString;
+            propagator()->_anotherSyncNeeded = true;
+            abortWithError(SyncFileItem::Message, fileChangedMessage());
+            return;
+        }
+    }
+
     if (_item->_httpErrorCode == 412) {
         // Precondition Failed: Either an etag or a checksum mismatch.
 
