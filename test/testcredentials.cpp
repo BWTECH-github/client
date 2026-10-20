@@ -89,6 +89,8 @@ public:
     QList<std::pair<int, QByteArray>> tokenFailures;
     // Ablehnungen (401) auf diese Pfade kommen verzögert
     QStringList slowUnauthorizedPaths;
+    // .well-known nennt die Endpunkte wie bei einem OpenID-Connect-Anbieter (sonst 404 wie bei der oauth2-App)
+    bool openIdConnect = false;
 
     int statusRequests = 0;
     int tokenRequests = 0;
@@ -153,6 +155,16 @@ public:
             }
             if (path.endsWith(QLatin1String(".well-known/openid-configuration"))) {
                 wellKnownRequestList.append(request);
+                if (openIdConnect) {
+                    // derselbe Token-Endpunkt, nur über .well-known gefunden
+                    const QString base = serverUrlC.toString();
+                    const QString authorize = base + QStringLiteral("/index.php/apps/oauth2/authorize");
+                    const QString token = base + QStringLiteral("/index.php/apps/oauth2/api/v1/token");
+                    return new FakePayloadReply(op, request,
+                        toJson({{QStringLiteral("issuer"), base}, {QStringLiteral("authorization_endpoint"), authorize},
+                            {QStringLiteral("token_endpoint"), token}}),
+                        replyParent);
+                }
                 // wie bei owncloud.online: kein OpenID Connect, der Client nimmt die Wege der oauth2-App
                 return new FakeErrorReply(op, request, replyParent, 404);
             }
@@ -1069,6 +1081,31 @@ private Q_SLOTS:
         QCOMPARE(request->error, QNetworkReply::NoError);
         QCOMPARE(f.server.tokenRequests, 2);
         QCOMPARE(f.credentials->askedUser, 0);
+    }
+
+    // unauthorized_client meldet die oauth2-App für ein deaktiviertes Konto. Ein OpenID-Connect-Anbieter meint damit: Diese
+    // Anwendung darf so kein Token bekommen (RFC 6749, Abschnitt 5.2). Dort nennt der Status kein deaktiviertes Konto.
+    void testUnauthorizedClientAtAnOpenIdConnectProvider()
+    {
+        // Arrange
+        Fixture f;
+        QObject scope;
+        f.server.openIdConnect = true;
+        f.server.expireAccessToken();
+        f.server.tokenFailures = {{400, toJson({{QStringLiteral("error"), QStringLiteral("unauthorized_client")}})}};
+        QSignalSpy delayedSpy(f.credentials, &AbstractCredentials::authenticationDelayed);
+
+        // Act
+        const auto request = f.get(&scope);
+
+        // Assert
+        QTRY_COMPARE_WITH_TIMEOUT(delayedSpy.count(), 1, 10000);
+        const QString message = delayedSpy.first().at(1).toString();
+        QVERIFY2(message.contains(QStringLiteral("does not accept this application")), qPrintable(message));
+        QVERIFY2(!message.contains(QStringLiteral("disabled")), qPrintable(message));
+        QTRY_VERIFY_WITH_TIMEOUT(request->finished, 10000);
+        QCOMPARE(request->error, QNetworkReply::NoError);
+        QCOMPARE(f.server.tokenRequests, 2);
     }
 
     // Eine Abfrage der Servereinstellungen läuft noch, da kommt die nächste (das Konto verbindet sich neu, während Aufträge der
