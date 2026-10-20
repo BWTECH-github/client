@@ -150,9 +150,10 @@ $snapshotCount = 0
 # (AccountManager::saveAccount, FolderDefinition::save und die Liste der
 # Anmeldedaten im CredentialManager). Erzeugt mit QSettings aus Qt 6.8 mit
 # denselben Schlüsseln und Typen; QUuid, QUrl und die Capabilities stehen
-# deshalb als @Variant darin. Get-Beta2Config setzt Sync-Ordner und Version
-# ein. Das Konto zeigt auf probe.invalid: Der Prüfling erreicht keinen Server,
-# liest und schreibt aber Konto und Ordnerpaar.
+# deshalb als @Variant darin; davUrl ohne Schrägstrich am Ende, den
+# FolderDefinition schon in beta2 entfernt. Get-Beta2Config setzt Sync-Ordner
+# und Version ein. Das Konto zeigt auf probe.invalid: Der Prüfling erreicht
+# keinen Server, liest und schreibt aber Konto und Ordnerpaar.
 $beta2AccountId = '3f1c2b7e-5a64-4d2e-9b1f-0c7d8e9a1b2c'
 $beta2FolderId = '8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57'
 $beta2ConfigTemplate = @'
@@ -174,7 +175,7 @@ monoIcons=false
 0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\localPath=C:/PROBE_SYNCDIR/
 0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\journalPath=.sync_5f3a9c0e1b7d.db
 0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\targetPath=/
-0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\davUrl=@Variant(\0\0\0\x11\0\0\0\x31https://probe.invalid/remote.php/dav/files/probe/)
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\davUrl=@Variant(\0\0\0\x11\0\0\0\x30https://probe.invalid/remote.php/dav/files/probe)
 0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\displayName=Probe
 0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\paused=false
 0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\deployed=false
@@ -776,6 +777,8 @@ function Test-Beta2ConfigAfterStart {
         return
     }
     $before = Read-IniValues $config
+    # Belege: die Konfiguration enthält keine Geheimnisse (das Refresh-Token liegt im Schlüsselbund)
+    Copy-Item -LiteralPath $config -Destination (Join-Path $OutDir 'pruefling-konfiguration-vorher.cfg') -ErrorAction SilentlyContinue
     $log = Join-Path $OutDir 'pruefling-start.log'
     Write-Host '== Prüfling mit der Konfiguration von beta2 starten'
     Write-Annotation 'notice' 'Start: Prüfling mit der Konfiguration von beta2'
@@ -800,6 +803,7 @@ function Test-Beta2ConfigAfterStart {
     }
     $text = Read-SharedText $log
     $after = Read-IniValues $config
+    Copy-Item -LiteralPath $config -Destination (Join-Path $OutDir 'pruefling-konfiguration-nachher.cfg') -ErrorAction SilentlyContinue
 
     if ($endedEarly) {
         Add-Check 'U14' $titles.U14 'FEHLER' ('vor --quit beendet, Exit-Code {0}, siehe pruefling-start.log' -f $process.ExitCode) ''
@@ -826,23 +830,18 @@ function Test-Beta2ConfigAfterStart {
         Add-Check 'U15' $titles.U15 'FEHLER' "kein 'Adding folder to Folder Map' für $folderPath, siehe pruefling-start.log" ''
     }
 
-    # Konto und Ordnerpaar: Zeichenketten unverändert, QUuid/QUrl/Capabilities (@Variant) mit ihrem Inhalt
+    # Konto und Ordnerpaar unverändert, auch QUuid, Capabilities und QUrl (@Variant, Byte für Byte wie von beta2)
     $account = 'Accounts|0\'
     $folder = "Accounts|0\Folders\$beta2FolderId\"
-    $exact = @('url', 'dav_user', 'display-name', 'default_sync_root' | ForEach-Object { $account + $_ }) +
-        @('localPath', 'journalPath', 'targetPath', 'displayName', 'paused', 'virtualFilesMode' | ForEach-Object { $folder + $_ })
-    $variants = [ordered]@{ ($account + 'uuid') = 'QUuid'; ($account + 'capabilities') = 'o\0w\0n\0\x63\0l\0o\0u\0\x64\0.\0o\0n\0l\0i\0n\0\x65'; ($folder + 'davUrl') = 'https://probe.invalid/remote.php/dav/files/probe/' }
+    $keys = @('url', 'dav_user', 'display-name', 'uuid', 'capabilities', 'default_sync_root' | ForEach-Object { $account + $_ }) +
+        @('localPath', 'journalPath', 'targetPath', 'davUrl', 'displayName', 'paused', 'virtualFilesMode' | ForEach-Object { $folder + $_ })
     $problems = New-Object 'System.Collections.Generic.List[string]'
-    foreach ($key in $exact) {
+    foreach ($key in $keys) {
         if (-not $after.ContainsKey($key)) { $problems.Add("$key fehlt") }
         elseif ($after[$key] -cne $before[$key]) { $problems.Add(('{0}: {1} -> {2}' -f $key, $before[$key], $after[$key])) }
     }
-    foreach ($key in $variants.Keys) {
-        if (-not $after.ContainsKey($key)) { $problems.Add("$key fehlt") }
-        elseif (-not $after[$key].Contains($variants[$key])) { $problems.Add("$key verändert") }
-    }
     if ($problems.Count -eq 0) {
-        Add-Check 'U16' $titles.U16 'OK' ('{0} Werte erhalten' -f ($exact.Count + $variants.Count)) ''
+        Add-Check 'U16' $titles.U16 'OK' ('{0} Werte unverändert' -f $keys.Count) ''
     } else {
         Add-Check 'U16' $titles.U16 'FEHLER' ('{0} Werte verloren oder verändert, z. B. {1}' -f $problems.Count, $problems[0]) ''
         Add-List 'U16 Konto und Ordnerpaar nach dem Start' $problems.ToArray()
