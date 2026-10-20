@@ -17,6 +17,8 @@
 #include "gui/owncloudguilib.h"
 
 class QLayout;
+class QScrollArea;
+class QWidget;
 class QWizardPage;
 
 namespace OCC {
@@ -27,5 +29,12 @@ namespace OCC {
  * abgeschnitten zu werden. Solange alles passt, sieht die Seite aus wie mit einem gewöhnlichen Layout.
  */
 OWNCLOUDGUI_EXPORT void setScrollableWizardPageLayout(QWizardPage *page, QLayout *contentLayout);
+
+/**
+ * Der Bildlaufbereich von setScrollableWizardPageLayout() allein, für Seiten mit eigener Knopfzeile (die Anmeldedialoge
+ * der Kontoansicht): Der Aufrufer setzt ihn über die Knöpfe in sein Layout. Gerollt wird nur senkrecht; nichts im Inhalt
+ * wird gestaucht, auch das Logo nicht.
+ */
+OWNCLOUDGUI_EXPORT QScrollArea *createScrollableContent(QWidget *parent, QLayout *contentLayout);
 
 }

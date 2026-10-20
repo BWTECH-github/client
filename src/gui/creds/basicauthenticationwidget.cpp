@@ -15,6 +15,7 @@
 
 #include "iconresources.h"
 #include "mainwindow/colormanager.h"
+#include "newaccountwizard/wizardpagelayout.h"
 #include "theme.h"
 
 #include <QFormLayout>
@@ -23,6 +24,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QScrollArea>
 #include <QVBoxLayout>
 
 namespace OCC {
@@ -104,33 +106,40 @@ BasicAuthenticationWidget::BasicAuthenticationWidget(const QUrl &serverUrl, cons
     _signInButton->setEnabled(false);
     connect(_signInButton, &QPushButton::clicked, this, &BasicAuthenticationWidget::submit);
 
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->setContentsMargins(50, 50, 50, 50);
-    layout->setSpacing(12);
-    layout->addStretch(1);
-    layout->addWidget(logoLabel, 0, Qt::AlignCenter);
-    layout->addSpacing(16);
-    layout->addWidget(titleLabel);
-    layout->addWidget(instructionLabel);
+    QVBoxLayout *contentLayout = new QVBoxLayout();
+    contentLayout->setContentsMargins(50, 24, 50, 0);
+    contentLayout->setSpacing(12);
+    contentLayout->addStretch(1);
+    contentLayout->addWidget(logoLabel, 0, Qt::AlignCenter);
+    contentLayout->addSpacing(16);
+    contentLayout->addWidget(titleLabel);
+    contentLayout->addWidget(instructionLabel);
 
     // die Beschriftungen sind zugleich die Namen der Felder für Screenreader (Buddy)
     QFormLayout *form = new QFormLayout();
     form->setContentsMargins(0, 0, 0, 0);
     form->addRow(tr("User name:"), userLabel);
     form->addRow(tr("Password:"), _passwordField);
-    layout->addLayout(form);
+    contentLayout->addLayout(form);
 
-    layout->addWidget(hintLabel);
-    layout->addWidget(_errorField);
+    contentLayout->addWidget(hintLabel);
+    contentLayout->addWidget(_errorField);
     if (footerLogoLabel)
-        layout->addWidget(footerLogoLabel, 0, Qt::AlignCenter);
-    layout->addStretch(1);
+        contentLayout->addWidget(footerLogoLabel, 0, Qt::AlignCenter);
+    contentLayout->addStretch(1);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
-    buttonLayout->setContentsMargins(0, 0, 0, 0);
+    buttonLayout->setContentsMargins(50, 0, 50, 24);
     buttonLayout->addStretch(1);
     buttonLayout->addWidget(_cancelButton);
     buttonLayout->addWidget(_signInButton);
+
+    // Die Kontoansicht ist oft niedriger als der Inhalt (1024×768, große Schrift, Meldung): Ohne Bildlauf stauchte das Layout
+    // das größte Element, das Logo, und schnitt „ONLINE“ ab. So rollt nur der Inhalt, die Knöpfe bleiben sichtbar.
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(12);
+    layout->addWidget(createScrollableContent(this, contentLayout), 1);
     layout->addLayout(buttonLayout);
 
     setLayout(layout);

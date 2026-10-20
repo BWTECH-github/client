@@ -16,6 +16,7 @@
 #include "iconresources.h"
 #include "template.h"
 #include "mainwindow/colormanager.h"
+#include "newaccountwizard/wizardpagelayout.h"
 #include "theme.h"
 
 #include <QBuffer>
@@ -27,6 +28,7 @@
 #include <QPalette>
 #include <QPushButton>
 #include <QResizeEvent>
+#include <QScrollArea>
 #include <QToolTip>
 #include <QVBoxLayout>
 
@@ -101,36 +103,42 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     _signInButton->setObjectName(QStringLiteral("SignInButton"));
     connect(_signInButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::connectClicked);
 
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->setContentsMargins(50, 50, 50, 50);
-    layout->setSpacing(12);
-    layout->addStretch(1);
+    QVBoxLayout *contentLayout = new QVBoxLayout();
+    contentLayout->setContentsMargins(50, 24, 50, 0);
+    contentLayout->setSpacing(12);
+    contentLayout->addStretch(1);
     // NOTE: addWidget(w, Qt::AlignCenter) binds the alignment constant to
     // the int STRETCH parameter - the alignment is silently never applied.
     // Always use the three-argument overload for alignments; the labels'
     // own setAlignment() does the horizontal centering here.
-    layout->addWidget(logoLabel, 0, Qt::AlignCenter);
-    layout->addSpacing(16);
-    layout->addWidget(titleLabel);
-    layout->addWidget(instructionLabel);
+    contentLayout->addWidget(logoLabel, 0, Qt::AlignCenter);
+    contentLayout->addSpacing(16);
+    contentLayout->addWidget(titleLabel);
+    contentLayout->addWidget(instructionLabel);
 
     QHBoxLayout *urlAreaLayout = new QHBoxLayout();
     urlAreaLayout->setContentsMargins(0, 0, 0, 0);
     urlAreaLayout->setSpacing(0);
     urlAreaLayout->addWidget(_urlField);
     urlAreaLayout->addWidget(_copyButton);
-    layout->addLayout(urlAreaLayout);
-    layout->addWidget(_errorField);
+    contentLayout->addLayout(urlAreaLayout);
+    contentLayout->addWidget(_errorField);
 
     if (footerLogoLabel)
-        layout->addWidget(footerLogoLabel, 0, Qt::AlignCenter);
-    layout->addStretch(1);
+        contentLayout->addWidget(footerLogoLabel, 0, Qt::AlignCenter);
+    contentLayout->addStretch(1);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
-    buttonLayout->setContentsMargins(0, 0, 0, 0);
+    buttonLayout->setContentsMargins(50, 0, 50, 24);
     buttonLayout->addStretch(1);
     buttonLayout->addWidget(_cancelButton);
     buttonLayout->addWidget(_signInButton);
+
+    // wie der Kennwort-Dialog: Reicht die Höhe der Kontoansicht nicht, rollt der Inhalt, statt das Logo zu stauchen
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(12);
+    layout->addWidget(createScrollableContent(this, contentLayout), 1);
     layout->addLayout(buttonLayout);
 
     setLayout(layout);

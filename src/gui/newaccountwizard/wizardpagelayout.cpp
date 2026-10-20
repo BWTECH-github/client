@@ -23,13 +23,20 @@ namespace OCC {
 
 void setScrollableWizardPageLayout(QWizardPage *page, QLayout *contentLayout)
 {
+    auto *pageLayout = new QVBoxLayout(page);
+    pageLayout->setContentsMargins(0, 0, 0, 0);
+    pageLayout->addWidget(createScrollableContent(page, contentLayout));
+}
+
+QScrollArea *createScrollableContent(QWidget *parent, QLayout *contentLayout)
+{
     auto *content = new QWidget;
     content->setLayout(contentLayout);
     // so breit wie die Seite, auch wenn ein Text ohne Umbruch breiter wäre: sonst würde der ganze Inhalt breiter und jede
     // Meldung rechts abgeschnitten. Nur senkrecht wird gerollt, Texte brechen um.
     content->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Preferred);
 
-    auto *scrollArea = new QScrollArea(page);
+    auto *scrollArea = new QScrollArea(parent);
     scrollArea->setObjectName(QStringLiteral("WizardPageScrollArea"));
     scrollArea->setFrameShape(QFrame::NoFrame);
     scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -45,9 +52,7 @@ void setScrollableWizardPageLayout(QWizardPage *page, QLayout *contentLayout)
     QObject::connect(scrollArea->verticalScrollBar(), &QScrollBar::rangeChanged, scrollArea,
         [scrollArea](int, int maximum) { scrollArea->setFocusPolicy(maximum > 0 ? Qt::StrongFocus : Qt::NoFocus); });
 
-    auto *pageLayout = new QVBoxLayout(page);
-    pageLayout->setContentsMargins(0, 0, 0, 0);
-    pageLayout->addWidget(scrollArea);
+    return scrollArea;
 }
 
 }
