@@ -276,6 +276,20 @@ jobs:
       - name: Check server capabilities (bulk upload, NG chunking)
         run: |
           set -euo pipefail
+          # Online-Server ohne oauth2-App (z. B. ein Kern ohne die App): dort meldet sich owncloudcmd
+          # wie der Desktop-Client mit Benutzername und Kennwort an und läuft die Fälle 01–20.
+          # Mit der App antwortet der Token-Endpunkt auf einen leeren POST mit 400 (oder 401),
+          # ohne sie mit einer Umleitung zur Anmeldung oder 404.
+          if [ "$TARGET" = online ] && [ "$E2E_AUTH" = oauth ]; then
+            code=$(curl -s -o /dev/null -w '%{http_code}' -X POST "$OC_URL/index.php/apps/oauth2/api/v1/token" || echo 000)
+            case $code in
+              400 | 401) echo "E2E_AUTH_EFFECTIVE=oauth" >> "$GITHUB_ENV" ;;
+              *)
+                echo "::notice::Online-Server ohne oauth2-App (Token-Endpunkt antwortet $code): Anmeldung mit Kennwort"
+                echo "E2E_AUTH_EFFECTIVE=basic" >> "$GITHUB_ENV"
+                ;;
+            esac
+          fi
           # fremde Server werden nur beschrieben, nicht abgelehnt
           if ! curl -sf -u "$OC_USER:$OC_PASS" -H 'OCS-APIRequest: true' \
             "$OC_URL/ocs/v1.php/cloud/capabilities?format=json" > "$E2E_OUT/capabilities.json"; then
@@ -300,9 +314,16 @@ jobs:
           E2E_MASK_ACCOUNT: ${{ matrix.target == 'online' && '1' || '' }}
           ONLINE_LARGE: ${{ inputs.online_large }}
         run: |
+          # Online-Server ohne oauth2-App: Kennwort statt OAuth2 (siehe Capabilities-Schritt)
+          export E2E_AUTH=${E2E_AUTH_EFFECTIVE:-$E2E_AUTH}
           cases=()
           if [ "$TARGET" = online ] && [ "$ONLINE_LARGE" != true ]; then
-            cases=(A1 A2 01 02 05 07 08 A3 A4 A5 A7)
+            if [ "$E2E_AUTH" = oauth ]; then
+              cases=(A1 A2 01 02 05 07 08 A3 A4 A5 A7)
+            else
+              # ohne die großen Dateien (03, 04, 12)
+              cases=(01 02 05 06 07 08 09 10 11 13 14 15 16 17 18 19 20)
+            fi
           fi
           bash test/e2e/sync/run-suite.sh "${cases[@]}"
 
@@ -321,7 +342,9 @@ jobs:
         if: always() && env.E2E_OUT != ''
         run: |
           {
-            if [ "$TARGET" = online ]; then
+            if [ "$TARGET" = online ] && [ "${E2E_AUTH_EFFECTIVE:-$E2E_AUTH}" = basic ]; then
+              echo "## Sync-E2E $VARIANT: owncloudcmd mit Kennwort gegen den Online-Server aus den Secrets (ohne oauth2-App)"
+            elif [ "$TARGET" = online ]; then
               echo "## Sync-E2E $VARIANT: owncloudcmd über OAuth2 gegen den Online-Server aus den Secrets"
             else
               echo "## Sync-E2E $VARIANT: owncloudcmd gegen owncloud.online $SERVER_TAG"
