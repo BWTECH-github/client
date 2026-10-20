@@ -68,9 +68,11 @@
     Nutzerdatei muss bleiben. Anmeldedaten, Einstellungen und Cache
     (Entscheidung E4): frisch und koexistenz deinstallieren mit /S /purge -
     sie müssen weg sein; upgrade deinstalliert mit /S - sie müssen bleiben.
-    CfApi-Sync-Root, Windows-Search-Regeln und Schnellzugriff lassen sich ohne
-    laufenden Client mit Konto nicht nachbilden und werden als "nicht geprüft"
-    gemeldet.
+    Einen CfApi-Sync-Root meldet in upgrade-beta2 der Prüfling selbst mit dem
+    Platzhalter-Ordner an; dann muss er samt Explorer-Eintrag (beide
+    Registry-Sichten) mit der Deinstallation gehen. Windows-Search-Regeln und
+    Schnellzugriff lassen sich ohne laufenden Client mit Konto nicht
+    nachbilden und werden als "nicht geprüft" gemeldet.
 
     Ergebnisse in -OutDir: Schnappschüsse (NN-*.json), Vergleiche (diff-*.md),
     bericht.md, zusammenfassung.md (kurz, für die Job-Zusammenfassung) und
@@ -225,6 +227,8 @@ $trace = @{
     ConfigWritten = $false
     # upgrade-beta2: clientVersion der Vorversion, wie sie in deren Konfiguration steht
     PreviousVersion = ''
+    # upgrade-beta2: vom Prüfling angemeldete Sync-Roots (Kennung, Explorer-Eintrag), siehe U21 und D9
+    SyncRoots = @()
 }
 $trace.UserFile = Join-Path $trace.SyncDir 'Probe-Nutzerdatei.txt'
 $traceErrors = @{}
@@ -865,6 +869,11 @@ function Get-TracePattern {
         [regex]::Escape($trace.NavClsid),
         ('^HKCU\\' + [regex]::Escape($runKeyPath) + ' :: ' + [regex]::Escape($appName) + '$')
     )
+    # Sync-Roots des Prüflings und ihre Explorer-Einträge prüft D9
+    foreach ($root in $trace.SyncRoots) {
+        $parts += [regex]::Escape($root.Id)
+        if ($root.Namespace) { $parts += [regex]::Escape($root.Namespace) }
+    }
     return ($parts -join '|')
 }
 
@@ -902,7 +911,28 @@ function Test-TracesAfterUninstall {
             Add-Check "D$number" $title 'FEHLER' $detail $expectation[2]
         }
     }
-    Add-Check 'D9' 'Sync-Root (CfApi), Search-Regeln, Schnellzugriff entfernt' 'NICHT GEPRÜFT' 'braucht einen laufenden Client mit Konto, im CI nicht nachbildbar' 'H4, H6'
+    if (@($trace.SyncRoots).Count -eq 0) {
+        Add-Check 'D9' 'Sync-Root (CfApi), Search-Regeln, Schnellzugriff entfernt' 'NICHT GEPRÜFT' 'braucht einen laufenden Client mit Konto, im CI nicht nachbildbar' 'H4, H6'
+        return
+    }
+    # upgrade-beta2: der Prüfling hat für den Platzhalter-Ordner einen Sync-Root angemeldet (U21);
+    # Windows legt dazu einen Explorer-Eintrag an, in beiden Registry-Sichten
+    $left = @(foreach ($category in 'reg.syncroot', 'reg.navpane') {
+            foreach ($key in (Get-Items $Snapshot $category).Keys) {
+                foreach ($root in $trace.SyncRoots) {
+                    if ($key.EndsWith('\' + $root.Id, [StringComparison]::OrdinalIgnoreCase) -or
+                        ($root.Namespace -and ($key.EndsWith('\' + $root.Namespace, [StringComparison]::OrdinalIgnoreCase) -or $key.EndsWith(' :: ' + $root.Namespace, [StringComparison]::OrdinalIgnoreCase)))) { $key }
+                }
+            }
+        })
+    $title = 'Sync-Root (CfApi) abgemeldet, sein Explorer-Eintrag entfernt'
+    if ($left.Count -eq 0) {
+        Add-Check 'D9' $title 'OK' (($trace.SyncRoots | ForEach-Object { '{0}, Explorer-Eintrag {1}' -f $_.Id, $(if ($_.Namespace) { $_.Namespace } else { '-' }) }) -join '; ') 'H4, H6'
+    } else {
+        Add-Check 'D9' $title 'FEHLER' ('{0} Einträge noch da, z. B. {1}' -f $left.Count, $left[0]) 'H4, H6'
+        Add-List "D9 $title" $left
+    }
+    Add-Check 'D10' 'Search-Regeln, Schnellzugriff entfernt' 'NICHT GEPRÜFT' 'Search-Regel nur mit laufender Windows-Suche, Schnellzugriff nur beim Anlegen eines Ordnerpaars - im CI nicht nachbildbar' 'H4, H6'
 }
 
 function Test-TracesAfterUpgrade {
@@ -1148,7 +1178,8 @@ function Get-Beta2SettingsProblems {
     }
 }
 
-# Sync-Roots des Clients laut SyncRootManager (Kennung "owncloud.online!<SID>!<Hash>", ältere "owncloud.online_<Hash>")
+# Sync-Roots des Clients laut SyncRootManager (Kennung "owncloud.online!<SID>!<Hash>", ältere
+# "owncloud.online_<Hash>") mit Ordnern und der CLSID ihres Explorer-Eintrags (NamespaceCLSID)
 function Get-OwnSyncRoots {
     $manager = $hklm.OpenSubKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SyncRootManager', $false)
     if ($null -eq $manager) { return }
@@ -1160,7 +1191,14 @@ function Get-OwnSyncRoots {
             if ($userRoots) {
                 try { $paths = @($userRoots.GetValueNames() | ForEach-Object { [string]$userRoots.GetValue($_) }) } finally { $userRoots.Close() }
             }
-            [pscustomobject]@{ Id = $id; Paths = $paths }
+            $namespace = ''
+            $root = $manager.OpenSubKey($id, $false)
+            if ($root) {
+                try { $namespace = [string]$root.GetValue('NamespaceCLSID') } finally { $root.Close() }
+            }
+            # die CLSID landet als Teil eines Suchmusters im Pfad; nur eine echte CLSID taugt dafür
+            if ($namespace -notmatch '^\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}$') { $namespace = '' }
+            [pscustomobject]@{ Id = $id; Paths = $paths; Namespace = $namespace }
         }
     } finally {
         $manager.Close()
@@ -1279,6 +1317,7 @@ function Test-Beta2VfsAfterStart {
     $plugin = @($lines | Where-Object { $_ -match 'Created VFS instance from plugin .*vfs_wincfapi|Could not load (vfs )?plugin|Plugin failed to load|Plugin doesn.t exist|Plugin has wrong' })
     $cfapi = @($lines | Where-Object { $_ -match 'Error registering StorageProvider|Could not find StorageFolder|Could not retrieve StorageFolder|managed by another sync client|used by a different client|Downgrading the folder|Virtual filesystem feature' })
     $roots = @(Get-OwnSyncRoots)
+    $trace.SyncRoots = $roots
     if ($plugin.Count -eq 0) {
         $note = 'Plug-in: keine Meldung im Protokoll'
     } elseif ($plugin[0] -match 'Created VFS instance') {
@@ -1287,7 +1326,7 @@ function Test-Beta2VfsAfterStart {
         $note = 'Plug-in nicht geladen: ' + $plugin[0].Trim()
     }
     if ($roots.Count -gt 0) {
-        $note += '; Sync-Root angemeldet: ' + (($roots | ForEach-Object { '{0} -> {1}' -f $_.Id, ($_.Paths -join ', ') }) -join '; ')
+        $note += '; Sync-Root angemeldet: ' + (($roots | ForEach-Object { '{0} -> {1}, Explorer-Eintrag {2}' -f $_.Id, ($_.Paths -join ', '), $(if ($_.Namespace) { $_.Namespace } else { '-' }) }) -join '; ')
     } elseif ($cfapi.Count -gt 0) {
         $note += '; kein Sync-Root angemeldet: ' + $cfapi[0].Trim()
     } else {
@@ -1815,6 +1854,13 @@ function Invoke-PolicyScenario {
         Set-PolicyLayout $layout
         $before = Get-RegistryTree $policyVendorPath
         if ($interactive) { Uninstall-CandidateInteractive "${id}b" } else { Uninstall-Candidate "${id}b" }
+        # wie D2: die Deinstallation ist durchgelaufen, auch die über die Oberfläche
+        $entry = Get-OwnUninstallCommand
+        if ($entry) {
+            Add-Check "${id}c" 'Eintrag in Programme und Features entfernt' 'FEHLER' "noch da: $entry" ''
+        } else {
+            Add-Check "${id}c" 'Eintrag in Programme und Features entfernt' 'OK' '' ''
+        }
         $after = Get-RegistryTree $policyVendorPath
         $differences = @(Compare-RegistryTree (Get-ExpectedPolicyTree $before $layout) $after | Sort-Object)
         if ($differences.Count -gt 0) {
