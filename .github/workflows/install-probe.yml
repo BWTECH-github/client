@@ -9,7 +9,9 @@ name: Install-Probe
 #
 # Szenarien: frisch | koexistenz (offizieller Client 6.0.3 als MSI vorher installiert,
 # muss unverändert bleiben) | upgrade (Release v7.11.0 vorher) | upgrade-beta1
-# (veröffentlichte v11.0.0-beta1 vorher, gleiche Kennung) | alle.
+# (veröffentlichte v11.0.0-beta1 vorher, gleiche Kennung) | upgrade-beta2 (veröffentlichte
+# v11.0.0-beta2 vorher, mit Konto- und Ordnerkonfiguration wie beta2; der Prüfling startet
+# danach einmal und muss sie ohne Verlust lesen) | alle.
 
 on:
   workflow_dispatch:
@@ -18,9 +20,9 @@ on:
         description: "ID des CI-Laufs (ownCloud CI), dessen Artefakt windows-cl-x86_64 geprüft wird"
         required: true
       szenario:
-        description: "frisch, koexistenz, upgrade, upgrade-beta1 oder alle (je Szenario ein eigener Runner)"
+        description: "frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2 oder alle (je Szenario ein eigener Runner)"
         type: choice
-        options: [alle, frisch, koexistenz, upgrade, upgrade-beta1]
+        options: [alle, frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2]
         default: alle
   # GitHub nimmt workflow_dispatch für einen Workflow, der nicht auf dem Standardzweig
   # liegt, erst nach einem ersten Lauf an. Dieser Auslöser registriert ihn nur; der Job
@@ -45,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        szenario: ${{ fromJSON(inputs.szenario == 'alle' && '["frisch","koexistenz","upgrade","upgrade-beta1"]' || format('["{0}"]', inputs.szenario)) }}
+        szenario: ${{ fromJSON(inputs.szenario == 'alle' && '["frisch","koexistenz","upgrade","upgrade-beta1","upgrade-beta2"]' || format('["{0}"]', inputs.szenario)) }}
     defaults:
       run:
         # Windows PowerShell 5.1 - darauf sind die Skripte lokal geprüft
@@ -55,8 +57,9 @@ jobs:
       RUN_ID: ${{ inputs.run_id }}
       SZENARIO: ${{ matrix.szenario }}
       VORVERSION_TAG: v7.11.0
-      # upgrade-beta1: die veröffentlichte Vorabversion mit derselben Kennung wie der Prüfling
+      # upgrade-beta1, upgrade-beta2: die veröffentlichten Vorabversionen mit derselben Kennung wie der Prüfling
       BETA1_TAG: v11.0.0-beta1
+      BETA2_TAG: v11.0.0-beta2
       OFFIZIELL_URL: https://github.com/owncloud/client/releases/download/v6.0.3/ownCloud-6.0.3.18040.x64.msi
       OFFIZIELL_SHA256: 474d390f144ca91aab550a9d3e83291690401310432bbde28f1d1c4f1480ff45
     steps:
@@ -106,9 +109,9 @@ jobs:
           "PROBE_OFFIZIELL=$msi" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Fetch previous release
-        if: matrix.szenario == 'upgrade' || matrix.szenario == 'upgrade-beta1'
+        if: startsWith(matrix.szenario, 'upgrade')
         run: |
-          $tag = if ($env:SZENARIO -eq 'upgrade-beta1') { $env:BETA1_TAG } else { $env:VORVERSION_TAG }
+          $tag = switch ($env:SZENARIO) { 'upgrade-beta1' { $env:BETA1_TAG } 'upgrade-beta2' { $env:BETA2_TAG } default { $env:VORVERSION_TAG } }
           $dir = Join-Path $env:RUNNER_TEMP 'vorversion'
           New-Item -ItemType Directory -Force -Path $dir | Out-Null
           gh release download $tag -R $env:GITHUB_REPOSITORY -p '*-win-x64-Setup.exe' -p 'SHA256SUMS.txt' -D $dir

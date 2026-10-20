@@ -33,6 +33,13 @@
                   keine Doppel-Einträge (auch unter fremdem Namen), genau eine
                   Programmdatei im selben Ordner, Programmdatei ersetzt,
                   Einstellungen der Vorversion erhalten
+      upgrade-beta2  wie upgrade-beta1 mit der veröffentlichten
+                  11.0.0-beta2. Die Einstellungen sind eine Konto- und
+                  Ordnerkonfiguration, wie beta2 sie schreibt (Konto auf
+                  probe.invalid, ein Ordnerpaar auf den Sync-Ordner). Nach dem
+                  Update startet der Prüfling einmal und wird mit --quit
+                  beendet: Er muss das Ordnerpaar lesen (Protokoll) und Konto,
+                  Ordnerpaar und Einstellungen ohne Verlust zurückschreiben
 
     Client-Spuren, nachgebildet nach dem Client-Code (Geheimnis = Zufallswert,
     wird nie ausgegeben): Anmeldeinformation <app>_credentials:<host>:<uuid>:
@@ -54,7 +61,7 @@
     2 = Probe abgebrochen.
 
 .PARAMETER Scenario
-    frisch, koexistenz, upgrade oder upgrade-beta1.
+    frisch, koexistenz, upgrade, upgrade-beta1 oder upgrade-beta2.
 
 .PARAMETER Setup
     Setup des Prüflings (*-Setup.exe aus dem CI-Artefakt windows-cl-x86_64).
@@ -64,7 +71,7 @@
     anlegen (Programme, Benutzerprofil, %TEMP%), z. B. unter RUNNER_TEMP.
 
 .PARAMETER PreviousSetup
-    upgrade, upgrade-beta1: Setup der Vorversion.
+    upgrade, upgrade-beta1, upgrade-beta2: Setup der Vorversion.
 
 .PARAMETER OfficialMsi
     koexistenz: MSI des offiziellen Clients 6.0.3.
@@ -84,7 +91,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1')]
+    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2')]
     [string] $Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -139,9 +146,49 @@ $runs = New-Object 'System.Collections.Generic.List[object]'
 $lists = New-Object 'System.Collections.Generic.List[string]'
 $snapshotCount = 0
 
+# upgrade-beta2: Konto- und Ordnerkonfiguration, wie 11.0.0-beta2 sie schreibt
+# (AccountManager::saveAccount, FolderDefinition::save und die Liste der
+# Anmeldedaten im CredentialManager). Erzeugt mit QSettings aus Qt 6.8 mit
+# denselben Schlüsseln und Typen; QUuid, QUrl und die Capabilities stehen
+# deshalb als @Variant darin. Get-Beta2Config setzt Sync-Ordner und Version
+# ein. Das Konto zeigt auf probe.invalid: Der Prüfling erreicht keinen Server,
+# liest und schreibt aber Konto und Ordnerpaar.
+$beta2AccountId = '3f1c2b7e-5a64-4d2e-9b1f-0c7d8e9a1b2c'
+$beta2FolderId = '8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57'
+$beta2ConfigTemplate = @'
+[%General]
+clientVersion=PROBE_CLIENTVERSION
+probe=true
+optionalDesktopNotifications=true
+monoIcons=false
+
+[Accounts]
+0\url=https://probe.invalid
+0\dav_user=probe
+0\display-name=Probe
+0\account-alias=probe@probe.invalid
+0\uuid="@Variant(\0\0\0\x7f\0\0\0\x6QUuid\0?\x1c+~ZdM.\x9b\x1f\f}\x8e\x9a\x1b,)"
+0\capabilities=@Variant(\0\0\0\b\0\0\0\x4\0\0\0\x12\0\x63\0h\0\x65\0\x63\0k\0s\0u\0m\0s\0\0\0\b\0\0\0\x2\0\0\0&\0p\0r\0\x65\0\x66\0\x65\0r\0r\0\x65\0\x64\0U\0p\0l\0o\0\x61\0\x64\0T\0y\0p\0\x65\0\0\0\n\0\0\0\b\0S\0H\0\x41\0\x31\0\0\0\x1c\0s\0u\0p\0p\0o\0r\0t\0\x65\0\x64\0T\0y\0p\0\x65\0s\0\0\0\t\0\0\0\x1\0\0\0\n\0\0\0\b\0S\0H\0\x41\0\x31\0\0\0\b\0\x63\0o\0r\0\x65\0\0\0\b\0\0\0\x2\0\0\0\x18\0p\0o\0l\0l\0i\0n\0t\0\x65\0r\0v\0\x61\0l\0\0\0\x2\0\0\0<\0\0\0\f\0s\0t\0\x61\0t\0u\0s\0\0\0\b\0\0\0\a\0\0\0\xe\0\x65\0\x64\0i\0t\0i\0o\0n\0\0\0\n\0\0\0\x12\0\x43\0o\0m\0m\0u\0n\0i\0t\0y\0\0\0\x12\0i\0n\0s\0t\0\x61\0l\0l\0\x65\0\x64\0\0\0\n\0\0\0\x2\0\x31\0\0\0\x16\0m\0\x61\0i\0n\0t\0\x65\0n\0\x61\0n\0\x63\0\x65\0\0\0\n\0\0\0\x2\0\x30\0\0\0\x1c\0n\0\x65\0\x65\0\x64\0s\0\x44\0\x62\0U\0p\0g\0r\0\x61\0\x64\0\x65\0\0\0\n\0\0\0\x2\0\x30\0\0\0\x16\0p\0r\0o\0\x64\0u\0\x63\0t\0n\0\x61\0m\0\x65\0\0\0\n\0\0\0\x1e\0o\0w\0n\0\x63\0l\0o\0u\0\x64\0.\0o\0n\0l\0i\0n\0\x65\0\0\0\xe\0v\0\x65\0r\0s\0i\0o\0n\0\0\0\n\0\0\0\x10\0\x31\0\x31\0.\0\x30\0.\0\x30\0.\0\x30\0\0\0\x1a\0v\0\x65\0r\0s\0i\0o\0n\0s\0t\0r\0i\0n\0g\0\0\0\n\0\0\0\f\0\x31\0\x31\0.\0\x30\0.\0\x30\0\0\0\x6\0\x64\0\x61\0v\0\0\0\b\0\0\0\x1\0\0\0\x10\0\x63\0h\0u\0n\0k\0i\0n\0g\0\0\0\n\0\0\0\x6\0\x31\0.\0\x30\0\0\0\x1a\0\x66\0i\0l\0\x65\0s\0_\0s\0h\0\x61\0r\0i\0n\0g\0\0\0\b\0\0\0\x1\0\0\0\x16\0\x61\0p\0i\0_\0\x65\0n\0\x61\0\x62\0l\0\x65\0\x64\0\0\0\x1\x1)
+0\default_sync_root=C:/PROBE_SYNCDIR
+0\userExplicitlySignedOut=false
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\localPath=C:/PROBE_SYNCDIR/
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\journalPath=.sync_5f3a9c0e1b7d.db
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\targetPath=/
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\davUrl=@Variant(\0\0\0\x11\0\0\0\x31https://probe.invalid/remote.php/dav/files/probe/)
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\displayName=Probe
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\paused=false
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\deployed=false
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\priority=0
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\virtualFilesMode=off
+
+[Credentials]
+owncloud.online_credentials%3Aprobe.invalid%3A3f1c2b7e-5a64-4d2e-9b1f-0c7d8e9a1b2c\http\oauthtoken=true
+'@
+
 # Client-Spuren; Schlüssel = Name der Spur in den Prüfungen
 $trace = @{
-    Credential = '{0}_credentials:probe.invalid:{1}:http/oauthtoken' -f $appName, [guid]::NewGuid()
+    # upgrade-beta2: zum Konto der Konfiguration, sonst eine beliebige Kennung
+    Credential = '{0}_credentials:probe.invalid:{1}:http/oauthtoken' -f $appName, $(if ($Scenario -eq 'upgrade-beta2') { $beta2AccountId } else { [guid]::NewGuid() })
     ConfigDir  = Join-Path ([Environment]::GetFolderPath('ApplicationData')) $appName
     CacheDir   = Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) $appName
     NavClsid   = '{' + [guid]::NewGuid().ToString().ToUpperInvariant() + '}'
@@ -468,7 +515,8 @@ function Add-ClientTraces {
         }
         'Einstellungen'      = {
             New-Item -ItemType Directory -Force -Path $trace.ConfigDir | Out-Null
-            [IO.File]::WriteAllText((Join-Path $trace.ConfigDir "$appName.cfg"), "[General]`r`nprobe=true`r`n")
+            $content = if ($Scenario -eq 'upgrade-beta2') { Get-Beta2Config $ClientExe } else { "[General]`r`nprobe=true`r`n" }
+            [IO.File]::WriteAllText((Join-Path $trace.ConfigDir "$appName.cfg"), $content)
             $trace.ConfigWritten = $true
         }
         'Cache'              = {
@@ -616,20 +664,20 @@ function Test-TracesAfterUpgrade {
     }
 }
 
-# upgrade-beta1: Die Vorversion trägt dieselbe Kennung wie der Prüfling. Das Update muss
-# sie an Ort und Stelle ersetzen, nicht daneben installieren oder unverändert lassen.
-function Test-UpgradeFromBeta1 {
-    param($Previous, $Installed, [string] $PreviousExe, [string] $PreviousExeHash, [string] $Exe)
+# upgrade-beta1, upgrade-beta2: Die Vorversion trägt dieselbe Kennung wie der Prüfling. Das
+# Update muss sie an Ort und Stelle ersetzen, nicht daneben installieren oder unverändert lassen.
+function Test-UpgradeFromBeta {
+    param($Previous, $Installed, [string] $PreviousExe, [string] $PreviousExeHash, [string] $Exe, [string] $PreviousVersion)
     $before = @(Get-UninstallEntries $Previous $ownPattern)
     $after = @(Get-UninstallEntries $Installed $ownPattern)
     $beforeVersion = if ($before.Count -eq 1) { Get-EntryValue $before[0] 'DisplayVersion' } else { '' }
     $afterVersion = if ($after.Count -eq 1) { Get-EntryValue $after[0] 'DisplayVersion' } else { '' }
 
     # sonst prüfte das Szenario etwas anderes, als es vorgibt
-    if ($before.Count -eq 1 -and $beforeVersion -match '^11\.0\.0-beta1(\D|$)') {
-        Add-Check 'U8' 'Vorversion 11.0.0-beta1 war installiert' 'OK' $beforeVersion ''
+    if ($before.Count -eq 1 -and $beforeVersion -match ('^' + [regex]::Escape($PreviousVersion) + '(\D|$)')) {
+        Add-Check 'U8' "Vorversion $PreviousVersion war installiert" 'OK' $beforeVersion ''
     } else {
-        Add-Check 'U8' 'Vorversion 11.0.0-beta1 war installiert' 'FEHLER' ("{0} Einträge vor dem Update, Version '{1}'" -f $before.Count, $beforeVersion) ''
+        Add-Check 'U8' "Vorversion $PreviousVersion war installiert" 'FEHLER' ("{0} Einträge vor dem Update, Version '{1}'" -f $before.Count, $beforeVersion) ''
     }
 
     if ($after.Count -eq 1 -and $afterVersion -and $afterVersion -ne $beforeVersion) {
@@ -669,6 +717,149 @@ function Test-UpgradeFromBeta1 {
         Add-Check 'U13' 'Einstellungen der Vorversion erhalten (owncloud.online.cfg)' 'OK' '' 'E4'
     } else {
         Add-Check 'U13' 'Einstellungen der Vorversion erhalten (owncloud.online.cfg)' 'FEHLER' 'Datei oder Wert probe=true fehlt' 'E4'
+    }
+}
+
+# upgrade-beta2: Konfiguration von beta2 mit dem Sync-Ordner dieses Rechners und der Dateiversion der Vorversion
+function Get-Beta2Config {
+    param([string] $ClientExe)
+    $syncDir = $trace.SyncDir -replace '\\', '/'
+    # QSettings schreibt einen solchen Pfad unmaskiert; mit Sonderzeichen passte die Vorlage nicht mehr
+    if ($syncDir -notmatch '^[A-Za-z]:/[A-Za-z0-9._/-]+$') { throw "Sync-Ordner '$syncDir' passt nicht in die Vorlage" }
+    # clientVersion trägt die Version mit Buildnummer (ConfigFile::setClientVersionWithBuildNumberString)
+    $version = ''
+    if ($ClientExe -and (Test-Path -LiteralPath $ClientExe -PathType Leaf)) { $version = [string](Get-Item -LiteralPath $ClientExe).VersionInfo.FileVersion }
+    if ($version -notmatch '^\d+(\.\d+){2,3}$') { $version = '11.0.0' }
+    return ($beta2ConfigTemplate -replace "`r`n", "`n").Replace('C:/PROBE_SYNCDIR', $syncDir).Replace('PROBE_CLIENTVERSION', $version)
+}
+
+# Rohwerte einer Qt-INI-Datei, Schlüssel "Abschnitt|Schlüssel"
+function Read-IniValues {
+    param([string] $Path)
+    $values = @{}
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $values }
+    $section = ''
+    foreach ($line in [IO.File]::ReadAllLines($Path)) {
+        if ($line -match '^\[(.+)\]$') { $section = $Matches[1]; continue }
+        $separator = $line.IndexOf('=')
+        if ($separator -gt 0) { $values[$section + '|' + $line.Substring(0, $separator)] = $line.Substring($separator + 1) }
+    }
+    return $values
+}
+
+# Datei lesen, die ein laufender Prozess noch schreibt
+function Read-SharedText {
+    param([string] $Path)
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return '' }
+    try {
+        $stream = [IO.File]::Open($Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::ReadWrite -bor [IO.FileShare]::Delete)
+        try { return (New-Object IO.StreamReader($stream, [Text.Encoding]::UTF8)).ReadToEnd() } finally { $stream.Dispose() }
+    } catch {
+        return ''
+    }
+}
+
+# upgrade-beta2: Der Prüfling startet einmal mit der Konfiguration von beta2 und wird wie von
+# Hand über --quit beendet. Er muss das Ordnerpaar lesen (Protokoll) und Konto, Ordnerpaar und
+# Einstellungen beim Beenden ohne Verlust zurückschreiben (FolderMan::shutdown, AccountManager).
+function Test-Beta2ConfigAfterStart {
+    param([string] $Exe)
+    $titles = [ordered]@{
+        U14 = 'Prüfling startet mit der Konfiguration von beta2 und endet über --quit'
+        U15 = 'Ordnerpaar von beta2 vom Prüfling gelesen (Protokoll)'
+        U16 = 'Konto und Ordnerpaar nach dem Start ohne Verlust (owncloud.online.cfg)'
+        U17 = 'Einstellungen und Anmeldedaten nach dem Start erhalten'
+    }
+    $config = Join-Path $trace.ConfigDir "$appName.cfg"
+    if (-not $Exe -or -not $trace.ConfigWritten) {
+        foreach ($id in $titles.Keys) { Add-Check $id $titles[$id] 'NICHT GEPRÜFT' 'Programmdatei oder Konfiguration fehlt' '' }
+        return
+    }
+    $before = Read-IniValues $config
+    $log = Join-Path $OutDir 'pruefling-start.log'
+    Write-Host '== Prüfling mit der Konfiguration von beta2 starten'
+    Write-Annotation 'notice' 'Start: Prüfling mit der Konfiguration von beta2'
+    $process = Start-Process -FilePath $Exe -ArgumentList @('--logfile', ('"{0}"' -f $log), '--logdebug', '--logflush') -PassThru
+    $null = $process.Handle
+    # bis die Ordner aus der Konfiguration eingerichtet sind, höchstens 3 min
+    $deadline = (Get-Date).AddMinutes(3)
+    while ((Get-Date) -lt $deadline -and -not $process.HasExited) {
+        Start-Sleep -Seconds 2
+        $text = Read-SharedText $log
+        if ($text -match 'Setup folders from settings file' -and $text -match '(Adding folder to Folder Map|Unable to rebuild previous folder|Unable to create Folder for|validation failed for folder)') { break }
+    }
+    # Konto und Ordner arbeiten lassen: Schlüsselbund, Verbindungsversuch, Speichern
+    Start-Sleep -Seconds 10
+    $endedEarly = $process.HasExited
+    $exited = $endedEarly
+    if (-not $endedEarly) {
+        # nur an eine laufende Instanz: sonst würde dieser Aufruf selbst zum Client
+        $null = Invoke-Step 'Prüfling beenden (--quit)' $Exe '--quit'
+        $exited = $process.WaitForExit(90 * 1000)
+        if (-not $exited) { $null = & taskkill.exe /PID $process.Id /T /F }
+    }
+    $text = Read-SharedText $log
+    $after = Read-IniValues $config
+
+    if ($endedEarly) {
+        Add-Check 'U14' $titles.U14 'FEHLER' ('vor --quit beendet, Exit-Code {0}, siehe pruefling-start.log' -f $process.ExitCode) ''
+    } elseif (-not $exited) {
+        Add-Check 'U14' $titles.U14 'FEHLER' 'nach --quit nicht in 90 s beendet, Prozess abgebrochen' ''
+    } else {
+        Add-Check 'U14' $titles.U14 'OK' ('Exit-Code {0}' -f $process.ExitCode) ''
+    }
+
+    # Einrichten des Ordnerpaars laut Protokoll; Meldungen, nach denen der Client Konto oder Ordner verwirft
+    $folderPath = ($trace.SyncDir -replace '\\', '/') + '/'
+    $lines = @($text -split "`r?`n")
+    $added = @($lines | Where-Object { $_.Contains('Adding folder to Folder Map') -and $_.Contains($folderPath) })
+    $lossPattern = 'Unable to rebuild previous folder|will be removed from the configuration|are not supported by this client|Folder Definition validation failed|Unable to create Folder for|missing from Config|No URL for account|No user name provided'
+    $loss = @($lines | Where-Object { $_ -match $lossPattern })
+    if (-not $text) {
+        Add-Check 'U15' $titles.U15 'FEHLER' 'kein Protokoll (pruefling-start.log fehlt oder ist leer)' ''
+    } elseif ($loss.Count -gt 0) {
+        Add-Check 'U15' $titles.U15 'FEHLER' ('{0} Meldungen, z. B. {1}' -f $loss.Count, $loss[0].Trim()) ''
+        Add-List 'U15 Meldungen beim Einrichten der Ordner' $loss
+    } elseif ($added.Count -gt 0 -and $text.Contains('Setup folders from settings file')) {
+        Add-Check 'U15' $titles.U15 'OK' $folderPath ''
+    } else {
+        Add-Check 'U15' $titles.U15 'FEHLER' "kein 'Adding folder to Folder Map' für $folderPath, siehe pruefling-start.log" ''
+    }
+
+    # Konto und Ordnerpaar: Zeichenketten unverändert, QUuid/QUrl/Capabilities (@Variant) mit ihrem Inhalt
+    $account = 'Accounts|0\'
+    $folder = "Accounts|0\Folders\$beta2FolderId\"
+    $exact = @('url', 'dav_user', 'display-name', 'default_sync_root' | ForEach-Object { $account + $_ }) +
+        @('localPath', 'journalPath', 'targetPath', 'displayName', 'paused', 'virtualFilesMode' | ForEach-Object { $folder + $_ })
+    $variants = [ordered]@{ ($account + 'uuid') = 'QUuid'; ($account + 'capabilities') = 'o\0w\0n\0\x63\0l\0o\0u\0\x64\0.\0o\0n\0l\0i\0n\0\x65'; ($folder + 'davUrl') = 'https://probe.invalid/remote.php/dav/files/probe/' }
+    $problems = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($key in $exact) {
+        if (-not $after.ContainsKey($key)) { $problems.Add("$key fehlt") }
+        elseif ($after[$key] -cne $before[$key]) { $problems.Add(('{0}: {1} -> {2}' -f $key, $before[$key], $after[$key])) }
+    }
+    foreach ($key in $variants.Keys) {
+        if (-not $after.ContainsKey($key)) { $problems.Add("$key fehlt") }
+        elseif (-not $after[$key].Contains($variants[$key])) { $problems.Add("$key verändert") }
+    }
+    if ($problems.Count -eq 0) {
+        Add-Check 'U16' $titles.U16 'OK' ('{0} Werte erhalten' -f ($exact.Count + $variants.Count)) ''
+    } else {
+        Add-Check 'U16' $titles.U16 'FEHLER' ('{0} Werte verloren oder verändert, z. B. {1}' -f $problems.Count, $problems[0]) ''
+        Add-List 'U16 Konto und Ordnerpaar nach dem Start' $problems.ToArray()
+    }
+
+    # Einstellungen der Probe, Liste der Anmeldedaten und der Eintrag im Schlüsselbund
+    $lost = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($key in '%General|probe', '%General|optionalDesktopNotifications', '%General|monoIcons') {
+        if ($after[$key] -cne $before[$key]) { $lost.Add(('{0}: {1} -> {2}' -f $key, $before[$key], $after[$key])) }
+    }
+    if (-not $after.ContainsKey("Credentials|owncloud.online_credentials%3Aprobe.invalid%3A$beta2AccountId\http\oauthtoken")) { $lost.Add('Liste der Anmeldedaten ohne das Konto') }
+    $listed = (& cmdkey.exe "/list:$($trace.Credential)" | Out-String)
+    if (-not $listed.Contains($trace.Credential)) { $lost.Add('Anmeldedaten im Schlüsselbund fehlen') }
+    if ($lost.Count -eq 0) {
+        Add-Check 'U17' $titles.U17 'OK' '' 'E4'
+    } else {
+        Add-Check 'U17' $titles.U17 'FEHLER' ($lost -join '; ') 'E4'
     }
 }
 
@@ -1016,7 +1207,11 @@ function Invoke-Upgrade {
     $installed = New-Snapshot 'installiert' 'Prüfling über die Vorversion installiert'
     Test-Installation $previous $installed $exe 'vorversion-installiert'
     Test-TracesAfterUpgrade $installed
-    if ($Scenario -eq 'upgrade-beta1') { Test-UpgradeFromBeta1 $previous $installed $previousExe $previousExeHash $exe }
+    if ($Scenario -eq 'upgrade-beta1') { Test-UpgradeFromBeta $previous $installed $previousExe $previousExeHash $exe '11.0.0-beta1' }
+    if ($Scenario -eq 'upgrade-beta2') {
+        Test-UpgradeFromBeta $previous $installed $previousExe $previousExeHash $exe '11.0.0-beta2'
+        Test-Beta2ConfigAfterStart $exe
+    }
     Uninstall-Candidate 'D1'
     $removed = New-Snapshot 'deinstalliert' 'Prüfling deinstalliert'
     Test-Removal $base $removed 'ausgang-deinstalliert' @{} $false
@@ -1185,6 +1380,7 @@ try {
         'koexistenz' { Invoke-Coexistence }
         'upgrade' { Invoke-Upgrade }
         'upgrade-beta1' { Invoke-Upgrade }
+        'upgrade-beta2' { Invoke-Upgrade }
     }
 } catch {
     $abort = '{0} (Zeile {1})' -f $_.Exception.Message, $_.InvocationInfo.ScriptLineNumber
