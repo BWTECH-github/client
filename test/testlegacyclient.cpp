@@ -17,14 +17,17 @@
 #include "folderman.h"
 #include "legacyclient/legacyclientconfig.h"
 #include "legacyclient/legacyclientimport.h"
+#include "libsync/httplogger.h"
 #include "testutils/syncenginetestutils.h"
 #include "testutils/testutils.h"
 
 #include <QCryptographicHash>
+#include <QElapsedTimer>
 #include <QScopeGuard>
 #include <QSignalSpy>
 #include <QtTest>
 
+using namespace std::chrono_literals;
 using namespace OCC;
 
 namespace {
@@ -134,6 +137,48 @@ TestUtils::TestUtilsPrivate::AccountStateRaii oc10Account()
     accountState->account()->setCapabilities({accountState->account()->url(), capabilities});
     return accountState;
 }
+
+/**
+ * Server der Konten des offiziellen Clients, je Host: ohne die App „OAuth2“ (wie testool.bw.tech: der Token-Endpunkt leitet
+ * zur Anmeldeseite um), mit ihr (JSON-Fehler auf eine Anfrage ohne grant_type), mit OpenID Connect, und einer, der nicht
+ * antwortet. Merkt sich jede Anfrage als „VERB Adresse“.
+ */
+class SignInServersAM : public FakeAM
+{
+public:
+    SignInServersAM()
+        : FakeAM(nullptr)
+    {
+        setOverride([this](Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            const QUrl url = request.url();
+            requests.append(QStringLiteral("%1 %2").arg(QString::fromLatin1(HttpLogger::requestVerb(op, request)), url.toString()));
+            const QString host = url.host();
+            if (host == QLatin1String("unreachable.example.org")) {
+                // bis die Zeitbegrenzung der Anfrage greift
+                return new FakeHangingReply(op, request, this);
+            }
+            const bool tokenEndpoint = url.path().endsWith(QLatin1String("/index.php/apps/oauth2/api/v1/token"));
+            if (!tokenEndpoint) {
+                if (host == QLatin1String("oidc.example.org")) {
+                    return new FakePayloadReply(op, request,
+                        QByteArrayLiteral("{\"issuer\":\"https://oidc.example.org\",\"authorization_endpoint\":\"https://oidc.example.org/authorize\","
+                                          "\"token_endpoint\":\"https://oidc.example.org/token\"}"),
+                        this);
+                }
+                return new FakeErrorReply(op, request, this, 404);
+            }
+            if (host == QLatin1String("without-oauth2.example.org")) {
+                auto *reply = new FakePayloadReply(op, request, QByteArrayLiteral("<!DOCTYPE html><html><body></body></html>"), this);
+                reply->setAttribute(QNetworkRequest::HttpStatusCodeAttribute, 302);
+                reply->setRawHeader(QByteArrayLiteral("Location"), QByteArrayLiteral("https://without-oauth2.example.org/index.php/login"));
+                return reply;
+            }
+            return new FakeErrorReply(op, request, this, 400, QByteArrayLiteral("{\"error\":\"invalid_request\"}"));
+        });
+    }
+
+    QStringList requests;
+};
 
 }
 
@@ -606,6 +651,45 @@ private Q_SLOTS:
         QCOMPARE(LegacyClient::copyJournal(source, target, &error), LegacyClient::JournalCopy::Failed);
         QVERIFY(!error.isEmpty());
         QVERIFY(!QFileInfo::exists(target));
+    }
+
+    // Umstieg: Server ohne die App „OAuth2“ vor der Rückfrage erkennen, alle Konten gleichzeitig. Ohne sichere Antwort gilt ein
+    // Server als verfügbar, den Grund nennt dann der Assistent.
+    void testCheckSignInSupport()
+    {
+        // Arrange
+        SignInServersAM servers;
+        const auto account = [](const QString &url) {
+            LegacyClient::Account legacy;
+            legacy.url = QUrl(url);
+            legacy.davUser = QStringLiteral("admin");
+            return legacy;
+        };
+        const QList<LegacyClient::Account> accounts = {account(QStringLiteral("https://without-oauth2.example.org/")),
+            account(QStringLiteral("https://with-oauth2.example.org//owncloud//")), account(QStringLiteral("https://oidc.example.org")),
+            account(QStringLiteral("https://unreachable.example.org"))};
+        QElapsedTimer timer;
+        timer.start();
+
+        // Act
+        const auto support = LegacyClient::checkSignInSupport(&servers, accounts, 1s);
+
+        // Assert
+        const auto missing = [&support](qsizetype i) { return support.at(i) == LegacyClient::SignInSupport::OAuth2AppMissing; };
+        QCOMPARE(support.size(), 4);
+        QVERIFY(missing(0));
+        QVERIFY(!missing(1));
+        QVERIFY(!missing(2));
+        QVERIFY(!missing(3));
+        QVERIFY(servers.requests.contains(QStringLiteral("POST https://with-oauth2.example.org/owncloud/index.php/apps/oauth2/api/v1/token")));
+        // wer OpenID Connect anbietet oder nicht antwortet, wird nicht weiter befragt
+        QCOMPARE(servers.requests.filter(QStringLiteral("oidc.example.org")).size(), 1);
+        QCOMPARE(servers.requests.filter(QStringLiteral("unreachable.example.org")).size(), 1);
+        for (const auto &request : std::as_const(servers.requests)) {
+            QVERIFY2(!QUrl(request.section(QLatin1Char(' '), 1)).path().contains(QLatin1String("//")), qPrintable(request));
+        }
+        // gleichzeitig: die Zeitbegrenzung des Servers, der nicht antwortet, nur einmal
+        QVERIFY2(timer.elapsed() < 1900, qPrintable(QString::number(timer.elapsed())));
     }
 };
 

@@ -14,6 +14,7 @@
 
 #include "legacyclient/legacyclientimport.h"
 
+#include "accessmanager.h"
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
@@ -24,6 +25,7 @@
 #include "folderman.h"
 #include "mainwindow/colormanager.h"
 #include "mainwindow/mainwindow.h"
+#include "networkadapters/serverdiagnostics.h"
 #include "newaccountwizard/newaccountbuilder.h"
 #include "newaccountwizard/newaccountmodel.h"
 #include "newaccountwizard/newaccountwizard.h"
@@ -32,15 +34,23 @@
 
 #include <QCoreApplication>
 #include <QDir>
+#include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QLoggingCategory>
 #include <QMessageBox>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <QPushButton>
+#include <QRegularExpression>
+#include <QScopeGuard>
 #include <QTimer>
 
 #include <algorithm>
 #include <utility>
+
+using namespace std::chrono_literals;
 
 namespace OCC {
 
@@ -64,6 +74,14 @@ namespace LegacyClient {
             return normalized(a) == normalized(b);
         }
 
+        // „//“ im Pfad zu „/“: Utility::concatUrlPath() verlangt Pfade ohne „//“ (Q_ASSERT, in Beta-Builds ein Absturz). Nicht
+        // QDir::cleanPath(), das unter Windows ein führendes „//“ (UNC) stehen ließe.
+        QString withoutDoubledSlashes(QString path)
+        {
+            static const QRegularExpression doubledSlashes(QStringLiteral("/{2,}"));
+            return path.replace(doubledSlashes, QStringLiteral("/"));
+        }
+
         // owncloud.online synchronisiert den Ordner (oder einen darin bzw. darüber) schon?
         bool alreadySynchronized(FolderMan *folderMan, const QString &localPath)
         {
@@ -81,6 +99,63 @@ namespace LegacyClient {
     bool isSameAccount(const Account &legacy, const OCC::Account *account)
     {
         return account && account->davUser().compare(legacy.davUser, Qt::CaseInsensitive) == 0 && sameServer(account->url(), legacy.url);
+    }
+
+    QList<SignInSupport> checkSignInSupport(QNetworkAccessManager *nam, const QList<Account> &accounts, std::chrono::milliseconds timeout)
+    {
+        QList<SignInSupport> results(accounts.size(), SignInSupport::Available);
+        qsizetype running = 0;
+        QEventLoop loop;
+        const auto done = [&running, &loop] {
+            if (--running == 0) {
+                loop.quit();
+            }
+        };
+        const auto makeRequest = [timeout](const QUrl &url) {
+            QNetworkRequest request(url);
+            request.setTransferTimeout(static_cast<int>(timeout.count()));
+            return request;
+        };
+
+        for (qsizetype i = 0; i < accounts.size(); ++i) {
+            QUrl server = accounts.at(i).url.adjusted(QUrl::RemoveUserInfo | QUrl::RemoveQuery | QUrl::RemoveFragment);
+            server.setPath(withoutDoubledSlashes(server.path(QUrl::FullyEncoded)), QUrl::TolerantMode);
+            if (!server.isValid() || server.host().isEmpty()) {
+                continue;
+            }
+            ++running;
+            // dieselben Proben wie DetermineAuthTypeAdapter: Wer OpenID Connect anbietet, braucht die App „OAuth2“ nicht
+            QNetworkReply *openIdReply = nam->get(makeRequest(Utility::concatUrlPath(server, QStringLiteral("/.well-known/openid-configuration"))));
+            QObject::connect(openIdReply, &QNetworkReply::finished, &loop, [&, i, server, openIdReply] {
+                openIdReply->deleteLater();
+                const bool openIdConnect = openIdReply->error() == QNetworkReply::NoError && ServerDiagnostics::isOpenIdConfiguration(openIdReply->readAll());
+                // ohne HTTP-Antwort (Netz, Zertifikat, Zeitüberschreitung) ist über den Server nichts zu sagen: Das klärt der Assistent
+                if (openIdConnect || openIdReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() == 0) {
+                    done();
+                    return;
+                }
+                // ohne grant_type antwortet die App mit einem JSON-Fehler; ohne die App leitet der Server zur Anmeldeseite um
+                QNetworkRequest tokenRequest = makeRequest(Utility::concatUrlPath(server, QStringLiteral("/index.php/apps/oauth2/api/v1/token")));
+                tokenRequest.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+                tokenRequest.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/x-www-form-urlencoded"));
+                QNetworkReply *tokenReply = nam->post(tokenRequest, QByteArray());
+                QObject::connect(tokenReply, &QNetworkReply::finished, &loop, [&, i, server, tokenReply] {
+                    tokenReply->deleteLater();
+                    const auto issue = ServerDiagnostics::classifyOAuth2TokenReply(tokenReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
+                        tokenReply->readAll(), QUrl::fromEncoded(tokenReply->rawHeader(QByteArrayLiteral("Location"))));
+                    if (issue == ServerDiagnostics::Issue::OAuth2AppMissing) {
+                        qCInfo(lcLegacyClientImport) << "The OAuth2 app is missing on" << server.toDisplayString() << "- the account cannot be taken over";
+                        results[i] = SignInSupport::OAuth2AppMissing;
+                    }
+                    done();
+                });
+            });
+        }
+        // Beendet sich das Programm währenddessen, kehrt exec() vorzeitig zurück; nicht geprüfte Server gelten dann als verfügbar
+        if (running > 0) {
+            loop.exec();
+        }
+        return results;
     }
 
     FolderImport importFolder(FolderMan *folderMan, AccountState *accountState, const Folder &folder, const QStringList &officialFolders)
@@ -179,36 +254,83 @@ bool LegacyClientImportController::confirm(bool firstStart)
 {
     // schon eingerichtete Konten nicht noch einmal
     _pending.clear();
-    QStringList lines;
+    QList<LegacyClient::Account> candidates;
     for (const auto &account : std::as_const(_config.accounts)) {
         if (AccountManager::instance()->accountForLoginExists(account.url, account.davUser)) {
             _report.append(tr("%1: already set up.").arg(account.displayString()));
             continue;
         }
-        _pending.append(account);
-        lines.append(tr("• %1 – %n sync folder(s)", "", account.folders.size()).arg(account.displayString()));
+        candidates.append(account);
     }
-    if (_pending.isEmpty()) {
+    if (candidates.isEmpty()) {
         if (!firstStart && _window) {
             QMessageBox::information(_window, tr("Import from the official client"), tr("All accounts of the official client are already set up."));
         }
         return false;
     }
 
-    QMessageBox box(QMessageBox::Question, tr("Import from the official client"),
-        tr("The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?")
-            + QStringLiteral("\n\n") + lines.join(QLatin1Char('\n')),
-        QMessageBox::NoButton, _window);
-    box.setInformativeText(tr("You sign in once per account in the browser. Folders that are already synchronized are recognized and not "
-                              "downloaded again. Nothing is changed in the official client."));
-    QPushButton *importButton = box.addButton(tr("Import"), QMessageBox::AcceptRole);
-    box.addButton(firstStart ? tr("Set up a new account") : tr("Cancel"), QMessageBox::RejectRole);
-    box.setDefaultButton(importButton);
+    // vor der Rückfrage: Ohne die App „OAuth2“ auf dem Server meldet sich owncloud.online nicht an, das Konto ließe sich also
+    // nicht übernehmen. Die Anmeldung im Assistenten scheiterte sonst erst nach dem Beenden des offiziellen Clients.
+    QList<LegacyClient::SignInSupport> support;
+    {
+        AccessManager accessManager(nullptr);
+        QGuiApplication::setOverrideCursor(Qt::WaitCursor);
+        const auto restoreCursor = qScopeGuard([] { QGuiApplication::restoreOverrideCursor(); });
+        support = LegacyClient::checkSignInSupport(&accessManager, candidates, 10s);
+    }
+    QStringList lines;
+    QStringList blockedLines;
+    for (qsizetype i = 0; i < candidates.size(); ++i) {
+        const auto &account = candidates.at(i);
+        const QString line = tr("• %1 – %n sync folder(s)", "", account.folders.size()).arg(account.displayString());
+        if (support.value(i) == LegacyClient::SignInSupport::OAuth2AppMissing) {
+            blockedLines.append(line);
+            _report.append(tr("%1: not taken over, the \"OAuth2\" app is not installed or not enabled on the server.").arg(account.displayString()));
+        } else {
+            _pending.append(account);
+            lines.append(line);
+        }
+    }
+
+    QString text;
+    if (_pending.isEmpty()) {
+        text = tr("The official desktop client is set up on this computer.");
+    } else {
+        text = tr("The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?") + QStringLiteral("\n\n")
+            + lines.join(QLatin1Char('\n'));
+    }
+    if (!blockedLines.isEmpty()) {
+        text += QStringLiteral("\n\n")
+            + tr("%n account(s) cannot be taken over because the \"OAuth2\" app, which is needed to sign in, is not installed or not enabled on the server:",
+                "", blockedLines.size())
+            + QStringLiteral("\n\n") + blockedLines.join(QLatin1Char('\n')) + QStringLiteral("\n\n")
+            + tr("Please ask your administrator to install the \"OAuth2\" app via \"Market\" and enable it for all users. Afterwards, choose \"Import "
+                 "from official client...\" in the menu.");
+    }
+    QMessageBox box(
+        _pending.isEmpty() ? QMessageBox::Information : QMessageBox::Question, tr("Import from the official client"), text, QMessageBox::NoButton, _window);
+    QPushButton *importButton = nullptr;
+    if (!_pending.isEmpty()) {
+        box.setInformativeText(tr("You sign in once per account in the browser. Folders that are already synchronized are recognized and not "
+                                  "downloaded again. Nothing is changed in the official client."));
+        importButton = box.addButton(tr("Import"), QMessageBox::AcceptRole);
+        box.setDefaultButton(importButton);
+    }
+    if (firstStart) {
+        QPushButton *newAccountButton = box.addButton(tr("Set up a new account"), QMessageBox::RejectRole);
+        if (!importButton) {
+            box.setDefaultButton(newAccountButton);
+        }
+    } else if (importButton) {
+        box.addButton(tr("Cancel"), QMessageBox::RejectRole);
+    } else {
+        box.addButton(QMessageBox::Ok);
+    }
     if (_window) {
         _window->ensureVisible();
     }
     box.exec();
-    return box.clickedButton() == importButton && officialClientStopped();
+    return importButton && box.clickedButton() == importButton && officialClientStopped();
 }
 
 bool LegacyClientImportController::officialClientStopped()
@@ -331,6 +453,7 @@ void LegacyClientImportController::importFolders(AccountState *accountState, Syn
             // wie ein neu eingerichtetes Konto, damit es nicht ohne Ordner bleibt, und mit der Wahl aus dem Assistenten
             setUpLikeNewAccount(accountState, choice);
         }
+        _takenOverFolders += imported;
     }
     QTimer::singleShot(0, this, &LegacyClientImportController::importNextAccount);
 }
@@ -350,8 +473,16 @@ void LegacyClientImportController::showReport()
         return;
     }
     QMessageBox box(QMessageBox::Information, tr("Import finished"), _report.join(QLatin1Char('\n')), QMessageBox::Ok, _window);
-    box.setInformativeText(tr("Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not "
-                              "synchronized twice."));
+    // doppelt synchronisiert würden nur übernommene Ordner. Hat der offizielle Client noch Konten, die hier fehlen (ohne die App
+    // „OAuth2“, Anmeldung abgebrochen), braucht der Nutzer ihn dafür weiter: dann nicht zum Deinstallieren raten.
+    if (_takenOverFolders > 0) {
+        const bool everyAccountSetUp = std::all_of(_config.accounts.cbegin(), _config.accounts.cend(),
+            [](const LegacyClient::Account &account) { return AccountManager::instance()->accountForLoginExists(account.url, account.davUser); });
+        box.setInformativeText(everyAccountSetUp
+                ? tr("Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.")
+                : tr("The accounts that were not taken over are only set up in the official client. Before you start it again, remove the "
+                     "accounts taken over from it, so that both programs do not synchronize the same folders."));
+    }
     _window->ensureVisible();
     box.exec();
 }

@@ -22,7 +22,10 @@
 #include <QStringList>
 #include <QUuid>
 
+#include <chrono>
 #include <optional>
+
+class QNetworkAccessManager;
 
 namespace OCC {
 
@@ -68,6 +71,20 @@ namespace LegacyClient {
      */
     OWNCLOUDGUI_EXPORT bool isSameAccount(const Account &legacy, const OCC::Account *account);
 
+    /** Lässt der Server eines Fremd-Kontos die Anmeldung von owncloud.online zu? */
+    enum class SignInSupport {
+        /** OpenID Connect oder die App „OAuth2“, oder nichts Sicheres zu erfahren (Netz, Zertifikat): Den Grund nennt dann der Assistent */
+        Available,
+        /** owncloud.online-Server ohne eingeschaltete App „OAuth2“: Anmelden und damit Übernehmen ist nicht möglich */
+        OAuth2AppMissing,
+    };
+
+    /**
+     * Prüft die Server der Konten gleichzeitig wie der Assistent (ServerDiagnostics): erst die OpenID-Konfiguration, dann den
+     * Token-Endpunkt der App „OAuth2“. Jede Anfrage wartet höchstens timeout. Ergebnis in der Reihenfolge der Konten.
+     */
+    OWNCLOUDGUI_EXPORT QList<SignInSupport> checkSignInSupport(QNetworkAccessManager *nam, const QList<Account> &accounts, std::chrono::milliseconds timeout);
+
 } // namespace LegacyClient
 
 /**
@@ -111,6 +128,8 @@ private:
     QList<LegacyClient::Account> _pending;
     std::optional<LegacyClient::Account> _current;
     QStringList _report;
+    /** übernommene Ordner des Fremd-Clients: nur dann gibt es etwas doppelt zu synchronisieren */
+    int _takenOverFolders = 0;
     QList<QUuid> _folderWizardAccounts;
     QPointer<MainWindow> _window;
     ColorManager *_colorManager = nullptr;
