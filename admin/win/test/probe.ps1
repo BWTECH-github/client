@@ -3657,7 +3657,8 @@ function Invoke-UiClick {
     return ''
 }
 
-# Lage der Elemente, die den Anmeldenamen des Testkontos zeigen (Eingabefeld, Kontoname, Anmeldename im Dialog)
+# Lage der Elemente, die den Anmeldenamen des Testkontos zeigen (Eingabefeld, Kontoname, Anmeldename im Dialog), und gefüllter
+# Kennwortfelder: sie zeigen je Zeichen einen Punkt, auch die Länge des Kennworts gehört nicht ins Artefakt
 function Get-AccountNameRects {
     param($Items)
     $patterns = @(@($loginUserPattern, $loginUserPattern2) | Where-Object { $_ })
@@ -3665,6 +3666,10 @@ function Get-AccountNameRects {
     foreach ($item in $Items) {
         if (-not $item.Visible) { continue }
         $value = if ($item.Type -eq 'Edit') { Get-UiValue $item } else { '' }
+        if ($item.Type -eq 'Edit' -and $item.Id -like '*PasswordLineEdit' -and $value) {
+            $item.Rect
+            continue
+        }
         foreach ($pattern in $patterns) {
             if ([regex]::IsMatch($item.Name, $pattern, 'IgnoreCase') -or [regex]::IsMatch($value, $pattern, 'IgnoreCase')) {
                 $item.Rect
@@ -3698,7 +3703,7 @@ function Save-BasicShot {
             $bitmap.Dispose()
         }
         $leaf = Split-Path -Leaf $file
-        if ($hidden.Count -gt 0) { return ('{0} (Anmeldename an {1} Stelle(n) geschwärzt)' -f $leaf, $hidden.Count) }
+        if ($hidden.Count -gt 0) { return ('{0} (Anmeldename oder Kennwortfeld an {1} Stelle(n) geschwärzt)' -f $leaf, $hidden.Count) }
         return $leaf
     } catch {
         return ('kein Foto: {0}' -f $_.Exception.Message)
