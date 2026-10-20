@@ -17,6 +17,8 @@
 #include "libsync/graphapi/space.h"
 
 #include <QObject>
+#include <QPointer>
+#include <QSet>
 
 #include <unordered_map>
 
@@ -47,16 +49,22 @@ Q_SIGNALS:
 private:
     void updateEtag(const QUuid &accountId, const QString &spaceId, const QString &etag);
 
+    // ownCloud 10/owncloud.online: das ETag der Serverordner von Ordnerpaaren ohne Space abfragen
+    void pollFoldersWithoutSpace();
+
     struct ETagInfo
     {
         QString etag;
-        Folder *folder;
+        QPointer<Folder> folder;
     };
 
     // we have to separate the data into accounts because it's NOT the case that all spaceid's are unique
     // specifically, the Shares space always has the same space id -> see Space.cpp sharesIdC
     // so we have a hash keyed on the uuid of the account, which in turn holds the hash for the space ids->etag info
     QHash<QUuid, QHash<QString, ETagInfo>> _lastEtagJobForSpace;
+
+    // Ordnerpaare, deren ETag-Abfrage noch läuft (Konto/Schlüssel): je Ordnerpaar höchstens eine
+    QSet<QString> _runningPolls;
 };
 
 }
