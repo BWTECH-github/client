@@ -57,6 +57,31 @@
                   im Schlüssel oder in Setup\ServerUrl) und fremde Richtlinien
                   unter BW-Tech GmbH bleiben unverändert. Am Ende Rückstände
                   gegen den Ausgang
+      assistent   Nur auf Anforderung (nicht in "alle"): Kontoassistent wie
+                  ein Tester. Prüfling (und, mit -OfficialMsi, der
+                  offizielle Client 6.0.3) still installieren, WER-
+                  Speicherabbilder einschalten, dann mehrere Durchgänge mit
+                  frischer Konfiguration (Oberfläche deutsch): Umstieg-Dialog
+                  aus einer owncloud.cfg des offiziellen Clients (Konto auf
+                  -WrongServerUrl, ein Sync-Ordner), "Neues Konto
+                  einrichten", Adresse eintragen, "Anmelden" - erst
+                  -WrongServerUrl (ohne OAuth2, Warnung) und/oder gleich
+                  -ServerUrl. Die Browser-Anmeldung übernimmt
+                  assistent-anmeldung.py mit dem Anmelde-Link des Clients und
+                  dem Testkonto aus OC_USER/OC_PASS (login.py aus dem Zweig
+                  sync-e2e, -LoginScript), dann Erfolgsseite, erweiterte
+                  Einstellungen, "Fertigstellen" und 90 s Beobachtung. Die
+                  Oberfläche fährt UI Automation; ein Durchgang nur mit
+                  Tastatureingaben (ohne UI Automation im Client) prüft, ob
+                  die Barrierefreiheits-Schnittstelle selbst etwas ändert.
+                  Nach jedem Schritt ein Bildschirmfoto und der Zustand des
+                  Prozesses. Endet der Prozess: Exit-Code, Ereignisprotokoll
+                  (Application Error 1000), Speicherabbild, Absturzprotokoll
+                  des Clients (%TEMP%\owncloud.online-crash.log), Ende seines
+                  Protokolls; Auswertung des Speicherabbilds mit cdb. Ein
+                  vollständiges Speicherabbild kommt nur ins Artefakt, wenn
+                  der Client noch keine Tokens hatte (sonst ein Auszug ohne
+                  Heap); Protokolle ohne Code, Tokens und Zugangsdaten
 
     Client-Spuren, nachgebildet nach dem Client-Code (Geheimnis = Zufallswert,
     wird nie ausgegeben): Anmeldeinformation <app>_credentials:<host>:<uuid>:
@@ -80,8 +105,8 @@
     2 = Probe abgebrochen.
 
 .PARAMETER Scenario
-    frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2 oder
-    deinstall-policies.
+    frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2,
+    deinstall-policies oder assistent.
 
 .PARAMETER Setup
     Setup des Prüflings (*-Setup.exe aus dem CI-Artefakt windows-cl-x86_64).
@@ -94,7 +119,20 @@
     upgrade, upgrade-beta1, upgrade-beta2: Setup der Vorversion.
 
 .PARAMETER OfficialMsi
-    koexistenz: MSI des offiziellen Clients 6.0.3.
+    koexistenz: MSI des offiziellen Clients 6.0.3. assistent: optional, wird
+    vorher installiert (und im ersten Durchgang gestartet).
+
+.PARAMETER LoginScript
+    assistent: test/e2e/oauth/login.py aus dem Zweig sync-e2e. Benutzer und
+    Kennwort des Testkontos kommen aus OC_USER/OC_PASS; die Probe nimmt sie
+    sofort aus der Umgebung, damit der Client sie nicht erbt.
+
+.PARAMETER ServerUrl
+    assistent: Server mit der App "OAuth2", an dem das Konto entsteht.
+
+.PARAMETER WrongServerUrl
+    assistent: Server ohne die App "OAuth2" (Warnung im Assistenten); auch das
+    Konto des offiziellen Clients zeigt dorthin.
 
 .PARAMETER ExpectedVersion
     Erwartete DisplayVersion des Prüflings, z. B. 7.11.1; leer = nicht prüfen.
@@ -111,7 +149,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2', 'deinstall-policies')]
+    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2', 'deinstall-policies', 'assistent')]
     [string] $Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -126,6 +164,12 @@ param(
 
     [string] $ExpectedVersion,
 
+    [string] $LoginScript,
+
+    [string] $ServerUrl = 'https://testoo.bw.tech',
+
+    [string] $WrongServerUrl = 'https://testool.bw.tech',
+
     [ValidateRange(1, 120)]
     [int] $TimeoutMinutes = 8,
 
@@ -134,6 +178,15 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
+
+# assistent: Zugang des Testkontos sofort aus der Umgebung nehmen. Gestartete Programme erben sie sonst, und
+# ein Speicherabbild des Clients trüge sie ins (öffentliche) Artefakt; dasselbe gilt für das Token des Jobs.
+$loginUser = $env:OC_USER
+$loginPass = $env:OC_PASS
+$loginServer = $env:OC_URL
+foreach ($name in 'OC_USER', 'OC_PASS', 'OC_URL', 'GH_TOKEN', 'GITHUB_TOKEN') {
+    [Environment]::SetEnvironmentVariable($name, $null, 'Process')
+}
 
 if (-not $AllowLocal -and $env:GITHUB_ACTIONS -ne 'true') {
     [Console]::Error.WriteLine('probe.ps1 installiert und deinstalliert Software und legt Client-Spuren an. Nur auf einer Wegwerf-Maschine ausführen (CI-Runner oder VM-Snapshot); außerhalb von GitHub Actions nur mit -AllowLocal.')
@@ -1878,6 +1931,1233 @@ function Invoke-PolicyScenario {
     Test-Residue $base $final 'ausgang-ende' @{}
 }
 
+# --- Kontoassistent (assistent) ----------------------------------------------
+#
+# Meldung zu v11.0.0-beta3: erster Start mit der Konfiguration des offiziellen Clients, "Neues Konto
+# einrichten", Serveradresse, "Anmelden" - danach stürzte der Client ab. Die Durchgänge fahren den Ablauf
+# eines Testers nach und belegen nach jedem Schritt Bildschirm und Prozess.
+
+# Rohdaten, die nicht ins Artefakt gehören: ungefiltertes Protokoll des Clients (Rückruf mit Code),
+# Anmelde-Link, Speicherabbilder vor der Prüfung, Debugger und Symbole
+$rawRoot = Join-Path $(if ($env:RUNNER_TEMP) { $env:RUNNER_TEMP } else { [IO.Path]::GetTempPath() }) 'assistent-roh'
+$dumpDir = Join-Path $rawRoot 'speicherabbilder'
+$timeline = New-Object 'System.Collections.Generic.List[string]'
+$shotCount = 0
+$cdbPath = $null
+$cdbSource = ''
+$legacyConfigPath = Join-Path ([Environment]::GetFolderPath('ApplicationData')) 'ownCloud\owncloud.cfg'
+$clientConfigDir = Join-Path ([Environment]::GetFolderPath('ApplicationData')) $appName
+# Texte, wo die Oberfläche keine AutomationId trägt (deutsch über uiLanguage=de, englisch als Rückfall)
+$legacyNewAccountPattern = '^(Neues Konto einrichten|Set up a new account)$'
+$legacyTitlePattern = '^(Vom offiziellen Client übernehmen|Import from the official client)$'
+$wizardTitlePattern = '^(Konto hinzufügen|Add account)'
+$nextPattern = '^(Anmelden|Sign in|Anmeldung erneut öffnen|Open sign in again)$'
+$finishPattern = '^(Fertigstellen|Fertig stellen|Fertig|Finish|Done)$'
+$copyLinkPattern = '^(Anmelde-?URL kopieren|Anmeldelink kopieren|Copy sign in URL)$'
+
+# Vordergrund und Tastatur für den Durchgang ohne UI Automation: Eingaben wie von Hand (SendInput)
+$deskSource = @'
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
+namespace OcProbe
+{
+    public static class Desk
+    {
+        [StructLayout(LayoutKind.Sequential)]
+        private struct KEYBDINPUT { public ushort wVk; public ushort wScan; public uint dwFlags; public uint time; public IntPtr dwExtraInfo; }
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MOUSEINPUT { public int dx; public int dy; public uint mouseData; public uint dwFlags; public uint time; public IntPtr dwExtraInfo; }
+        [StructLayout(LayoutKind.Explicit)]
+        private struct INPUTUNION { [FieldOffset(0)] public MOUSEINPUT mi; [FieldOffset(0)] public KEYBDINPUT ki; }
+        [StructLayout(LayoutKind.Sequential)]
+        private struct INPUT { public uint type; public INPUTUNION u; }
+
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hwnd);
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetForegroundWindow();
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hwnd, int command);
+        [DllImport("user32.dll")]
+        private static extern bool BringWindowToTop(IntPtr hwnd);
+        [DllImport("user32.dll")]
+        private static extern void keybd_event(byte vk, byte scan, uint flags, UIntPtr extra);
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern uint SendInput(uint count, INPUT[] inputs, int size);
+
+        private const uint INPUT_KEYBOARD = 1;
+        private const uint KEYEVENTF_KEYUP = 0x0002;
+        private const uint KEYEVENTF_UNICODE = 0x0004;
+
+        // Alt kurz drücken: dann erlaubt Windows SetForegroundWindow auch einem Prozess im Hintergrund
+        public static bool Activate(IntPtr hwnd)
+        {
+            keybd_event(0x12, 0, 0, UIntPtr.Zero);
+            keybd_event(0x12, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+            ShowWindow(hwnd, 9);
+            BringWindowToTop(hwnd);
+            SetForegroundWindow(hwnd);
+            return GetForegroundWindow() == hwnd;
+        }
+
+        private static INPUT Key(ushort vk, ushort scan, uint flags)
+        {
+            INPUT input = new INPUT();
+            input.type = INPUT_KEYBOARD;
+            input.u.ki.wVk = vk;
+            input.u.ki.wScan = scan;
+            input.u.ki.dwFlags = flags;
+            return input;
+        }
+
+        private static uint Send(List<INPUT> inputs)
+        {
+            return SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(INPUT)));
+        }
+
+        // Text Zeichen für Zeichen, unabhängig vom Tastaturlayout
+        public static uint TypeText(string text)
+        {
+            List<INPUT> inputs = new List<INPUT>();
+            foreach (char c in text)
+            {
+                inputs.Add(Key(0, c, KEYEVENTF_UNICODE));
+                inputs.Add(Key(0, c, KEYEVENTF_UNICODE | KEYEVENTF_KEYUP));
+            }
+            return Send(inputs);
+        }
+
+        // eine Taste, wahlweise mit Strg (virtuelle Tastencodes: Enter 0x0D, Esc 0x1B, A 0x41)
+        public static uint Press(ushort vk, bool control)
+        {
+            List<INPUT> inputs = new List<INPUT>();
+            if (control) { inputs.Add(Key(0x11, 0, 0)); }
+            inputs.Add(Key(vk, 0, 0));
+            inputs.Add(Key(vk, 0, KEYEVENTF_KEYUP));
+            if (control) { inputs.Add(Key(0x11, 0, KEYEVENTF_KEYUP)); }
+            return Send(inputs);
+        }
+    }
+}
+'@
+
+function Initialize-Desktop {
+    if (-not ('OcProbe.Ui' -as [type])) { Add-Type -TypeDefinition $uiSource -Language CSharp }
+    if (-not ('OcProbe.Desk' -as [type])) { Add-Type -TypeDefinition $deskSource -Language CSharp }
+    Add-Type -AssemblyName System.Windows.Forms, System.Drawing, UIAutomationClient, UIAutomationTypes
+}
+
+function Add-Timeline {
+    param([string] $Text)
+    $line = '{0} {1}' -f (Get-Date -Format 'HH:mm:ss'), $Text
+    $timeline.Add($line)
+    Write-Host "   $line"
+}
+
+function Limit-Text {
+    param([string] $Text, [int] $Length = 400)
+    if (-not $Text) { return '' }
+    $flat = ($Text -replace '\s+', ' ').Trim()
+    if ($flat.Length -gt $Length) { return $flat.Substring(0, $Length) + ' …' }
+    return $flat
+}
+
+# Protokolle und Ausgaben vor dem Hochladen: Code des Rückrufs, Tokens und der Zugang des Testkontos
+function Protect-Text {
+    param([string] $Text)
+    if (-not $Text) { return $Text }
+    $Text = [regex]::Replace($Text, '(?i)([?&]code=)[^&\s"''<>]+', '$1[entfernt]')
+    $Text = [regex]::Replace($Text, '(?i)((?:access_token|refresh_token|id_token|code_verifier|client_secret|password)["'']?\s*[:=]\s*["'']?)[^"''&\s,}<>]+', '$1[entfernt]')
+    $Text = [regex]::Replace($Text, '(?i)\b(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{8,}', '$1 [entfernt]')
+    foreach ($secret in @($loginPass, $loginUser)) {
+        if ($secret -and $secret.Length -ge 3) { $Text = $Text.Replace($secret, '[testkonto]') }
+    }
+    return $Text
+}
+
+function Copy-Protected {
+    param([string] $Source, [string] $Target)
+    $text = Read-SharedText $Source
+    if (-not $text) { return $false }
+    [IO.File]::WriteAllText($Target, (Protect-Text $text), (New-Object System.Text.UTF8Encoding $false))
+    return $true
+}
+
+function Format-ExitCode {
+    param($Code)
+    if ($null -eq $Code) { return '-' }
+    $unsigned = [BitConverter]::ToUInt32([BitConverter]::GetBytes([int]$Code), 0)
+    return '{0} (0x{1:X8})' -f $Code, $unsigned
+}
+
+function Get-ProcessNote {
+    param($Process)
+    try {
+        if ($Process.HasExited) { return 'beendet, Exit-Code ' + (Format-ExitCode $Process.ExitCode) }
+        $Process.Refresh()
+        return 'läuft (reagiert: {0}, {1} MB)' -f $(if ($Process.Responding) { 'ja' } else { 'nein' }), [int]($Process.WorkingSet64 / 1MB)
+    } catch {
+        return 'Zustand nicht lesbar: ' + $_.Exception.Message
+    }
+}
+
+# ganzer Bildschirm als PNG in OutDir; Rückgabe: Dateiname oder der Grund, warum es keinen gibt
+function Save-Screenshot {
+    param([string] $Name)
+    $script:shotCount++
+    $file = Join-Path $OutDir ('foto-{0:D2}-{1}.png' -f $script:shotCount, $Name)
+    try {
+        $bounds = [System.Windows.Forms.SystemInformation]::VirtualScreen
+        $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+        try {
+            $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+            try { $graphics.CopyFromScreen($bounds.X, $bounds.Y, 0, 0, $bitmap.Size) } finally { $graphics.Dispose() }
+            $bitmap.Save($file, [System.Drawing.Imaging.ImageFormat]::Png)
+        } finally {
+            $bitmap.Dispose()
+        }
+        return (Split-Path -Leaf $file)
+    } catch {
+        return ('kein Foto: {0}' -f $_.Exception.Message)
+    }
+}
+
+# Fenstertitel über Win32 (WM_GETTEXT) - ohne UI Automation, für den Durchgang mit Tastatur
+function Get-WindowTitles {
+    param([int] $ProcessId)
+    $titles = @(foreach ($window in @([OcProbe.Ui]::TopWindows($ProcessId))) { '"{0}" ({1})' -f $window.Text, $window.ClassName })
+    if ($titles.Count -eq 0) { return 'keine Fenster' }
+    return 'Fenster ' + ($titles -join ', ')
+}
+
+function Find-TopWindow {
+    param([int] $ProcessId, [string] $Pattern)
+    foreach ($window in @([OcProbe.Ui]::TopWindows($ProcessId))) {
+        if ($window.Text -match $Pattern) { return $window }
+    }
+    return $null
+}
+
+# sichtbare Fenster des Prozesses mit ihren Elementen (UI Automation). Das Hauptfenster nur auf Wunsch
+# mit Inhalt: Assistent und Dialoge sind eigene Fenster, und das Hauptfenster ist groß.
+function Get-UiItems {
+    param([int] $ProcessId, [switch] $IncludeMain)
+    $items = New-Object 'System.Collections.Generic.List[object]'
+    foreach ($top in @([OcProbe.Ui]::TopWindows($ProcessId))) {
+        $scope = if ($top.Text -eq $appName -and -not $IncludeMain) { [System.Windows.Automation.TreeScope]::Element } else { [System.Windows.Automation.TreeScope]::Subtree }
+        try {
+            $window = [System.Windows.Automation.AutomationElement]::FromHandle($top.Handle)
+            $title = [string]$window.Current.Name
+            $elements = $window.FindAll($scope, [System.Windows.Automation.Condition]::TrueCondition)
+        } catch {
+            continue
+        }
+        foreach ($element in $elements) {
+            try {
+                $current = $element.Current
+                $rect = $current.BoundingRectangle
+                $type = ([string]$current.ControlType.ProgrammaticName).Replace('ControlType.', '')
+                $visible = (-not $current.IsOffscreen) -and (-not $rect.IsEmpty) -and $rect.Width -gt 0 -and $rect.Height -gt 0
+                $item = [pscustomobject]@{
+                    Window  = $title
+                    Element = $element
+                    Type    = $type
+                    Name    = [string]$current.Name
+                    Id      = [string]$current.AutomationId
+                    Enabled = [bool]$current.IsEnabled
+                    Visible = $visible
+                    Rect    = $rect
+                }
+                $items.Add($item)
+            } catch {
+                # Element inzwischen verschwunden
+            }
+        }
+    }
+    return , $items
+}
+
+function Get-UiValue {
+    param($Item)
+    try {
+        $value = $Item.Element.GetCurrentPropertyValue([System.Windows.Automation.ValuePattern]::ValueProperty)
+        if ($value -eq [System.Windows.Automation.AutomationElement]::NotSupported) { return '' }
+        return [string]$value
+    } catch {
+        return '?'
+    }
+}
+
+function Test-UiSelected {
+    param($Item)
+    try { return [bool]$Item.Element.GetCurrentPropertyValue([System.Windows.Automation.SelectionItemPattern]::IsSelectedProperty) } catch { return $false }
+}
+
+function Invoke-UiItem {
+    param($Item)
+    if (-not $Item) { return $false }
+    $pattern = $null
+    try {
+        if ($Item.Element.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern, [ref] $pattern)) {
+            $pattern.Invoke()
+            return $true
+        }
+    } catch {
+        Add-Timeline ('Auslösen von "{0}" fehlgeschlagen: {1}' -f $Item.Name, $_.Exception.Message)
+    }
+    return $false
+}
+
+function Set-UiValue {
+    param($Item, [string] $Text)
+    $pattern = $null
+    try {
+        if ($Item.Element.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern, [ref] $pattern)) {
+            $pattern.SetValue($Text)
+            return $true
+        }
+    } catch {
+        Add-Timeline ('Eintragen in "{0}" fehlgeschlagen: {1}' -f $Item.Name, $_.Exception.Message)
+    }
+    return $false
+}
+
+# Knopf über die AutomationId (objectName, sprachunabhängig), sonst über den Text
+function Find-UiButton {
+    param($Items, [string] $IdPattern, [string] $NamePattern)
+    $visible = @($Items | Where-Object { $_.Visible -and $_.Type -eq 'Button' })
+    if ($IdPattern) {
+        $byId = @($visible | Where-Object { $_.Id -like $IdPattern })
+        if ($byId.Count -gt 0) { return $byId[0] }
+    }
+    if ($NamePattern) {
+        $byName = @($visible | Where-Object { $_.Name -match $NamePattern })
+        if ($byName.Count -gt 0) { return $byName[0] }
+    }
+    return $null
+}
+
+function Get-UrlField {
+    param($Items)
+    return (@($Items | Where-Object { $_.Visible -and ($_.Id -like '*ServerAddressLineEdit*' -or ($_.Type -eq 'Edit' -and $_.Name -match 'Serveradress|Server address')) }) | Select-Object -First 1)
+}
+
+# Zustand des Ablaufs aus den sichtbaren Elementen: umstieg, adresse, anmeldung, erfolg, erweitert oder leer
+function Get-AssistentState {
+    param($Items)
+    $visible = @($Items | Where-Object { $_.Visible })
+    if (@($visible | Where-Object { $_.Type -eq 'Button' -and $_.Name -match $legacyNewAccountPattern }).Count -gt 0) { return 'umstieg' }
+    if (@($visible | Where-Object { $_.Id -like '*CopyUrlToClipboardButton*' -or ($_.Type -eq 'Button' -and $_.Name -match $copyLinkPattern) }).Count -gt 0) { return 'anmeldung' }
+    if (@($visible | Where-Object { $_.Type -eq 'RadioButton' }).Count -gt 0) { return 'erweitert' }
+    if (Get-UrlField $visible) { return 'adresse' }
+    if (Find-UiButton $visible '*qt_wizard_finish*' $finishPattern) { return 'erfolg' }
+    return ''
+}
+
+# Meldungen unter dem Adressfeld (Fehler und Warnungen der Adressprüfung)
+function Get-UrlPageMessages {
+    param($Items)
+    $field = Get-UrlField $Items
+    if (-not $field) { return @() }
+    return @($Items | Where-Object { $_.Visible -and $_.Type -eq 'Text' -and $_.Name -and $_.Window -eq $field.Window -and $_.Rect.Top -ge ($field.Rect.Bottom - 1) -and $_.Name -notmatch '[Ll]ogo' })
+}
+
+# Warnung samt Lage: reicht das Feld der Meldung unter die Knopfzeile, gibt es eine Bildlaufleiste?
+function Get-WarningDetail {
+    param($Items, $Messages)
+    $label = $Messages[0]
+    $text = Limit-Text ((@($Messages | ForEach-Object { $_.Name })) -join ' ') 900
+    $buttons = @($Items | Where-Object { $_.Visible -and $_.Type -eq 'Button' -and $_.Window -eq $label.Window })
+    $buttonTop = if ($buttons.Count -gt 0) { ($buttons | ForEach-Object { $_.Rect.Top } | Measure-Object -Minimum).Minimum } else { $null }
+    $scroll = @($Items | Where-Object { $_.Visible -and $_.Type -eq 'ScrollBar' -and $_.Window -eq $label.Window }).Count -gt 0
+    $window = @($Items | Where-Object { $_.Type -eq 'Window' -and $_.Window -eq $label.Window }) | Select-Object -First 1
+    $rect = $label.Rect
+    $where = if ($null -eq $buttonTop) { 'Knopfzeile nicht gefunden' } elseif ($rect.Bottom -gt $buttonTop) { 'ragt unter die Knopfzeile' } else { 'endet über der Knopfzeile' }
+    return ('„{0}“ | Meldungsfeld {1:N0}x{2:N0} bei y={3:N0}..{4:N0}, Knopfzeile ab y={5}, Fenster {6}: {7}; Bildlaufleiste: {8}' -f $text, $rect.Width, $rect.Height, $rect.Top, $rect.Bottom,
+        $(if ($null -ne $buttonTop) { '{0:N0}' -f $buttonTop } else { '-' }), $(if ($window) { $window.Rect } else { '-' }), $where, $(if ($scroll) { 'ja' } else { 'nein' }))
+}
+
+# kurze Beschreibung der Fenster für den Ablauf
+function Get-UiSummary {
+    param($Items)
+    $parts = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($group in @($Items | Group-Object -Property Window)) {
+        $entries = New-Object 'System.Collections.Generic.List[string]'
+        foreach ($item in @($group.Group | Where-Object { $_.Visible -and $_.Type -ne 'Window' })) {
+            switch ($item.Type) {
+                'Text' { if ($item.Name) { $entries.Add(('Text "{0}"' -f (Limit-Text $item.Name 300))) } }
+                'Button' { if ($item.Name) { $entries.Add(('Knopf "{0}"{1}' -f $item.Name, $(if ($item.Enabled) { '' } else { ' (gesperrt)' }))) } }
+                'Edit' { $entries.Add(('Eingabe "{0}" = "{1}"' -f $item.Name, (Get-UiValue $item))) }
+                'RadioButton' { $entries.Add(('Option "{0}"{1}' -f $item.Name, $(if (Test-UiSelected $item) { ' (gewählt)' } else { '' }))) }
+                'ScrollBar' { $entries.Add('Bildlaufleiste') }
+            }
+        }
+        $parts.Add(('Fenster "{0}": {1}' -f $group.Name, (Limit-Text ($entries -join '; ') 1500)))
+    }
+    if ($parts.Count -eq 0) { return 'keine Fenster' }
+    return ($parts -join ' | ')
+}
+
+# alle Elemente in eine Datei, zum Nachsehen der AutomationIds
+function Save-UiTree {
+    param($Ctx, $Items, [string] $Label)
+    $file = Join-Path $OutDir ('{0}-ui-{1}.txt' -f $Ctx.Name, $Label)
+    $lines = @(foreach ($item in $Items) {
+            '{0} | {1} | "{2}" | id={3} | aktiv={4} | sichtbar={5} | {6}' -f $item.Window, $item.Type, (Limit-Text $item.Name 200), $item.Id, $item.Enabled, $item.Visible, $item.Rect
+        })
+    [IO.File]::WriteAllLines($file, [string[]]$lines, (New-Object System.Text.UTF8Encoding $false))
+}
+
+# wartet, bis $Condition etwas liefert, der Prozess endet oder die Zeit abläuft
+function Wait-Ui {
+    param($Ctx, [scriptblock] $Condition, [int] $Seconds)
+    $deadline = (Get-Date).AddSeconds($Seconds)
+    do {
+        if ($Ctx.Process.HasExited) { return $null }
+        $value = $null
+        try { $value = & $Condition } catch { $value = $null }
+        if ($value) { return $value }
+        Start-Sleep -Milliseconds 500
+    } while ((Get-Date) -lt $deadline)
+    return $null
+}
+
+# nach jedem Schritt: Bildschirmfoto, Zustand des Prozesses und was die Fenster zeigen
+function Write-StepRecord {
+    param($Ctx, [string] $Step, [string] $Label)
+    $Ctx.Step++
+    $shot = Save-Screenshot ('{0}-{1:D2}-{2}' -f $Ctx.Name, $Ctx.Step, $Step)
+    $Ctx.Shots.Add($shot)
+    $status = Get-ProcessNote $Ctx.Process
+    $windows = '-'
+    if (-not $Ctx.Process.HasExited) {
+        try {
+            $windows = if ($Ctx.Uia) { Get-UiSummary (Get-UiItems $Ctx.Process.Id -IncludeMain) } else { Get-WindowTitles $Ctx.Process.Id }
+        } catch {
+            $windows = 'Fenster nicht lesbar: ' + $_.Exception.Message
+        }
+    }
+    Add-Timeline ('{0} [{1}] {2} | Prozess: {3} | Foto: {4} | {5}' -f $Ctx.Name, $Step, $Label, $status, $shot, $windows)
+}
+
+# Prozess beendet? Dann den Schritt festhalten, in dem es geschah
+function Test-Crashed {
+    param($Ctx, [string] $During)
+    if (-not $Ctx.Process.HasExited) { return $false }
+    if (-not $Ctx.Crashed) {
+        $Ctx.Crashed = $true
+        $Ctx.CrashStep = $During
+        Add-Timeline ('{0}: Prozess beendet während: {1} - Exit-Code {2}' -f $Ctx.Name, $During, (Format-ExitCode $Ctx.Process.ExitCode))
+        Write-StepRecord $Ctx 'absturz' "Prozess beendet ($During)"
+    }
+    return $true
+}
+
+function Enable-LocalDumps {
+    New-Item -ItemType Directory -Force -Path $dumpDir | Out-Null
+    $dword = [Microsoft.Win32.RegistryValueKind]::DWord
+    $wer = $hklm.CreateSubKey('SOFTWARE\Microsoft\Windows\Windows Error Reporting')
+    try {
+        $wer.SetValue('Disabled', 0, $dword)
+        $wer.SetValue('DontShowUI', 1, $dword)
+    } finally {
+        $wer.Close()
+    }
+    $key = $hklm.CreateSubKey("SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\$appName.exe")
+    try {
+        $key.SetValue('DumpFolder', $dumpDir, [Microsoft.Win32.RegistryValueKind]::ExpandString)
+        $key.SetValue('DumpType', 2, $dword)
+        $key.SetValue('DumpCount', 10, $dword)
+    } finally {
+        $key.Close()
+    }
+    $notes = @("HKLM\SOFTWARE\Microsoft\Windows\Windows Error Reporting\LocalDumps\$appName.exe: DumpType=2, DumpFolder außerhalb des Artefakts")
+    $policy = $hklm.OpenSubKey('SOFTWARE\Policies\Microsoft\Windows\Windows Error Reporting', $false)
+    if ($policy) {
+        try { $notes += 'Richtlinie Disabled=' + [string]$policy.GetValue('Disabled') } finally { $policy.Close() }
+    }
+    try { $notes += 'Dienst WerSvc: ' + (Get-Service -Name WerSvc -ErrorAction Stop).StartType } catch { $notes += 'Dienst WerSvc: nicht lesbar' }
+    return ($notes -join '; ')
+}
+
+function Stop-Client {
+    foreach ($process in @(Get-Process -Name $appName -ErrorAction SilentlyContinue)) {
+        try { $process.Kill(); $null = $process.WaitForExit(15000) } catch { }
+    }
+}
+
+function Stop-OfficialClient {
+    foreach ($process in @(Get-Process -Name 'owncloud' -ErrorAction SilentlyContinue)) {
+        try { $process.Kill(); $null = $process.WaitForExit(15000) } catch { }
+    }
+}
+
+# Browser, die der Client für die Anmeldung öffnet (und die Auswahl "Öffnen mit", falls es keinen gibt)
+function Stop-Browsers {
+    foreach ($process in @(Get-Process -Name 'msedge', 'chrome', 'firefox', 'OpenWith' -ErrorAction SilentlyContinue)) {
+        try { $process.Kill() } catch { }
+    }
+}
+
+# frische Ausgangslage je Durchgang: keine Konfiguration, kein Cache, keine Anmeldedaten des Clients. Die
+# Sync-Ordner früherer Durchgänge bleiben; der Assistent schlägt dann "owncloud.online (2)" usw. vor.
+function Reset-ClientState {
+    Stop-Client
+    Stop-Browsers
+    foreach ($dir in $clientConfigDir, (Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) $appName)) {
+        if (Test-Path -LiteralPath $dir) { Remove-Item -LiteralPath $dir -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+    foreach ($line in @(& cmdkey.exe /list)) {
+        if ($line -match 'target=(owncloud\.online_credentials\S*)') { $null = & cmdkey.exe "/delete:$($Matches[1])" }
+    }
+    $crashLog = Join-Path ([IO.Path]::GetTempPath()) "$appName-crash.log"
+    if (Test-Path -LiteralPath $crashLog) { Remove-Item -LiteralPath $crashLog -Force -ErrorAction SilentlyContinue }
+}
+
+# Oberfläche deutsch wie beim Tester (ConfigFile::uiLanguage); sonst eine leere Konfiguration
+function Write-ClientConfig {
+    New-Item -ItemType Directory -Force -Path $clientConfigDir | Out-Null
+    [IO.File]::WriteAllText((Join-Path $clientConfigDir "$appName.cfg"), "[General]`r`nuiLanguage=de`r`n")
+}
+
+# Konfiguration des offiziellen Clients wie beim Tester: ein Konto admin auf dem Server ohne OAuth2 und ein
+# Sync-Ordner (LegacyClient::readConfig liest url, dav_user, display-name und die Ordnergruppen)
+function Set-LegacyConfig {
+    param([bool] $Present)
+    if (-not $Present) {
+        if (Test-Path -LiteralPath $legacyConfigPath) { Remove-Item -LiteralPath $legacyConfigPath -Force }
+        return
+    }
+    $server = $WrongServerUrl.TrimEnd('/')
+    $syncDir = Join-Path $env:USERPROFILE 'ownCloud'
+    New-Item -ItemType Directory -Force -Path $syncDir, (Split-Path -Parent $legacyConfigPath) | Out-Null
+    [IO.File]::WriteAllText((Join-Path $syncDir 'Datei des offiziellen Clients.txt'), "Probe`r`n")
+    $content = @(
+        '[General]'
+        'clientVersion=6.0.3.18040'
+        ''
+        '[Accounts]'
+        "0\url=$server"
+        '0\dav_user=admin'
+        '0\display-name=admin'
+        ('0\Folders\1\localPath={0}/' -f ($syncDir -replace '\\', '/'))
+        '0\Folders\1\journalPath=.sync_journal.db'
+        '0\Folders\1\targetPath=/'
+        "0\Folders\1\davUrl=$server/remote.php/dav/files/admin/"
+        '0\Folders\1\displayString=ownCloud'
+        '0\Folders\1\paused=false'
+        '0\Folders\1\virtualFilesMode=off'
+        'version=13'
+    ) -join "`r`n"
+    [IO.File]::WriteAllText($legacyConfigPath, $content + "`r`n")
+}
+
+function Test-LegacyConfig {
+    if (-not (Test-Path -LiteralPath $legacyConfigPath -PathType Leaf)) { return $false }
+    return ((Get-Content -LiteralPath $legacyConfigPath -Raw) -match '(?m)^0\\url=')
+}
+
+function Get-Python {
+    foreach ($candidate in 'python', 'py') {
+        $command = Get-Command $candidate -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+        # der Platzhalter aus dem Store startet keinen Interpreter
+        if ($command -and $command.Source -notlike '*\WindowsApps\*') { return $command.Source }
+    }
+    return $null
+}
+
+# Anmelde-Link, den der Client öffnet: aus der Befehlszeile des Browsers, sonst über "Anmelde-URL kopieren"
+function Get-AuthorizeUrl {
+    param($Ctx)
+    $serverHost = ([uri]$ServerUrl).Host
+    $deadline = (Get-Date).AddSeconds(45)
+    while ((Get-Date) -lt $deadline -and -not $Ctx.Process.HasExited) {
+        foreach ($browser in @(Get-CimInstance -ClassName Win32_Process -Filter "Name='msedge.exe' OR Name='chrome.exe' OR Name='firefox.exe'" -ErrorAction SilentlyContinue)) {
+            $match = [regex]::Match([string]$browser.CommandLine, 'https://[^\s"]+')
+            if (-not $match.Success) { continue }
+            $uri = $null
+            if (-not [uri]::TryCreate($match.Value, [UriKind]::Absolute, [ref] $uri)) { continue }
+            if ($uri.Host -eq $serverHost -and $match.Value -match '[?&]redirect_uri=') {
+                return @{ Url = $match.Value; Source = "Befehlszeile von $($browser.Name)" }
+            }
+        }
+        if ($Ctx.Uia) {
+            $copy = Find-UiButton (Get-UiItems $Ctx.Process.Id) '*CopyUrlToClipboardButton*' $copyLinkPattern
+            if ($copy) {
+                try { [System.Windows.Forms.Clipboard]::Clear() } catch { }
+                if (Invoke-UiItem $copy) {
+                    Start-Sleep -Milliseconds 800
+                    $text = ''
+                    try { $text = ([string](Get-Clipboard -Raw)).Trim() } catch { }
+                    if ($text -match '^https://' -and $text -match '[?&]redirect_uri=') {
+                        return @{ Url = $text; Source = 'Zwischenablage (Knopf "Anmelde-URL kopieren")' }
+                    }
+                }
+            }
+        }
+        Start-Sleep -Milliseconds 700
+    }
+    return $null
+}
+
+# Browser-Anmeldung mit dem Link des Clients (assistent-anmeldung.py). Der Zugang geht nur in die Umgebung
+# dieses einen Prozesses; die Ausgabe enthält weder Code noch Tokens.
+function Invoke-BrowserLogin {
+    param($Ctx, [string] $AuthorizeUrl)
+    $result = @{ Ok = $false; Summary = ''; ExitCode = $null }
+    $wrapper = Join-Path $PSScriptRoot 'assistent-anmeldung.py'
+    if (-not $LoginScript -or -not (Test-Path -LiteralPath $LoginScript -PathType Leaf)) { $result.Summary = 'login.py aus dem Zweig sync-e2e fehlt (-LoginScript)'; return $result }
+    if (-not $loginUser -or -not $loginPass) { $result.Summary = 'Zugang des Testkontos fehlt (Secrets E2E_ONLINE_USER_1, E2E_ONLINE_PASS_1)'; return $result }
+    $python = Get-Python
+    if (-not $python) { $result.Summary = 'kein Python gefunden'; return $result }
+    $urlFile = Join-Path $rawRoot ('{0}-anmeldelink.txt' -f $Ctx.Name)
+    [IO.File]::WriteAllText($urlFile, $AuthorizeUrl)
+    $info = New-Object System.Diagnostics.ProcessStartInfo
+    $info.FileName = $python
+    $info.Arguments = '-I "{0}" --login-py "{1}" --url-file "{2}"' -f $wrapper, $LoginScript, $urlFile
+    $info.UseShellExecute = $false
+    $info.CreateNoWindow = $true
+    $info.RedirectStandardOutput = $true
+    $info.RedirectStandardError = $true
+    $info.StandardOutputEncoding = [Text.Encoding]::UTF8
+    $info.StandardErrorEncoding = [Text.Encoding]::UTF8
+    $info.EnvironmentVariables['OC_USER'] = $loginUser
+    $info.EnvironmentVariables['OC_PASS'] = $loginPass
+    $info.EnvironmentVariables['PYTHONIOENCODING'] = 'utf-8'
+    # ab hier kann der Client Tokens im Speicher haben
+    $Ctx.TokensPossible = $true
+    $process = [System.Diagnostics.Process]::Start($info)
+    $stdout = $process.StandardOutput.ReadToEndAsync()
+    $stderr = $process.StandardError.ReadToEndAsync()
+    if (-not $process.WaitForExit(180 * 1000)) {
+        try { $process.Kill() } catch { }
+        $result.Summary = 'nach 180 s abgebrochen; '
+    }
+    $process.WaitForExit()
+    $output = (Protect-Text ($stdout.Result + $stderr.Result)).Trim()
+    [IO.File]::WriteAllText((Join-Path $OutDir ('{0}-anmeldung.txt' -f $Ctx.Name)), $output + "`r`n", (New-Object System.Text.UTF8Encoding $false))
+    $result.ExitCode = $process.ExitCode
+    $result.Ok = $process.ExitCode -eq 0
+    $last = @($output -split "`r?`n" | Where-Object { $_.Trim() }) | Select-Object -Last 1
+    $result.Summary += 'Exit-Code {0}: {1}' -f $process.ExitCode, $last
+    return $result
+}
+
+function Complete-Login {
+    param($Ctx)
+    $link = Get-AuthorizeUrl $Ctx
+    if (Test-Crashed $Ctx 'Warten auf den Anmelde-Link (Browser wird geöffnet)') { return }
+    if (-not $link) {
+        $Ctx.Problem = 'Anmelde-Link nicht ermittelbar (kein Browser mit dem Link, Zwischenablage leer)'
+        Write-StepRecord $Ctx 'kein-link' $Ctx.Problem
+        return
+    }
+    Add-Timeline ('Anmelde-Link aus {0}' -f $link.Source)
+    Stop-Browsers
+    $login = Invoke-BrowserLogin $Ctx $link.Url
+    $Ctx.LoginSummary = $login.Summary
+    Add-Timeline ('Browser-Anmeldung (assistent-anmeldung.py): {0}' -f $login.Summary)
+    if ($login.Ok) {
+        $Ctx.LoginDone = $true
+        $Ctx.Reached = 'Browser-Anmeldung abgeschlossen'
+    }
+    Start-Sleep -Seconds 2
+    if (Test-Crashed $Ctx 'Rückruf des Browsers und Prüfung des Kontos') { return }
+    Write-StepRecord $Ctx 'nach-browser' ('nach der Browser-Anmeldung: {0}' -f $login.Summary)
+    if (-not $login.Ok) { $Ctx.Problem = 'Browser-Anmeldung gescheitert: ' + $login.Summary }
+}
+
+# nach "Fertigstellen": Konto anlegen, Ordner einrichten - beobachten
+function Watch-AccountSetup {
+    param($Ctx)
+    $start = Get-Date
+    foreach ($mark in 3, 15, 30, 60, 90) {
+        while (((Get-Date) - $start).TotalSeconds -lt $mark -and -not $Ctx.Process.HasExited) { Start-Sleep -Milliseconds 500 }
+        if (Test-Crashed $Ctx ('Konto anlegen nach "Fertigstellen" (bis {0} s)' -f $mark)) { return }
+        Write-StepRecord $Ctx ('konto-{0:D2}s' -f $mark) ('{0} s nach "Fertigstellen"' -f $mark)
+    }
+    $Ctx.Reached = 'Konto angelegt, 90 s beobachtet'
+}
+
+function Invoke-UiaFlow {
+    param($Ctx, [hashtable] $Definition)
+    if ($Definition.Legacy) {
+        $found = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; if ((Get-AssistentState $i) -eq 'umstieg') { @{ Items = $i } } } 90
+        if (Test-Crashed $Ctx 'Start bis zum Umstieg-Dialog') { return }
+        if (-not $found) {
+            # ohne Dialog kann der Assistent schon offen sein (Konfiguration des offiziellen Clients nicht erkannt)
+            $Ctx.Problem = 'Umstieg-Dialog erschien nicht innerhalb von 90 s'
+            Write-StepRecord $Ctx 'kein-umstieg' $Ctx.Problem
+        } else {
+            $Ctx.LegacySeen = $true
+            $Ctx.Reached = 'Umstieg-Dialog'
+            $Ctx.LegacyText = Limit-Text ((@($found.Items | Where-Object { $_.Visible -and $_.Type -eq 'Text' -and $_.Name } | ForEach-Object { $_.Name })) -join ' / ') 600
+            Save-UiTree $Ctx $found.Items 'umstieg'
+            Write-StepRecord $Ctx 'umstieg' 'Umstieg-Dialog "Vom offiziellen Client übernehmen"'
+            $button = Find-UiButton $found.Items '' $legacyNewAccountPattern
+            if (-not (Invoke-UiItem $button)) {
+                $Ctx.Problem = 'Knopf "Neues Konto einrichten" nicht auslösbar'
+                return
+            }
+            Add-Timeline ('Klick: "{0}"' -f $button.Name)
+        }
+    }
+
+    $found = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; if ((Get-AssistentState $i) -eq 'adresse') { @{ Items = $i } } } 60
+    if (Test-Crashed $Ctx 'Öffnen des Assistenten') { return }
+    if (-not $found) {
+        $Ctx.Problem = 'Adressseite des Assistenten erschien nicht innerhalb von 60 s'
+        Write-StepRecord $Ctx 'kein-assistent' $Ctx.Problem
+        return
+    }
+    $Ctx.Reached = 'Adressseite'
+    Save-UiTree $Ctx $found.Items 'adresse'
+    Write-StepRecord $Ctx 'adressseite' 'Assistent, Adressseite'
+
+    foreach ($url in $Definition.Urls) {
+        $items = Get-UiItems $Ctx.Process.Id
+        $field = Get-UrlField $items
+        $next = Find-UiButton $items '*wizardbutton1' $nextPattern
+        if (-not $field -or -not $next) {
+            $Ctx.Problem = 'Adressfeld oder Knopf "Anmelden" nicht gefunden'
+            Write-StepRecord $Ctx 'nicht-gefunden' $Ctx.Problem
+            return
+        }
+        if (-not (Set-UiValue $field $url)) {
+            $Ctx.Problem = "Adresse $url nicht eintragbar"
+            return
+        }
+        Start-Sleep -Milliseconds 300
+        Write-StepRecord $Ctx 'adresse' ('Adresse eingetragen: {0} (Feld zeigt "{1}")' -f $url, (Get-UiValue $field))
+        if (-not (Invoke-UiItem $next)) {
+            $Ctx.Problem = 'Knopf "Anmelden" nicht auslösbar'
+            return
+        }
+        Add-Timeline ('Klick: "{0}" mit {1}' -f $next.Name, $url)
+        $start = Get-Date
+        Start-Sleep -Milliseconds 700
+        # Ergebnis: Meldung auf der Adressseite (Knopf wieder frei), Anmeldeseite oder Ende des Prozesses
+        $outcome = Wait-Ui $Ctx {
+            $i = Get-UiItems $Ctx.Process.Id
+            $state = Get-AssistentState $i
+            if ($state -eq 'adresse') {
+                $nextNow = Find-UiButton $i '*wizardbutton1' $nextPattern
+                $messages = @(Get-UrlPageMessages $i)
+                if ($messages.Count -gt 0 -and $nextNow -and $nextNow.Enabled) { @{ State = 'warnung'; Items = $i; Messages = $messages } }
+            } elseif ($state) {
+                @{ State = $state; Items = $i; Messages = @() }
+            }
+        } 150
+        $seconds = [int]((Get-Date) - $start).TotalSeconds
+        if (Test-Crashed $Ctx ('"Anmelden" mit {0} ({1} s danach)' -f $url, $seconds)) { return }
+        if (-not $outcome) {
+            $Ctx.Problem = 'kein Ergebnis {0} s nach "Anmelden" mit {1}' -f $seconds, $url
+            Write-StepRecord $Ctx 'kein-ergebnis' $Ctx.Problem
+            return
+        }
+        if ($outcome.State -eq 'warnung') {
+            $detail = Get-WarningDetail $outcome.Items $outcome.Messages
+            $Ctx.Warnings.Add(@{ Url = $url; Detail = $detail })
+            $Ctx.Reached = "Warnung für $url"
+            Save-UiTree $Ctx $outcome.Items ('warnung-' + ([uri]$url).Host)
+            Write-StepRecord $Ctx 'warnung' ('Meldung {0} s nach "Anmelden" mit {1}' -f $seconds, $url)
+            Add-Timeline "Meldung: $detail"
+            continue
+        }
+        if ($outcome.State -eq 'anmeldung') {
+            $Ctx.ReachedLogin = $true
+            $Ctx.Reached = "Anmeldeseite für $url"
+            Save-UiTree $Ctx $outcome.Items 'anmeldung'
+            Write-StepRecord $Ctx 'anmeldeseite' ('Anmeldeseite {0} s nach "Anmelden" mit {1}' -f $seconds, $url)
+            break
+        }
+        $Ctx.Problem = 'unerwarteter Zustand "{0}" nach "Anmelden" mit {1}' -f $outcome.State, $url
+        Write-StepRecord $Ctx 'unerwartet' $Ctx.Problem
+        return
+    }
+    if (-not $Ctx.ReachedLogin) { return }
+
+    Complete-Login $Ctx
+    if (-not $Ctx.LoginDone -or $Ctx.Process.HasExited) { return }
+
+    $found = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; if ((Get-AssistentState $i) -eq 'erfolg') { @{ Items = $i } } } 120
+    if (Test-Crashed $Ctx 'Prüfung des Kontos nach dem Rückruf (bis zur Erfolgsseite)') { return }
+    if (-not $found) {
+        $Ctx.Problem = 'Erfolgsseite erschien nicht innerhalb von 120 s nach der Browser-Anmeldung'
+        Write-StepRecord $Ctx 'keine-erfolgsseite' $Ctx.Problem
+        return
+    }
+    $Ctx.SuccessPage = $true
+    $Ctx.Reached = 'Erfolgsseite'
+    Save-UiTree $Ctx $found.Items 'erfolg'
+    Write-StepRecord $Ctx 'erfolgsseite' 'Erfolgsseite'
+    $items = $found.Items
+
+    if ($Definition.Advanced) {
+        $advanced = Find-UiButton $items '*wizardbutton6' '^(Erweitert|Advanced)$'
+        if (Invoke-UiItem $advanced) {
+            Add-Timeline ('Klick: "{0}"' -f $advanced.Name)
+            $found = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; if ((Get-AssistentState $i) -eq 'erweitert') { @{ Items = $i } } } 30
+            if (Test-Crashed $Ctx 'Erweiterte Einstellungen öffnen') { return }
+            if ($found) {
+                $items = $found.Items
+                $Ctx.Reached = 'Erweiterte Einstellungen'
+                Save-UiTree $Ctx $items 'erweitert'
+                Write-StepRecord $Ctx 'erweitert' 'Erweiterte Einstellungen (Vorgaben unverändert)'
+            } else {
+                Add-Timeline 'Erweiterte Einstellungen erschienen nicht innerhalb von 30 s'
+            }
+        } else {
+            Add-Timeline 'Knopf "Erweitert" nicht gefunden oder nicht auslösbar'
+        }
+    }
+
+    $finish = Find-UiButton $items '*qt_wizard_finish*' $finishPattern
+    if (-not (Invoke-UiItem $finish)) {
+        $Ctx.Problem = 'Knopf "Fertigstellen" nicht gefunden oder nicht auslösbar'
+        Write-StepRecord $Ctx 'kein-fertigstellen' $Ctx.Problem
+        return
+    }
+    $Ctx.Finished = $true
+    $Ctx.Reached = 'Fertigstellen'
+    Add-Timeline ('Klick: "{0}"' -f $finish.Name)
+    Watch-AccountSetup $Ctx
+}
+
+# derselbe Ablauf nur mit Tastatur und Fenstertiteln: im Client wird die Barrierefreiheits-Schnittstelle
+# (UI Automation) nie aktiv, wie bei einem Tester ohne Hilfsprogramme. Fortschritt aus dem Protokoll.
+function Invoke-KeyboardFlow {
+    param($Ctx, [hashtable] $Definition)
+    if ($Definition.Legacy) {
+        $dialog = Wait-Ui $Ctx { $w = Find-TopWindow $Ctx.Process.Id $legacyTitlePattern; if ($w) { @{ Window = $w } } } 90
+        if (Test-Crashed $Ctx 'Start bis zum Umstieg-Dialog') { return }
+        if (-not $dialog) {
+            $Ctx.Problem = 'Umstieg-Dialog (Fenstertitel) erschien nicht innerhalb von 90 s'
+            Write-StepRecord $Ctx 'kein-umstieg' $Ctx.Problem
+        } else {
+            $Ctx.LegacySeen = $true
+            $Ctx.Reached = 'Umstieg-Dialog'
+            $Ctx.LegacyText = 'Fenstertitel "{0}"' -f $dialog.Window.Text
+            Start-Sleep -Seconds 1
+            Write-StepRecord $Ctx 'umstieg' 'Umstieg-Dialog (Fenstertitel)'
+            # Esc löst den einzigen Knopf mit RejectRole aus: "Neues Konto einrichten"
+            $active = [OcProbe.Desk]::Activate($dialog.Window.Handle)
+            $null = [OcProbe.Desk]::Press(0x1B, $false)
+            Add-Timeline ('Taste Esc im Umstieg-Dialog = "Neues Konto einrichten" (Vordergrund: {0})' -f $active)
+        }
+    }
+
+    $wizard = Wait-Ui $Ctx { $w = Find-TopWindow $Ctx.Process.Id $wizardTitlePattern; if ($w) { @{ Window = $w } } } 60
+    if (Test-Crashed $Ctx 'Öffnen des Assistenten') { return }
+    if (-not $wizard) {
+        $Ctx.Problem = 'Assistent (Fenstertitel) erschien nicht innerhalb von 60 s'
+        Write-StepRecord $Ctx 'kein-assistent' $Ctx.Problem
+        return
+    }
+    $Ctx.Reached = 'Adressseite'
+    Start-Sleep -Seconds 1
+    Write-StepRecord $Ctx 'adressseite' 'Assistent (Fenstertitel)'
+
+    foreach ($url in $Definition.Urls) {
+        $logStart = (Read-SharedText $Ctx.Log).Length
+        $active = [OcProbe.Desk]::Activate($wizard.Window.Handle)
+        # das Adressfeld hat den Fokus (UrlPageController::buildPage, nach einer Meldung bleibt er dort)
+        $null = [OcProbe.Desk]::Press(0x41, $true)
+        $null = [OcProbe.Desk]::TypeText($url)
+        Start-Sleep -Milliseconds 300
+        Write-StepRecord $Ctx 'adresse' ('Adresse getippt: {0} (Vordergrund: {1})' -f $url, $active)
+        $null = [OcProbe.Desk]::Press(0x0D, $false)
+        Add-Timeline ('Taste Enter = "Anmelden" mit {0}' -f $url)
+        $start = Get-Date
+        $outcome = Wait-Ui $Ctx {
+            $text = Read-SharedText $Ctx.Log
+            $new = if ($text.Length -gt $logStart) { $text.Substring($logStart) } else { '' }
+            if ($new -match 'Waiting for the browser on') { @{ State = 'anmeldung' } }
+            elseif ($new -match 'OAuth2 token endpoint answered|Did not receive (bearer|WWW-Authenticate)|Failed to determine authentication type|Network error when resolving Url|is rejected|failed with SSL errors') { @{ State = 'warnung' } }
+        } 150
+        $seconds = [int]((Get-Date) - $start).TotalSeconds
+        Start-Sleep -Seconds 2
+        if (Test-Crashed $Ctx ('Enter ("Anmelden") mit {0} ({1} s danach)' -f $url, $seconds)) { return }
+        if (-not $outcome) {
+            $Ctx.Problem = 'kein Ergebnis im Protokoll {0} s nach Enter mit {1}' -f $seconds, $url
+            Write-StepRecord $Ctx 'kein-ergebnis' $Ctx.Problem
+            return
+        }
+        if ($outcome.State -eq 'warnung') {
+            $Ctx.Warnings.Add(@{ Url = $url; Detail = 'laut Protokoll; Text siehe Foto (ohne UI Automation nicht lesbar)' })
+            $Ctx.Reached = "Warnung für $url"
+            Write-StepRecord $Ctx 'warnung' ('Meldung {0} s nach Enter mit {1}' -f $seconds, $url)
+            continue
+        }
+        $Ctx.ReachedLogin = $true
+        $Ctx.Reached = "Anmeldeseite für $url"
+        Write-StepRecord $Ctx 'anmeldeseite' ('Anmeldeseite (Protokoll: wartet auf den Browser) {0} s nach Enter mit {1}' -f $seconds, $url)
+        break
+    }
+    if (-not $Ctx.ReachedLogin) { return }
+
+    $logStart = (Read-SharedText $Ctx.Log).Length
+    Complete-Login $Ctx
+    if (-not $Ctx.LoginDone -or $Ctx.Process.HasExited) { return }
+    # nach dem Rückruf fragt der Assistent Benutzer und Capabilities ab und wechselt dann zur Erfolgsseite
+    $done = Wait-Ui $Ctx {
+        $text = Read-SharedText $Ctx.Log
+        $new = if ($text.Length -gt $logStart) { $text.Substring($logStart) } else { '' }
+        if ($new -match 'Browser callback received' -and $new -match 'capabilities') { @{ State = 'erfolg' } }
+    } 120
+    Start-Sleep -Seconds 3
+    if (Test-Crashed $Ctx 'Prüfung des Kontos nach dem Rückruf (bis zur Erfolgsseite)') { return }
+    if (-not $done) {
+        $Ctx.Problem = 'keine Abfrage der Capabilities im Protokoll innerhalb von 120 s nach der Browser-Anmeldung'
+        Write-StepRecord $Ctx 'keine-erfolgsseite' $Ctx.Problem
+        return
+    }
+    $Ctx.SuccessPage = $true
+    $Ctx.Reached = 'Erfolgsseite (laut Protokoll)'
+    Write-StepRecord $Ctx 'erfolgsseite' 'Erfolgsseite (Protokoll: Rückruf, Benutzer, Capabilities)'
+    # "Fertigstellen" hat auf der Erfolgsseite den Fokus (NewAccountWizardController::onPageChanged)
+    $active = [OcProbe.Desk]::Activate($wizard.Window.Handle)
+    $null = [OcProbe.Desk]::Press(0x0D, $false)
+    $Ctx.Finished = $true
+    $Ctx.Reached = 'Fertigstellen'
+    Add-Timeline ('Taste Enter = "Fertigstellen" (Vordergrund: {0})' -f $active)
+    Watch-AccountSetup $Ctx
+}
+
+# Belege nach dem Ende des Prozesses: Exit-Code, Ereignisprotokoll, Speicherabbild, Absturzprotokoll, Protokollende
+function Get-CrashEvidence {
+    param($Ctx)
+    # WerFault schreibt das Speicherabbild noch, wenn der Prozess schon fort ist
+    Start-Sleep -Seconds 3
+    $deadline = (Get-Date).AddSeconds(180)
+    while ((Get-Date) -lt $deadline -and @(Get-Process -Name 'WerFault', 'WerFaultSecure' -ErrorAction SilentlyContinue).Count -gt 0) { Start-Sleep -Seconds 1 }
+    $code = $null
+    try { $code = $Ctx.Process.ExitCode } catch { }
+    $Ctx.ExitCode = $code
+    $Ctx.Evidence.Add('Exit-Code: ' + (Format-ExitCode $code))
+
+    $events = @()
+    try {
+        $events = @(Get-WinEvent -FilterHashtable @{ LogName = 'Application'; Id = 1000, 1001; StartTime = $Ctx.Since } -ErrorAction Stop |
+                Where-Object { $_.Message -match 'owncloud' })
+    } catch { }
+    $eventLines = @(foreach ($event in $events) { 'Ereignis {0} ({1}, {2:HH:mm:ss}): {3}' -f $event.Id, $event.ProviderName, $event.TimeCreated, (Limit-Text $event.Message 2000) })
+    foreach ($line in $eventLines) { $Ctx.Evidence.Add($line) }
+    if ($eventLines.Count -eq 0) { $Ctx.Evidence.Add('Ereignisprotokoll: kein Application Error/Windows Error Reporting zu owncloud.online') }
+    [IO.File]::WriteAllLines((Join-Path $OutDir ('{0}-ereignisse.txt' -f $Ctx.Name)), [string[]]$eventLines, (New-Object System.Text.UTF8Encoding $false))
+
+    $dumps = @(Get-ChildItem -LiteralPath $dumpDir -Filter '*.dmp' -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -ge $Ctx.Since.AddSeconds(-5) })
+    foreach ($dump in $dumps) {
+        $Ctx.Dumps.Add($dump.FullName)
+        $Ctx.Evidence.Add(('Speicherabbild: {0} ({1:N0} MB)' -f $dump.Name, ($dump.Length / 1MB)))
+    }
+    if ($dumps.Count -eq 0) { $Ctx.Evidence.Add('Speicherabbild: keins geschrieben') }
+
+    # Logger::dumpCrashLog: die letzten 20 Meldungen vor einem qFatal (ASSERT, ENFORCE)
+    $crashLog = Join-Path ([IO.Path]::GetTempPath()) "$appName-crash.log"
+    if (Copy-Protected $crashLog (Join-Path $OutDir ('{0}-crash.log' -f $Ctx.Name))) {
+        $Ctx.Evidence.Add(('Absturzprotokoll des Clients: {0}-crash.log' -f $Ctx.Name))
+    } else {
+        $Ctx.Evidence.Add("Absturzprotokoll des Clients: keins ($crashLog)")
+    }
+
+    $lines = @((Read-SharedText $Ctx.Log) -split "`r?`n" | Where-Object { $_ })
+    $fatal = @($lines | Where-Object { $_ -match 'ASSERT|ENFORCE|ENSURE|\[ fatal |\[ critical ' })
+    foreach ($line in @($fatal | Select-Object -Last 8)) { $Ctx.Evidence.Add('Protokoll: ' + (Limit-Text (Protect-Text $line) 700)) }
+    $Ctx.LogTail = @($lines | Select-Object -Last 60 | ForEach-Object { Protect-Text $_ })
+    $Ctx.Assert = @($fatal | Where-Object { $_ -match 'ASSERT|ENFORCE|ENSURE' } | Select-Object -Last 1 | ForEach-Object { Limit-Text (Protect-Text $_) 700 })
+}
+
+# cdb.exe: aus dem Windows SDK des Runners, sonst aus dem WinDbg-Paket entpackt (ohne Installation)
+function Get-Cdb {
+    if ($script:cdbPath) { return $script:cdbPath }
+    if ($script:cdbSource) { return $null }
+    foreach ($candidate in (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\Debuggers\x64\cdb.exe'), (Join-Path $env:ProgramFiles 'Windows Kits\10\Debuggers\x64\cdb.exe')) {
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+            $script:cdbPath = $candidate
+            $script:cdbSource = 'Windows SDK des Runners'
+            return $candidate
+        }
+    }
+    $dir = Join-Path $rawRoot 'windbg'
+    try {
+        New-Item -ItemType Directory -Force -Path $dir | Out-Null
+        $installer = Join-Path $dir 'windbg.appinstaller'
+        & curl.exe -fsSL --retry 3 -o $installer 'https://aka.ms/windbg/download'
+        if ($LASTEXITCODE -ne 0) { throw "appinstaller nicht ladbar (curl $LASTEXITCODE)" }
+        [xml] $xml = Get-Content -LiteralPath $installer -Raw
+        $bundleUri = [string]$xml.AppInstaller.MainBundle.Uri
+        if (-not $bundleUri) { throw 'MainBundle fehlt im appinstaller' }
+        $bundle = Join-Path $dir 'windbg.msixbundle'
+        & curl.exe -fsSL --retry 3 -o $bundle $bundleUri
+        if ($LASTEXITCODE -ne 0) { throw "Paket nicht ladbar (curl $LASTEXITCODE)" }
+        $bundleDir = Join-Path $dir 'bundle'
+        New-Item -ItemType Directory -Force -Path $bundleDir | Out-Null
+        & tar.exe -xf $bundle -C $bundleDir
+        $msix = @(Get-ChildItem -LiteralPath $bundleDir -Filter '*.msix' -File | Sort-Object { $_.Name -notmatch 'x64|amd64' }) | Select-Object -First 1
+        if (-not $msix) { throw 'kein msix im Paket' }
+        $packageDir = Join-Path $dir 'paket'
+        New-Item -ItemType Directory -Force -Path $packageDir | Out-Null
+        & tar.exe -xf $msix.FullName -C $packageDir
+        $cdb = @(Get-ChildItem -LiteralPath $packageDir -Filter 'cdb.exe' -File -Recurse | Sort-Object { $_.FullName -notmatch '\\amd64\\' }) | Select-Object -First 1
+        if (-not $cdb) { throw 'cdb.exe nicht im Paket' }
+        $script:cdbPath = $cdb.FullName
+        $script:cdbSource = "WinDbg-Paket ($($msix.Name))"
+        return $script:cdbPath
+    } catch {
+        $script:cdbSource = 'nicht verfügbar: ' + $_.Exception.Message
+        return $null
+    }
+}
+
+function Invoke-Cdb {
+    param([string] $Dump, [string] $Commands, [string] $OutFile)
+    $cdb = Get-Cdb
+    if (-not $cdb) { return '' }
+    $symbols = Join-Path $rawRoot 'symbole'
+    New-Item -ItemType Directory -Force -Path $symbols | Out-Null
+    $info = New-Object System.Diagnostics.ProcessStartInfo
+    $info.FileName = $cdb
+    $info.Arguments = '-z "{0}" -y "srv*{1}*https://msdl.microsoft.com/download/symbols" -lines -c "{2}"' -f $Dump, $symbols, $Commands
+    $info.UseShellExecute = $false
+    $info.CreateNoWindow = $true
+    $info.RedirectStandardOutput = $true
+    $info.RedirectStandardError = $true
+    $process = [System.Diagnostics.Process]::Start($info)
+    $stdout = $process.StandardOutput.ReadToEndAsync()
+    $stderr = $process.StandardError.ReadToEndAsync()
+    if (-not $process.WaitForExit(12 * 60 * 1000)) { try { $process.Kill() } catch { } }
+    $process.WaitForExit()
+    $text = Protect-Text ($stdout.Result + $stderr.Result)
+    if ($OutFile) { [IO.File]::WriteAllText($OutFile, $text, (New-Object System.Text.UTF8Encoding $false)) }
+    return $text
+}
+
+# das Wichtigste aus !analyze -v für den Bericht
+function Get-CdbSummary {
+    param([string] $Text)
+    $lines = @($Text -split "`r?`n")
+    $keys = '^(ExceptionCode|EXCEPTION_CODE_STR|EXCEPTION_PARAMETER1|FAULTING_IP|FAULTING_SOURCE_LINE|FAULTING_SOURCE_FILE|FAULTING_THREAD|PROCESS_NAME|MODULE_NAME|IMAGE_NAME|SYMBOL_NAME|FAILURE_BUCKET_ID|BUCKET_ID_FUNC_OFFSET|ERROR_CODE|EXCEPTION_RECORD):'
+    $summary = New-Object 'System.Collections.Generic.List[string]'
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match $keys) {
+            $summary.Add($lines[$i].Trim())
+            if ($lines[$i] -match '^FAULTING_IP:' -and $i + 1 -lt $lines.Count) { $summary.Add('  ' + $lines[$i + 1].Trim()) }
+        }
+    }
+    $stack = -1
+    for ($i = 0; $i -lt $lines.Count; $i++) {
+        if ($lines[$i] -match '^STACK_TEXT:') { $stack = $i; break }
+    }
+    if ($stack -ge 0) {
+        $summary.Add('STACK_TEXT:')
+        for ($i = $stack + 1; $i -lt $lines.Count -and $lines[$i].Trim(); $i++) {
+            if ($summary.Count -gt 70) { break }
+            # nur die Funktion: hinter dem letzten " : " (davor Stack- und Rücksprungadresse, Argumente)
+            $frame = $lines[$i]
+            $cut = $frame.LastIndexOf(' : ')
+            if ($cut -ge 0) { $frame = $frame.Substring($cut + 3) }
+            $summary.Add('  ' + $frame.Trim())
+        }
+    }
+    return , $summary.ToArray()
+}
+
+# Speicherabbilder mit cdb auswerten. Ins Artefakt nur, was keine Tokens enthalten kann: das vollständige
+# Abbild, wenn der Client noch keine Anmeldung hatte, sonst ein Auszug ohne Heap (.dump /m)
+function Invoke-DumpAnalysis {
+    param($Ctx)
+    $number = 0
+    foreach ($dump in $Ctx.Dumps) {
+        $number++
+        $name = '{0}-cdb{1}' -f $Ctx.Name, $(if ($number -gt 1) { "-$number" } else { '' })
+        Write-Host "== Speicherabbild auswerten: $(Split-Path -Leaf $dump)"
+        $text = Invoke-Cdb $dump '!analyze -v; .echo ===ECXR===; .ecxr; kn 80; .echo ===THREAD0===; ~0s; kn 50; .echo ===ALLE===; ~*kn 30; .echo ===MODULE===; lmo; q' (Join-Path $OutDir "$name.txt")
+        if (-not $text) {
+            $Ctx.Analysis.Add("cdb $script:cdbSource")
+        } else {
+            $Ctx.Analysis.Add("cdb ($script:cdbSource): $name.txt")
+            foreach ($line in (Get-CdbSummary $text)) { $Ctx.Analysis.Add($line) }
+        }
+        if (-not $Ctx.TokensPossible) {
+            Copy-Item -LiteralPath $dump -Destination (Join-Path $OutDir ('{0}-{1}' -f $Ctx.Name, (Split-Path -Leaf $dump)))
+            $Ctx.Analysis.Add('Speicherabbild vollständig im Artefakt (der Client hatte noch keine Tokens)')
+        } elseif ($script:cdbPath -and $OutDir -notmatch '\s') {
+            $mini = Join-Path $OutDir "$name-auszug.dmp"
+            $null = Invoke-Cdb $dump ".dump /m $mini; q" ''
+            $Ctx.Analysis.Add($(if (Test-Path -LiteralPath $mini) { "Auszug ohne Heap im Artefakt: $(Split-Path -Leaf $mini)" } else { 'Auszug nicht geschrieben' }))
+        } else {
+            $Ctx.Analysis.Add('Speicherabbild nicht im Artefakt (Tokens möglich, kein cdb für einen Auszug)')
+        }
+    }
+}
+
+function Add-AssistentChecks {
+    param($Ctx, [hashtable] $Definition)
+    $id = $Ctx.Name.ToUpperInvariant()
+    if ($Definition.Legacy) {
+        if ($Ctx.LegacySeen) {
+            Add-Check "$id.1" 'Umstieg-Dialog erschienen' 'OK' $Ctx.LegacyText ''
+        } else {
+            Add-Check "$id.1" 'Umstieg-Dialog erschienen' $(if ($Ctx.Crashed) { 'NICHT GEPRÜFT' } else { 'FEHLER' }) $(if ($Ctx.Crashed) { 'Prozess vorher beendet' } else { 'nicht erschienen, obwohl die Konfiguration des offiziellen Clients ein Konto hat' }) ''
+        }
+    }
+    foreach ($warning in $Ctx.Warnings) {
+        Add-Check "$id.2" ('Meldung im Assistenten für {0}' -f $warning.Url) 'INFO' $warning.Detail ''
+    }
+    $loginUrl = $Definition.Urls[-1]
+    if ($Ctx.ReachedLogin) {
+        Add-Check "$id.3" "Anmeldeseite für $loginUrl erreicht" 'OK' '' ''
+    } else {
+        Add-Check "$id.3" "Anmeldeseite für $loginUrl erreicht" 'FEHLER' $(if ($Ctx.Crashed) { "Prozess beendet: $($Ctx.CrashStep)" } else { $Ctx.Problem }) ''
+    }
+    if ($Ctx.ReachedLogin) {
+        $status = if ($Ctx.LoginDone) { 'OK' } else { 'FEHLER' }
+        Add-Check "$id.4" 'Browser-Anmeldung (assistent-anmeldung.py) beim Client abgeliefert' $status $(if ($Ctx.LoginSummary) { $Ctx.LoginSummary } else { $Ctx.Problem }) ''
+    }
+    if ($Ctx.LoginDone) {
+        Add-Check "$id.5" 'Erfolgsseite nach der Anmeldung' $(if ($Ctx.SuccessPage) { 'OK' } else { 'FEHLER' }) $(if ($Ctx.SuccessPage) { '' } elseif ($Ctx.Crashed) { "Prozess beendet: $($Ctx.CrashStep)" } else { $Ctx.Problem }) ''
+    }
+    if ($Ctx.Finished) {
+        $detail = 'Konto gespeichert: {0}; Ordner eingerichtet: {1}' -f $(if ($Ctx.AccountSaved) { 'ja' } else { 'nein' }), $(if ($Ctx.FolderAdded) { 'ja' } else { 'nein' })
+        Add-Check "$id.6" 'Konto nach "Fertigstellen" angelegt' $(if ($Ctx.AccountSaved -and -not $Ctx.Crashed) { 'OK' } else { 'FEHLER' }) $detail ''
+    }
+    if ($Ctx.Crashed) {
+        $detail = @("Absturz während: $($Ctx.CrashStep)") + @($Ctx.Evidence | Select-Object -First 6)
+        Add-Check $id ('Durchgang {0}: kein Absturz' -f $Ctx.Name) 'FEHLER' ($detail -join '; ') ''
+    } else {
+        Add-Check $id ('Durchgang {0}: kein Absturz' -f $Ctx.Name) 'OK' ('bis "{0}"{1}' -f $Ctx.Reached, $(if ($Ctx.Problem) { '; ' + $Ctx.Problem } else { '' })) ''
+    }
+}
+
+function Invoke-AssistentPass {
+    param([hashtable] $Definition, [string] $Exe)
+    $name = $Definition.Name
+    $ctx = @{
+        Name = $name; Uia = ($Definition.Mode -eq 'uia'); Process = $null; Log = (Join-Path $rawRoot "$name-client.log"); Since = (Get-Date); Step = 0
+        Shots = New-Object 'System.Collections.Generic.List[string]'
+        Dumps = New-Object 'System.Collections.Generic.List[string]'
+        Evidence = New-Object 'System.Collections.Generic.List[string]'
+        Analysis = New-Object 'System.Collections.Generic.List[string]'
+        Warnings = New-Object 'System.Collections.Generic.List[object]'
+        LogTail = @(); Assert = @()
+        Crashed = $false; CrashStep = ''; ExitCode = $null; Problem = ''; Reached = 'Start'; LegacyText = ''; LoginSummary = ''
+        LegacySeen = $false; ReachedLogin = $false; TokensPossible = $false; LoginDone = $false; SuccessPage = $false; Finished = $false
+        AccountSaved = $false; FolderAdded = $false
+    }
+    Write-Host "== Durchgang ${name}: $($Definition.Title)"
+    Write-Annotation 'notice' "Durchgang ${name}: $($Definition.Title)"
+    Add-Timeline "== Durchgang ${name}: $($Definition.Title)"
+    Reset-ClientState
+    Write-ClientConfig
+    Set-LegacyConfig $Definition.Legacy
+    if ($Definition.Official -and $OfficialMsi) {
+        $running = (Get-OfficialProcess) -or (Start-OfficialClient)
+        Add-Timeline ('Offizieller Client läuft: {0}' -f $(if ($running) { 'ja' } else { 'nein' }))
+        # der offizielle Client darf seine Datei beim Start umschreiben; der Umstieg-Dialog braucht das Konto darin
+        if ($Definition.Legacy -and -not (Test-LegacyConfig)) {
+            Set-LegacyConfig $true
+            Add-Timeline 'Konfiguration des offiziellen Clients nach dessen Start erneut geschrieben (Konto fehlte)'
+        }
+    } else {
+        Stop-OfficialClient
+    }
+    if (Test-Path -LiteralPath $ctx.Log) { Remove-Item -LiteralPath $ctx.Log -Force }
+    $ctx.Since = Get-Date
+    $ctx.Process = Start-Process -FilePath $Exe -ArgumentList @('--logfile', ('"{0}"' -f $ctx.Log), '--logdebug', '--logflush') -PassThru
+    # ohne diesen Zugriff liefert ExitCode nach dem Ende $null
+    $null = $ctx.Process.Handle
+    Add-Timeline ('Prüfling gestartet, PID {0}' -f $ctx.Process.Id)
+    try {
+        if ($ctx.Uia) { Invoke-UiaFlow $ctx $Definition } else { Invoke-KeyboardFlow $ctx $Definition }
+    } catch {
+        $ctx.Problem = 'Fehler der Probe: {0} (Zeile {1})' -f $_.Exception.Message, $_.InvocationInfo.ScriptLineNumber
+        Add-Timeline $ctx.Problem
+    }
+    if ($ctx.Process.HasExited) {
+        $null = Test-Crashed $ctx $(if ($ctx.Reached) { "nach: $($ctx.Reached)" } else { 'Ablauf' })
+        Get-CrashEvidence $ctx
+        foreach ($line in $ctx.Evidence) { Add-Timeline "Beleg: $line" }
+    } else {
+        $null = Invoke-Step "Prüfling beenden (--quit, $name)" $Exe '--quit'
+        if ($ctx.Process.WaitForExit(90 * 1000)) {
+            Add-Timeline ('nach --quit beendet, Exit-Code {0}' -f (Format-ExitCode $ctx.Process.ExitCode))
+        } else {
+            $null = & taskkill.exe /PID $ctx.Process.Id /T /F
+            Add-Timeline 'nach --quit nicht in 90 s beendet, abgebrochen'
+        }
+    }
+    Stop-Browsers
+    # Protokoll ohne Code des Rückrufs, Tokens und Zugang ins Artefakt
+    $null = Copy-Protected $ctx.Log (Join-Path $OutDir "$name-client.log")
+    $text = Read-SharedText $ctx.Log
+    $ctx.AccountSaved = $text.Contains('Saving account')
+    $ctx.FolderAdded = $text.Contains('Adding folder to Folder Map')
+    Add-AssistentChecks $ctx $Definition
+    return $ctx
+}
+
+function Invoke-Assistent {
+    Initialize-Desktop
+    New-Item -ItemType Directory -Force -Path $rawRoot, $dumpDir | Out-Null
+    Add-Check 'A0' 'Speicherabbilder bei Absturz (WER LocalDumps)' 'INFO' (Enable-LocalDumps) ''
+    $bounds = [System.Windows.Forms.SystemInformation]::VirtualScreen
+    $account = if ($loginUser -and $loginPass) { 'vorhanden' } else { 'fehlt - die Browser-Anmeldung unterbleibt' }
+    # die Adresse aus dem Secret selbst erscheint nirgends
+    $loginHost = $null
+    $sameServer = '-'
+    if ($loginServer -and [uri]::TryCreate($loginServer, [UriKind]::Absolute, [ref] $loginHost)) {
+        $sameServer = if ($loginHost.Host -eq ([uri]$ServerUrl).Host) { 'ja' } else { 'nein (eigene Adresse, dieselbe Instanz angenommen)' }
+    }
+    Add-Check 'A1' 'Umgebung' 'INFO' ('Bildschirm {0}x{1}; Testkonto {2}; Server des Testkontos = {3}: {4}; login.py: {5}; Python: {6}' -f $bounds.Width, $bounds.Height, $account, ([uri]$ServerUrl).Host, $sameServer,
+        $(if ($LoginScript -and (Test-Path -LiteralPath $LoginScript)) { 'vorhanden' } else { 'fehlt' }), $(if (Get-Python) { Get-Python } else { 'fehlt' })) ''
+
+    if ($OfficialMsi) {
+        $log = Join-Path $OutDir 'offiziell-installation.log'
+        $run = Invoke-Step 'Offizieller Client 6.0.3 (MSI)' 'msiexec.exe' ('/i "{0}" /qn /norestart DO_NOT_SCHEDULE_REBOOT=1 SKIPAUTOUPDATE=1 /l*v "{1}"' -f $OfficialMsi, $log)
+        Test-Run $run 'A2' 'Offizieller Client 6.0.3 still installiert'
+    }
+    Install-Candidate 'A3'
+    $exe = Find-ClientExe
+    if (-not $exe) { throw 'Programmdatei des Prüflings nicht gefunden' }
+    Add-Check 'A4' 'Prüfling' 'INFO' ('{0}, Version {1}, Signatur {2}' -f $exe, (Get-VersionWithBuild $exe), (Get-SignatureNote $exe)) ''
+    Stop-Client
+
+    # p1 zuerst: nur Tastatur, bevor diese Sitzung UI Automation benutzt - wie ein Tester ohne Hilfsprogramme
+    $passes = @(
+        @{ Name = 'p1'; Mode = 'tastatur'; Legacy = $true; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false
+            Title = 'Umstieg-Dialog, "Neues Konto einrichten" (Esc), erst ' + $WrongServerUrl + ' (Warnung), dann ' + $ServerUrl + ', Anmeldung, Fertigstellen - nur Tastatur, ohne UI Automation im Client' },
+        @{ Name = 'p2'; Mode = 'uia'; Legacy = $true; Official = $true; Urls = @($ServerUrl); Advanced = $true
+            Title = 'Umstieg-Dialog (offizieller Client läuft), "Neues Konto einrichten", gleich ' + $ServerUrl + ', Anmeldung, Erweitert, Fertigstellen (UI Automation)' },
+        @{ Name = 'p3'; Mode = 'uia'; Legacy = $true; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false
+            Title = 'Umstieg-Dialog, "Neues Konto einrichten", erst ' + $WrongServerUrl + ' (Warnung lesen und vermessen), dann ' + $ServerUrl + ', Anmeldung, Fertigstellen (UI Automation)' }
+    )
+    $contexts = New-Object 'System.Collections.Generic.List[object]'
+    foreach ($definition in $passes) {
+        $contexts.Add((Invoke-AssistentPass $definition $exe))
+        Write-Report $null
+    }
+    Stop-Client
+    Stop-OfficialClient
+
+    foreach ($ctx in $contexts) {
+        if ($ctx.Dumps.Count -eq 0) { continue }
+        Invoke-DumpAnalysis $ctx
+        Add-Check ('{0}.9' -f $ctx.Name.ToUpperInvariant()) 'Auswertung des Speicherabbilds' 'INFO' (($ctx.Analysis | Select-Object -First 12) -join '; ') ''
+        Add-List ('{0}: Auswertung des Speicherabbilds' -f $ctx.Name) $ctx.Analysis.ToArray()
+    }
+    foreach ($ctx in $contexts) {
+        if ($ctx.Crashed) {
+            Add-List ('{0}: Belege des Absturzes' -f $ctx.Name) $ctx.Evidence.ToArray()
+            Add-List ('{0}: Ende des Protokolls (ohne Code und Tokens)' -f $ctx.Name) $ctx.LogTail
+        }
+    }
+    Add-List 'Ablauf (alle Durchgänge)' $timeline.ToArray()
+    [IO.File]::WriteAllLines((Join-Path $OutDir 'assistent-ablauf.txt'), [string[]]$timeline.ToArray(), (New-Object System.Text.UTF8Encoding $false))
+}
+
 # ---------------------------------------------------------------------------
 # Bericht
 # ---------------------------------------------------------------------------
@@ -1912,6 +3192,10 @@ function Write-Report {
     $head.Add(('- Prüfling: `{0}`, Version {1}, SHA256 `{2}`' -f (Get-Leaf $Setup), $(if ($ExpectedVersion) { $ExpectedVersion } else { 'nicht angegeben' }), $setupHash))
     if ($Scenario -like 'upgrade*') { $head.Add(('- Vorversion: `{0}`' -f (Get-Leaf $PreviousSetup))) }
     if ($Scenario -eq 'koexistenz') { $head.Add(('- Offizieller Client: `{0}`' -f (Get-Leaf $OfficialMsi))) }
+    if ($Scenario -eq 'assistent') {
+        $head.Add(('- Server: `{0}` (mit OAuth2), `{1}` (ohne OAuth2); offizieller Client: `{2}`' -f $ServerUrl, $WrongServerUrl, (Get-Leaf $OfficialMsi)))
+        $head.Add('- Bildschirmfotos (foto-*.png), Ablauf (assistent-ablauf.txt), Protokolle des Clients (p*-client.log, ohne Code und Tokens) und Belege eines Absturzes liegen im Artefakt')
+    }
     $head.Add(('- Rechner: {0}, Windows PowerShell {1}' -f $os, $PSVersionTable.PSVersion))
     $head.Add(('- Ergebnis: **{0}**, {1} Warnungen' -f $verdict, $warned))
     if ($Abort) { $head.Add("- Abbruch: $Abort") }
@@ -1980,6 +3264,7 @@ try {
         'upgrade-beta1' { Invoke-Upgrade }
         'upgrade-beta2' { Invoke-Upgrade }
         'deinstall-policies' { Invoke-PolicyScenario }
+        'assistent' { Invoke-Assistent }
     }
 } catch {
     $abort = '{0} (Zeile {1})' -f $_.Exception.Message, $_.InvocationInfo.ScriptLineNumber
