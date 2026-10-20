@@ -81,7 +81,14 @@
                   Protokolls; Auswertung des Speicherabbilds mit cdb. Ein
                   vollständiges Speicherabbild kommt nur ins Artefakt, wenn
                   der Client noch keine Tokens hatte (sonst ein Auszug ohne
-                  Heap); Protokolle ohne Code, Tokens und Zugangsdaten
+                  Heap); Protokolle ohne Code, Tokens und Zugangsdaten.
+                  Die Warnung zum Server ohne OAuth2 muss vollständig zu
+                  sehen sein (im Bildlaufbereich der Seite, über der
+                  Knopfzeile), auch in der längsten Sprache (fr) mit 150 %
+                  (QT_SCALE_FACTOR). Ein Durchgang übernimmt über
+                  "Übernehmen" ein zweites Konto des offiziellen Clients
+                  auf -ServerUrl, während das Konto ohne OAuth2 als nicht
+                  übernehmbar ausgewiesen sein muss.
 
     Client-Spuren, nachgebildet nach dem Client-Code (Geheimnis = Zufallswert,
     wird nie ausgegeben): Anmeldeinformation <app>_credentials:<host>:<uuid>:
@@ -1949,11 +1956,14 @@ $cdbPath = $null
 $cdbSource = ''
 $legacyConfigPath = Join-Path ([Environment]::GetFolderPath('ApplicationData')) 'ownCloud\owncloud.cfg'
 $clientConfigDir = Join-Path ([Environment]::GetFolderPath('ApplicationData')) $appName
-# Texte, wo die Oberfläche keine AutomationId trägt (deutsch über uiLanguage=de, englisch als Rückfall)
-$legacyNewAccountPattern = '^(Neues Konto einrichten|Set up a new account)$'
-$legacyTitlePattern = '^(Vom offiziellen Client übernehmen|Import from the official client)$'
-$wizardTitlePattern = '^(Konto hinzufügen|Add account)'
-$nextPattern = '^(Anmelden|Sign in|Anmeldung erneut öffnen|Open sign in again)$'
+# Texte, wo die Oberfläche keine AutomationId trägt (deutsch über uiLanguage=de, französisch für die längste
+# Fassung der Meldungen, englisch als Rückfall)
+$legacyNewAccountPattern = '^(Neues Konto einrichten|Set up a new account|Configurer un nouveau compte)$'
+$legacyImportPattern = '^(Übernehmen|Import|Importer)$'
+$legacyTitlePattern = '^(Vom offiziellen Client übernehmen|Import from the official client|Importer depuis le client officiel)$'
+$importReportPattern = '^(Übernahme abgeschlossen|Import finished|Importation terminée)$'
+$wizardTitlePattern = '^(Konto hinzufügen|Add account|Ajouter un compte)'
+$nextPattern = "^(Anmelden|Sign in|S'identifier|Anmeldung erneut öffnen|Open sign in again)$"
 $finishPattern = '^(Abschließen|Fertigstellen|Fertig stellen|Fertig|Finish|Done)$'
 $copyLinkPattern = '^(Anmelde-?URL kopieren|Anmeldelink kopieren|Copy sign in URL)$'
 
@@ -2274,11 +2284,30 @@ function Get-WarningDetail {
     $buttons = @($Items | Where-Object { $_.Visible -and $_.Type -eq 'Button' -and $_.Window -eq $label.Window })
     $buttonTop = if ($buttons.Count -gt 0) { ($buttons | ForEach-Object { $_.Rect.Top } | Measure-Object -Minimum).Minimum } else { $null }
     $scroll = @($Items | Where-Object { $_.Visible -and $_.Type -eq 'ScrollBar' -and $_.Window -eq $label.Window }).Count -gt 0
+    # der Bildlaufbereich der Seite (setScrollableWizardPageLayout): was über ihn hinausragt, ist abgeschnitten
+    $area = @($Items | Where-Object { $_.Window -eq $label.Window -and $_.Id -match 'WizardPageScrollArea$' }) | Select-Object -First 1
     $window = @($Items | Where-Object { $_.Type -eq 'Window' -and $_.Window -eq $label.Window }) | Select-Object -First 1
     $rect = $label.Rect
-    $where = if ($null -eq $buttonTop) { 'Knopfzeile nicht gefunden' } elseif ($rect.Bottom -gt $buttonTop) { 'ragt unter die Knopfzeile' } else { 'endet über der Knopfzeile' }
-    return ('„{0}“ | Meldungsfeld {1:N0}x{2:N0} bei y={3:N0}..{4:N0}, Knopfzeile ab y={5}, Fenster {6}: {7}; Bildlaufleiste: {8}' -f $text, $rect.Width, $rect.Height, $rect.Top, $rect.Bottom,
-        $(if ($null -ne $buttonTop) { '{0:N0}' -f $buttonTop } else { '-' }), $(if ($window) { $window.Rect } else { '-' }), $where, $(if ($scroll) { 'ja' } else { 'nein' }))
+    $visible = $null
+    if ($null -ne $buttonTop -or $area) {
+        $left = [double]::NegativeInfinity
+        $top = [double]::NegativeInfinity
+        $right = [double]::PositiveInfinity
+        $bottom = if ($null -ne $buttonTop) { [double]$buttonTop } else { [double]::PositiveInfinity }
+        if ($area) {
+            $left = $area.Rect.Left
+            $top = $area.Rect.Top
+            $right = $area.Rect.Right
+            $bottom = [Math]::Min($bottom, $area.Rect.Bottom)
+        }
+        # ein Bildpunkt Spielraum für Rundungen der Skalierung
+        $visible = $rect.Left -ge ($left - 1) -and $rect.Top -ge ($top - 1) -and $rect.Right -le ($right + 1) -and $rect.Bottom -le ($bottom + 1)
+    }
+    $where = if ($null -eq $visible) { 'Knopfzeile und Bildlaufbereich nicht gefunden' } elseif ($visible) { 'vollständig sichtbar' } else { 'abgeschnitten' }
+    $detail = '„{0}“ | Meldungsfeld {1:N0}x{2:N0} bei x={3:N0}..{4:N0} y={5:N0}..{6:N0}, Knopfzeile ab y={7}, Bildlaufbereich {8}, Fenster {9}: {10}; Bildlaufleiste: {11}' -f $text,
+        $rect.Width, $rect.Height, $rect.Left, $rect.Right, $rect.Top, $rect.Bottom, $(if ($null -ne $buttonTop) { '{0:N0}' -f $buttonTop } else { '-' }),
+        $(if ($area) { $area.Rect } else { 'nicht gefunden' }), $(if ($window) { $window.Rect } else { '-' }), $where, $(if ($scroll) { 'ja' } else { 'nein' })
+    return @{ Complete = $visible; Detail = $detail }
 }
 
 # kurze Beschreibung der Fenster für den Ablauf
@@ -2306,8 +2335,10 @@ function Get-UiSummary {
 function Save-UiTree {
     param($Ctx, $Items, [string] $Label)
     $file = Join-Path $OutDir ('{0}-ui-{1}.txt' -f $Ctx.Name, $Label)
+    # Bericht und Erfolgsseite nennen das Testkonto: dessen Namen nicht ins Artefakt
     $lines = @(foreach ($item in $Items) {
-            '{0} | {1} | "{2}" | id={3} | aktiv={4} | sichtbar={5} | {6}' -f $item.Window, $item.Type, (Limit-Text $item.Name 200), $item.Id, $item.Enabled, $item.Visible, $item.Rect
+            '{0} | {1} | "{2}" | id={3} | aktiv={4} | sichtbar={5} | {6}' -f (Protect-Text $item.Window), $item.Type, (Protect-Text (Limit-Text $item.Name 200)), $item.Id, $item.Enabled,
+            $item.Visible, $item.Rect
         })
     [IO.File]::WriteAllLines($file, [string[]]$lines, (New-Object System.Text.UTF8Encoding $false))
 }
@@ -2420,14 +2451,15 @@ function Reset-ClientState {
 
 # Oberfläche deutsch wie beim Tester (ConfigFile::uiLanguage); sonst eine leere Konfiguration
 function Write-ClientConfig {
+    param([string] $Language = 'de')
     New-Item -ItemType Directory -Force -Path $clientConfigDir | Out-Null
-    [IO.File]::WriteAllText((Join-Path $clientConfigDir "$appName.cfg"), "[General]`r`nuiLanguage=de`r`n")
+    [IO.File]::WriteAllText((Join-Path $clientConfigDir "$appName.cfg"), "[General]`r`nuiLanguage=$Language`r`n")
 }
 
 # Konfiguration des offiziellen Clients wie beim Tester: ein Konto admin auf dem Server ohne OAuth2 und ein
 # Sync-Ordner (LegacyClient::readConfig liest url, dav_user, display-name und die Ordnergruppen)
 function Set-LegacyConfig {
-    param([bool] $Present)
+    param([bool] $Present, [bool] $WithImportAccount = $false)
     if (-not $Present) {
         if (Test-Path -LiteralPath $legacyConfigPath) { Remove-Item -LiteralPath $legacyConfigPath -Force }
         return
@@ -2451,9 +2483,26 @@ function Set-LegacyConfig {
         '0\Folders\1\displayString=ownCloud'
         '0\Folders\1\paused=false'
         '0\Folders\1\virtualFilesMode=off'
-        'version=13'
-    ) -join "`r`n"
-    [IO.File]::WriteAllText($legacyConfigPath, $content + "`r`n")
+    )
+    if ($WithImportAccount) {
+        # zweites Konto auf dem Server mit OAuth2, das Testkonto: über "Übernehmen" samt Ordner (leer, ohne Journal: die
+        # Dateien kommen einmal vom Server). Ohne davUrl wie bei 2.x, die Benutzerkennung des Servers kennt die Probe nicht.
+        $importDir = Join-Path $env:USERPROFILE 'ownCloud-testoo'
+        New-Item -ItemType Directory -Force -Path $importDir | Out-Null
+        $content += @(
+            ('1\url={0}/' -f $ServerUrl.TrimEnd('/'))
+            ('1\dav_user={0}' -f $(if ($loginUser) { $loginUser } else { 'testkonto' }))
+            '1\display-name=Testkonto'
+            ('1\Folders\1\localPath={0}/' -f ($importDir -replace '\\', '/'))
+            '1\Folders\1\journalPath=.sync_journal.db'
+            '1\Folders\1\targetPath=/'
+            '1\Folders\1\displayString=ownCloud'
+            '1\Folders\1\paused=false'
+            '1\Folders\1\virtualFilesMode=off'
+        )
+    }
+    $content += 'version=13'
+    [IO.File]::WriteAllText($legacyConfigPath, ($content -join "`r`n") + "`r`n")
 }
 
 function Test-LegacyConfig {
@@ -2584,6 +2633,32 @@ function Watch-AccountSetup {
     $Ctx.Reached = 'Konto angelegt, 90 s beobachtet'
 }
 
+# Umstieg über "Übernehmen": den Abschlussbericht festhalten und mit "OK" schließen
+function Complete-ImportReport {
+    param($Ctx)
+    $found = Wait-Ui $Ctx { if (Find-TopWindow $Ctx.Process.Id $importReportPattern) { @{ Items = (Get-UiItems $Ctx.Process.Id) } } } 60
+    if (Test-Crashed $Ctx 'Abschlussbericht des Umstiegs') { return }
+    if (-not $found) {
+        $Ctx.Problem = 'Abschlussbericht des Umstiegs erschien nicht innerhalb von 60 s'
+        Write-StepRecord $Ctx 'kein-bericht' $Ctx.Problem
+        return
+    }
+    $items = @($found.Items | Where-Object { $_.Window -match $importReportPattern })
+    $Ctx.ReportSeen = $true
+    $Ctx.ReportText = Limit-Text (Protect-Text ((@($items | Where-Object { $_.Visible -and $_.Type -eq 'Text' -and $_.Name } | ForEach-Object { $_.Name })) -join ' / ')) 1200
+    Save-UiTree $Ctx $found.Items 'bericht'
+    Write-StepRecord $Ctx 'bericht' 'Abschlussbericht des Umstiegs'
+    $ok = Find-UiButton $items '' '^&?OK$'
+    if (Invoke-UiItem $ok) {
+        Add-Timeline ('Klick: "{0}" im Abschlussbericht' -f $ok.Name)
+    } else {
+        Add-Timeline 'Knopf "OK" im Abschlussbericht nicht gefunden'
+    }
+    Start-Sleep -Seconds 3
+    if (Test-Crashed $Ctx 'nach dem Abschlussbericht') { return }
+    Write-StepRecord $Ctx 'nach-bericht' 'nach dem Schließen des Abschlussberichts'
+}
+
 function Invoke-UiaFlow {
     param($Ctx, [hashtable] $Definition)
     if ($Definition.Legacy) {
@@ -2596,12 +2671,17 @@ function Invoke-UiaFlow {
         } else {
             $Ctx.LegacySeen = $true
             $Ctx.Reached = 'Umstieg-Dialog'
-            $Ctx.LegacyText = Limit-Text ((@($found.Items | Where-Object { $_.Visible -and $_.Type -eq 'Text' -and $_.Name } | ForEach-Object { $_.Name })) -join ' / ') 600
+            $texts = (@($found.Items | Where-Object { $_.Visible -and $_.Type -eq 'Text' -and $_.Name } | ForEach-Object { $_.Name })) -join ' / '
+            $Ctx.LegacyText = Limit-Text (Protect-Text $texts) 1200
+            # der Server ohne OAuth2 muss im Dialog genannt sein; "Übernehmen" nur, wenn ein anderes Konto übernehmbar ist
+            $Ctx.LegacyMentionsOAuth2 = $texts -match 'OAuth2'
+            $importButton = Find-UiButton $found.Items '' $legacyImportPattern
+            $Ctx.LegacyOffersImport = [bool]$importButton
             Save-UiTree $Ctx $found.Items 'umstieg'
             Write-StepRecord $Ctx 'umstieg' 'Umstieg-Dialog "Vom offiziellen Client übernehmen"'
-            $button = Find-UiButton $found.Items '' $legacyNewAccountPattern
+            $button = if ($Definition.Import) { $importButton } else { Find-UiButton $found.Items '' $legacyNewAccountPattern }
             if (-not (Invoke-UiItem $button)) {
-                $Ctx.Problem = 'Knopf "Neues Konto einrichten" nicht auslösbar'
+                $Ctx.Problem = 'Knopf "{0}" nicht auslösbar' -f $(if ($Definition.Import) { 'Übernehmen' } else { 'Neues Konto einrichten' })
                 return
             }
             Add-Timeline ('Klick: "{0}"' -f $button.Name)
@@ -2661,12 +2741,20 @@ function Invoke-UiaFlow {
             return
         }
         if ($outcome.State -eq 'warnung') {
-            $detail = Get-WarningDetail $outcome.Items $outcome.Messages
-            $Ctx.Warnings.Add(@{ Url = $url; Detail = $detail })
+            # vermessen erst, wenn die Seite neu angeordnet ist (das Logo weicht der Meldung)
+            Start-Sleep -Milliseconds 800
+            $items = Get-UiItems $Ctx.Process.Id
+            $messages = @(Get-UrlPageMessages $items)
+            if ($messages.Count -eq 0) {
+                $items = $outcome.Items
+                $messages = $outcome.Messages
+            }
+            $warning = Get-WarningDetail $items $messages
+            $Ctx.Warnings.Add(@{ Url = $url; Detail = $warning.Detail; Complete = $warning.Complete })
             $Ctx.Reached = "Warnung für $url"
-            Save-UiTree $Ctx $outcome.Items ('warnung-' + ([uri]$url).Host)
+            Save-UiTree $Ctx $items ('warnung-' + ([uri]$url).Host)
             Write-StepRecord $Ctx 'warnung' ('Meldung {0} s nach "Anmelden" mit {1}' -f $seconds, $url)
-            Add-Timeline "Meldung: $detail"
+            Add-Timeline ('Meldung: {0}' -f $warning.Detail)
             continue
         }
         if ($outcome.State -eq 'anmeldung') {
@@ -2727,6 +2815,9 @@ function Invoke-UiaFlow {
     $Ctx.Reached = 'Fertigstellen'
     Add-Timeline ('Klick: "{0}"' -f $finish.Name)
     Watch-AccountSetup $Ctx
+    if ($Definition.Import -and -not $Ctx.Process.HasExited) {
+        Complete-ImportReport $Ctx
+    }
 }
 
 # derselbe Ablauf nur mit Tastatur und Fenstertiteln: im Client wird die Barrierefreiheits-Schnittstelle
@@ -3046,7 +3137,21 @@ function Add-AssistentChecks {
         }
     }
     foreach ($warning in $Ctx.Warnings) {
-        Add-Check "$id.2" ('Meldung im Assistenten für {0}' -f $warning.Url) 'INFO' $warning.Detail ''
+        # ohne UI Automation (Tastatur-Durchgang) ist die Lage nicht messbar: dann nur das Foto
+        $status = if ($null -eq $warning.Complete) { 'INFO' } elseif ($warning.Complete) { 'OK' } else { 'FEHLER' }
+        Add-Check "$id.2" ('Meldung im Assistenten für {0} vollständig sichtbar' -f $warning.Url) $status $warning.Detail ''
+    }
+    if ($Definition.Legacy -and $Ctx.Uia -and $Ctx.LegacySeen) {
+        if ($Definition.Import) {
+            $ok = $Ctx.LegacyMentionsOAuth2 -and $Ctx.LegacyOffersImport
+            Add-Check "$id.7" 'Umstieg: Konto ohne OAuth2 als nicht übernehmbar ausgewiesen, das andere übernehmbar' $(if ($ok) { 'OK' } else { 'FEHLER' }) $Ctx.LegacyText ''
+        } else {
+            $ok = $Ctx.LegacyMentionsOAuth2 -and -not $Ctx.LegacyOffersImport
+            Add-Check "$id.7" 'Umstieg: Konto ohne OAuth2 ausgewiesen, keine Übernahme angeboten' $(if ($ok) { 'OK' } else { 'FEHLER' }) $Ctx.LegacyText ''
+        }
+    }
+    if ($Definition.Import -and $Ctx.Finished) {
+        Add-Check "$id.8" 'Umstieg: Abschlussbericht' $(if ($Ctx.ReportSeen) { 'OK' } else { 'FEHLER' }) $(if ($Ctx.ReportSeen) { $Ctx.ReportText } else { $Ctx.Problem }) ''
     }
     $loginUrl = $Definition.Urls[-1]
     if ($Ctx.ReachedLogin) {
@@ -3088,20 +3193,20 @@ function Invoke-AssistentPass {
         LogTail = @(); Assert = @()
         Crashed = $false; CrashStep = ''; ExitCode = $null; Problem = ''; Reached = 'Start'; LegacyText = ''; LoginSummary = ''
         LegacySeen = $false; ReachedLogin = $false; TokensPossible = $false; LoginDone = $false; SuccessPage = $false; Finished = $false
-        AccountSaved = $false; FolderAdded = $false
+        AccountSaved = $false; FolderAdded = $false; LegacyMentionsOAuth2 = $false; LegacyOffersImport = $false; ReportSeen = $false; ReportText = ''
     }
     Write-Host "== Durchgang ${name}: $($Definition.Title)"
     Write-Annotation 'notice' "Durchgang ${name}: $($Definition.Title)"
     Add-Timeline "== Durchgang ${name}: $($Definition.Title)"
     Reset-ClientState
-    Write-ClientConfig
-    Set-LegacyConfig $Definition.Legacy
+    Write-ClientConfig $(if ($Definition.Language) { $Definition.Language } else { 'de' })
+    Set-LegacyConfig $Definition.Legacy ([bool]$Definition.Import)
     if ($Definition.Official -and $OfficialMsi) {
         $running = (Get-OfficialProcess) -or (Start-OfficialClient)
         Add-Timeline ('Offizieller Client läuft: {0}' -f $(if ($running) { 'ja' } else { 'nein' }))
         # der offizielle Client darf seine Datei beim Start umschreiben; der Umstieg-Dialog braucht das Konto darin
         if ($Definition.Legacy -and -not (Test-LegacyConfig)) {
-            Set-LegacyConfig $true
+            Set-LegacyConfig $true ([bool]$Definition.Import)
             Add-Timeline 'Konfiguration des offiziellen Clients nach dessen Start erneut geschrieben (Konto fehlte)'
         }
     } else {
@@ -3109,7 +3214,16 @@ function Invoke-AssistentPass {
     }
     if (Test-Path -LiteralPath $ctx.Log) { Remove-Item -LiteralPath $ctx.Log -Force }
     $ctx.Since = Get-Date
-    $ctx.Process = Start-Process -FilePath $Exe -ArgumentList @('--logfile', ('"{0}"' -f $ctx.Log), '--logdebug', '--logflush') -PassThru
+    # Skalierung wie Windows mit 150 %: Qt rechnet alles in Bildpunkten mal QT_SCALE_FACTOR; nur dieser Prozess erbt sie
+    if ($Definition.Scale) {
+        $env:QT_SCALE_FACTOR = $Definition.Scale
+        Add-Timeline "QT_SCALE_FACTOR=$($Definition.Scale)"
+    }
+    try {
+        $ctx.Process = Start-Process -FilePath $Exe -ArgumentList @('--logfile', ('"{0}"' -f $ctx.Log), '--logdebug', '--logflush') -PassThru
+    } finally {
+        Remove-Item Env:QT_SCALE_FACTOR -ErrorAction SilentlyContinue
+    }
     # ohne diesen Zugriff liefert ExitCode nach dem Ende $null
     $null = $ctx.Process.Handle
     Add-Timeline ('Prüfling gestartet, PID {0}' -f $ctx.Process.Id)
@@ -3168,14 +3282,20 @@ function Invoke-Assistent {
     Add-Check 'A4' 'Prüfling' 'INFO' ('{0}, Version {1}, Signatur {2}' -f $exe, (Get-VersionWithBuild $exe), (Get-SignatureNote $exe)) ''
     Stop-Client
 
+    # eingefügt in ein Feld, in dem "https://" schon stand, und mit "/" zu viel: brach bis beta3 beim "Anmelden" ab
+    $messyServerUrl = 'https://' + $ServerUrl.TrimEnd('/') + '//'
     # p1 zuerst: nur Tastatur, bevor diese Sitzung UI Automation benutzt - wie ein Tester ohne Hilfsprogramme
     $passes = @(
         @{ Name = 'p1'; Mode = 'tastatur'; Legacy = $true; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false
             Title = 'Umstieg-Dialog, "Neues Konto einrichten" (Esc), erst ' + $WrongServerUrl + ' (Warnung), dann ' + $ServerUrl + ', Anmeldung, Fertigstellen - nur Tastatur, ohne UI Automation im Client' },
-        @{ Name = 'p2'; Mode = 'uia'; Legacy = $true; Official = $true; Urls = @($ServerUrl); Advanced = $true
-            Title = 'Umstieg-Dialog (offizieller Client läuft), "Neues Konto einrichten", gleich ' + $ServerUrl + ', Anmeldung, Erweitert, Fertigstellen (UI Automation)' },
+        @{ Name = 'p2'; Mode = 'uia'; Legacy = $true; Official = $true; Urls = @($messyServerUrl); Advanced = $true
+            Title = 'Umstieg-Dialog (offizieller Client läuft), "Neues Konto einrichten", gleich ' + $messyServerUrl + ' (doppeltes Schema und "//"), Anmeldung, Erweitert, Fertigstellen (UI Automation)' },
         @{ Name = 'p3'; Mode = 'uia'; Legacy = $true; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false
-            Title = 'Umstieg-Dialog, "Neues Konto einrichten", erst ' + $WrongServerUrl + ' (Warnung lesen und vermessen), dann ' + $ServerUrl + ', Anmeldung, Fertigstellen (UI Automation)' }
+            Title = 'Umstieg-Dialog, "Neues Konto einrichten", erst ' + $WrongServerUrl + ' (Warnung lesen und vermessen), dann ' + $ServerUrl + ', Anmeldung, Fertigstellen (UI Automation)' },
+        @{ Name = 'p4'; Mode = 'uia'; Legacy = $true; Official = $false; Urls = @($WrongServerUrl, $ServerUrl); Advanced = $false; Language = 'fr'; Scale = '1.5'
+            Title = 'wie p3 auf Französisch (längste Fassung der Meldungen) mit 150 % (QT_SCALE_FACTOR=1.5): Warnung vermessen, dann ' + $ServerUrl + ', Anmeldung, Fertigstellen (UI Automation)' },
+        @{ Name = 'p5'; Mode = 'uia'; Legacy = $true; Import = $true; Official = $false; Urls = @($ServerUrl); Advanced = $false
+            Title = 'Umstieg mit zwei Konten: ' + $WrongServerUrl + ' als nicht übernehmbar ausgewiesen (App "OAuth2" fehlt), ' + $ServerUrl + ' über "Übernehmen" mit Anmeldung, Fertigstellen und Abschlussbericht (UI Automation)' }
     )
     $contexts = New-Object 'System.Collections.Generic.List[object]'
     foreach ($definition in $passes) {

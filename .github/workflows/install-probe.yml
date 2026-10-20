@@ -19,6 +19,8 @@ name: Install-Probe
 # "Neues Konto einrichten", Server ohne und mit OAuth2, Browser-Anmeldung mit dem Testkonto aus den
 # Secrets E2E_ONLINE_USER_1/E2E_ONLINE_PASS_1 über test/e2e/oauth/login.py aus dem Zweig sync-e2e,
 # "Fertigstellen"), Bildschirmfotos nach jedem Schritt, bei einem Absturz Speicherabbild (WER) und cdb.
+# Die Warnung zum Server ohne OAuth2 muss vollständig sichtbar sein, auch französisch mit 150 %; ein
+# Durchgang übernimmt ein zweites Konto über "Übernehmen".
 #
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=assistent
 
