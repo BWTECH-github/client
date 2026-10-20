@@ -152,7 +152,9 @@
                   -MoveServerUrl (dieselbe Instanz unter anderem Namen),
                   Browser-Anmeldung dort, verbunden, der Ordner
                   synchronisiert, eine Datei vom Server kommt an; dann
-                  zurück auf -ServerUrl. Zuletzt der Umstieg für das Konto
+                  zurück auf -ServerUrl. Vor dem Umzug und danach lehnt
+                  der Assistent dasselbe Konto ein zweites Mal ab
+                  („bereits … verbunden“). Zuletzt der Umstieg für das Konto
                   mit Kennwort: eine Konfiguration des offiziellen Clients
                   (vor dem Neustart geschrieben, Konto des Testkontos 2 mit
                   einem klassisch synchronisierten Ordner) wird über "Mehr"
@@ -160,7 +162,8 @@
                   Kennwortseite mit vorbelegtem Anmeldenamen, Kennwort aus
                   OC_PASS_2, das Konto entsteht, der Ordner wird
                   übernommen (Datei lokal -> Server und Server -> lokal),
-                  Abschlussbericht. Am Ende muss der Prozess leben und
+                  Abschlussbericht; ein zweiter Umstieg meldet das Konto
+                  als bereits eingerichtet. Am Ende muss der Prozess leben und
                   reagieren, WER darf kein Speicherabbild geschrieben haben,
                   die Protokolle kein ASSERT enthalten; Ende über --quit
                   mit Exit-Code 0. Die Serverordner und Dateien löscht die
@@ -4975,8 +4978,9 @@ function Find-TrayIcon {
             try { $name = [string]$element.Current.Name } catch { continue }
             if ($name -notmatch $trayIconPattern) { continue }
             $item = ConvertTo-ShellItem $element $area.Where
-            # der Knopf des laufenden Programms heißt ebenso ("owncloud.online - 1 ausgeführtes Fenster")
-            if (-not $item -or $item.Class -match 'TaskList' -or $item.Id -like 'Appid:*') { continue }
+            # der Knopf des laufenden Programms heißt ebenso ("owncloud.online - 1 ausgeführtes Fenster"), und der Tooltip des Symbols
+            # liegt im geöffneten Überlauf als eigenes Element (ToolTip, Text) darüber
+            if (-not $item -or $item.Type -ne 'Button' -or $item.Class -match 'TaskList' -or $item.Id -like 'Appid:*') { continue }
             if ($item.Offscreen -or $item.Rect.IsEmpty -or $item.Rect.Width -le 0 -or $item.Rect.Height -le 0) { continue }
             return $item
         }
@@ -5065,10 +5069,11 @@ function Close-ClientMenu {
     }
 }
 
-# sichtbare Einträge der offenen Menüs des Clients (Texte ohne Anmeldenamen)
+# sichtbare Einträge der offenen Menüs des Clients (Texte ohne Anmeldenamen); ein Untermenü meldet UI Automation zweimal (als Fenster
+# und unter seinem Eintrag), jeder Text zählt einmal
 function Get-OpenMenuEntries {
     param($Ctx)
-    return @((Get-UiItems $Ctx.Process.Id -IncludeMain) | Where-Object { $_.Visible -and $_.Type -eq 'MenuItem' -and $_.Name } | ForEach-Object { Protect-Text $_.Name })
+    return @((Get-UiItems $Ctx.Process.Id -IncludeMain) | Where-Object { $_.Visible -and $_.Type -eq 'MenuItem' -and $_.Name } | ForEach-Object { Protect-Text $_.Name } | Select-Object -Unique)
 }
 
 # Eintrag eines offenen Menüs mit der Maus anklicken, wahlweise erst ein Untermenü öffnen; Rückgabe: der Eintrag
@@ -5232,6 +5237,62 @@ function Remove-AccountByUi {
     return ('Konten vorher {0}, nachher {1}; Fotos {2}, {3}' -f $before, @(Get-AccountButtons (Get-UiItems $Ctx.Process.Id -IncludeMain)).Count, $shot, $shot2)
 }
 
+# Assistent ohne neues Konto schließen: "Abbrechen", Rückfrage "Setup abbrechen" mit "Ja"; Rückgabe: $true, wenn er zu ist
+function Close-WizardByCancel {
+    param($Ctx)
+    $cancel = Find-UiButton (Get-UiItems $Ctx.Process.Id) '*qt_wizard_cancel*' '^(Abbrechen|Cancel)$'
+    $how = Invoke-UiClick $Ctx $cancel
+    if (-not $how) { return $false }
+    Add-Timeline ('Klick: "{0}" im Assistenten ({1})' -f $cancel.Name, $how)
+    $confirm = Wait-Ui $Ctx { $b = @((Get-UiItems $Ctx.Process.Id) | Where-Object { $_.Visible -and $_.Type -eq 'Button' -and $_.Name -match '^(Ja|Yes)$' }) | Select-Object -First 1; if ($b) { $b } } 20
+    if ($confirm) {
+        $how = Invoke-UiClick $Ctx $confirm
+        Add-Timeline ('Klick: "{0}" in der Rückfrage ({1})' -f $confirm.Name, $how)
+    }
+    return [bool](Wait-Ui $Ctx { if (-not (Find-TopWindow $Ctx.Process.Id $wizardTitlePattern)) { $true } } 20)
+}
+
+# dasselbe Konto ein zweites Mal: "Mehr" → "Konto hinzufügen…", -ServerUrl, Browser-Anmeldung mit dem Testkonto 1. Der Assistent muss das
+# ablehnen („Sie sind bereits mit einem Konto mit diesen Anmeldedaten verbunden.“, AccountManager::accountForLoginExists), sonst entstünde ein
+# zweites Konto für denselben Benutzer. Danach wird der Assistent abgebrochen. Rückgabe: @{ Refused; Detail }
+function Test-DuplicateAccount {
+    param($Ctx, [string] $Step)
+    Invoke-MoreMenu $Ctx $addAccountEntryPattern $Step
+    $found = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; if ((Get-BasicWizardState $i) -eq 'adresse') { @{ Items = $i } } } 60
+    if (-not $found) { Stop-Step 'Assistent erschien nach "Konto hinzufügen…" nicht innerhalb von 60 s' }
+    $field = Get-UrlField $found.Items
+    $next = Find-UiButton $found.Items '*wizardbutton1' $nextPattern
+    if (-not $field -or -not $next) { Stop-Step 'Adressfeld oder "Anmelden" im Assistenten nicht gefunden' }
+    if (-not (Set-UiValue $field $ServerUrl)) { Stop-Step "Adresse $ServerUrl nicht eintragbar" }
+    Start-Sleep -Milliseconds 300
+    $how = Invoke-UiClick $Ctx $next
+    if (-not $how) { Stop-Step '"Anmelden" auf der Adressseite nicht auslösbar' }
+    Add-Timeline ('Klick: "{0}" mit {1} ({2})' -f $next.Name, $ServerUrl, $how)
+    Start-Sleep -Milliseconds 700
+    $page = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; $s = Get-BasicWizardState $i; if ($s -and $s -ne 'adresse') { @{ State = $s } } } 150
+    if (-not $page -or $page.State -ne 'anmeldung') {
+        $null = Close-WizardByCancel $Ctx
+        Stop-Step ('keine Anmeldeseite nach "Anmelden" mit {0} ({1})' -f $ServerUrl, $(if ($page) { 'Zustand ' + $page.State } else { '150 s' }))
+    }
+    $Ctx.LoginDone = $false
+    $Ctx.Problem = ''
+    Complete-Login $Ctx
+    if (-not $Ctx.LoginDone) {
+        $null = Close-WizardByCancel $Ctx
+        Stop-Step ('Browser-Anmeldung: {0}' -f $(if ($Ctx.Problem) { $Ctx.Problem } else { $Ctx.LoginSummary }))
+    }
+    $outcome = Wait-Ui $Ctx {
+        $i = Get-UiItems $Ctx.Process.Id
+        $message = @($i | Where-Object { $_.Visible -and $_.Type -eq 'Text' -and $_.Name -match 'bereits mit einem Konto mit diesen Anmeldedaten verbunden|already connected to an account with these credentials' }) | Select-Object -First 1
+        if ($message) { @{ State = 'abgelehnt'; Text = $message.Name } } elseif ((Get-BasicWizardState $i) -eq 'erfolg') { @{ State = 'erfolg'; Text = '' } }
+    } 120
+    $shot = Write-BasicStep $Ctx ($Step + '-ergebnis') $(if (-not $outcome) { 'weder Meldung noch Erfolgsseite' } elseif ($outcome.State -eq 'abgelehnt') { 'Meldung: dasselbe Konto ist schon eingerichtet' } else { 'Erfolgsseite: ein zweites Konto für denselben Benutzer wäre möglich' })
+    $closed = Close-WizardByCancel $Ctx
+    $detail = '{0}; Assistent abgebrochen: {1}; Foto {2}' -f $(if (-not $outcome) { 'weder Meldung noch Erfolgsseite (120 s)' } elseif ($outcome.State -eq 'abgelehnt') { 'Meldung „' + $outcome.Text + '“' } else { 'Erfolgsseite statt der Meldung' }),
+        $(if ($closed) { 'ja' } else { 'nein' }), $shot
+    return @{ Refused = [bool]($outcome -and $outcome.State -eq 'abgelehnt'); Detail = $detail }
+}
+
 # Statuszeile der Kontoansicht (connectionStatusLabel, etwa "Verbunden"), nach Wahl des Kontos in der Werkzeugleiste; leer, wenn nicht lesbar
 function Get-AccountStatus {
     param($Ctx, [string] $Uuid)
@@ -5344,7 +5405,10 @@ function Invoke-ServerMove {
         $null = Write-BasicStep $Ctx ($Step + '-abgelehnt') 'Umzug abgelehnt'
         Stop-Step ('Umzug abgelehnt: ' + $outcome.Line)
     }
-    if (-not (Wait-LogSince $Ctx (Get-ConnectedPattern $To) $mark 120)) { Stop-Step ('nach dem Umzug nicht mit {0} verbunden (120 s); {1}' -f $toHost, $outcome.Line) }
+    # Das Konto bleibt „Verbunden“ - ohne Wechsel des Zustands meldet FolderMan kein „connected, scheduling its folders“. Belegt wird die
+    # Verbindungsprüfung an der neuen Adresse, der Sync des Ordners und die Statuszeile der Kontoansicht.
+    $validated = Wait-LogSince $Ctx ('owncloud\.online-compatible server found:\s+QUrl\("' + [regex]::Escape($To.TrimEnd('/')) + '/?"\)') $mark 120
+    if (-not $validated) { Stop-Step ('nach dem Umzug keine erfolgreiche Verbindungsprüfung an {0} im Protokoll (120 s); {1}' -f $toHost, $outcome.Line) }
     $closed = [bool](Wait-Ui $Ctx { if (-not (Find-UiElement (Get-UiItems $Ctx.Process.Id -IncludeMain) '*newServerUrlEdit' '' 'Edit')) { $true } } 30)
     $root = ConvertTo-LogPath $Dl.OAuthRoot
     $sync = Wait-LogSince $Ctx ('(?i)Sync finished for "' + [regex]::Escape($root) + '" with status [^\r\n]+') $mark 240
@@ -5353,11 +5417,13 @@ function Invoke-ServerMove {
     # Datei, die erst jetzt auf dem Server entsteht (über die neue Adresse): kommt sie an, synchronisiert der Ordner über die neue Adresse
     $file = Test-ServerFileArrives $Ctx $To $loginToken ('probe-{0}-{1}.txt' -f $Step, [guid]::NewGuid().ToString('N').Substring(0, 8)) $Dl.OAuthRoot 180
     if ($file.Put) { $Dl.TestooFiles.Add([IO.Path]::GetFileName($file.Local)) }
+    $accountState = Get-AccountStatus $Ctx $Dl.OAuthUuid
     $shotDone = Write-BasicStep $Ctx ($Step + '-fertig') ('nach dem Umzug auf {0}' -f $toHost)
-    $detail = '{0}; verbunden mit {1}; Dialog geschlossen: {2}; Sync des Ordners: {3}; Datei vom Server: {4}; Fotos {5}, {6}, {7}' -f $outcome.Line, $toHost, $(if ($closed) { 'ja' } else { 'nein' }), $status,
-        $file.Detail, $shotDialog, $shotWait, $shotDone
+    $detail = '{0}; Verbindungsprüfung an {1}: „{2}“; Status in der Kontoansicht: „{3}“; Dialog geschlossen: {4}; Sync des Ordners: {5}; Datei vom Server: {6}; Fotos {7}, {8}, {9}' -f $outcome.Line, $toHost, (Limit-Text $validated 200), $accountState,
+        $(if ($closed) { 'ja' } else { 'nein' }), $status, $file.Detail, $shotDialog, $shotWait, $shotDone
     if (-not $closed) { Stop-Step ('Dialog nach dem Umzug noch offen (30 s); ' + $detail) }
     if ($status -notmatch 'Success|Problem') { Stop-Step ('Sync nach dem Umzug endete mit {0}; {1}' -f $status, $detail) }
+    if ($accountState -notmatch '^(Verbunden|Connected)\b') { Stop-Step ('Konto nach dem Umzug nicht „Verbunden“; ' + $detail) }
     if ($file.Put -and -not $file.Ok) { Stop-Step ('Datei vom Server kam nach dem Umzug nicht an; ' + $detail) }
     return $detail
 }
@@ -5365,7 +5431,8 @@ function Invoke-ServerMove {
 # --- Umstieg vom offiziellen Client mit Kennwort (dauerlauf) -----------------
 
 # Konfiguration des offiziellen Clients (6.0.3) mit dem Konto des Testkontos 2 und einem klassisch synchronisierten Ordner auf einen
-# Serverordner der Probe; ohne davUrl und ohne Journal wie bei einem Ordner, den 6.0.3 nie synchronisiert hat
+# Serverordner der Probe; ohne davUrl und ohne Journal wie bei einem Ordner, den 6.0.3 nie synchronisiert hat. Die Adresse mit „/“ am
+# Ende, wie 6.0.3 sie ablegt (ResolveUrlJobFactory: Adresse von status.php ohne den Dateinamen)
 function Write-LegacyConfigBasic {
     param([string] $Server, [string] $User, [string] $LocalDir, [string] $TargetPath)
     New-Item -ItemType Directory -Force -Path $LocalDir, (Split-Path -Parent $legacyConfigPath) | Out-Null
@@ -5374,7 +5441,7 @@ function Write-LegacyConfigBasic {
         'clientVersion=6.0.3.18040'
         ''
         '[Accounts]'
-        ('0\url={0}' -f $Server.TrimEnd('/'))
+        ('0\url={0}/' -f $Server.TrimEnd('/'))
         ('0\dav_user={0}' -f $User)
         ('0\http_user={0}' -f $User)
         '0\display-name=Umstieg'
@@ -6097,14 +6164,15 @@ function Invoke-Dauerlauf {
         if ($dl.TrayReachable) {
             if (-not (Open-TrayMenu $ctx $dl 'fortsetzen')) { Stop-Step ('Tray-Menü zum Fortsetzen nicht zu öffnen: ' + $dl.TrayWhy) }
             $null = Invoke-MenuEntry $ctx $trayResumePattern
+            $resumedAt = Get-Date
             if (-not (Wait-LogSince $ctx 'Sync resumed by user' $resumeMark 20)) { Stop-Step 'nach „Synchronisation fortsetzen“ kein Fortsetzen im Protokoll (20 s)' }
         } else {
             Open-FolderMenu $ctx $dl.Folders[0]
             $null = Invoke-MenuEntry $ctx $folderResumePattern '' 'im Menü des Ordners'
+            $resumedAt = Get-Date
         }
-        $start = Get-Date
         $arrived = [bool](Wait-Ui $ctx { if (Test-Path -LiteralPath $local) { $true } } 120)
-        $seconds = [int]((Get-Date) - $start).TotalSeconds
+        $seconds = [int]((Get-Date) - $resumedAt).TotalSeconds
         $shotResumed = Write-BasicStep $ctx 'fortgesetzt' ('fortgesetzt, Datei vom Server lokal: {0}' -f $(if ($arrived) { 'ja' } else { 'nein' }))
         $notStarted = [regex]::Matches((Get-LogSince $ctx $mark), 'Scheduler is paused, next sync is not started').Count
         $detail = 'über {0}; Tooltip während der Pause: „{1}“; Datei {2} während der Pause (45 s) lokal: {3}; nach dem Fortsetzen lokal: {4}{5}; Protokoll „Scheduler is paused…“: {6}x; Fotos {7}, {8}' -f $way, $tooltip, $name,
@@ -6185,12 +6253,26 @@ function Invoke-Dauerlauf {
         return ('verbunden; Ordner {0}, erster Sync: {1}; Foto {2}' -f $sync.Path, $sync.Status, $shot)
     }
 
+    $null = Invoke-DauerStep $dl 'S0' ('Gegenprobe vor dem Umzug: dasselbe Konto an {0} noch einmal über "Konto hinzufügen…" - der Assistent lehnt es ab („bereits … verbunden“)' -f $ServerUrl) {
+        $duplicate = Test-DuplicateAccount $ctx 'doppelt-vorher'
+        if (-not $duplicate.Refused) { Stop-Step ('dasselbe Konto wurde nicht abgelehnt; ' + $duplicate.Detail) }
+        return $duplicate.Detail
+    }
+
     $null = Invoke-DauerStep $dl 'S1' ('Serveradresse ändern: Konto an {0} → {1} (dieselbe Instanz), Browser-Anmeldung dort, verbunden, Ordner synchronisiert, Datei vom Server kommt an' -f $ServerUrl, $MoveServerUrl) {
         Invoke-ServerMove $ctx $dl $MoveServerUrl 'umzug-hin'
     }
 
     $null = Invoke-DauerStep $dl 'S2' ('Serveradresse ändern zurück: {0} → {1}, Browser-Anmeldung, verbunden, Ordner synchronisiert, Datei vom Server kommt an' -f $MoveServerUrl, $ServerUrl) {
         Invoke-ServerMove $ctx $dl $ServerUrl 'umzug-zurueck'
+    }
+
+    $null = Invoke-DauerStep $dl 'S3' ('nach dem Umzug zurück: dasselbe Konto an {0} noch einmal über "Konto hinzufügen…" - der Assistent muss es weiter ablehnen' -f $ServerUrl) {
+        $saved = @([regex]::Matches((Get-LogSince $ctx 0), 'Saving account "([^"]+)"') | ForEach-Object { $_.Groups[1].Value } | Where-Object { $_ -match [regex]::Escape(([uri]$ServerUrl).Host) } | Select-Object -Last 1)
+        $duplicate = Test-DuplicateAccount $ctx 'doppelt-nachher'
+        $detail = '{0}; Adresse des Kontos laut Protokoll zuletzt gespeichert als „{1}“' -f $duplicate.Detail, $(if ($saved.Count) { $saved[0] } else { '-' })
+        if (-not $duplicate.Refused) { Stop-Step ('nach dem Serverumzug wird dasselbe Konto nicht mehr als schon eingerichtet erkannt; ' + $detail) }
+        return $detail
     }
 
     $null = Invoke-DauerStep $dl 'U1' ('Umstieg vom offiziellen Client für das Konto mit Kennwort: Konto an {0} entfernen, „Mehr“ → „Vom offiziellen Client übernehmen…“, „Übernehmen“, Kennwortseite mit vorbelegtem Anmeldenamen, Kennwort, „Abschließen“: Konto verbunden, Ordner übernommen (lokale Datei auf dem Server, Datei vom Server lokal), Abschlussbericht' -f $BasicServerUrl) {
@@ -6230,8 +6312,35 @@ function Invoke-Dauerlauf {
         if (-not $adopted) { $problems += 'Ordner nicht übernommen (Protokoll)' }
         if ($up -ne 200) { $problems += 'lokale Datei nicht auf dem Server' }
         if (-not $down) { $problems += 'Datei vom Server nicht lokal' }
+        # das einzige Konto des offiziellen Clients ist übernommen: der Bericht darf nicht von nicht übernommenen Konten sprechen
+        if ($report.Text -match 'nicht übernommenen Konten|accounts that were not taken over') { $problems += 'der Abschlussbericht nennt nicht übernommene Konten, obwohl alle übernommen sind' }
         if ($problems.Count -gt 0) { Stop-Step (($problems -join '; ') + '; ' + $detail) }
         return $detail
+    }
+
+    $null = Invoke-DauerStep $dl 'U2' '„Vom offiziellen Client übernehmen…“ noch einmal: das Konto ist schon eingerichtet („Alle Konten des offiziellen Clients sind bereits eingerichtet.“), keine zweite Übernahme' {
+        if (-not $dl.LegacyDir) { Stop-Step 'keine Konfiguration des offiziellen Clients (vor dem Neustart nicht geschrieben)' }
+        Invoke-MoreMenu $ctx $legacyMenuEntryPattern 'umstieg-2'
+        $outcome = Wait-Ui $ctx {
+            $i = Get-UiItems $ctx.Process.Id
+            $texts = (@($i | Where-Object { $_.Visible -and $_.Type -eq 'Text' -and $_.Window -match $legacyTitlePattern -and $_.Name } | ForEach-Object { $_.Name })) -join ' / '
+            $offer = @($i | Where-Object { $_.Visible -and $_.Type -eq 'Button' -and $_.Window -match $legacyTitlePattern -and $_.Name -match $legacyImportPattern }) | Select-Object -First 1
+            if ($offer) { @{ State = 'angeboten'; Text = $texts; Items = $i } } elseif ($texts -match 'bereits eingerichtet|already set up') { @{ State = 'eingerichtet'; Text = $texts; Items = $i } }
+        } 20
+        if (-not $outcome) { Stop-Step 'weder Hinweis noch Rückfrage nach „Vom offiziellen Client übernehmen…“ (20 s)' }
+        $shot = Write-BasicStep $ctx 'umstieg-2' ('zweiter Umstieg: {0}' -f $outcome.State)
+        $text = Limit-Text (Protect-Text $outcome.Text) 600
+        if ($outcome.State -eq 'eingerichtet') {
+            $ok = Find-UiButton @($outcome.Items | Where-Object { $_.Window -match $legacyTitlePattern }) '' '^&?OK$'
+            $how = Invoke-UiClick $ctx $ok
+            Add-Timeline ('Klick: "OK" im Hinweis ({0})' -f $how)
+            return ('Hinweis: „{0}“; Foto {1}' -f $text, $shot)
+        }
+        # schon übernommen und doch wieder angeboten: abbrechen, sonst entstünde ein zweites Konto
+        $cancel = Find-UiButton @($outcome.Items | Where-Object { $_.Window -match $legacyTitlePattern }) '' '^(Abbrechen|Cancel)$'
+        $how = Invoke-UiClick $ctx $cancel
+        Add-Timeline ('Klick: "Abbrechen" in der Rückfrage ({0})' -f $how)
+        Stop-Step ('das schon übernommene Konto wird erneut zur Übernahme angeboten: „{0}“; Foto {1}' -f $text, $shot)
     }
 
     $null = Invoke-DauerStep $dl 'D13' ('Betrieb bis {0} min nach dem Neustart: der Prozess lebt und reagiert' -f $RunMinutes) {
@@ -6292,8 +6401,10 @@ function Add-LangLogChecks {
     }
     $text = Read-SharedText $Ctx.Log
     $lines = @($text -split "`r?`n" | Where-Object { $_ })
-    $runLines = @($lines | Where-Object { $t = Get-LogLineTime $_; $Dl.T0 -and $t -and $t -ge $Dl.T0.AddSeconds(-1) })
     $endTime = if ($Dl.Samples.Count -gt 0) { $Dl.Samples[$Dl.Samples.Count - 1].Zeit } else { Get-Date }
+    # nur der Betrieb: ohne das Beenden über --quit danach (dabei melden sich die Konten ab)
+    $until = $endTime.AddSeconds(30)
+    $runLines = @($lines | Where-Object { $t = Get-LogLineTime $_; $t -and $t -ge $Dl.T0.AddSeconds(-1) -and $t -le $until })
 
     # L7: Access-Token erneuert, ohne dass der Client nach einer Anmeldung fragt; Lebensdauer aus expires_in ("valid for N s")
     $callback = @($lines | Where-Object { $_ -match 'Browser callback received' }) | Select-Object -First 1
@@ -6518,7 +6629,7 @@ function Write-Report {
     }
     if ($Scenario -eq 'dauerlauf') {
         $head.Add(('- Server: `{0}` (Browser-Anmeldung, Testkonto aus E2E_ONLINE_USER_1/E2E_ONLINE_PASS_1) und `{1}` (Kennwort, E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2) im selben Profil; mindestens {2} min Betrieb nach dem Neustart; Serverumzug auf `{3}` (dieselbe Instanz) und zurück' -f $ServerUrl, $BasicServerUrl, $RunMinutes, $MoveServerUrl))
-        $head.Add('- Tray-Symbol (T1–T5), Serverumzug (S1, S2) und Umstieg des Kontos mit Kennwort (U1) per Maus; Elemente des Infobereichs der Taskleiste (tray-*.txt), wenn das Symbol nicht zu finden war')
+        $head.Add('- Tray-Symbol (T1–T5), Serverumzug mit Gegenproben für dasselbe Konto (S0–S3) und Umstieg des Kontos mit Kennwort (U1, U2) per Maus; Elemente des Infobereichs der Taskleiste (tray-*.txt), wenn das Symbol nicht zu finden war')
         $head.Add('- Bildschirmfotos (foto-*.png, Anmeldenamen geschwärzt), Ablauf (dauerlauf-ablauf.txt) und Protokolle des Clients vor und nach dem Neustart (d1-client.log, d2-client.log, ohne Zugangsdaten) liegen im Artefakt; Speicherabbilder nicht (der Client kannte Kennwort und Tokens), nur ihre Auswertung mit cdb')
     }
     if ($Scenario -eq 'dauerlauf-lang') {
