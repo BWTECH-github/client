@@ -468,6 +468,7 @@ void OAuth::fetchWellKnown()
         _tokenEndpoint = Utility::concatUrlPath(_serverUrl, ownCloudOAuthTokenPathC);
         _redirectUrl = ownCloudOAuthRedirectUrlC;
         _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
+        _usesOpenIdConnect = false;
     };
 
     QNetworkRequest req;
@@ -495,6 +496,8 @@ void OAuth::fetchWellKnown()
             _authEndpoint = QUrl::fromEncoded(data[QStringLiteral("authorization_endpoint")].toString().toUtf8());
             _tokenEndpoint = QUrl::fromEncoded(data[QStringLiteral("token_endpoint")].toString().toUtf8());
             _redirectUrl = ownCloudOAuthRedirectUrlC;
+            // ohne brauchbare Endpunkte setzt der Rückfall unten das zurück
+            _usesOpenIdConnect = true;
 
             const auto authMethods = data.value(QStringLiteral("token_endpoint_auth_methods_supported")).toArray();
             if (authMethods.contains(QStringLiteral("client_secret_basic"))) {
@@ -685,11 +688,13 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
                 ? QStringLiteral("HTTP %1: %2").arg(QString::number(httpStatus), jsonParseError.errorString())
                 : QStringLiteral("HTTP %1").arg(QString::number(httpStatus));
             QString reason;
-            if (error == QLatin1String("unauthorized_client")) {
+            if (error == QLatin1String("unauthorized_client") && !_usesOpenIdConnect) {
                 // die oauth2-App: Konto deaktiviert oder gelöscht („user not enabled“)
                 reason = QCoreApplication::translate("OCC::AccountBasedOAuth", "Your account on the server is disabled (%1). Please contact your system administrator.")
                              .arg(oauthError);
-            } else if (error == QLatin1String("invalid_client")) {
+            } else if (error == QLatin1String("invalid_client") || error == QLatin1String("unauthorized_client")) {
+                // bei einem OpenID-Connect-Anbieter heißt unauthorized_client: Diese Anwendung bekommt so kein Token (RFC 6749,
+                // Abschnitt 5.2), über das Konto sagt das nichts
                 reason = QCoreApplication::translate(
                     "OCC::AccountBasedOAuth", "The sign-in service of the server does not accept this application (%1). Please contact your system administrator.")
                              .arg(oauthError);

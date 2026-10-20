@@ -138,9 +138,16 @@ Credentials::Credentials(const QString &token, const QString &refreshToken, Acco
     _storeRetryTimer.setSingleShot(true);
     connect(&_storeRetryTimer, &QTimer::timeout, this, &Credentials::writeRefreshToken);
 
-    // wieder im Netz: nicht die volle Pause abwarten
-    connect(NetworkInformation::instance(), &NetworkInformation::reachabilityChanged, this, [this] {
-        if (_refreshRetryTimer.isActive() && networkAvailable()) {
+    // wieder im Netz: nicht die volle Pause abwarten. Das ist nur der Übergang aus Disconnected; ein Wechsel zwischen
+    // erreichbaren Zuständen (Windows bewertet die Verbindung neu: Online, Site, Local, Unknown) ist kein Anlass.
+    auto *network = NetworkInformation::instance();
+    if (const auto *qni = QNetworkInformation::instance()) {
+        _reachability = qni->reachability();
+    }
+    connect(network, &NetworkInformation::reachabilityChanged, this, [this](NetworkInformation::Reachability reachability) {
+        const bool back = _reachability == NetworkInformation::Reachability::Disconnected && reachability != NetworkInformation::Reachability::Disconnected;
+        _reachability = reachability;
+        if (back && _refreshRetryTimer.isActive() && networkAvailable()) {
             qCInfo(lcCredentials) << "Network is back, retrying the token refresh soon";
             bringRetryForward(networkBackRetryDelay);
         }
@@ -715,14 +722,16 @@ void Credentials::askFromUserSucceeded(const QString &token, const QString &refr
     }
 }
 
-void Credentials::replaceTokens(const QString &accessToken, const QString &refreshToken)
+void Credentials::replaceTokens(const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt)
 {
     _fetchErrorString.clear();
     // sonst läse checkConnectivity() erst den Schlüsselbund, während der neue Token noch geschrieben wird
     _wasEverFetched = true;
+    // restliche Lebensdauer; schon abgelaufen: bald erneuern (die Lebensdauer 0 hieße „unbekannt“)
+    const qint64 expiresIn = accessTokenExpiresAt > 0 ? std::max<qint64>(1, accessTokenExpiresAt - QDateTime::currentSecsSinceEpoch()) : 0;
     // askFromUserSucceeded() verwirft über stopRefresh() eine Erneuerung gegen die alte Adresse samt Pausen: ihr Ergebnis
     // darf die neuen Token nicht überschreiben
-    askFromUserSucceeded(accessToken, refreshToken, 0);
+    askFromUserSucceeded(accessToken, refreshToken, expiresIn);
 }
 
 void Credentials::askFromUserLogout()

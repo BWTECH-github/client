@@ -10,11 +10,14 @@
 // Ruhezustand, Pausen bei Netz- und Serverfehlern, eine neue Anmeldung nur bei invalid_grant, das neue Refresh-Token
 // zuerst im Schlüsselbund.
 
+#include "accountmanager.h"
 #include "accountstate.h"
 #include "common/syncjournaldb.h"
 #include "common/vfs.h"
 #include "creds/credentials.h"
+#include "gui/networkinformation.h"
 #include "networkjobs/jsonjob.h"
+#include "newaccountwizard/newaccountmodel.h"
 #include "syncengine.h"
 #include "syncoptions.h"
 #include "testutils/syncenginetestutils.h"
@@ -88,6 +91,8 @@ public:
     QList<std::pair<int, QByteArray>> tokenFailures;
     // Ablehnungen (401) auf diese Pfade kommen verzögert
     QStringList slowUnauthorizedPaths;
+    // .well-known nennt die Endpunkte wie bei einem OpenID-Connect-Anbieter (sonst 404 wie bei der oauth2-App)
+    bool openIdConnect = false;
 
     int statusRequests = 0;
     int tokenRequests = 0;
@@ -152,6 +157,16 @@ public:
             }
             if (path.endsWith(QLatin1String(".well-known/openid-configuration"))) {
                 wellKnownRequestList.append(request);
+                if (openIdConnect) {
+                    // derselbe Token-Endpunkt, nur über .well-known gefunden
+                    const QString base = serverUrlC.toString();
+                    const QString authorize = base + QStringLiteral("/index.php/apps/oauth2/authorize");
+                    const QString token = base + QStringLiteral("/index.php/apps/oauth2/api/v1/token");
+                    return new FakePayloadReply(op, request,
+                        toJson({{QStringLiteral("issuer"), base}, {QStringLiteral("authorization_endpoint"), authorize},
+                            {QStringLiteral("token_endpoint"), token}}),
+                        replyParent);
+                }
                 // wie bei owncloud.online: kein OpenID Connect, der Client nimmt die Wege der oauth2-App
                 return new FakeErrorReply(op, request, replyParent, 404);
             }
@@ -1029,6 +1044,72 @@ private Q_SLOTS:
         QCOMPARE(f.credentials->askedUser, 0);
     }
 
+    // Nur die Rückkehr ins Netz (aus „getrennt“) zieht den nächsten Versuch vor. Ein Wechsel zwischen erreichbaren Zuständen
+    // (Windows bewertet die Verbindung neu: Online, Site, Local, Unknown) ist kein Anlass, sonst ginge er an der Pause vorbei.
+    void testOnlyNetworkReturnEndsThePause()
+    {
+        // Arrange: die Erneuerung scheitert, lange Pause; ein echter Anlass dürfte sofort erneuern
+        Fixture f;
+        QObject scope;
+        auto *network = NetworkInformation::instance();
+        Q_EMIT network->reachabilityChanged(NetworkInformation::Reachability::Online);
+        f.credentials->retryDelay = 10min;
+        f.credentials->explicitRetry = 0ms;
+        f.server.tokenFailures = {{503, QByteArrayLiteral("<html>Service Unavailable</html>")}};
+        f.server.expireAccessToken();
+        QSignalSpy delayedSpy(f.credentials, &AbstractCredentials::authenticationDelayed);
+        const auto request = f.get(&scope);
+        QTRY_COMPARE_WITH_TIMEOUT(delayedSpy.count(), 1, 10000);
+        QCOMPARE(f.server.tokenRequests, 1);
+
+        // Act: das Netz wechselt zwischen erreichbaren Zuständen
+        for (const auto reachability : {NetworkInformation::Reachability::Site, NetworkInformation::Reachability::Unknown,
+                 NetworkInformation::Reachability::Local, NetworkInformation::Reachability::Online}) {
+            Q_EMIT network->reachabilityChanged(reachability);
+        }
+        // länger als der Abstand, mit dem die Rückkehr ins Netz den nächsten Versuch vorzieht (2 s)
+        QTest::qWait(2500);
+
+        // Assert: die Pause läuft weiter
+        QCOMPARE(f.server.tokenRequests, 1);
+        QVERIFY(!request->finished);
+
+        // Act: das Netz war weg und ist wieder da
+        Q_EMIT network->reachabilityChanged(NetworkInformation::Reachability::Disconnected);
+        Q_EMIT network->reachabilityChanged(NetworkInformation::Reachability::Online);
+
+        // Assert: der nächste Versuch kommt gleich, die angehaltene Anfrage geht mit dem neuen Token durch
+        QTRY_VERIFY_WITH_TIMEOUT(request->finished, 10000);
+        QCOMPARE(request->error, QNetworkReply::NoError);
+        QCOMPARE(f.server.tokenRequests, 2);
+        QCOMPARE(f.credentials->askedUser, 0);
+    }
+
+    // unauthorized_client meldet die oauth2-App für ein deaktiviertes Konto. Ein OpenID-Connect-Anbieter meint damit: Diese
+    // Anwendung darf so kein Token bekommen (RFC 6749, Abschnitt 5.2). Dort nennt der Status kein deaktiviertes Konto.
+    void testUnauthorizedClientAtAnOpenIdConnectProvider()
+    {
+        // Arrange
+        Fixture f;
+        QObject scope;
+        f.server.openIdConnect = true;
+        f.server.expireAccessToken();
+        f.server.tokenFailures = {{400, toJson({{QStringLiteral("error"), QStringLiteral("unauthorized_client")}})}};
+        QSignalSpy delayedSpy(f.credentials, &AbstractCredentials::authenticationDelayed);
+
+        // Act
+        const auto request = f.get(&scope);
+
+        // Assert
+        QTRY_COMPARE_WITH_TIMEOUT(delayedSpy.count(), 1, 10000);
+        const QString message = delayedSpy.first().at(1).toString();
+        QVERIFY2(message.contains(QStringLiteral("does not accept this application")), qPrintable(message));
+        QVERIFY2(!message.contains(QStringLiteral("disabled")), qPrintable(message));
+        QTRY_VERIFY_WITH_TIMEOUT(request->finished, 10000);
+        QCOMPARE(request->error, QNetworkReply::NoError);
+        QCOMPARE(f.server.tokenRequests, 2);
+    }
+
     // Eine Abfrage der Servereinstellungen läuft noch, da kommt die nächste (das Konto verbindet sich neu, während Aufträge der
     // vorigen auf ein neues Token warten): keine zweite daneben, die laufende zählt. Mit FORCE_ASSERTS (Beta) beendete das
     // ASSERT in fetchServerSettings() hier den Client.
@@ -1123,6 +1204,29 @@ private Q_SLOTS:
         // Assert: vorbeugend erneuert
         QVERIFY(f.credentials->ready());
         QTRY_COMPARE_WITH_TIMEOUT(f.server.tokenRequests, 2, 5000);
+    }
+
+    // Assistent: Das Konto übernimmt den Ablaufzeitpunkt aus dem Modell (AccountManager::createAccount()). Ein inzwischen
+    // abgelaufenes Token gilt gleich als abgelaufen; ohne Angabe (0) wie bisher, bis der Server es ablehnt.
+    void testNewAccountTakesTheTokenExpiry()
+    {
+        // Arrange
+        NewAccountModel model(nullptr);
+        model.setServerUrl(serverUrlC);
+        model.setDavUser(QStringLiteral("admin"));
+        model.setAuthToken(QStringLiteral("access-1"));
+        model.setRefreshToken(QStringLiteral("refresh-1"));
+        model.setCapabilities({serverUrlC, serverCapabilities()});
+
+        // Act
+        model.setAccessTokenExpiresAt(QDateTime::currentSecsSinceEpoch() - 1);
+        const std::unique_ptr<Account> expired(AccountManager::instance()->createAccount(model));
+        model.setAccessTokenExpiresAt(0);
+        const std::unique_ptr<Account> unknown(AccountManager::instance()->createAccount(model));
+
+        // Assert
+        QVERIFY(!expired->credentials()->ready());
+        QVERIFY(unknown->credentials()->ready());
     }
 
     // Lässt sich das neue Refresh-Token dauerhaft nicht speichern, zeigt das Konto einen Hinweis (nach einem Neustart droht eine

@@ -106,6 +106,8 @@ protected:
     OpenIdConfig _openIdConfig;
     QNetworkAccessManager *_networkAccessManager;
     bool _isRefreshingToken = false;
+    // .well-known nannte die Endpunkte (OpenID Connect); sonst gelten die Wege der oauth2-App
+    bool _usesOpenIdConnect = false;
 
     virtual void fetchWellKnown();
 

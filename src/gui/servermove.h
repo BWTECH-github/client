@@ -80,10 +80,12 @@ public:
     /**
      * Stellt das Konto auf @p newUrl um, wenn Server, Benutzer und Instanz geprüft sind: Ordnerpaare werden mit der neuen
      * WebDAV-Adresse neu aufgebaut (Journale, lokale Ordner und Einstellungen bleiben), die alten Zugangsdaten gelöscht und
-     * die neuen gespeichert, danach verbindet sich das Konto neu.
+     * die neuen gespeichert, danach verbindet sich das Konto neu. @p accessTokenExpiresAt: Ablauf des Access-Tokens nach der
+     * Uhr des Rechners (Sekunden seit 1970, 0: unbekannt), aus expires_in der Anmeldung an der neuen Adresse.
      * @return eine Fehlermeldung, leer bei Erfolg
      */
-    static QString applyNewServerUrl(AccountState *accountState, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
+    static QString applyNewServerUrl(
+        AccountState *accountState, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt = 0);
 };
 
 /**
@@ -158,9 +160,10 @@ public:
 
     /**
      * Schritt nach der Anmeldung an @p newUrl: Benutzer und Instanz prüfen (PROPFIND mit dem neuen Token), dann umstellen.
-     * Wird sonst nach der Anmeldung im Browser aufgerufen; öffentlich für Tests.
+     * Wird sonst nach der Anmeldung im Browser aufgerufen; öffentlich für Tests. @p accessTokenExpiresAt wie bei
+     * ServerMove::applyNewServerUrl().
      */
-    void verifyAndApply(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
+    void verifyAndApply(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt = 0);
 
 Q_SIGNALS:
     /// Zwischenstand für die Anzeige
@@ -180,9 +183,9 @@ private:
     /// merkt sich unbekannte Zertifikate für die Rückfrage nach der gescheiterten Prüfung, bekannte lässt es zu
     void onSslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
     void startSignIn(const QUrl &newUrl);
-    void finishVerification(QNetworkReply *reply, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
+    void finishVerification(QNetworkReply *reply, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt);
     /// stellt um, sobald kein Lauf des Kontos mehr läuft (geprüft alle 100 ms, ohne verschachtelte Ereignisschleife)
-    void applyWhenSyncsStopped(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
+    void applyWhenSyncsStopped(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt);
     /// beendet das Warten und gibt die angehaltene Synchronisation wieder frei
     void releaseSyncs();
     void fail(const QString &message);

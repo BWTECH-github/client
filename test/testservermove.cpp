@@ -131,6 +131,29 @@ FakeAM *serverWithTlsErrors(const FileInfo &server, const QList<QSslError> &tlsE
     });
     return accessManager;
 }
+
+// OAuth2-Zugangsdaten mit Schlüsselbund im Speicher und gefälschtem Netzwerkzugang: zeigt, mit welchem Ablauf die Token
+// nach dem Umzug gelten
+class InMemoryCredentials : public Credentials
+{
+public:
+    explicit InMemoryCredentials(Account *account)
+        : Credentials(account)
+    {
+    }
+
+    using Credentials::_accessTokenStaleAt;
+
+    OCC::AccessManager *createAccessManager() const override { return new FakeAM(FileInfo(), const_cast<InMemoryCredentials *>(this)); }
+
+protected:
+    void readRefreshToken(const ReadCallback &done) override { done(KeychainResult::NotFound, {}, QStringLiteral("no entry")); }
+    void storeRefreshToken(const QString &, const StoreCallback &done) override
+    {
+        QTimer::singleShot(0, this, [done] { done(true, {}); });
+    }
+    void removeRefreshToken() override { }
+};
 }
 
 class TestServerMove : public QObject
@@ -483,6 +506,55 @@ private Q_SLOTS:
         QCOMPARE(failed.size(), 0);
         QCOMPARE(account->url(), newUrl);
         QCOMPARE(TestUtils::folderMan()->foldersForAccount(account->uuid()).size(), 1);
+    }
+
+    // Nach dem Umzug gilt der Ablauf des Access-Tokens aus der Anmeldung an der neuen Adresse (expires_in): Das Konto erneuert
+    // vorbeugend wie nach jeder Anmeldung, nicht erst nach einer Ablehnung (401). Lief er bis zum Umstellen schon ab (Prüfung,
+    // Warten auf Synchronisationen), gilt er gleich als abgelaufen.
+    void testMoveKeepsTheTokenExpiry_data()
+    {
+        QTest::addColumn<qint64>("lifetime");
+        QTest::newRow("valid") << qint64(3600);
+        QTest::newRow("already expired") << qint64(-5);
+    }
+
+    void testMoveKeepsTheTokenExpiry()
+    {
+        // Arrange
+        QFETCH(qint64, lifetime);
+        auto dir = TestUtils::createTempDir();
+        QVERIFY(dir.isValid());
+        QVERIFY(QDir(dir.path()).mkpath(QStringLiteral("docs")));
+        auto accountState = createDummyAccountWithFileSupport(FileInfo::A12_B12_C12_S12());
+        Account *account = accountState->account();
+        account->setCapabilities({account->url(), oc10Capabilities()});
+        auto *credentials = new InMemoryCredentials(account);
+        account->setCredentials(credentials);
+        Folder *docs = TestUtils::folderMan()->addFolder(
+            accountState.get(), oc10FolderDefinition(account, QDir(dir.path()).canonicalPath() + QStringLiteral("/docs"), QStringLiteral("/")));
+        QVERIFY(docs);
+        addSyncedFile(docs, "a1", "ocinstance01");
+        FileInfo sameServer = FileInfo::A12_B12_C12_S12();
+        sameServer.fileId = "00000001ocinstance01";
+        auto *sameAm = new FakeAM(sameServer, nullptr);
+        ServerMoveController controller(accountState.get(), nullptr);
+        controller.setAccessManagerFactory([sameAm](QObject *parent) -> QNetworkAccessManager * {
+            sameAm->setParent(parent);
+            return sameAm;
+        });
+        QSignalSpy succeeded(&controller, &ServerMoveController::succeeded);
+        QSignalSpy fetched(credentials, &AbstractCredentials::fetched);
+        const qint64 expiresAt = QDateTime::currentSecsSinceEpoch() + lifetime;
+
+        // Act
+        controller.verifyAndApply(QUrl(QStringLiteral("https://neu.example.org/owncloud")), QStringLiteral("new-token"), QStringLiteral("new-refresh"), expiresAt);
+
+        // Assert: gilt eine Minute vor dem Ablauf als abgelaufen, ein schon abgelaufener gleich
+        QVERIFY(succeeded.wait());
+        QTRY_COMPARE(fetched.size(), 1);
+        const qint64 expectedStaleAt = lifetime > 0 ? expiresAt - 60 : QDateTime::currentSecsSinceEpoch() + 1;
+        QVERIFY2(qAbs(credentials->_accessTokenStaleAt - expectedStaleAt) <= 2,
+            qPrintable(QStringLiteral("stale at %1, expected %2").arg(credentials->_accessTokenStaleAt).arg(expectedStaleAt)));
     }
 
     // Eingaben, die gar nicht erst an einen Server gehen

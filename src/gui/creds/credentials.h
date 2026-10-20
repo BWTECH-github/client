@@ -21,6 +21,7 @@
 
 #include <QElapsedTimer>
 #include <QMap>
+#include <QNetworkInformation>
 #include <QSslCertificate>
 #include <QSslKey>
 #include <QNetworkRequest>
@@ -51,7 +52,7 @@ class RequestAuthenticationController;
  * deaktiviertes Konto oder abgeschalteter Anmeldedienst), bleibt das Refresh-Token, und nach einer wachsenden Pause
  * (30 s bis 5 min) folgt der nächste Versuch (authenticationDelayed() mit der Ursache). Die regelmäßige Kontoprüfung
  * verkürzt die Pause nicht; nur echte Anlässe ziehen den nächsten Versuch vor, frühestens 10 s nach dem letzten: wieder
- * im Netz, der Server antwortet nach einem Ausfall oder einer Wartung wieder, ein Zertifikat ist bestätigt
+ * im Netz (nach Disconnected), der Server antwortet nach einem Ausfall oder einer Wartung wieder, ein Zertifikat ist bestätigt
  * (retryRefreshSoon()). Nur wenn der Server das Refresh-Token ablehnt (invalid_grant), muss sich der Nutzer neu anmelden
  * (fetched() ohne Token, das Konto fragt dann über askFromUser()).
  *
@@ -120,9 +121,10 @@ public:
      * Übernimmt Token einer Anmeldung, die außerhalb dieses Objekts lief (Serverumzug: Anmeldung an der neuen Adresse).
      * Bricht eine laufende Erneuerung gegen die alte Adresse samt Pausen ab und schließt eine offene Neuanmeldung, wie
      * nach einer erfolgreichen Anmeldung: Das Refresh-Token kommt zuerst unter der aktuellen Kontoadresse in den
-     * Schlüsselbund, erst danach gilt das Access-Token (fetched()).
+     * Schlüsselbund, erst danach gilt das Access-Token (fetched()). Mit @p accessTokenExpiresAt (wie bei
+     * setAccessTokenExpiresAt(), 0: unbekannt) wird danach vorbeugend erneuert wie nach jeder Anmeldung.
      */
-    void replaceTokens(const QString &accessToken, const QString &refreshToken);
+    void replaceTokens(const QString &accessToken, const QString &refreshToken, qint64 accessTokenExpiresAt = 0);
 
     /** Pause vor dem n-ten Versuch nach vorübergehend gescheiterten Erneuerungen: 30 s, 60 s, 120 s, 240 s, dann 5 min. */
     static std::chrono::milliseconds defaultRefreshRetryDelay(int failedAttempts);
@@ -199,6 +201,8 @@ protected:
     QTimer _refreshRetryTimer;
     QTimer _proactiveRefreshTimer;
     QElapsedTimer _sinceRefreshAttempt;
+    // zuletzt gemeldete Erreichbarkeit: nur der Übergang aus Disconnected zieht den nächsten Versuch vor
+    QNetworkInformation::Reachability _reachability = QNetworkInformation::Reachability::Unknown;
     QString _refreshErrorString;
     bool _refreshMaintenance = false;
     // authenticationStarted() ist gesendet, fetched() oder authenticationFailed() steht aus

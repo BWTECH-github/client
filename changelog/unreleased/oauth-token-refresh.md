@@ -14,15 +14,18 @@ sign-in only when the server rejects it (invalid_grant). Network and server
 errors, timeouts, maintenance mode, unexpected answers, a disabled account
 and a disabled sign-in service keep the refresh token and are retried after
 30 seconds, growing to 5 minutes. The regular connection check of the
-account does not shorten this pause; only a returning network, a server
-that answers again after an outage or maintenance, or an accepted
-certificate brings the next attempt forward, at most every 10 seconds. The
-account status names the cause, for example "Your account on the server is
-disabled" or "The sign-in service of the server is not available". Only one
+account does not shorten this pause; only a network that comes back after
+being disconnected, a server that answers again after an outage or
+maintenance, or an accepted certificate brings the next attempt forward, at
+most every 10 seconds. The account status names the cause, for example
+"Your account on the server is disabled" (with an OpenID Connect provider
+"The sign-in service of the server does not accept this application") or
+"The sign-in service of the server is not available". Only one
 refresh runs at a time, and all requests rejected in the meantime are sent
 again with the new token. Tokens are renewed before they expire (at 80 % of
 their lifetime and, after sleep, before the next request), also the first
-token after a sign-in in the wizard or after a new sign-in. Token requests
+token after a sign-in in the wizard, after a new sign-in or after changing
+the server address of an account. Token requests
 carry no cookies and wait up to 120 seconds. A new refresh token is stored
 in the keychain before it is used; if that fails it stays in memory and
 storing it is retried. If storing keeps failing, the account shows a warning
