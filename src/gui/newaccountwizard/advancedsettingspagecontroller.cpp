@@ -25,6 +25,8 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMouseEvent>
+#include <QPointer>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QVBoxLayout>
@@ -32,6 +34,51 @@
 
 namespace OCC {
 
+namespace {
+    /**
+     * owncloud.online: QRadioButton bricht seinen Text nicht um. In der festen Breite des Assistenten war die erste Wahl schon
+     * deutsch ab „(spart …“ abgeschnitten, in längeren Übersetzungen noch früher. Der Knopf behält den Text als Namen für
+     * Bedienungshilfen; sichtbar steht er umbrochen daneben, ein Klick darauf wählt den Knopf.
+     */
+    class ChoiceLabel : public QLabel
+    {
+    public:
+        ChoiceLabel(QRadioButton *button, const QString &text, QWidget *parent)
+            : QLabel(text, parent)
+            , _button(button)
+        {
+            setTextFormat(Qt::PlainText);
+            setWordWrap(true);
+            setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+            setBuddy(button);
+        }
+
+    protected:
+        void mouseReleaseEvent(QMouseEvent *event) override
+        {
+            QLabel::mouseReleaseEvent(event);
+            if (event->button() == Qt::LeftButton && _button && _button->isEnabled() && rect().contains(event->position().toPoint())) {
+                _button->setFocus(Qt::MouseFocusReason);
+                _button->click();
+            }
+        }
+
+    private:
+        QPointer<QRadioButton> _button;
+    };
+
+    /** Zeile aus Knopf und umbrechendem Text; ein- und ausgeblendet wird die Zeile, nicht der Knopf */
+    QWidget *choiceRow(QRadioButton *button, const QString &text, QWidget *parent)
+    {
+        auto *row = new QWidget(parent);
+        auto *rowLayout = new QHBoxLayout(row);
+        rowLayout->setContentsMargins(0, 0, 0, 0);
+        button->setAccessibleName(text);
+        rowLayout->addWidget(button, 0, Qt::AlignTop);
+        rowLayout->addWidget(new ChoiceLabel(button, text, row), 1);
+        return row;
+    }
+}
 
 AdvancedSettingsPageController::AdvancedSettingsPageController(QWizardPage *page, QObject *parent)
     : QObject{parent}
@@ -74,31 +121,34 @@ void AdvancedSettingsPageController::buildPage()
     layout->addSpacing(8);
     layout->addWidget(syncOptionsLabel);
 
-    _vfsButton = new QRadioButton(tr("Sync and download files as you use them (saves hard drive space)"), _page);
+    _vfsButton = new QRadioButton(_page);
     _vfsButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(_vfsButton, NewAccount::SyncType::USE_VFS);
-    layout->addWidget(_vfsButton);
+    QWidget *vfsRow = choiceRow(_vfsButton, tr("Sync and download files as you use them (saves hard drive space)"), _page);
+    layout->addWidget(vfsRow);
 
-    _syncAllButton = new QRadioButton(tr("Automatically sync and download folders and files"), _page);
+    _syncAllButton = new QRadioButton(_page);
     _syncAllButton->setObjectName("SyncAllRadioButton");
     _syncAllButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(_syncAllButton, NewAccount::SyncType::SYNC_ALL);
-    layout->addWidget(_syncAllButton);
+    QWidget *syncAllRow = choiceRow(_syncAllButton, tr("Automatically sync and download folders and files"), _page);
+    layout->addWidget(syncAllRow);
 
-    _selectiveSyncButton = new QRadioButton(tr("Sync and download folders manually"), _page);
+    _selectiveSyncButton = new QRadioButton(_page);
     _selectiveSyncButton->setObjectName("SelectiveSyncRadioButton");
     _selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
     _buttonGroup->addButton(_selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
-    layout->addWidget(_selectiveSyncButton);
+    QWidget *selectiveSyncRow = choiceRow(_selectiveSyncButton, tr("Sync and download folders manually"), _page);
+    layout->addWidget(selectiveSyncRow);
 
     connect(_buttonGroup, &QButtonGroup::idClicked, this, &AdvancedSettingsPageController::syncTypeChanged);
 
     if (!_vfsIsAvailable) {
-        _vfsButton->setVisible(false);
+        vfsRow->setVisible(false);
     } else if (_forceVfs) {
         _vfsButton->setEnabled(false);
-        _selectiveSyncButton->setVisible(false);
-        _syncAllButton->setVisible(false);
+        selectiveSyncRow->setVisible(false);
+        syncAllRow->setVisible(false);
     }
 
     Q_ASSERT(_buttonGroup->button(_defaultSyncType));
