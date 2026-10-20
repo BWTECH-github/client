@@ -22,6 +22,7 @@
 #include "networkadapters/fetchcapabilitiesadapter.h"
 #include "networkadapters/userinfoadapter.h"
 #include "theme.h"
+#include "wizardpagelayout.h"
 
 #include <QFormLayout>
 #include <QGuiApplication>
@@ -120,7 +121,8 @@ void BasicCredentialsPageController::buildPage()
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel);
     layout->addStretch(1);
-    _page->setLayout(layout);
+    // wie die übrigen Seiten: eine Fehlermeldung oder größere Schrift rollt, statt unter der Knopfzeile zu verschwinden
+    setScrollableWizardPageLayout(_page, layout);
 
     updateColorsAndIcons();
 }
