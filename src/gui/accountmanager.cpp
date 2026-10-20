@@ -19,6 +19,7 @@
 #include "configfile.h"
 #include "creds/credentialmanager.h"
 #include "creds/credentials.h"
+#include "creds/httpcredentialsgui.h"
 #include "guiutility.h"
 
 #include <QQmlEngine>
@@ -76,6 +77,30 @@ QString capabilitesC()
 {
     return "capabilities";
 }
+
+// Anmeldeart und Anmeldename wie im 6.0.3-Client, damit beide Richtungen die Konfiguration lesen können: http_oauth
+// (true: Browser, false: Benutzername und Kennwort), http_user (Anmeldename), http_CredentialVersion und die Kopie user
+QString httpOAuthC()
+{
+    return "http_oauth";
+}
+
+QString httpUserC()
+{
+    return "http_user";
+}
+
+QString httpCredentialVersionC()
+{
+    return "http_CredentialVersion";
+}
+
+QString userC()
+{
+    return "user";
+}
+
+constexpr int credentialVersionC = 1;
 }
 
 
@@ -132,10 +157,15 @@ Account *AccountManager::createAccount(const NewAccountModel &model)
     account->setDavDisplayName(model.displayName());
     account->setAccountAlias(account->calculateAlias());
 
-    Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), account);
-    // sonst wüsste das Konto in der ersten Stunde nichts vom Ablauf: keine vorbeugende Erneuerung, nur der Weg über 401
-    creds->setAccessTokenExpiresAt(model.accessTokenExpiresAt());
-    account->setCredentials(creds);
+    if (model.authType() == AuthenticationType::Basic) {
+        // Server ohne die App „OAuth2“: Benutzername und Kennwort wie im 6.0.3-Client
+        account->setCredentials(new HttpCredentialsGui(account, model.loginUser(), model.password()));
+    } else {
+        Credentials *creds = new Credentials(model.authToken(), model.refreshToken(), account);
+        // sonst wüsste das Konto in der ersten Stunde nichts vom Ablauf: keine vorbeugende Erneuerung, nur der Weg über 401
+        creds->setAccessTokenExpiresAt(model.accessTokenExpiresAt());
+        account->setCredentials(creds);
+    }
 
     account->addApprovedCerts(model.trustedCertificates());
     QString syncRoot = model.defaultSyncRoot();
@@ -180,6 +210,17 @@ void AccountManager::saveAccount(Account *account)
     }
     if (account->hasDefaultSyncRoot()) {
         settings->setValue(defaultSyncRootC(), account->defaultSyncRoot());
+    }
+    if (const AbstractCredentials *credentials = account->credentials()) {
+        const AuthenticationType authType = credentials->authenticationType();
+        if (authType != AuthenticationType::Unknown) {
+            // das Kennwort bzw. Refresh-Token liegt im Schlüsselbund (AbstractCredentials::persist), hier nur die Art
+            const QString loginUser = authType == AuthenticationType::Basic ? credentials->loginUser() : account->davUser();
+            settings->setValue(httpCredentialVersionC(), credentialVersionC);
+            settings->setValue(httpOAuthC(), authType == AuthenticationType::OAuth);
+            settings->setValue(httpUserC(), loginUser);
+            settings->setValue(userC(), loginUser);
+        }
     }
 
     // Save accepted certificates.
@@ -300,7 +341,22 @@ Account *AccountManager::loadAccountHelper(QSettings &settings)
     acc->setCapabilities(caps);
     acc->setDefaultSyncRoot(settings.value(defaultSyncRootC()).toString());
 
-    acc->setCredentials(new Credentials(acc));
+    // Anmeldeart wie in 6.0.3 gespeichert: http_oauth=false heißt Benutzername und Kennwort (der Anmeldename steht in
+    // http_user, älter in user, notfalls ist er der Benutzername des Kontos); ohne Angabe OAuth2
+    const QVariant httpOAuth = settings.value(httpOAuthC());
+    if (httpOAuth.isValid() && !httpOAuth.toBool()) {
+        QString loginUser;
+        for (const QString &key : {httpUserC(), userC(), davUserC()}) {
+            loginUser = settings.value(key).toString();
+            if (!loginUser.isEmpty()) {
+                break;
+            }
+        }
+        qCInfo(lcAccountManager) << "Account" << url.toDisplayString() << "signs in with user name and password as" << loginUser;
+        acc->setCredentials(new HttpCredentialsGui(acc, loginUser, QString()));
+    } else {
+        acc->setCredentials(new Credentials(acc));
+    }
 
     // now the server cert, it is in the general group
     settings.beginGroup("General");
@@ -308,19 +364,6 @@ Account *AccountManager::loadAccountHelper(QSettings &settings)
     qCInfo(lcAccountManager) << "Restored: " << certs.count() << " unknown certs.";
     acc->setApprovedCerts({certs.begin(), certs.end()});
     settings.endGroup();
-
-    // 7.0 config settings maintenance: clean up legacy settings related to the old style credentials
-    // todo: remove this when we get to 8.0
-    QString credsVersion = "http_CredentialVersion";
-    if (settings.contains(credsVersion)) {
-        settings.remove("user");
-        const QString authTypePrefix = "http_";
-        const auto childKeys = settings.childKeys();
-        for (const auto &key : childKeys) {
-            if (key.startsWith(authTypePrefix))
-                settings.remove(key);
-        }
-    }
 
     return acc;
 }

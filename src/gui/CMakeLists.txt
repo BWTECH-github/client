@@ -48,6 +48,8 @@ set(client_SRCS
 
     creds/oauth.cpp
     creds/credentials.cpp
+    creds/httpcredentialsgui.cpp
+    creds/basicauthenticationwidget.cpp
     creds/requestauthenticationwidget.cpp
     creds/requestauthenticationcontroller.cpp
     creds/oauthhtmlpage.cpp

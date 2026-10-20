@@ -183,7 +183,12 @@ QUrl NewAccountModel::effectiveUserInfoUrl() const
 
 bool NewAccountModel::isComplete() const
 {
-    bool authInfoComplete = !_davUser.isEmpty() && !_authToken.isEmpty() && !_refreshToken.isEmpty();
+    bool authInfoComplete = !_davUser.isEmpty();
+    if (_authType == AuthenticationType::Basic) {
+        authInfoComplete = authInfoComplete && !_loginUser.isEmpty() && !_password.isEmpty();
+    } else {
+        authInfoComplete = authInfoComplete && !_authToken.isEmpty() && !_refreshToken.isEmpty();
+    }
     bool syncInfoComplete = false;
     if (_syncType != NewAccount::SyncType::NONE) {
         if (_syncType == NewAccount::SyncType::SELECTIVE_SYNC && _defaultSyncRoot.isEmpty())
