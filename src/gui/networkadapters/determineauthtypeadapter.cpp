@@ -71,15 +71,23 @@ DetermineAuthTypeResult DetermineAuthTypeAdapter::getResult()
 
     if (reply->error() == QNetworkReply::AuthenticationRequiredError) {
         // the header key is case insensitive per debug testing
-        const QByteArray rawHeader = reply->rawHeader(QByteArrayLiteral("www-authenticate")).toLower();
+        const QByteArray rawHeader = reply->rawHeader(QByteArrayLiteral("www-authenticate"));
+        res.type = authenticationTypeFromChallenge(rawHeader);
 
-        if (rawHeader.contains(QByteArrayLiteral("bearer "))) {
-            res.type = AuthenticationType::OAuth;
-        } else {
+        if (res.type == AuthenticationType::Basic) {
+            // Ein Server mit OpenID Connect braucht die App „OAuth2“ nicht; sein WebDAV verlangt womöglich trotzdem kein
+            // Bearer-Token. Dann meldet sich der Nutzer wie bisher im Browser an, sonst mit Benutzername und Kennwort.
+            if (offersOpenIdConnect()) {
+                qCInfo(lcDetermineAuthTypeAdapter) << "Server offers OpenID Connect, signing in in the browser";
+                res.type = AuthenticationType::OAuth;
+            } else {
+                qCInfo(lcDetermineAuthTypeAdapter) << "Server asks for user name and password";
+            }
+        } else if (res.type == AuthenticationType::Unknown) {
             if (rawHeader.isEmpty()) {
                 qCWarning(lcDetermineAuthTypeAdapter) << "Did not receive WWW-Authenticate reply to auth-test PROPFIND";
             } else {
-                qCWarning(lcDetermineAuthTypeAdapter) << "Did not receive bearer in WWW-Authenticate reply to auth-test PROPFIND";
+                qCWarning(lcDetermineAuthTypeAdapter) << "Did not receive bearer or basic in WWW-Authenticate reply to auth-test PROPFIND";
             }
             res.issue = probeMissingOAuth();
             res.error =
@@ -98,17 +106,22 @@ DetermineAuthTypeResult DetermineAuthTypeAdapter::getResult()
     return res;
 }
 
-ServerDiagnostics::Issue DetermineAuthTypeAdapter::probeMissingOAuth()
+bool DetermineAuthTypeAdapter::offersOpenIdConnect()
 {
-    // Wer OpenID Connect anbietet, braucht die App „OAuth2“ nicht; dann liegt die Ursache woanders
     QNetworkRequest openIdRequest = AbstractCoreJobFactory::makeRequest(Utility::concatUrlPath(_url, openIdConfigurationPathC));
     openIdRequest.setAttribute(DontAddCredentialsAttribute, true);
     openIdRequest.setTransferTimeout(probeTimeoutMsC);
     QNetworkReply *openIdReply = _nam->get(openIdRequest);
     waitForFinished(openIdReply);
-    const bool offersOpenIdConnect = openIdReply->error() == QNetworkReply::NoError && ServerDiagnostics::isOpenIdConfiguration(openIdReply->readAll());
+    const bool offers = openIdReply->error() == QNetworkReply::NoError && ServerDiagnostics::isOpenIdConfiguration(openIdReply->readAll());
     delete openIdReply;
-    if (offersOpenIdConnect) {
+    return offers;
+}
+
+ServerDiagnostics::Issue DetermineAuthTypeAdapter::probeMissingOAuth()
+{
+    // Wer OpenID Connect anbietet, braucht die App „OAuth2“ nicht; dann liegt die Ursache woanders
+    if (offersOpenIdConnect()) {
         qCWarning(lcDetermineAuthTypeAdapter) << "Server offers OpenID Connect but did not ask for a bearer token";
         return ServerDiagnostics::Issue::Other;
     }

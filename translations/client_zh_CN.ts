@@ -1112,6 +1112,132 @@ The update will be performed in the background, and overwrite the current AppIma
     </message>
 </context>
 <context>
+    <name>OCC::BasicAuthenticationWidget</name>
+    <message>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <source>Application Name Logo %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>应用名称徽标 %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sign in required</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>需要登录</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Please enter your password to sign in to %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>请输入您的密码以登录 %1。</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Recommended: use an app password instead of your account password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>建议：使用应用密码代替您的账户密码。</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Additional logo defined by the organization</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>组织定义的附加徽标</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Stay logged out</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>保持注销状态</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Sign in</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>登录</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>User name:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>用户名：</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>密码：</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::BasicCredentialsPageController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <source>Application Name Logo %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>应用名称徽标 %1</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Recommended: use an app password instead of your account password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>建议：使用应用密码代替您的账户密码。</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Additional logo defined by the organization</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>组织定义的附加徽标</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>User name:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>用户名：</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>密码：</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Sign in to %1 with your user name and password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>请使用您的用户名和密码登录 %1。</translation>
+    </message>
+    <message>
+        <location line="+73"/>
+        <source>Please enter your user name and password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>请输入您的用户名和密码。</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>用户名或密码不正确。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>You are already connected to an account with these credentials.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>您已使用这些凭据连接到某个账户。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Unable to retrieve capabilities from server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>无法从服务器获取功能信息。</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The server is not supported by this client.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>此客户端不支持该服务器。</translation>
+    </message>
+</context>
+<context>
     <name>OCC::BulkPropagatorJob</name>
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
@@ -1221,7 +1347,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+86"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+94"/>
         <source>Server does not support OAuth</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>服务器不支持 OAuth</translation>
@@ -1296,7 +1422,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+67"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
         <source>server sent invalid content type: %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>服务器发送了无效的内容类型：%1。</translation>
@@ -2046,6 +2172,15 @@ This means that the synchronization client might not upload local changes immedi
     </message>
 </context>
 <context>
+    <name>OCC::HttpCredentialsGui</name>
+    <message>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>用户名或密码不正确。</translation>
+    </message>
+</context>
+<context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
@@ -2193,7 +2328,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 <context>
     <name>OCC::LegacyClient</name>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+363"/>
         <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>官方客户端正在运行,并且也在同步文件夹 %1。请退出官方客户端,以免两个程序同时同步该文件夹。</translation>
@@ -2262,13 +2397,13 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location line="+4"/>
         <location line="+5"/>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>从官方客户端导入</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-26"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>官方客户端的所有账户均已设置。</translation>
@@ -2280,10 +2415,10 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>此计算机上已设置官方桌面客户端。是否迁移其账户和同步文件夹?</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <location line="+4"/>
+        <source>You sign in once per account. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>每个账户需在浏览器中登录一次。已同步的文件夹会被识别,不会重新下载。官方客户端中不会做任何更改。</translation>
+        <translation>每个账户需登录一次。已同步的文件夹会被识别，不会重新下载。官方客户端中不会做任何更改。</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2322,7 +2457,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>仍然导入</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Sign in: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登录:%1</translation>
@@ -2762,7 +2897,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizard</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="+52"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="+68"/>
         <source>Cancel Setup</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>取消设置</translation>
@@ -2777,7 +2912,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+70"/>
         <source>Add account…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>添加账户…</translation>
@@ -2793,13 +2928,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>高级</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+198"/>
+        <location line="+5"/>
         <source>Sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登录</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Open sign in again</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>重新打开登录</translation>
@@ -3920,28 +4056,41 @@ Note that using any logging command line options will override the settings.</so
         <translation>新地址:</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+5"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>密码：</translation>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>Open browser again</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>重新打开浏览器</translation>
     </message>
     <message>
         <location line="+4"/>
+        <location line="+97"/>
         <source>Check and sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>检查并登录</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-71"/>
         <source>Sign-in link: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登录链接:%1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Sign in</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>登录</translation>
     </message>
 </context>
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+489"/>
+        <location filename="../src/gui/servermove.cpp" line="+510"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在检查 %1…</translation>
@@ -3953,7 +4102,26 @@ Note that using any logging command line options will override the settings.</so
         <translation>另一个账户已使用此地址和同一用户。</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+25"/>
+        <source>Checking how to sign in at %1…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>正在检查 %1 的登录方式…</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>The new address does not accept a user name and password. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>新地址不接受用户名和密码。地址未更改。</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Please enter the password of %1 for the new address.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>请输入 %1 在新地址的密码。</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <location line="+26"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在检查是否为同一服务器和同一用户…</translation>
@@ -3989,7 +4157,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>请在浏览器中使用与之前相同的用户登录新地址:%1。</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+56"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>用户名或密码不正确。</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>The new address did not accept the sign-in. The address was not changed.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>新地址未接受登录。地址未更改。</translation>
@@ -4034,7 +4208,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-402"/>
+        <location line="-525"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无法访问 %1 处的任何服务器。</translation>
@@ -5435,13 +5609,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
-        <source>Your web browser will be opened to complete sign in.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>将打开您的网页浏览器以完成登录。</translation>
-    </message>
-    <message>
-        <location line="+15"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 徽标</translation>
@@ -5452,10 +5620,16 @@ Note that using any logging command line options will override the settings.</so
         <translation>欢迎来到 %1</translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
+        <location line="-17"/>
+        <source>Sign in to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>请输入服务器地址以开始。将打开您的网页浏览器以完成登录。</translation>
+        <translation>登录以开始。</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Enter your server address to get started.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>请输入服务器地址以开始。</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -5488,7 +5662,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>无效的 URL 协议。仅接受 https。</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>The requested URL failed with query value: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>请求的 URL 失败，查询值：%1</translation>
@@ -5497,7 +5671,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+64"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
         <source>Network request to collect user info failed</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>获取用户信息的网络请求失败</translation>
@@ -5760,7 +5934,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-297"/>
+        <location filename="../src/gui/servermove.cpp" line="-312"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>请输入服务器的新地址。</translation>
@@ -5790,39 +5964,53 @@ Note that using any logging command line options will override the settings.</so
         <translation>地址不能包含“?”或“#”。</translation>
     </message>
     <message>
-        <location line="+138"/>
-        <location line="+221"/>
+        <location line="+143"/>
+        <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+25"/>
-        <location line="+65"/>
+        <location line="+112"/>
+        <location line="+28"/>
+        <location line="+73"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>该账户已不存在。</translation>
     </message>
     <message>
-        <location line="-456"/>
-        <location line="+222"/>
+        <location line="-589"/>
+        <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>只有不含空间的账户才能更改服务器地址。</translation>
     </message>
     <message>
-        <location line="-218"/>
-        <location line="+229"/>
+        <location line="-228"/>
+        <location line="+239"/>
         <location line="+60"/>
         <source>This is already the address of the account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>这已经是该账户的地址。</translation>
     </message>
     <message>
-        <location line="-284"/>
+        <location line="-292"/>
+        <location line="+374"/>
+        <source>The new address signs in in the browser, but this account uses a user name and password. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>新地址在浏览器中登录，但此账户使用用户名和密码。地址未更改。</translation>
+    </message>
+    <message>
+        <location line="-373"/>
+        <source>The new address asks for a user name and password, but this account signs in in the browser. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>新地址要求用户名和密码，但此账户在浏览器中登录。地址未更改。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>账户的同步仍在进行中。地址未更改,请重试。</translation>
     </message>
     <message>
-        <location line="+432"/>
+        <location line="+557"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>更改账户的服务器地址</translation>

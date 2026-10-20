@@ -226,6 +226,13 @@ namespace LegacyClient {
                         break;
                     }
                 }
+                // der Anmeldename (6.0.3: http_user, 2.x: user) für die Kennwortseite des Assistenten
+                for (const auto &key : {QStringLiteral("http_user"), QStringLiteral("user"), QStringLiteral("dav_user")}) {
+                    account.loginUser = settings.value(key).toString();
+                    if (!account.loginUser.isEmpty()) {
+                        break;
+                    }
+                }
                 account.displayName = settings.value(QStringLiteral("display-name")).toString();
                 QStringList seenPaths;
                 for (const auto &group : folderGroupsC) {

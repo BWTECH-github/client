@@ -1106,6 +1106,132 @@ The update will be performed in the background, and overwrite the current AppIma
     </message>
 </context>
 <context>
+    <name>OCC::BasicAuthenticationWidget</name>
+    <message>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <source>Application Name Logo %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Лого на приложението %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sign in required</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Необходимо е влизане</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Please enter your password to sign in to %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Въведете паролата си, за да влезете в %1.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Recommended: use an app password instead of your account password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Препоръчително: използвайте парола за приложение вместо паролата на профила си.</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Additional logo defined by the organization</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Допълнително лого, определено от организацията</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Stay logged out</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Оставане извън профила</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Sign in</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Влизане</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>User name:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Потребителско име:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Парола:</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::BasicCredentialsPageController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <source>Application Name Logo %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Лого на приложението %1</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Recommended: use an app password instead of your account password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Препоръчително: използвайте парола за приложение вместо паролата на профила си.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Additional logo defined by the organization</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Допълнително лого, определено от организацията</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>User name:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Потребителско име:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Парола:</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Sign in to %1 with your user name and password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Влезте в %1 с потребителското си име и парола.</translation>
+    </message>
+    <message>
+        <location line="+73"/>
+        <source>Please enter your user name and password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Въведете потребителското си име и парола.</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Потребителското име или паролата са грешни.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>You are already connected to an account with these credentials.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Вече сте свързани с профил с тези идентификационни данни.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Unable to retrieve capabilities from server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Възможностите на сървъра не могат да бъдат извлечени.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The server is not supported by this client.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Този сървър не се поддържа от този клиент.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::BulkPropagatorJob</name>
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
@@ -1215,7 +1341,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+86"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+94"/>
         <source>Server does not support OAuth</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Сървърът не поддържа OAuth</translation>
@@ -1290,7 +1416,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+67"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
         <source>server sent invalid content type: %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>сървърът изпрати невалиден тип съдържание: %1.</translation>
@@ -2044,6 +2170,15 @@ This means that the synchronization client might not upload local changes immedi
     </message>
 </context>
 <context>
+    <name>OCC::HttpCredentialsGui</name>
+    <message>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Потребителското име или паролата са грешни.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
@@ -2191,7 +2326,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 <context>
     <name>OCC::LegacyClient</name>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+363"/>
         <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Официалният клиент работи и също синхронизира папката %1. Затворете го, за да не се синхронизира папката от две програми едновременно.</translation>
@@ -2261,13 +2396,13 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location line="+4"/>
         <location line="+5"/>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Внасяне от официалния клиент</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-26"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Всички профили на официалния клиент вече са настроени.</translation>
@@ -2279,10 +2414,10 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>На този компютър е настроен официалният настолен клиент. Искате ли да прехвърлите неговите профили и папки за синхронизиране?</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <location line="+4"/>
+        <source>You sign in once per account. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Влизате веднъж за всеки профил в браузъра. Вече синхронизираните папки се разпознават и не се изтеглят отново. В официалния клиент нищо не се променя.</translation>
+        <translation>Влизате веднъж за всеки профил. Вече синхронизираните папки се разпознават и не се изтеглят отново. В официалния клиент нищо не се променя.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2321,7 +2456,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>Внасяне въпреки това</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Sign in: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Влизане: %1</translation>
@@ -2759,7 +2894,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizard</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="+52"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="+68"/>
         <source>Cancel Setup</source>
         <translation>Анулиране на настройката</translation>
     </message>
@@ -2772,7 +2907,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+70"/>
         <source>Add account…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Добавяне на профил…</translation>
@@ -2788,13 +2923,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>Разширени</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+198"/>
+        <location line="+5"/>
         <source>Sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Влизане</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Open sign in again</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Повторно отваряне на влизането</translation>
@@ -3912,28 +4048,41 @@ Note that using any logging command line options will override the settings.</so
         <translation>Нов адрес:</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+5"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Парола:</translation>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>Open browser again</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Отваряне на браузъра отново</translation>
     </message>
     <message>
         <location line="+4"/>
+        <location line="+97"/>
         <source>Check and sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Проверка и влизане</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-71"/>
         <source>Sign-in link: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Връзка за влизане: %1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Sign in</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Влизане</translation>
     </message>
 </context>
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+489"/>
+        <location filename="../src/gui/servermove.cpp" line="+510"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Проверка на %1…</translation>
@@ -3945,7 +4094,26 @@ Note that using any logging command line options will override the settings.</so
         <translation>Друг профил вече използва този адрес със същия потребител.</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+25"/>
+        <source>Checking how to sign in at %1…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Проверка на начина на влизане в %1…</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>The new address does not accept a user name and password. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Новият адрес не приема потребителско име и парола. Адресът не е променен.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Please enter the password of %1 for the new address.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Въведете паролата на %1 за новия адрес.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <location line="+26"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Проверка дали това е същият сървър и същият потребител…</translation>
@@ -3981,7 +4149,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>Влезте в браузъра на новия адрес със същия потребител като преди: %1.</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+56"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Потребителското име или паролата са грешни.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>The new address did not accept the sign-in. The address was not changed.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Новият адрес не прие влизането. Адресът не е променен.</translation>
@@ -4026,7 +4200,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-402"/>
+        <location line="-525"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Не може да се достигне сървър на %1.</translation>
@@ -5425,13 +5599,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
-        <source>Your web browser will be opened to complete sign in.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Уеб браузърът ще се отвори, за да завършите влизането.</translation>
-    </message>
-    <message>
-        <location line="+15"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Лого на %1</translation>
@@ -5442,10 +5610,16 @@ Note that using any logging command line options will override the settings.</so
         <translation>Добре дошли в %1</translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
+        <location line="-17"/>
+        <source>Sign in to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Въведете адреса на сървъра си, за да започнете. Уеб браузърът ще се отвори, за да завършите влизането.</translation>
+        <translation>Влезте, за да започнете.</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Enter your server address to get started.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Въведете адреса на сървъра си, за да започнете.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -5478,7 +5652,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>Невалидна схема на URL адреса. Приема се само https.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>The requested URL failed with query value: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Заявеният URL адрес е неуспешен със стойност на заявката: %1</translation>
@@ -5487,7 +5661,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+64"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
         <source>Network request to collect user info failed</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Мрежовата заявка за получаване на информация за потребителя е неуспешна</translation>
@@ -5751,7 +5925,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-297"/>
+        <location filename="../src/gui/servermove.cpp" line="-312"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Въведете новия адрес на Вашия сървър.</translation>
@@ -5781,39 +5955,53 @@ Note that using any logging command line options will override the settings.</so
         <translation>Адресът не трябва да съдържа „?“ или „#“.</translation>
     </message>
     <message>
-        <location line="+138"/>
-        <location line="+221"/>
+        <location line="+143"/>
+        <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+25"/>
-        <location line="+65"/>
+        <location line="+112"/>
+        <location line="+28"/>
+        <location line="+73"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Профилът вече не съществува.</translation>
     </message>
     <message>
-        <location line="-456"/>
-        <location line="+222"/>
+        <location line="-589"/>
+        <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Адресът на сървъра може да се промени само за профили без пространства.</translation>
     </message>
     <message>
-        <location line="-218"/>
-        <location line="+229"/>
+        <location line="-228"/>
+        <location line="+239"/>
         <location line="+60"/>
         <source>This is already the address of the account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Това вече е адресът на профила.</translation>
     </message>
     <message>
-        <location line="-284"/>
+        <location line="-292"/>
+        <location line="+374"/>
+        <source>The new address signs in in the browser, but this account uses a user name and password. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>На новия адрес се влиза чрез браузъра, но този профил използва потребителско име и парола. Адресът не е променен.</translation>
+    </message>
+    <message>
+        <location line="-373"/>
+        <source>The new address asks for a user name and password, but this account signs in in the browser. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Новият адрес изисква потребителско име и парола, но този профил влиза чрез браузъра. Адресът не е променен.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Синхронизиране на профила все още е в ход. Адресът не е променен, опитайте отново.</translation>
     </message>
     <message>
-        <location line="+432"/>
+        <location line="+557"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>промяна на адреса на сървъра на профила</translation>

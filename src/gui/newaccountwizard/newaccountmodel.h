@@ -15,6 +15,7 @@
 #pragma once
 
 #include "capabilities.h"
+#include "creds/credentialssupport.h"
 #include "newaccountenums.h"
 
 #include <QObject>
@@ -95,6 +96,17 @@ public:
     QString refreshToken() const;
     void setRefreshToken(const QString &newRefreshToken);
 
+    /** Anmeldeart des Servers: OAuth (Token oben) oder Basic (Anmeldename und Kennwort unten) */
+    AuthenticationType authType() const { return _authType; }
+    void setAuthType(AuthenticationType authType) { _authType = authType; }
+
+    /** Anmeldename bei Benutzername und Kennwort; kann vom davUser abweichen (LDAP) */
+    QString loginUser() const { return _loginUser; }
+    void setLoginUser(const QString &loginUser) { _loginUser = loginUser; }
+
+    QString password() const { return _password; }
+    void setPassword(const QString &password) { _password = password; }
+
     /** Ablauf des Access-Tokens nach der Uhr des Rechners (Sekunden seit 1970, 0: unbekannt), siehe OAuthPageResults */
     qint64 accessTokenExpiresAt() const { return _accessTokenExpiresAt; }
     void setAccessTokenExpiresAt(qint64 expiresAt) { _accessTokenExpiresAt = expiresAt; }
@@ -141,6 +153,9 @@ private:
     QString _davUser;
     QString _authToken;
     QString _refreshToken;
+    AuthenticationType _authType = AuthenticationType::OAuth;
+    QString _loginUser;
+    QString _password;
     qint64 _accessTokenExpiresAt = 0;
     Capabilities _capabilities{QUrl(), {}};
     QString _defaultSyncRoot;

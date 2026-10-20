@@ -75,8 +75,9 @@ QByteArray sampleConfig603(const QString &documents, const QString &root)
                           "0\\Folders\\31a0efd3-c1d6-45e4-ba22-b3522eeaa744\\virtualFilesMode=off\n"
                           "0\\Folders\\a27e5f56-87e8-410e-b41d-d2f970e1e794\\virtualFilesMode=wincfapi\n"
                           "0\\http_CredentialVersion=1\n"
-                          "0\\http_oauth=true\n"
-                          "0\\http_user=anna\n"
+                          "0\\http_oauth=false\n"
+                          // Anmeldename (LDAP) weicht vom Benutzernamen des Servers ab
+                          "0\\http_user=anna.beispiel\n"
                           "1\\url=https://other.example.org/owncloud\n"
                           "1\\dav_user=bob\n")
         .arg(documents, root)
@@ -159,6 +160,8 @@ private Q_SLOTS:
         const auto &anna = config->accounts.at(0);
         QCOMPARE(anna.url, QUrl(QStringLiteral("https://cloud.example.com")));
         QCOMPARE(anna.davUser, QStringLiteral("anna"));
+        // für die Kennwortseite des Assistenten (Server ohne die App „OAuth2“)
+        QCOMPARE(anna.loginUser, QStringLiteral("anna.beispiel"));
         QCOMPARE(anna.displayName, QStringLiteral("Anna Beispiel"));
         QCOMPARE(anna.displayString(), QStringLiteral("Anna Beispiel@cloud.example.com"));
         QCOMPARE(anna.folders.size(), 2);
@@ -180,6 +183,7 @@ private Q_SLOTS:
         const auto &bob = config->accounts.at(1);
         QCOMPARE(bob.url, QUrl(QStringLiteral("https://other.example.org/owncloud")));
         QCOMPARE(bob.davUser, QStringLiteral("bob"));
+        QCOMPARE(bob.loginUser, QStringLiteral("bob"));
         QVERIFY(bob.folders.isEmpty());
     }
 
@@ -196,6 +200,7 @@ private Q_SLOTS:
         QCOMPARE(config->accounts.size(), 1);
         const auto &account = config->accounts.first();
         QCOMPARE(account.davUser, QStringLiteral("anna"));
+        QCOMPARE(account.loginUser, QStringLiteral("anna"));
         QCOMPARE(account.folders.size(), 2);
         QCOMPARE(account.folders.at(0).absoluteJournalPath(), folder + QStringLiteral("/._sync_8a3c1f2b9d0e.db"));
         QVERIFY(!account.folders.at(0).usesVirtualFiles());

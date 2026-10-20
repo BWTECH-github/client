@@ -1032,6 +1032,122 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
     </message>
 </context>
 <context>
+    <name>OCC::BasicAuthenticationWidget</name>
+    <message>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <source>Application Name Logo %1</source>
+        <translation>Programlogotyp %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sign in required</source>
+        <translation>Inloggning krävs</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Please enter your password to sign in to %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ange ditt lösenord för att logga in på %1.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Recommended: use an app password instead of your account password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Rekommenderas: använd ett applösenord i stället för ditt kontolösenord.</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Additional logo defined by the organization</source>
+        <translation>Ytterligare logotyp definierad av organisationen</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Stay logged out</source>
+        <translation>Fortsätt vara utloggad</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Sign in</source>
+        <translation>Logga in</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>User name:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Användarnamn:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lösenord:</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::BasicCredentialsPageController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <source>Application Name Logo %1</source>
+        <translation>Programlogotyp %1</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Recommended: use an app password instead of your account password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Rekommenderas: använd ett applösenord i stället för ditt kontolösenord.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Additional logo defined by the organization</source>
+        <translation>Ytterligare logotyp definierad av organisationen</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>User name:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Användarnamn:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lösenord:</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Sign in to %1 with your user name and password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Logga in på %1 med ditt användarnamn och lösenord.</translation>
+    </message>
+    <message>
+        <location line="+73"/>
+        <source>Please enter your user name and password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ange ditt användarnamn och lösenord.</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Användarnamnet eller lösenordet är fel.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>You are already connected to an account with these credentials.</source>
+        <translation>Du är redan ansluten till ett konto med dessa inloggningsuppgifter.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Unable to retrieve capabilities from server.</source>
+        <translation>Det gick inte att hämta funktioner från servern.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The server is not supported by this client.</source>
+        <translation>Servern stöds inte av den här klienten.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::BulkPropagatorJob</name>
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
@@ -1137,7 +1253,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+86"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+94"/>
         <source>Server does not support OAuth</source>
         <translation>Servern stöder inte OAuth</translation>
     </message>
@@ -1208,7 +1324,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+67"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
         <source>server sent invalid content type: %1.</source>
         <translation>servern skickade en ogiltig innehållstyp: %1.</translation>
     </message>
@@ -1933,6 +2049,15 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
     </message>
 </context>
 <context>
+    <name>OCC::HttpCredentialsGui</name>
+    <message>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Användarnamnet eller lösenordet är fel.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
@@ -2080,7 +2205,7 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
 <context>
     <name>OCC::LegacyClient</name>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+363"/>
         <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Den officiella klienten körs och synkroniserar också mappen %1. Avsluta den så att mappen inte synkroniseras av två program samtidigt.</translation>
@@ -2150,13 +2275,13 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
     <message>
         <location line="+4"/>
         <location line="+5"/>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Importera från den officiella klienten</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-26"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Alla konton i den officiella klienten är redan konfigurerade.</translation>
@@ -2168,10 +2293,10 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
         <translation>Den officiella skrivbordsklienten är konfigurerad på den här datorn. Vill du ta över dess konton och synkroniseringsmappar?</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <location line="+4"/>
+        <source>You sign in once per account. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Du loggar in en gång per konto i webbläsaren. Mappar som redan synkroniseras känns igen och laddas inte ned igen. Ingenting ändras i den officiella klienten.</translation>
+        <translation>Du loggar in en gång per konto. Mappar som redan synkroniseras känns igen och laddas inte ned igen. Ingenting ändras i den officiella klienten.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2210,7 +2335,7 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
         <translation>Importera ändå</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Sign in: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logga in: %1</translation>
@@ -2628,7 +2753,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::NewAccountWizard</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="+52"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="+68"/>
         <source>Cancel Setup</source>
         <translation>Avbryt konfiguration</translation>
     </message>
@@ -2641,7 +2766,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+70"/>
         <source>Add account…</source>
         <translation>Lägg till konto…</translation>
     </message>
@@ -2656,12 +2781,13 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Avancerad</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+198"/>
+        <location line="+5"/>
         <source>Sign in</source>
         <translation>Logga in</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Open sign in again</source>
         <translation>Öppna inloggningen igen</translation>
     </message>
@@ -3726,28 +3852,40 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Ny adress:</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+5"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lösenord:</translation>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>Open browser again</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Öppna webbläsaren igen</translation>
     </message>
     <message>
         <location line="+4"/>
+        <location line="+97"/>
         <source>Check and sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kontrollera och logga in</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-71"/>
         <source>Sign-in link: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Inloggningslänk: %1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Sign in</source>
+        <translation>Logga in</translation>
     </message>
 </context>
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+489"/>
+        <location filename="../src/gui/servermove.cpp" line="+510"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kontrollerar %1…</translation>
@@ -3759,7 +3897,26 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Ett annat konto använder redan den här adressen med samma användare.</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+25"/>
+        <source>Checking how to sign in at %1…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kontrollerar hur man loggar in på %1…</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>The new address does not accept a user name and password. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Den nya adressen godtar inte användarnamn och lösenord. Adressen ändrades inte.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Please enter the password of %1 for the new address.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ange lösenordet för %1 för den nya adressen.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <location line="+26"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kontrollerar att det är samma server och samma användare…</translation>
@@ -3795,7 +3952,13 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Logga in på den nya adressen i din webbläsare, med samma användare som tidigare: %1.</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+56"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Användarnamnet eller lösenordet är fel.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>The new address did not accept the sign-in. The address was not changed.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Den nya adressen godtog inte inloggningen. Adressen ändrades inte.</translation>
@@ -3840,7 +4003,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-402"/>
+        <location line="-525"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ingen server kunde nås på %1.</translation>
@@ -5216,12 +5379,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
-        <source>Your web browser will be opened to complete sign in.</source>
-        <translation>Webbläsaren öppnas för att slutföra inloggningen.</translation>
-    </message>
-    <message>
-        <location line="+15"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
         <source>%1 logo</source>
         <translation>%1-logotyp</translation>
     </message>
@@ -5231,9 +5389,16 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Välkommen till %1</translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
-        <translation>Ange serveradressen för att komma igång. Webbläsaren öppnas för att slutföra inloggningen.</translation>
+        <location line="-17"/>
+        <source>Sign in to get started.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Logga in för att komma igång.</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Enter your server address to get started.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ange serveradressen för att komma igång.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -5261,7 +5426,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Ogiltigt URL-schema. Endast https accepteras.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>Den begärda URL:en misslyckades med frågevärdet: %1</translation>
     </message>
@@ -5269,7 +5434,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+64"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
         <source>Network request to collect user info failed</source>
         <translation>Nätverksbegäran för att hämta användarinformation misslyckades</translation>
     </message>
@@ -5519,7 +5684,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-297"/>
+        <location filename="../src/gui/servermove.cpp" line="-312"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ange den nya adressen till din server.</translation>
@@ -5549,39 +5714,53 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Adressen får inte innehålla ”?” eller ”#”.</translation>
     </message>
     <message>
-        <location line="+138"/>
-        <location line="+221"/>
+        <location line="+143"/>
+        <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+25"/>
-        <location line="+65"/>
+        <location line="+112"/>
+        <location line="+28"/>
+        <location line="+73"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kontot finns inte längre.</translation>
     </message>
     <message>
-        <location line="-456"/>
-        <location line="+222"/>
+        <location line="-589"/>
+        <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Serveradressen kan bara ändras för konton utan utrymmen.</translation>
     </message>
     <message>
-        <location line="-218"/>
-        <location line="+229"/>
+        <location line="-228"/>
+        <location line="+239"/>
         <location line="+60"/>
         <source>This is already the address of the account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Det här är redan kontots adress.</translation>
     </message>
     <message>
-        <location line="-284"/>
+        <location line="-292"/>
+        <location line="+374"/>
+        <source>The new address signs in in the browser, but this account uses a user name and password. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>På den nya adressen loggar man in i webbläsaren, men det här kontot använder användarnamn och lösenord. Adressen ändrades inte.</translation>
+    </message>
+    <message>
+        <location line="-373"/>
+        <source>The new address asks for a user name and password, but this account signs in in the browser. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Den nya adressen kräver användarnamn och lösenord, men det här kontot loggar in i webbläsaren. Adressen ändrades inte.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>En synkronisering av kontot pågår fortfarande. Adressen ändrades inte, försök igen.</translation>
     </message>
     <message>
-        <location line="+432"/>
+        <location line="+557"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ändring av kontots serveradress</translation>

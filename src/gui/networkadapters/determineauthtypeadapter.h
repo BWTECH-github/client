@@ -33,14 +33,15 @@ struct DetermineAuthTypeResult
 };
 
 /**
- * @brief The DetermineAuthTypeAdapter class allows us to validate that a given server URL supports oauth authentication.
- * If oauth is not supported, the authentication type will be reported as unknown. It is up to the caller to report an
- * error or handle this condition in some responsible manner.
+ * @brief The DetermineAuthTypeAdapter class determines how a server wants its users to sign in: OAuth (OAuth2 app or
+ * OpenID Connect, sign-in in the browser) or Basic (user name and password, like the 6.0.3 client for servers without
+ * the OAuth2 app).
  *
- * This routine used to identify basic http server authentication as well but the Basic type is obsolete after client 6.0
- *
- * Verlangt der Server keinen Bearer-Token, prüft der Adapter zusätzlich die OpenID-Konfiguration und den Token-Endpunkt
- * der App „OAuth2“, um eine fehlende App eindeutig zu melden.
+ * Ein PROPFIND ohne Zugangsdaten muss mit 401 abgelehnt werden. Verlangt der Server ein Bearer-Token, ist es OAuth.
+ * Nimmt er nur Benutzername und Kennwort an, prüft der Adapter noch die OpenID-Konfiguration (ein Server mit OpenID
+ * Connect meldet sich im Browser an, auch wenn sein WebDAV das nicht sagt) und meldet sonst Basic. Ohne erkennbares
+ * Verfahren prüft er OpenID-Konfiguration und den Token-Endpunkt der App „OAuth2“, um eine fehlende App eindeutig zu
+ * melden.
  */
 class DetermineAuthTypeAdapter : public QObject
 {
@@ -63,6 +64,8 @@ public:
     DetermineAuthTypeResult getResult();
 
 private:
+    /// bietet der Server eine OpenID-Konfiguration an (/.well-known/openid-configuration)?
+    bool offersOpenIdConnect();
     /// OAuth2AppMissing, wenn der Server weder OpenID Connect noch den Token-Endpunkt der App „OAuth2“ bedient
     ServerDiagnostics::Issue probeMissingOAuth();
 

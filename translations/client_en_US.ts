@@ -1037,6 +1037,122 @@ The update will be performed in the background, and overwrite the current AppIma
     </message>
 </context>
 <context>
+    <name>OCC::BasicAuthenticationWidget</name>
+    <message>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <source>Application Name Logo %1</source>
+        <translation>Application Name Logo %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sign in required</source>
+        <translation>Sign in required</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Please enter your password to sign in to %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Please enter your password to sign in to %1.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Recommended: use an app password instead of your account password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Recommended: use an app password instead of your account password.</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Additional logo defined by the organization</source>
+        <translation>Additional logo defined by the organization</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Stay logged out</source>
+        <translation>Stay logged out</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Sign in</source>
+        <translation>Sign in</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>User name:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>User name:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Password:</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::BasicCredentialsPageController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <source>Application Name Logo %1</source>
+        <translation>Application Name Logo %1</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Recommended: use an app password instead of your account password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Recommended: use an app password instead of your account password.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Additional logo defined by the organization</source>
+        <translation>Additional logo defined by the organization</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>User name:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>User name:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Password:</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Sign in to %1 with your user name and password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sign in to %1 with your user name and password.</translation>
+    </message>
+    <message>
+        <location line="+73"/>
+        <source>Please enter your user name and password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Please enter your user name and password.</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>The user name or password is not correct.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>You are already connected to an account with these credentials.</source>
+        <translation>You are already connected to an account with these credentials.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Unable to retrieve capabilities from server.</source>
+        <translation>Unable to retrieve capabilities from server.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The server is not supported by this client.</source>
+        <translation>The server is not supported by this client.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::BulkPropagatorJob</name>
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
@@ -1143,7 +1259,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+86"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+94"/>
         <source>Server does not support OAuth</source>
         <translation>Server does not support OAuth</translation>
     </message>
@@ -1214,7 +1330,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+67"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
         <source>server sent invalid content type: %1.</source>
         <translation>server sent invalid content type: %1.</translation>
     </message>
@@ -1939,6 +2055,15 @@ This means that the synchronization client might not upload local changes immedi
     </message>
 </context>
 <context>
+    <name>OCC::HttpCredentialsGui</name>
+    <message>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>The user name or password is not correct.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
@@ -2086,7 +2211,7 @@ Items, where deletion is allowed, will be deleted if they prevent a directory fr
 <context>
     <name>OCC::LegacyClient</name>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+363"/>
         <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</translation>
@@ -2156,13 +2281,13 @@ Items, where deletion is allowed, will be deleted if they prevent a directory fr
     <message>
         <location line="+4"/>
         <location line="+5"/>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Import from the official client</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-26"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>All accounts of the official client are already set up.</translation>
@@ -2174,10 +2299,10 @@ Items, where deletion is allowed, will be deleted if they prevent a directory fr
         <translation>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <location line="+4"/>
+        <source>You sign in once per account. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</translation>
+        <translation>You sign in once per account. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2216,7 +2341,7 @@ Items, where deletion is allowed, will be deleted if they prevent a directory fr
         <translation>Import anyway</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Sign in: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sign in: %1</translation>
@@ -2634,7 +2759,7 @@ Note that using any logging command line options will override the settings.</tr
 <context>
     <name>OCC::NewAccountWizard</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="+52"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="+68"/>
         <source>Cancel Setup</source>
         <translation>Cancel Setup</translation>
     </message>
@@ -2647,7 +2772,7 @@ Note that using any logging command line options will override the settings.</tr
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+70"/>
         <source>Add account…</source>
         <translation>Add account…</translation>
     </message>
@@ -2662,12 +2787,13 @@ Note that using any logging command line options will override the settings.</tr
         <translation>Advanced</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+198"/>
+        <location line="+5"/>
         <source>Sign in</source>
         <translation>Sign in</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Open sign in again</source>
         <translation>Open sign in again</translation>
     </message>
@@ -3732,28 +3858,40 @@ Note that using any logging command line options will override the settings.</tr
         <translation>New address:</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+5"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Password:</translation>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>Open browser again</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Open browser again</translation>
     </message>
     <message>
         <location line="+4"/>
+        <location line="+97"/>
         <source>Check and sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Check and sign in</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-71"/>
         <source>Sign-in link: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sign-in link: %1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Sign in</source>
+        <translation>Sign in</translation>
     </message>
 </context>
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+489"/>
+        <location filename="../src/gui/servermove.cpp" line="+510"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Checking %1…</translation>
@@ -3765,7 +3903,26 @@ Note that using any logging command line options will override the settings.</tr
         <translation>Another account already uses this address with the same user.</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+25"/>
+        <source>Checking how to sign in at %1…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Checking how to sign in at %1…</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>The new address does not accept a user name and password. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>The new address does not accept a user name and password. The address was not changed.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Please enter the password of %1 for the new address.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Please enter the password of %1 for the new address.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <location line="+26"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Checking that this is the same server and the same user…</translation>
@@ -3801,7 +3958,13 @@ Note that using any logging command line options will override the settings.</tr
         <translation>Please sign in at the new address in your browser, with the same user as before: %1.</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+56"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>The user name or password is not correct.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>The new address did not accept the sign-in. The address was not changed.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>The new address did not accept the sign-in. The address was not changed.</translation>
@@ -3846,7 +4009,7 @@ Note that using any logging command line options will override the settings.</tr
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-402"/>
+        <location line="-525"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>No server could be reached at %1.</translation>
@@ -5221,12 +5384,7 @@ Note that using any logging command line options will override the settings.</tr
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
-        <source>Your web browser will be opened to complete sign in.</source>
-        <translation>Your web browser will be opened to complete sign in.</translation>
-    </message>
-    <message>
-        <location line="+15"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
         <source>%1 logo</source>
         <translation>%1 logo</translation>
     </message>
@@ -5236,9 +5394,16 @@ Note that using any logging command line options will override the settings.</tr
         <translation>Welcome to %1</translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
-        <translation>Enter your server address to get started. Your web browser will be opened to complete sign in.</translation>
+        <location line="-17"/>
+        <source>Sign in to get started.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sign in to get started.</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Enter your server address to get started.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Enter your server address to get started.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -5266,7 +5431,7 @@ Note that using any logging command line options will override the settings.</tr
         <translation>Invalid URL scheme. Only https is accepted.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>The requested URL failed with query value: %1</translation>
     </message>
@@ -5274,7 +5439,7 @@ Note that using any logging command line options will override the settings.</tr
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+64"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
         <source>Network request to collect user info failed</source>
         <translation>Network request to collect user info failed</translation>
     </message>
@@ -5524,7 +5689,7 @@ Note that using any logging command line options will override the settings.</tr
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-297"/>
+        <location filename="../src/gui/servermove.cpp" line="-312"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Please enter the new address of your server.</translation>
@@ -5554,39 +5719,53 @@ Note that using any logging command line options will override the settings.</tr
         <translation>The address must not contain “?” or “#”.</translation>
     </message>
     <message>
-        <location line="+138"/>
-        <location line="+221"/>
+        <location line="+143"/>
+        <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+25"/>
-        <location line="+65"/>
+        <location line="+112"/>
+        <location line="+28"/>
+        <location line="+73"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>The account no longer exists.</translation>
     </message>
     <message>
-        <location line="-456"/>
-        <location line="+222"/>
+        <location line="-589"/>
+        <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>The server address can only be changed for accounts without Spaces.</translation>
     </message>
     <message>
-        <location line="-218"/>
-        <location line="+229"/>
+        <location line="-228"/>
+        <location line="+239"/>
         <location line="+60"/>
         <source>This is already the address of the account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>This is already the address of the account.</translation>
     </message>
     <message>
-        <location line="-284"/>
+        <location line="-292"/>
+        <location line="+374"/>
+        <source>The new address signs in in the browser, but this account uses a user name and password. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>The new address signs in in the browser, but this account uses a user name and password. The address was not changed.</translation>
+    </message>
+    <message>
+        <location line="-373"/>
+        <source>The new address asks for a user name and password, but this account signs in in the browser. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>The new address asks for a user name and password, but this account signs in in the browser. The address was not changed.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>A synchronization of the account is still running. The address was not changed, please try again.</translation>
     </message>
     <message>
-        <location line="+432"/>
+        <location line="+557"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>change of the account&apos;s server address</translation>

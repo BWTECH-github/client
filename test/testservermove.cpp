@@ -16,6 +16,7 @@
 #include "common/syncjournalfilerecord.h"
 #include "configfile.h"
 #include "creds/credentials.h"
+#include "creds/httpcredentials.h"
 #include "folder.h"
 #include "libsync/creds/credentialmanager.h"
 #include "folderman.h"
@@ -37,6 +38,28 @@ QVariantMap oc10Capabilities()
 }
 
 const QByteArray statusOk = "{\"installed\":true,\"maintenance\":false,\"needsDbUpgrade\":false,\"version\":\"11.0.0.0\",\"versionstring\":\"11.0.0\",\"edition\":\"Community\",\"productname\":\"owncloud.online\",\"product\":\"owncloud.online\"}";
+
+// Konto mit Benutzername und Kennwort: das Kennwort liegt im Speicher statt im Schlüsselbund, das Konto bleibt ohne Netz
+class MemoryHttpCredentials : public HttpCredentials
+{
+public:
+    using HttpCredentials::HttpCredentials;
+
+    OCC::AccessManager *createAccessManager() const override { return new FakeAM({}, nullptr); }
+    void askFromUser() override { ++asked; }
+
+    QStringList stored;
+    int asked = 0;
+
+protected:
+    void readPassword(const ReadCallback &done) override { done(KeychainResult::NotFound, {}, {}); }
+    void storePassword(const QString &password, const StoreCallback &done) override
+    {
+        stored.append(password);
+        done(true, {});
+    }
+    void removePassword() override { }
+};
 
 ServerStatusCheck::Result runStatusCheck(QNetworkAccessManager *accessManager, const QUrl &url)
 {
@@ -555,6 +578,108 @@ private Q_SLOTS:
         const qint64 expectedStaleAt = lifetime > 0 ? expiresAt - 60 : QDateTime::currentSecsSinceEpoch() + 1;
         QVERIFY2(qAbs(credentials->_accessTokenStaleAt - expectedStaleAt) <= 2,
             qPrintable(QStringLiteral("stale at %1, expected %2").arg(credentials->_accessTokenStaleAt).arg(expectedStaleAt)));
+    }
+
+    // Konto mit Benutzername und Kennwort (Server ohne die App „OAuth2“): Die neue Adresse verlangt Basic, also fragt der
+    // Ablauf nach dem Kennwort des Anmeldenamens. Ein falsches fragt erneut, das richtige prüft Benutzer und Instanz mit
+    // Basic-Kopf und stellt um; das Kennwort liegt danach unter der neuen Adresse.
+    void testMoveWithPassword()
+    {
+        auto accountState = createDummyAccountWithFileSupport(FileInfo::A12_B12_C12_S12());
+        Account *account = accountState->account();
+        account->setCapabilities({account->url(), oc10Capabilities()});
+        auto *credentials = new MemoryHttpCredentials(account, QStringLiteral("anna"), QStringLiteral("old-password"));
+        account->setCredentials(credentials);
+
+        FileInfo sameServer = FileInfo::A12_B12_C12_S12();
+        sameServer.fileId = "00000001ocinstance01";
+        auto *accessManager = new FakeAM(sameServer, nullptr);
+        QList<QByteArray> verifications;
+        accessManager->setOverride(
+            [accessManager, &verifications](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+                const QString path = request.url().path();
+                if (path.endsWith(QLatin1String("/status.php"))) {
+                    return new FakePayloadReply(op, request, statusOk, accessManager);
+                }
+                if (path.endsWith(QLatin1String("/.well-known/openid-configuration"))) {
+                    return new FakeErrorReply(op, request, accessManager, 404);
+                }
+                if (path.endsWith(QLatin1String("/remote.php/webdav/"))) {
+                    // ohne Zugangsdaten: der Server nennt nur Basic
+                    auto *reply = new FakeErrorReply(op, request, accessManager, 401);
+                    reply->setRawHeader(QByteArrayLiteral("WWW-Authenticate"), QByteArrayLiteral("Basic realm=\"owncloud.online\""));
+                    return reply;
+                }
+                verifications.append(request.rawHeader("Authorization"));
+                if (request.rawHeader("Authorization") != basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("new-password"))) {
+                    return new FakeErrorReply(op, request, accessManager, 401);
+                }
+                // PROPFIND mit der Datei-ID wie ein echter Server
+                return nullptr;
+            });
+        ServerMoveController controller(accountState.get(), nullptr);
+        controller.setAccessManagerFactory([accessManager](QObject *parent) -> QNetworkAccessManager * {
+            accessManager->setParent(parent);
+            return accessManager;
+        });
+        QSignalSpy passwordRequired(&controller, &ServerMoveController::passwordRequired);
+        QSignalSpy failed(&controller, &ServerMoveController::failed);
+        QSignalSpy succeeded(&controller, &ServerMoveController::succeeded);
+
+        const QUrl newUrl(QStringLiteral("https://neu.example.org/owncloud"));
+        controller.start(newUrl.toString());
+        QVERIFY(passwordRequired.wait());
+        QCOMPARE(passwordRequired.last().first().toString(), QStringLiteral("anna"));
+        QVERIFY(controller.isBusy());
+
+        // vertippt: noch einmal fragen, nichts umstellen
+        controller.signInWithPassword(QStringLiteral("wrong"));
+        QVERIFY(passwordRequired.wait());
+        QCOMPARE(failed.size(), 0);
+        QVERIFY(account->url() != newUrl);
+
+        controller.signInWithPassword(QStringLiteral("new-password"));
+        QVERIFY(succeeded.wait());
+        QCOMPARE(failed.size(), 0);
+        QCOMPARE(account->url(), newUrl);
+        QCOMPARE(verifications,
+            (QList<QByteArray>{basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("wrong")),
+                basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("new-password"))}));
+        QCOMPARE(credentials->stored, QStringList{QStringLiteral("new-password")});
+        QVERIFY(credentials->ready());
+        QVERIFY(!controller.isBusy());
+    }
+
+    // Ein Konto mit Kennwort zieht nicht an eine Adresse um, die im Browser anmeldet
+    void testMoveWithPasswordRejectsBrowserSignIn()
+    {
+        auto accountState = createDummyAccountWithFileSupport(FileInfo::A12_B12_C12_S12());
+        Account *account = accountState->account();
+        account->setCapabilities({account->url(), oc10Capabilities()});
+        account->setCredentials(new MemoryHttpCredentials(account, QStringLiteral("anna"), QStringLiteral("old-password")));
+        const QUrl oldUrl = account->url();
+
+        auto *accessManager = new FakeAM({}, nullptr);
+        accessManager->setOverride([accessManager](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            if (request.url().path().endsWith(QLatin1String("/status.php"))) {
+                return new FakePayloadReply(op, request, statusOk, accessManager);
+            }
+            auto *reply = new FakeErrorReply(op, request, accessManager, 401);
+            reply->setRawHeader(QByteArrayLiteral("WWW-Authenticate"), QByteArrayLiteral("Bearer realm=\"owncloud.online\""));
+            return reply;
+        });
+        ServerMoveController controller(accountState.get(), nullptr);
+        controller.setAccessManagerFactory([accessManager](QObject *parent) -> QNetworkAccessManager * {
+            accessManager->setParent(parent);
+            return accessManager;
+        });
+        QSignalSpy passwordRequired(&controller, &ServerMoveController::passwordRequired);
+        QSignalSpy failed(&controller, &ServerMoveController::failed);
+        controller.start(QStringLiteral("https://neu.example.org/owncloud"));
+        QVERIFY(failed.wait());
+        QCOMPARE(passwordRequired.size(), 0);
+        QCOMPARE(account->url(), oldUrl);
+        QVERIFY(!controller.isBusy());
     }
 
     // Eingaben, die gar nicht erst an einen Server gehen

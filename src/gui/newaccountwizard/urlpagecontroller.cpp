@@ -55,7 +55,7 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
     bool allowServerUrlChange = systemConfig.allowServerUrlChange();
     if (!allowServerUrlChange) {
         _urlField->setEnabled(false);
-        _instructionLabel->setText(tr("Your web browser will be opened to complete sign in."));
+        _instructionLabel->setText(tr("Sign in to get started."));
     }
 }
 
@@ -80,7 +80,8 @@ void UrlPageController::buildPage()
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    _instructionLabel = new QLabel(tr("Enter your server address to get started. Your web browser will be opened to complete sign in."), _page);
+    // wie die Anmeldung weitergeht (Browser oder Kennwort), weiß erst die Adressprüfung
+    _instructionLabel = new QLabel(tr("Enter your server address to get started."), _page);
     QFont font = _instructionLabel->font();
     font.setPixelSize(14);
     _instructionLabel->setFont(font);
@@ -243,6 +244,8 @@ bool UrlPageController::validate()
     if (webfingerServiceResult.success()) {
         _results.baseServerUrl = givenUrl;
         _results.webfingerServiceUrl = QUrl(webfingerServiceResult.href);
+        // WebFinger nennt einen OpenID-Connect-Anbieter: Anmeldung im Browser
+        _results.authType = AuthenticationType::OAuth;
     } else {
         // first, we must resolve the actual server URL
         // note we have to pass the wizard dialog to the adapter to parent the tlsErrorDialog
@@ -270,8 +273,7 @@ bool UrlPageController::validate()
             _results.certificates = resolveUrlResult.acceptedCertificates;
         }
 
-        // This is now a mere formality to be very very very sure that the base url uses oauth. In the unlikely event that it doesn't
-        // the job simply fails.
+        // Anmeldung im Browser (OAuth2, OpenID Connect) oder mit Benutzername und Kennwort (Server ohne die App „OAuth2“)?
         DetermineAuthTypeAdapter authTypeAdapter(_accessManager, finalUrl);
         const DetermineAuthTypeResult authResult = authTypeAdapter.getResult();
         if (!authResult.success()) {
@@ -285,7 +287,12 @@ bool UrlPageController::validate()
             return false;
         }
 
-        Q_ASSERT(authResult.type == AuthenticationType::OAuth);
+        if (authResult.type == AuthenticationType::Unknown) {
+            // der Adapter meldet jede unklare Antwort als Fehler; ohne Anmeldeart ginge der Assistent in die Irre
+            handleError(ServerDiagnostics::message(ServerDiagnostics::Issue::NotOwncloudServer, finalUrl));
+            return false;
+        }
+        _results.authType = authResult.type;
         _results.baseServerUrl = finalUrl;
     }
     Q_EMIT success(_results);

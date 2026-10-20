@@ -60,6 +60,11 @@ namespace LegacyClient {
     {
         QUrl url;
         QString davUser;
+        /**
+         * Anmeldename für Benutzername und Kennwort (http_user, älter user); kann vom davUser abweichen (LDAP). Ob sich das
+         * Konto im Browser oder mit Kennwort anmeldet, bestimmt der Assistent am Server, nicht die alte Konfiguration.
+         */
+        QString loginUser;
         QString displayName;
         QList<Folder> folders;
 

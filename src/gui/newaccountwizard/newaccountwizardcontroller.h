@@ -15,6 +15,7 @@
 #pragma once
 
 #include "advancedsettingspagecontroller.h"
+#include "basiccredentialspagecontroller.h"
 #include "oauthpagecontroller.h"
 #include "urlpagecontroller.h"
 
@@ -51,6 +52,8 @@ public:
 
     /** owncloud.online: Serveradresse vorbelegen (Umstieg vom offiziellen Client) */
     void presetServerUrl(const QUrl &url);
+    /** owncloud.online: Anmeldename für die Kennwortseite vorbelegen (Umstieg vom offiziellen Client) */
+    void presetLoginUser(const QString &loginUser);
 
 
 protected Q_SLOTS:
@@ -64,6 +67,8 @@ protected Q_SLOTS:
     void onOAuthValidationCompleted(const OCC::OAuthPageResults &results);
     // we need to raise the gui when oauth validation fails
     void onOauthValidationFailed(const OCC::OAuthPageResults &results);
+
+    void onBasicValidationCompleted(const OCC::BasicCredentialsPageResults &results);
 
     void onAdvancedSettingsCompleted(const OCC::AdvancedSettingsResult &result);
 
@@ -102,6 +107,8 @@ private:
 
     // this is the only controller we need to explicitly keep our eye on as we need to give it values to start the oauth step
     OAuthPageController *_oauthController = nullptr;
+    // Benutzername und Kennwort für Server ohne die App „OAuth2“
+    BasicCredentialsPageController *_basicController = nullptr;
     // für presetServerUrl
     UrlPageController *_urlController = nullptr;
     bool _autoValidateOAuthPage = false;
@@ -110,6 +117,7 @@ private:
 
     int _urlPageIndex = -1;
     int _oauthPageIndex = -1;
+    int _basicPageIndex = -1;
     int _authSuccessPageIndex = -1;
     int _advancedSettingsPageIndex = -1;
 };

@@ -1114,6 +1114,131 @@ The update will be performed in the background, and overwrite the current AppIma
     </message>
 </context>
 <context>
+    <name>OCC::BasicAuthenticationWidget</name>
+    <message>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <source>Application Name Logo %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئەپ نامى تامغىسى %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Sign in required</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>كىرىش زۆرۈر</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Please enter your password to sign in to %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 گە كىرىش ئۈچۈن ئىمىڭىزنى كىرگۈزۈڭ.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Recommended: use an app password instead of your account password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>تەۋسىيە: ھېسابات ئىمى ئورنىغا ئەپ ئىمى ئىشلىتىڭ.</translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>Additional logo defined by the organization</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>تەشكىلات بەلگىلىگەن قوشۇمچە تامغا</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Stay logged out</source>
+        <translation>تىزىملىتىڭ</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Sign in</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>كىرىش</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>User name:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئىشلەتكۈچى ئاتى:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئىم:</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::BasicCredentialsPageController</name>
+    <message>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <source>Application Name Logo %1</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئەپ نامى تامغىسى %1</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Recommended: use an app password instead of your account password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>تەۋسىيە: ھېسابات ئىمى ئورنىغا ئەپ ئىمى ئىشلىتىڭ.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Additional logo defined by the organization</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>تەشكىلات بەلگىلىگەن قوشۇمچە تامغا</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>User name:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئىشلەتكۈچى ئاتى:</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئىم:</translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Sign in to %1 with your user name and password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئىشلەتكۈچى ئاتى ۋە ئىمىڭىز بىلەن %1 گە كىرىڭ.</translation>
+    </message>
+    <message>
+        <location line="+73"/>
+        <source>Please enter your user name and password.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئىشلەتكۈچى ئاتى ۋە ئىمىڭىزنى كىرگۈزۈڭ.</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئىشلەتكۈچى ئاتى ياكى ئىم خاتا.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>You are already connected to an account with these credentials.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>سىز بۇ كىملىك ئۇچۇرى بىلەن بىر ھېساباتقا ئاللىقاچان ئۇلانغان.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Unable to retrieve capabilities from server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىردىن ئىقتىدار ئۇچۇرىغا ئېرىشەلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The server is not supported by this client.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>بۇ خېرىدار بۇ مۇلازىمېتىرنى قوللىمايدۇ.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::BulkPropagatorJob</name>
     <message>
         <location filename="../src/libsync/bulkpropagatorjob.cpp" line="+79"/>
@@ -1226,7 +1351,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DetermineAuthTypeAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+86"/>
+        <location filename="../src/gui/networkadapters/determineauthtypeadapter.cpp" line="+94"/>
         <source>Server does not support OAuth</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىر OAuth نى قوللىمايدۇ</translation>
@@ -1304,7 +1429,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+67"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
         <source>server sent invalid content type: %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىر ئىناۋەتسىز مەزمۇن تىپى ئەۋەتتى: %1.</translation>
@@ -2070,6 +2195,15 @@ This means that the synchronization client might not upload local changes immedi
     </message>
 </context>
 <context>
+    <name>OCC::HttpCredentialsGui</name>
+    <message>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئىشلەتكۈچى ئاتى ياكى ئىم خاتا.</translation>
+    </message>
+</context>
+<context>
     <name>OCC::HttpOAuthCredentials</name>
     <message>
         <location filename="../src/cmd/httpoauthcredentials.cpp" line="+160"/>
@@ -2220,7 +2354,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
 <context>
     <name>OCC::LegacyClient</name>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+356"/>
+        <location filename="../src/gui/legacyclient/legacyclientconfig.cpp" line="+363"/>
         <source>The official client is running and also synchronizes the folder %1. Quit it, so that the folder is not synchronized by two programs at the same time.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>رەسمىي خېرىدار ئىجرا بولۇۋاتىدۇ ھەمدە %1 قىسقۇچىنىمۇ ماس قەدەملەۋاتىدۇ. قىسقۇچنى ئىككى پروگرامما بىرلا ۋاقىتتا ماس قەدەملىمەسلىكى ئۈچۈن ئۇنى تاقاڭ.</translation>
@@ -2290,13 +2424,13 @@ Items where deletion is allowed will be deleted if they prevent a directory from
     <message>
         <location line="+4"/>
         <location line="+5"/>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>رەسمىي خېرىداردىن ئەكىرىش</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-26"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>رەسمىي خېرىدارنىڭ بارلىق ھېساباتلىرى ئاللىبۇرۇن تەڭشەلگەن.</translation>
@@ -2308,10 +2442,10 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>بۇ كومپيۇتېردا رەسمىي ئۈستەلئۈستى خېرىدارى تەڭشەلگەن. ئۇنىڭ ھېساباتلىرى ۋە ماس قەدەملەش قىسقۇچلىرىنى ئۆتكۈزۈۋالامسىز؟</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
+        <location line="+4"/>
+        <source>You sign in once per account. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ھەر بىر ھېسابات ئۈچۈن توركۆرگۈدە بىر قېتىم كىرىسىز. ئاللىبۇرۇن ماس قەدەملەنگەن قىسقۇچلار تونۇلىدۇ ۋە قايتا چۈشۈرۈلمەيدۇ. رەسمىي خېرىداردا ھېچنېمە ئۆزگەرتىلمەيدۇ.</translation>
+        <translation>ھەر بىر ھېسابات ئۈچۈن بىر قېتىم كىرىسىز. ئاللىبۇرۇن ماس قەدەملەنگەن قىسقۇچلار تونۇلىدۇ ۋە قايتا چۈشۈرۈلمەيدۇ. رەسمىي خېرىداردا ھېچنېمە ئۆزگەرتىلمەيدۇ.</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2350,7 +2484,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>يەنىلا ئەكىرىش</translation>
     </message>
     <message>
-        <location line="+35"/>
+        <location line="+37"/>
         <source>Sign in: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>كىرىش: %1</translation>
@@ -2786,7 +2920,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizard</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="+52"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizard.cpp" line="+68"/>
         <source>Cancel Setup</source>
         <translation>تەڭشەشنى ئەمەلدىن قالدۇرۇڭ</translation>
     </message>
@@ -2799,7 +2933,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountWizardController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+63"/>
+        <location filename="../src/gui/newaccountwizard/newaccountwizardcontroller.cpp" line="+70"/>
         <source>Add account…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھېسابات قوشۇش…</translation>
@@ -2815,12 +2949,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>ئىلغار</translation>
     </message>
     <message>
-        <location line="+151"/>
+        <location line="+198"/>
+        <location line="+5"/>
         <source>Sign in</source>
         <translation>تىزىملىتىڭ</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Open sign in again</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>كىرىشنى قايتا ئېچىش</translation>
@@ -3982,28 +4117,41 @@ Note that using any logging command line options will override the settings.</so
         <translation>يېڭى ئادرېس:</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+5"/>
+        <source>Password:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئىم:</translation>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>Open browser again</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>توركۆرگۈنى قايتا ئېچىش</translation>
     </message>
     <message>
         <location line="+4"/>
+        <location line="+97"/>
         <source>Check and sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تەكشۈرۈپ كىرىش</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="-71"/>
         <source>Sign-in link: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>كىرىش ئۇلىنىشى: %1</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Sign in</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>كىرىش</translation>
     </message>
 </context>
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+489"/>
+        <location filename="../src/gui/servermove.cpp" line="+510"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 تەكشۈرۈلۈۋاتىدۇ…</translation>
@@ -4015,7 +4163,26 @@ Note that using any logging command line options will override the settings.</so
         <translation>باشقا بىر ھېسابات بۇ ئادرېسنى ئاللىبۇرۇن ئوخشاش ئىشلەتكۈچى بىلەن ئىشلىتىۋاتىدۇ.</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+25"/>
+        <source>Checking how to sign in at %1…</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 نىڭ كىرىش ئۇسۇلى تەكشۈرۈلۈۋاتىدۇ…</translation>
+    </message>
+    <message>
+        <location line="+51"/>
+        <source>The new address does not accept a user name and password. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېس ئىشلەتكۈچى ئاتى ۋە ئىمنى قوبۇل قىلمايدۇ. ئادرېس ئۆزگەرتىلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Please enter the password of %1 for the new address.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېس ئۈچۈن %1 نىڭ ئىمىنى كىرگۈزۈڭ.</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <location line="+26"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئوخشاش مۇلازىمېتىر ۋە ئوخشاش ئىشلەتكۈچى ئىكەنلىكى تەكشۈرۈلۈۋاتىدۇ…</translation>
@@ -4051,7 +4218,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>توركۆرگۈڭىزدە يېڭى ئادرېستا ئىلگىرىكى ئوخشاش ئىشلەتكۈچى بىلەن كىرىڭ: %1.</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+56"/>
+        <source>The user name or password is not correct.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ئىشلەتكۈچى ئاتى ياكى ئىم خاتا.</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>The new address did not accept the sign-in. The address was not changed.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>يېڭى ئادرېس كىرىشنى قوبۇل قىلمىدى. ئادرېس ئۆزگەرتىلمىدى.</translation>
@@ -4096,7 +4269,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-402"/>
+        <location line="-525"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 دا ھېچقانداق مۇلازىمېتىرغا ئۇلانغىلى بولمىدى.</translation>
@@ -5506,13 +5679,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
-        <source>Your web browser will be opened to complete sign in.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>كىرىشنى تاماملاش ئۈچۈن توركۆرگۈڭىز ئېچىلىدۇ.</translation>
-    </message>
-    <message>
-        <location line="+15"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 تامغىسى</translation>
@@ -5524,10 +5691,16 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1 غا خۇش كەلدىڭىز</translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
+        <location line="-17"/>
+        <source>Sign in to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>باشلاش ئۈچۈن مۇلازىمېتىر ئادرېسىڭىزنى كىرگۈزۈڭ. كىرىشنى تاماملاش ئۈچۈن توركۆرگۈڭىز ئېچىلىدۇ.</translation>
+        <translation>باشلاش ئۈچۈن كىرىڭ.</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Enter your server address to get started.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>باشلاش ئۈچۈن مۇلازىمېتىر ئادرېسىڭىزنى كىرگۈزۈڭ.</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -5560,7 +5733,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ئىناۋەتسىز URL لايىھەسى. پەقەت https قوبۇل قىلىنىدۇ.</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>The requested URL failed with query value: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تەلەپ قىلىنغان URL مەغلۇپ بولدى، سوئال قىممىتى: %1</translation>
@@ -5569,7 +5742,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+64"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
         <source>Network request to collect user info failed</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىشلەتكۈچى ئۇچۇرىغا ئېرىشىش تور تەلىپى مەغلۇپ بولدى</translation>
@@ -5842,7 +6015,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-297"/>
+        <location filename="../src/gui/servermove.cpp" line="-312"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىرىڭىزنىڭ يېڭى ئادرېسىنى كىرگۈزۈڭ.</translation>
@@ -5872,39 +6045,53 @@ Note that using any logging command line options will override the settings.</so
         <translation>ئادرېستا «?» ياكى «#» بولماسلىقى كېرەك.</translation>
     </message>
     <message>
-        <location line="+138"/>
-        <location line="+221"/>
+        <location line="+143"/>
+        <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+25"/>
-        <location line="+65"/>
+        <location line="+112"/>
+        <location line="+28"/>
+        <location line="+73"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھېسابات ئەمدى مەۋجۇت ئەمەس.</translation>
     </message>
     <message>
-        <location line="-456"/>
-        <location line="+222"/>
+        <location line="-589"/>
+        <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىر ئادرېسىنى پەقەت بوشلۇقى يوق ھېساباتلاردىلا ئۆزگەرتكىلى بولىدۇ.</translation>
     </message>
     <message>
-        <location line="-218"/>
-        <location line="+229"/>
+        <location line="-228"/>
+        <location line="+239"/>
         <location line="+60"/>
         <source>This is already the address of the account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>بۇ ئاللىبۇرۇن ھېساباتنىڭ ئادرېسى.</translation>
     </message>
     <message>
-        <location line="-284"/>
+        <location line="-292"/>
+        <location line="+374"/>
+        <source>The new address signs in in the browser, but this account uses a user name and password. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېستا توركۆرگۈدە كىرىلىدۇ، ئەمما بۇ ھېسابات ئىشلەتكۈچى ئاتى ۋە ئىم ئىشلىتىدۇ. ئادرېس ئۆزگەرتىلمىدى.</translation>
+    </message>
+    <message>
+        <location line="-373"/>
+        <source>The new address asks for a user name and password, but this account signs in in the browser. The address was not changed.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يېڭى ئادرېس ئىشلەتكۈچى ئاتى ۋە ئىم تەلەپ قىلىدۇ، ئەمما بۇ ھېسابات توركۆرگۈدە كىرىدۇ. ئادرېس ئۆزگەرتىلمىدى.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>A synchronization of the account is still running. The address was not changed, please try again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھېساباتنىڭ بىر ماس قەدەملىشى يەنىلا ئىجرا بولۇۋاتىدۇ. ئادرېس ئۆزگەرتىلمىدى، قايتا سىناڭ.</translation>
     </message>
     <message>
-        <location line="+432"/>
+        <location line="+557"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھېساباتنىڭ مۇلازىمېتىر ئادرېسىنى ئۆزگەرتىش</translation>
