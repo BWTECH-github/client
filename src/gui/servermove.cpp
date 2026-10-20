@@ -20,11 +20,14 @@
 #include "common/utility.h"
 #include "config/appconfig.h"
 #include "creds/credentials.h"
+#include "creds/httpcredentials.h"
 #include "creds/oauth.h"
 #include "folder.h"
 #include "folderman.h"
+#include "libsync/abstractcorejob.h"
 #include "libsync/accessmanager.h"
 #include "libsync/account.h"
+#include "networkadapters/serverdiagnostics.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -42,6 +45,9 @@ Q_LOGGING_CATEGORY(lcServerMove, "gui.servermove", QtInfoMsg)
 namespace {
 
     constexpr auto transferTimeoutMs = 30 * 1000;
+    // dieselben Pfade wie der Assistent (DetermineAuthTypeAdapter)
+    const QString authProbePathC = QStringLiteral("remote.php/webdav/");
+    const QString openIdConfigurationPathC = QStringLiteral(".well-known/openid-configuration");
 
     int defaultPort(const QString &scheme)
     {
@@ -235,6 +241,11 @@ std::optional<QUrl> ServerMove::rebaseUrl(const QUrl &url, const QUrl &oldBase, 
 
 QString ServerMove::applyNewServerUrl(AccountState *accountState, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken)
 {
+    return applyNewServerUrl(accountState, newUrl, SignIn::withTokens(accessToken, refreshToken));
+}
+
+QString ServerMove::applyNewServerUrl(AccountState *accountState, const QUrl &newUrl, const SignIn &signIn)
+{
     if (!accountState || !accountState->account()) {
         return tr("The account no longer exists.");
     }
@@ -245,6 +256,14 @@ QString ServerMove::applyNewServerUrl(AccountState *accountState, const QUrl &ne
     const QUrl oldUrl = account->url();
     if (Utility::urlEqual(oldUrl, newUrl)) {
         return tr("This is already the address of the account.");
+    }
+    // Die Verbindungen des Kontos (Abmelden, Anmeldedialog, Schlüsselbund-Hinweis) hängen am Credentials-Objekt: Es bleibt,
+    // also auch seine Anmeldeart. Ein Konto mit Kennwort bekommt nur ein Kennwort, eines mit Browser-Anmeldung nur Token.
+    const bool accountUsesPassword = qobject_cast<const HttpCredentials *>(account->credentials()) != nullptr;
+    if ((signIn.type == AuthenticationType::Basic) != accountUsesPassword) {
+        return accountUsesPassword
+            ? tr("The new address signs in in the browser, but this account uses a user name and password. The address was not changed.")
+            : tr("The new address asks for a user name and password, but this account signs in in the browser. The address was not changed.");
     }
     FolderMan *folderMan = FolderMan::instance();
     // ein laufender Ordner darf nicht umgebaut werden; ServerMoveController wartet vorher, bis alle Läufe beendet sind
@@ -274,9 +293,11 @@ QString ServerMove::applyNewServerUrl(AccountState *accountState, const QUrl &ne
         qCCritical(lcServerMove) << "the folders of" << account->displayNameWithHost() << "were not rebuilt for the new address";
     }
 
-    // die neuen Token unter dem neuen Host speichern; schließt auch eine offene Neuanmeldung für die alte Adresse
-    if (auto *credentials = qobject_cast<Credentials *>(account->credentials())) {
-        credentials->replaceTokens(accessToken, refreshToken);
+    // die neuen Zugangsdaten unter dem neuen Host speichern; schließt auch eine offene Neuanmeldung für die alte Adresse
+    if (auto *oauthCredentials = qobject_cast<Credentials *>(account->credentials())) {
+        oauthCredentials->replaceTokens(signIn.accessToken, signIn.refreshToken);
+    } else if (auto *httpCredentials = qobject_cast<HttpCredentials *>(account->credentials())) {
+        httpCredentials->replacePassword(signIn.password);
     }
 
     if (accountState->isSignedOut()) {
@@ -448,7 +469,7 @@ void ServerMoveController::onSslErrors(QNetworkReply *reply, const QList<QSslErr
 
 bool ServerMoveController::isBusy() const
 {
-    return _statusCheck || _oauth || _verificationReply || _applying;
+    return _statusCheck || _authTypeReply || _oauth || _awaitingPassword || _verificationReply || _applying;
 }
 
 void ServerMoveController::start(const QString &input)
@@ -548,7 +569,114 @@ void ServerMoveController::onStatusChecked(const ServerStatusCheck::Result &resu
     }
 
     _newUrl = result.serverUrl;
-    startSignIn(result.serverUrl);
+    if (usesPassword(account)) {
+        // Benutzername und Kennwort: erst prüfen, ob die neue Adresse das annimmt
+        startAuthTypeCheck(result.serverUrl);
+    } else {
+        // Anmeldung im Browser wie bisher; nimmt die neue Adresse sie nicht an, meldet das die Anmeldung selbst
+        startSignIn(result.serverUrl);
+    }
+}
+
+void ServerMoveController::startAuthTypeCheck(const QUrl &newUrl)
+{
+    // wie der Assistent: ein PROPFIND ohne Zugangsdaten, die Ablehnung nennt das Verfahren
+    QNetworkRequest request = AbstractCoreJobFactory::makeRequest(Utility::concatUrlPath(newUrl, authProbePathC));
+    request.setAttribute(DontAddCredentialsAttribute, true);
+    request.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
+    request.setTransferTimeout(transferTimeoutMs);
+    QNetworkReply *reply = accessManager()->sendCustomRequest(request, QByteArrayLiteral("PROPFIND"));
+    _authTypeReply = reply;
+    Q_EMIT progress(tr("Checking how to sign in at %1…").arg(displayUrl(newUrl)));
+    connect(reply, &QNetworkReply::finished, this, [reply, newUrl, this] { finishAuthTypeCheck(reply, newUrl); });
+}
+
+void ServerMoveController::finishAuthTypeCheck(QNetworkReply *reply, const QUrl &newUrl)
+{
+    reply->deleteLater();
+    _authTypeReply = nullptr;
+    const int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    // nur eine Ablehnung (401) nennt das Verfahren; alles andere bleibt unklar (Unknown)
+    const AuthenticationType type =
+        httpStatus == 401 ? authenticationTypeFromChallenge(reply->rawHeader(QByteArrayLiteral("www-authenticate"))) : AuthenticationType::Unknown;
+    qCInfo(lcServerMove) << "sign-in check of" << newUrl << "answered" << httpStatus << "->" << static_cast<int>(type);
+    if (type == AuthenticationType::Basic) {
+        probeOpenIdConnect(newUrl);
+        return;
+    }
+    continueWithAuthType(type);
+}
+
+void ServerMoveController::probeOpenIdConnect(const QUrl &newUrl)
+{
+    // wie der Assistent: ohne Zugangsdaten, Weiterleitungen (etwa zu index.php) gelten
+    QNetworkRequest request = AbstractCoreJobFactory::makeRequest(Utility::concatUrlPath(newUrl, openIdConfigurationPathC));
+    request.setAttribute(DontAddCredentialsAttribute, true);
+    request.setTransferTimeout(transferTimeoutMs);
+    QNetworkReply *reply = accessManager()->get(request);
+    _authTypeReply = reply;
+    connect(reply, &QNetworkReply::finished, this, [reply, newUrl, this] {
+        reply->deleteLater();
+        _authTypeReply = nullptr;
+        const bool openIdConnect = reply->error() == QNetworkReply::NoError && ServerDiagnostics::isOpenIdConfiguration(reply->read(64 * 1024));
+        continueWithAuthType(openIdConnect ? AuthenticationType::OAuth : AuthenticationType::Basic);
+    });
+}
+
+void ServerMoveController::continueWithAuthType(AuthenticationType type)
+{
+    if (!_accountState || !_accountState->account()) {
+        fail(ServerMove::tr("The account no longer exists."));
+        return;
+    }
+    // nur Konten mit Benutzername und Kennwort prüfen die Anmeldeart der neuen Adresse (onStatusChecked())
+    switch (type) {
+    case AuthenticationType::Basic:
+        askForPassword();
+        return;
+    case AuthenticationType::OAuth:
+        fail(ServerMove::tr("The new address signs in in the browser, but this account uses a user name and password. The address was not changed."));
+        return;
+    case AuthenticationType::Unknown:
+        fail(tr("The new address does not accept a user name and password. The address was not changed."));
+        return;
+    }
+}
+
+QString ServerMoveController::loginUser() const
+{
+    if (!_accountState || !_accountState->account()) {
+        return {};
+    }
+    const Account *account = _accountState->account();
+    const QString login = account->credentials() ? account->credentials()->loginUser() : QString();
+    return login.isEmpty() ? account->davUser() : login;
+}
+
+bool ServerMoveController::usesPassword(const Account *account)
+{
+    return account && qobject_cast<const HttpCredentials *>(account->credentials());
+}
+
+void ServerMoveController::askForPassword()
+{
+    const QString login = loginUser();
+    _awaitingPassword = true;
+    qCInfo(lcServerMove) << "the new address asks for user name and password, asking for the password of" << login;
+    Q_EMIT progress(tr("Please enter the password of %1 for the new address.").arg(login));
+    Q_EMIT passwordRequired(login);
+}
+
+void ServerMoveController::signInWithPassword(const QString &password)
+{
+    if (!_awaitingPassword || password.isEmpty()) {
+        return;
+    }
+    _awaitingPassword = false;
+    const QUrl url = _newUrl;
+    Q_EMIT progress(tr("Checking that this is the same server and the same user…"));
+    verifyAndApply(url, ServerMove::SignIn::withPassword(password));
 }
 
 void ServerMoveController::startSignIn(const QUrl &newUrl)
@@ -605,6 +733,11 @@ void ServerMoveController::openBrowserAgain()
 
 void ServerMoveController::verifyAndApply(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken)
 {
+    verifyAndApply(newUrl, ServerMove::SignIn::withTokens(accessToken, refreshToken));
+}
+
+void ServerMoveController::verifyAndApply(const QUrl &newUrl, const ServerMove::SignIn &signIn)
+{
     if (!_accountState || !_accountState->account()) {
         fail(ServerMove::tr("The account no longer exists."));
         return;
@@ -612,7 +745,11 @@ void ServerMoveController::verifyAndApply(const QUrl &newUrl, const QString &acc
     Account *account = _accountState->account();
 
     QNetworkRequest request(Utility::concatUrlPath(newUrl, account->davPath()));
-    request.setRawHeader(QByteArrayLiteral("Authorization"), QByteArrayLiteral("Bearer ") + accessToken.toUtf8());
+    if (signIn.type == AuthenticationType::Basic) {
+        request.setRawHeader(QByteArrayLiteral("Authorization"), basicAuthorizationHeader(loginUser(), signIn.password));
+    } else {
+        request.setRawHeader(QByteArrayLiteral("Authorization"), QByteArrayLiteral("Bearer ") + signIn.accessToken.toUtf8());
+    }
     request.setRawHeader(QByteArrayLiteral("Depth"), QByteArrayLiteral("0"));
     request.setHeader(QNetworkRequest::ContentTypeHeader, QByteArrayLiteral("application/xml; charset=utf-8"));
     // den Token nie einer Weiterleitung hinterherschicken
@@ -622,11 +759,10 @@ void ServerMoveController::verifyAndApply(const QUrl &newUrl, const QString &acc
                                                      "<d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\"><d:prop><oc:id/></d:prop></d:propfind>");
     QNetworkReply *reply = accessManager()->sendCustomRequest(request, QByteArrayLiteral("PROPFIND"), body);
     _verificationReply = reply;
-    connect(reply, &QNetworkReply::finished, this,
-        [reply, newUrl, accessToken, refreshToken, this] { finishVerification(reply, newUrl, accessToken, refreshToken); });
+    connect(reply, &QNetworkReply::finished, this, [reply, newUrl, signIn, this] { finishVerification(reply, newUrl, signIn); });
 }
 
-void ServerMoveController::finishVerification(QNetworkReply *reply, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken)
+void ServerMoveController::finishVerification(QNetworkReply *reply, const QUrl &newUrl, const ServerMove::SignIn &signIn)
 {
     reply->deleteLater();
     _verificationReply = nullptr;
@@ -637,6 +773,14 @@ void ServerMoveController::finishVerification(QNetworkReply *reply, const QUrl &
     Account *account = _accountState->account();
 
     const int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    if (httpStatus == 401 && signIn.type == AuthenticationType::Basic) {
+        // vertippt: noch einmal nach dem Kennwort fragen, statt den ganzen Umzug neu zu beginnen
+        qCInfo(lcServerMove) << "the new address rejected the password, asking again";
+        Q_EMIT progress(tr("The user name or password is not correct."));
+        _awaitingPassword = true;
+        Q_EMIT passwordRequired(loginUser());
+        return;
+    }
     if (httpStatus == 401 || httpStatus == 403) {
         fail(tr("The new address did not accept the sign-in. The address was not changed."));
         return;
@@ -688,12 +832,12 @@ void ServerMoveController::finishVerification(QNetworkReply *reply, const QUrl &
     _syncStopTime.start();
     _syncStopPoll = new QTimer(this);
     _syncStopPoll->setInterval(100);
-    connect(_syncStopPoll, &QTimer::timeout, this, [newUrl, accessToken, refreshToken, this] { applyWhenSyncsStopped(newUrl, accessToken, refreshToken); });
+    connect(_syncStopPoll, &QTimer::timeout, this, [newUrl, signIn, this] { applyWhenSyncsStopped(newUrl, signIn); });
     _syncStopPoll->start();
-    applyWhenSyncsStopped(newUrl, accessToken, refreshToken);
+    applyWhenSyncsStopped(newUrl, signIn);
 }
 
-void ServerMoveController::applyWhenSyncsStopped(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken)
+void ServerMoveController::applyWhenSyncsStopped(const QUrl &newUrl, const ServerMove::SignIn &signIn)
 {
     if (!_accountState || !_accountState->account()) {
         fail(ServerMove::tr("The account no longer exists."));
@@ -709,7 +853,7 @@ void ServerMoveController::applyWhenSyncsStopped(const QUrl &newUrl, const QStri
     }
     // erst umstellen, dann die Synchronisation freigeben (reset() bzw. fail()): FolderMan::setSyncEnabled(true) startet
     // sofort den nächsten Lauf aus der Warteschlange, womöglich einen Ordner dieses Kontos
-    const QString error = ServerMove::applyNewServerUrl(_accountState, newUrl, accessToken, refreshToken);
+    const QString error = ServerMove::applyNewServerUrl(_accountState, newUrl, signIn);
     if (!error.isEmpty()) {
         fail(error);
         return;
@@ -757,12 +901,19 @@ void ServerMoveController::reset()
         _statusCheck->deleteLater();
         _statusCheck = nullptr;
     }
+    if (_authTypeReply) {
+        _authTypeReply->disconnect(this);
+        _authTypeReply->abort();
+        _authTypeReply->deleteLater();
+        _authTypeReply = nullptr;
+    }
     if (_oauth) {
         // erst später löschen: reset() kann aus einem Signal des OAuth-Objekts heraus kommen
         _oauth->disconnect(this);
         _oauth->deleteLater();
         _oauth = nullptr;
     }
+    _awaitingPassword = false;
     if (_verificationReply) {
         _verificationReply->disconnect(this);
         _verificationReply->abort();

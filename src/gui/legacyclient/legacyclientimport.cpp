@@ -199,7 +199,8 @@ bool LegacyClientImportController::confirm(bool firstStart)
         tr("The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?")
             + QStringLiteral("\n\n") + lines.join(QLatin1Char('\n')),
         QMessageBox::NoButton, _window);
-    box.setInformativeText(tr("You sign in once per account in the browser. Folders that are already synchronized are recognized and not "
+    // je nach Server im Browser oder mit Benutzername und Kennwort
+    box.setInformativeText(tr("You sign in once per account. Folders that are already synchronized are recognized and not "
                               "downloaded again. Nothing is changed in the official client."));
     QPushButton *importButton = box.addButton(tr("Import"), QMessageBox::AcceptRole);
     box.addButton(firstStart ? tr("Set up a new account") : tr("Cancel"), QMessageBox::RejectRole);
@@ -255,6 +256,8 @@ void LegacyClientImportController::importNextAccount()
     NewAccountModel model(nullptr);
     NewAccountWizardController wizardController(&model, &wizard, _colorManager, nullptr);
     wizardController.presetServerUrl(_current->url);
+    // Server ohne die App „OAuth2“: die Kennwortseite kennt den Anmeldenamen schon
+    wizardController.presetLoginUser(_current->loginUser);
     wizard.setWindowTitle(tr("Sign in: %1").arg(_current->displayString()));
     _window->ensureVisible();
     if (wizard.exec() != QDialog::Accepted || !model.isComplete()) {

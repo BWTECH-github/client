@@ -13,6 +13,7 @@
  */
 #pragma once
 
+#include "creds/credentialssupport.h"
 #include "gui/owncloudguilib.h"
 
 #include <QCoreApplication>
@@ -34,6 +35,7 @@ class QNetworkReply;
 
 namespace OCC {
 
+class Account;
 class AccountState;
 class OAuth;
 
@@ -42,16 +44,30 @@ class OAuth;
  * Server auf eine neue Adresse um, ohne dass Konto, Ordnerpaare, Journale oder lokale Dateien neu entstehen.
  *
  * Sicherheit: Die neue Adresse wird nur mit status.php geprüft, ohne Zugangsdaten. Weiterleitungen gelten nur auf
- * demselben Host (und von HTTP zu HTTPS). Danach meldet sich der Nutzer an der neuen Adresse neu an; die vorhandenen
- * Token gehen nie an den neuen Host. Erst wenn derselbe Benutzer angemeldet ist und die Datei-IDs zur bisherigen
+ * demselben Host (und von HTTP zu HTTPS). Danach meldet sich der Nutzer an der neuen Adresse neu an (im Browser oder,
+ * bei einem Server ohne die App „OAuth2“, mit seinem Kennwort); die vorhandenen Token oder das gespeicherte Kennwort
+ * gehen nie von selbst an den neuen Host. Erst wenn derselbe Benutzer angemeldet ist und die Datei-IDs zur bisherigen
  * Instanz passen, wird umgestellt – sonst könnte ein fremder Server mit gleichem Benutzernamen lokale Dateien als
- * „auf dem Server gelöscht“ erscheinen lassen.
+ * „auf dem Server gelöscht“ erscheinen lassen. Die Anmeldeart des Kontos bleibt: Ein Umzug von Browser- zu
+ * Kennwort-Anmeldung oder umgekehrt wird abgelehnt.
  */
 class OWNCLOUDGUI_EXPORT ServerMove
 {
     Q_DECLARE_TR_FUNCTIONS(ServerMove)
 
 public:
+    /// Zugangsdaten nach der Anmeldung an der neuen Adresse: Token (OAuth) oder das Kennwort (Basic)
+    struct SignIn
+    {
+        AuthenticationType type = AuthenticationType::OAuth;
+        QString accessToken;
+        QString refreshToken;
+        QString password;
+
+        static SignIn withTokens(const QString &accessToken, const QString &refreshToken) { return {AuthenticationType::OAuth, accessToken, refreshToken, {}}; }
+        static SignIn withPassword(const QString &password) { return {AuthenticationType::Basic, {}, {}, password}; }
+    };
+
     /**
      * Wandelt eine Eingabe in eine Serveradresse: Ohne Schema wird „https://“ ergänzt, eine angehängte „status.php“ oder
      * „index.php“ und ein „/“ am Ende entfallen. Zugangsdaten, Anfrage und Fragment in der Adresse sind nicht erlaubt.
@@ -80,9 +96,11 @@ public:
     /**
      * Stellt das Konto auf @p newUrl um, wenn Server, Benutzer und Instanz geprüft sind: Ordnerpaare werden mit der neuen
      * WebDAV-Adresse neu aufgebaut (Journale, lokale Ordner und Einstellungen bleiben), die alten Zugangsdaten gelöscht und
-     * die neuen gespeichert, danach verbindet sich das Konto neu.
+     * die neuen gespeichert, danach verbindet sich das Konto neu. Die Anmeldeart muss zum Konto passen.
      * @return eine Fehlermeldung, leer bei Erfolg
      */
+    static QString applyNewServerUrl(AccountState *accountState, const QUrl &newUrl, const SignIn &signIn);
+    /// wie oben mit OAuth-Token
     static QString applyNewServerUrl(AccountState *accountState, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
 };
 
@@ -127,7 +145,8 @@ private:
 
 /**
  * @brief Ablauf von „Serveradresse ändern…“: Adresse prüfen, an der neuen Adresse anmelden, Benutzer und Instanz
- * vergleichen, umstellen
+ * vergleichen, umstellen. Ein Konto mit Anmeldung im Browser meldet sich dort wie bisher im Browser an; ein Konto mit
+ * Benutzername und Kennwort prüft zuerst, ob die neue Adresse das annimmt, und fragt dann nach dem Kennwort.
  */
 class OWNCLOUDGUI_EXPORT ServerMoveController : public QObject
 {
@@ -145,21 +164,28 @@ public:
     /// ohne Rückfrage scheitert die Prüfung einer Adresse mit unbekanntem Zertifikat
     void setTlsPrompt(const TlsPrompt &prompt);
 
-    /// prüft @p input und meldet den Nutzer danach im Browser an der neuen Adresse an
+    /**
+     * prüft @p input und meldet den Nutzer danach an der neuen Adresse an: im Browser, oder bei einem Konto mit
+     * Benutzername und Kennwort mit dem Kennwort des Anmeldenamens (passwordRequired(), dann signInWithPassword())
+     */
     void start(const QString &input);
     /// bricht ab, ohne etwas zu ändern
     void cancel();
     /// öffnet die Anmeldeseite erneut, solange die Anmeldung wartet
     void openBrowserAgain();
+    /// nach passwordRequired(): meldet sich mit @p password an der neuen Adresse an und prüft sie
+    void signInWithPassword(const QString &password);
 
     bool isBusy() const;
     /// das Konto wird gerade umgestellt (nicht mehr abbrechbar)
     bool isApplying() const { return _applying; }
 
     /**
-     * Schritt nach der Anmeldung an @p newUrl: Benutzer und Instanz prüfen (PROPFIND mit dem neuen Token), dann umstellen.
-     * Wird sonst nach der Anmeldung im Browser aufgerufen; öffentlich für Tests.
+     * Schritt nach der Anmeldung an @p newUrl: Benutzer und Instanz prüfen (PROPFIND mit den neuen Zugangsdaten), dann
+     * umstellen. Wird sonst nach der Anmeldung aufgerufen; öffentlich für Tests.
      */
+    void verifyAndApply(const QUrl &newUrl, const ServerMove::SignIn &signIn);
+    /// wie oben mit OAuth-Token
     void verifyAndApply(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
 
 Q_SIGNALS:
@@ -167,6 +193,8 @@ Q_SIGNALS:
     void progress(const QString &message);
     /// die Anmeldeseite an der neuen Adresse, zum Kopieren, falls sich kein Browser öffnet
     void signInLinkChanged(const QUrl &link);
+    /// die neue Adresse verlangt Benutzername und Kennwort: das Kennwort von @p loginUser eingeben (signInWithPassword())
+    void passwordRequired(const QString &loginUser);
     void failed(const QString &message);
     void succeeded(const QUrl &newUrl);
 
@@ -179,10 +207,23 @@ private:
     void onStatusChecked(const ServerStatusCheck::Result &result);
     /// merkt sich unbekannte Zertifikate für die Rückfrage nach der gescheiterten Prüfung, bekannte lässt es zu
     void onSslErrors(QNetworkReply *reply, const QList<QSslError> &errors);
+    /// Konto mit Kennwort: PROPFIND ohne Zugangsdaten, nimmt die neue Adresse Benutzername und Kennwort an?
+    void startAuthTypeCheck(const QUrl &newUrl);
+    void finishAuthTypeCheck(QNetworkReply *reply, const QUrl &newUrl);
+    /// ein Server, der nur Basic verlangt, aber OpenID Connect anbietet, meldet sich trotzdem im Browser an
+    void probeOpenIdConnect(const QUrl &newUrl);
+    /// nur für Konten mit Benutzername und Kennwort: nach dem Kennwort fragen oder mit klarer Meldung abbrechen
+    void continueWithAuthType(AuthenticationType type);
+    /// passwordRequired() für den Anmeldenamen des Kontos
+    void askForPassword();
+    /// Anmeldename des Kontos (bei Benutzername und Kennwort), sonst der Benutzer
+    QString loginUser() const;
+    /// meldet sich das Konto mit Benutzername und Kennwort an (HttpCredentials)?
+    static bool usesPassword(const Account *account);
     void startSignIn(const QUrl &newUrl);
-    void finishVerification(QNetworkReply *reply, const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
+    void finishVerification(QNetworkReply *reply, const QUrl &newUrl, const ServerMove::SignIn &signIn);
     /// stellt um, sobald kein Lauf des Kontos mehr läuft (geprüft alle 100 ms, ohne verschachtelte Ereignisschleife)
-    void applyWhenSyncsStopped(const QUrl &newUrl, const QString &accessToken, const QString &refreshToken);
+    void applyWhenSyncsStopped(const QUrl &newUrl, const ServerMove::SignIn &signIn);
     /// beendet das Warten und gibt die angehaltene Synchronisation wieder frei
     void releaseSyncs();
     void fail(const QString &message);
@@ -202,7 +243,10 @@ private:
     QString _pendingTlsHost;
     QUrl _statusTarget;
     QPointer<ServerStatusCheck> _statusCheck;
+    QPointer<QNetworkReply> _authTypeReply;
     QPointer<OAuth> _oauth;
+    // die neue Adresse verlangt ein Kennwort, der Dialog fragt danach
+    bool _awaitingPassword = false;
     QPointer<QNetworkReply> _verificationReply;
     QPointer<QTimer> _syncStopPoll;
     QElapsedTimer _syncStopTime;

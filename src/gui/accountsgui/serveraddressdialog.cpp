@@ -61,6 +61,14 @@ ServerAddressDialog::ServerAddressDialog(AccountState *accountState, QWidget *pa
         _urlEdit->setText(accountState->movedServerUrl().toDisplayString());
     }
     form->addRow(tr("New address:"), _urlEdit);
+    // nur wenn die neue Adresse Benutzername und Kennwort verlangt (Konto ohne Anmeldung im Browser)
+    _passwordEdit = new QLineEdit(this);
+    _passwordEdit->setObjectName(QStringLiteral("newServerPasswordEdit"));
+    _passwordEdit->setEchoMode(QLineEdit::Password);
+    form->addRow(tr("Password:"), _passwordEdit);
+    _passwordRow = form->rowCount() - 1;
+    form->setRowVisible(_passwordRow, false);
+    _form = form;
     layout->addLayout(form);
 
     _messageLabel = new QLabel(this);
@@ -93,6 +101,12 @@ ServerAddressDialog::ServerAddressDialog(AccountState *accountState, QWidget *pa
 
     connect(_startButton, &QPushButton::clicked, this, &ServerAddressDialog::startMove);
     connect(_urlEdit, &QLineEdit::returnPressed, this, &ServerAddressDialog::startMove);
+    connect(_passwordEdit, &QLineEdit::returnPressed, this, &ServerAddressDialog::startMove);
+    connect(_passwordEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
+        if (_askingPassword) {
+            _startButton->setEnabled(!text.isEmpty());
+        }
+    });
     connect(_browserButton, &QPushButton::clicked, _controller, &ServerMoveController::openBrowserAgain);
     connect(_cancelButton, &QPushButton::clicked, this, &ServerAddressDialog::reject);
 
@@ -109,6 +123,16 @@ ServerAddressDialog::ServerAddressDialog(AccountState *accountState, QWidget *pa
         _linkLabel->setText(tr("Sign-in link: %1").arg(link.toString(QUrl::FullyEncoded)));
         _linkLabel->setVisible(!link.isEmpty());
         _browserButton->setVisible(!link.isEmpty());
+    });
+    connect(_controller, &ServerMoveController::passwordRequired, this, [this] {
+        // die Adresse bleibt gesperrt, gefragt ist nur noch das Kennwort
+        _askingPassword = true;
+        _form->setRowVisible(_passwordRow, true);
+        _passwordEdit->clear();
+        _passwordEdit->setEnabled(true);
+        _startButton->setText(tr("Sign in"));
+        _startButton->setEnabled(false);
+        _passwordEdit->setFocus(Qt::OtherFocusReason);
     });
     connect(_controller, &ServerMoveController::failed, this, [this](const QString &message) {
         setBusy(false);
@@ -134,6 +158,19 @@ void ServerAddressDialog::reject()
 
 void ServerAddressDialog::startMove()
 {
+    if (_askingPassword) {
+        // Enter im Kennwortfeld oder „Anmelden“: das Kennwort geht nur an den Controller, das Feld wird gleich geleert
+        const QString password = _passwordEdit->text();
+        if (password.isEmpty()) {
+            return;
+        }
+        _askingPassword = false;
+        _passwordEdit->clear();
+        _passwordEdit->setEnabled(false);
+        _startButton->setEnabled(false);
+        _controller->signInWithPassword(password);
+        return;
+    }
     if (_controller->isBusy()) {
         return;
     }
@@ -151,6 +188,10 @@ void ServerAddressDialog::setBusy(bool busy)
     if (!busy) {
         _linkLabel->hide();
         _browserButton->hide();
+        _askingPassword = false;
+        _passwordEdit->clear();
+        _form->setRowVisible(_passwordRow, false);
+        _startButton->setText(tr("Check and sign in"));
     }
 }
 

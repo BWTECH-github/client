@@ -18,6 +18,7 @@
 #include <QDialog>
 #include <QPointer>
 
+class QFormLayout;
 class QLabel;
 class QLineEdit;
 class QPushButton;
@@ -53,6 +54,11 @@ private:
     QPointer<AccountState> _accountState;
     ServerMoveController *_controller;
     QLineEdit *_urlEdit;
+    QFormLayout *_form = nullptr;
+    // Kennwort für eine neue Adresse mit Benutzername und Kennwort (ServerMoveController::passwordRequired)
+    QLineEdit *_passwordEdit = nullptr;
+    int _passwordRow = -1;
+    bool _askingPassword = false;
     QLabel *_messageLabel;
     QLabel *_linkLabel;
     QPushButton *_startButton;
