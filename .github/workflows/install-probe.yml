@@ -16,21 +16,30 @@ name: Install-Probe
 # gehen, Richtlinien eines Administrators bleiben; still und über die Oberfläche) | alle.
 #
 # Nur einzeln wählbar (nicht in "alle"): assistent - Kontoassistent wie ein Tester (Umstieg-Dialog,
-# "Neues Konto einrichten", Server ohne und mit OAuth2, Browser-Anmeldung mit dem Testkonto aus den
-# Secrets E2E_ONLINE_USER_1/E2E_ONLINE_PASS_1 über test/e2e/oauth/login.py aus dem Zweig sync-e2e,
-# "Fertigstellen"), Bildschirmfotos nach jedem Schritt, bei einem Absturz Speicherabbild (WER) und cdb.
-# Die Warnung zum Server ohne OAuth2 muss vollständig sichtbar sein, auch französisch mit 150 %; ein
-# Durchgang übernimmt ein zweites Konto über "Übernehmen".
+# "Neues Konto einrichten", Adresse mit Tippfehler, Server ohne OAuth2 mit Kennwortseite und "Zurück",
+# Server mit OAuth2 und Browser-Anmeldung mit dem Testkonto aus den Secrets E2E_ONLINE_USER_1/
+# E2E_ONLINE_PASS_1 über test/e2e/oauth/login.py aus dem Zweig sync-e2e, "Fertigstellen"),
+# Bildschirmfotos nach jedem Schritt, bei einem Absturz Speicherabbild (WER) und cdb. Die Meldung zur
+# Adresse mit Tippfehler muss vollständig sichtbar sein, auch französisch mit 150 %; ein Durchgang
+# übernimmt über "Übernehmen" beide Konten des offiziellen Clients (das ohne OAuth2 wird abgebrochen).
 #
 # Ebenso nur einzeln: assistent-basic - Anmeldung mit Benutzername und Kennwort am Server ohne die App
-# "OAuth2" (ASSISTENT_OHNE_OAUTH2) mit der Maus: Kennwortseite, Testkonto aus E2E_ONLINE_USER_2/
-# E2E_ONLINE_PASS_2, "Abschließen", erster Sync, in der Kontoansicht Abmelden und Anmelden über den
-# Kennwort-Dialog; das Protokoll des Clients darf weder Kennwort noch Basic-Zugang enthalten. Enthält die
-# Quelle des CI-Laufs noch den Absturz nach "Verbunden" (ServerActivityFetcher, ASSERT "account !=
-# parent"), ist er erwartet und gilt als bestanden; sonst ist jeder Absturz ein Fehler.
+# "OAuth2" (ASSISTENT_OHNE_OAUTH2) mit der Maus: Kennwortseite, erst ein falsches Kennwort (Meldung),
+# dann das Testkonto aus E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2, "Abschließen", erster Sync, in der
+# Kontoansicht Abmelden und Anmelden über den Kennwort-Dialog; das Protokoll des Clients darf weder
+# Kennwort noch Basic-Zugang enthalten. Enthält die Quelle des CI-Laufs noch den Absturz nach "Verbunden"
+# (ServerActivityFetcher, ASSERT "account != parent"), ist er erwartet und gilt als bestanden; sonst ist
+# jeder Absturz ein Fehler.
+#
+# Ebenso nur einzeln: dauerlauf - beide Testkonten im selben Profil (Browser-Anmeldung an
+# ASSISTENT_SERVER, Kennwort an ASSISTENT_OHNE_OAUTH2 mit Ordner-Assistent), Beenden über das Menü,
+# Neustart aus dem Schlüsselbund, dann mindestens 13 Minuten Betrieb mit zweitem Ordner, Datei vom
+# Server als Platzhalter, Lesen der Platzhalter, Aktivität, Einstellungen, Konto entfernen und neu
+# anlegen. Am Ende muss der Client leben, ohne Speicherabbild und ohne ASSERT im Protokoll.
 #
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=assistent
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=assistent-basic
+#   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=dauerlauf
 
 on:
   workflow_dispatch:
@@ -39,9 +48,9 @@ on:
         description: "ID des CI-Laufs (ownCloud CI), dessen Artefakt windows-cl-x86_64 geprüft wird"
         required: true
       szenario:
-        description: "frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic (beide nur einzeln) oder alle (je Szenario ein eigener Runner)"
+        description: "frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic, dauerlauf (die drei nur einzeln) oder alle (je Szenario ein eigener Runner)"
         type: choice
-        options: [alle, frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic]
+        options: [alle, frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic, dauerlauf]
         default: alle
   # GitHub nimmt workflow_dispatch für einen Workflow, der nicht auf dem Standardzweig
   # liegt, erst nach einem ersten Lauf an. Dieser Auslöser registriert ihn nur; der Job
@@ -81,9 +90,10 @@ jobs:
       BETA2_TAG: v11.0.0-beta2
       OFFIZIELL_URL: https://github.com/owncloud/client/releases/download/v6.0.3/ownCloud-6.0.3.18040.x64.msi
       OFFIZIELL_SHA256: 474d390f144ca91aab550a9d3e83291690401310432bbde28f1d1c4f1480ff45
-      # assistent: Server mit der App "OAuth2" (Konto entsteht) und ohne sie (Warnung, Konto des offiziellen Clients)
+      # assistent, dauerlauf: Server mit der App "OAuth2" (Browser-Anmeldung) und ohne sie (Kennwortseite, Konto des
+      # offiziellen Clients)
       ASSISTENT_SERVER: https://testoo.bw.tech
-      # assistent-basic: dort meldet sich das Testkonto mit Benutzername und Kennwort an
+      # assistent-basic, dauerlauf: dort meldet sich das Testkonto mit Benutzername und Kennwort an
       ASSISTENT_OHNE_OAUTH2: https://testool.bw.tech
     steps:
       - name: Check out probe scripts
@@ -163,9 +173,9 @@ jobs:
           if ($hash -ne $expected) { throw "SHA256 der Vorversion stimmt nicht: $hash statt $expected" }
           "PROBE_VORVERSION=$($setup[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
-      # assistent: Browser-Anmeldung wie in der Sync-E2E-Suite (Datei unverändert aus dem Zweig sync-e2e)
+      # assistent, dauerlauf: Browser-Anmeldung wie in der Sync-E2E-Suite (Datei unverändert aus dem Zweig sync-e2e)
       - name: Check out OAuth login helper (sync-e2e)
-        if: matrix.szenario == 'assistent'
+        if: matrix.szenario == 'assistent' || matrix.szenario == 'dauerlauf'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: sync-e2e
@@ -180,9 +190,13 @@ jobs:
           # Speicherabbild im Artefakt)
           # assistent-basic: Testkonto wie online-2 (Server ohne OAuth2); die Probe gibt das Kennwort nur über die
           # Oberfläche an den Client
-          OC_URL: ${{ matrix.szenario == 'assistent' && secrets.E2E_ONLINE_URL_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_URL_2 || '' }}
-          OC_USER: ${{ matrix.szenario == 'assistent' && secrets.E2E_ONLINE_USER_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_USER_2 || '' }}
-          OC_PASS: ${{ matrix.szenario == 'assistent' && secrets.E2E_ONLINE_PASS_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_PASS_2 || '' }}
+          # dauerlauf: beide - online-1 für die Browser-Anmeldung (OC_*), online-2 mit Kennwort (OC_*_2)
+          OC_URL: ${{ (matrix.szenario == 'assistent' || matrix.szenario == 'dauerlauf') && secrets.E2E_ONLINE_URL_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_URL_2 || '' }}
+          OC_USER: ${{ (matrix.szenario == 'assistent' || matrix.szenario == 'dauerlauf') && secrets.E2E_ONLINE_USER_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_USER_2 || '' }}
+          OC_PASS: ${{ (matrix.szenario == 'assistent' || matrix.szenario == 'dauerlauf') && secrets.E2E_ONLINE_PASS_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_PASS_2 || '' }}
+          OC_URL_2: ${{ matrix.szenario == 'dauerlauf' && secrets.E2E_ONLINE_URL_2 || '' }}
+          OC_USER_2: ${{ matrix.szenario == 'dauerlauf' && secrets.E2E_ONLINE_USER_2 || '' }}
+          OC_PASS_2: ${{ matrix.szenario == 'dauerlauf' && secrets.E2E_ONLINE_PASS_2 || '' }}
         run: |
           $parameters = @{ Scenario = $env:SZENARIO; Setup = $env:PROBE_SETUP; OutDir = $env:PROBE_OUT }
           if ($env:PROBE_VERSION) { $parameters.ExpectedVersion = $env:PROBE_VERSION }
@@ -197,6 +211,11 @@ jobs:
           if ($env:SZENARIO -eq 'assistent-basic') {
             $parameters.BasicServerUrl = $env:ASSISTENT_OHNE_OAUTH2
             if ($env:PROBE_BEKANNTER_ABSTURZ) { $parameters.KnownCrash = $env:PROBE_BEKANNTER_ABSTURZ }
+          }
+          if ($env:SZENARIO -eq 'dauerlauf') {
+            $parameters.LoginScript = Join-Path $env:GITHUB_WORKSPACE 'e2e-oauth\test\e2e\oauth\login.py'
+            $parameters.ServerUrl = $env:ASSISTENT_SERVER
+            $parameters.BasicServerUrl = $env:ASSISTENT_OHNE_OAUTH2
           }
           & .\admin\win\test\probe.ps1 @parameters
           exit $LASTEXITCODE
