@@ -2,6 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="es">
 <context>
+    <name>AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Su cuenta en el servidor está desactivada (%1). Póngase en contacto con su administrador del sistema.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>El servicio de inicio de sesión del servidor no acepta esta aplicación (%1). Póngase en contacto con su administrador del sistema.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>El servicio de inicio de sesión del servidor rechazó la solicitud (%1).</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>El servicio de inicio de sesión del servidor no está disponible temporalmente (%1).</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>El servicio de inicio de sesión del servidor no está disponible (%1). Póngase en contacto con su administrador del sistema.</translation>
+    </message>
+</context>
+<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -632,7 +665,7 @@ Cree una cuenta seleccionando la opción «Añadir cuenta...» en el menú del b
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+249"/>
+        <location filename="../src/gui/accountstate.cpp" line="+277"/>
         <source>The server is not supported by this client.</source>
         <translation>El servidor no es compatible con este cliente.</translation>
     </message>
@@ -647,6 +680,12 @@ Cree una cuenta seleccionando la opción «Añadir cuenta...» en el menú del b
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>No se pudo obtener la configuración del usuario ni las capacidades del servidor.</translation>
+    </message>
+    <message>
+        <location line="+404"/>
+        <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>No se pudo guardar el inicio de sesión en el llavero del sistema (%1). La sincronización continúa, pero después de reiniciar es posible que tenga que volver a iniciar sesión.</translation>
     </message>
 </context>
 <context>
@@ -694,7 +733,7 @@ Cree una cuenta seleccionando la opción «Añadir cuenta...» en el menú del b
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+115"/>
         <location line="+54"/>
         <source>Log in</source>
         <translation>Iniciar sesión</translation>
@@ -834,7 +873,7 @@ Cree una cuenta seleccionando la opción «Añadir cuenta...» en el menú del b
         <translation>Estado de conexión no válido</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+96"/>
         <source>Folder not added</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Carpeta no añadida</translation>
@@ -2641,7 +2680,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>Avanzado</translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+151"/>
         <source>Sign in</source>
         <translation>Entrar</translation>
     </message>
@@ -2672,7 +2711,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
         <source>Successfully signed in</source>
         <translation>Inicio de sesión correcto</translation>
     </message>
@@ -2682,7 +2721,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>Ahora, explore %1 en el escritorio.</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+118"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Error devuelto desde el servidor: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2736,7 +2775,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
         <source>Application Name Logo %1</source>
         <translation>Logotipo de nombre de la aplicación %1</translation>
     </message>
@@ -2798,7 +2837,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>Copie la URL de autenticación utilizando el botón de arriba y facilite esta información al servicio de asistencia.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>No se pudieron buscar instancias de WebFinger: %1</translation>
     </message>
@@ -3306,12 +3345,12 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
     </message>
     <message>
         <location line="+11"/>
-        <location line="+195"/>
+        <location line="+209"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>La subida %1 excede la quota de la carpeta</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-161"/>
         <location line="+31"/>
         <source>%1 the file is currently in use</source>
         <translation>El archivo %1 está actualmente en uso</translation>
@@ -3322,7 +3361,7 @@ Tenga en cuenta que el uso de cualquier opción de línea de comando de registro
         <translation>Archivo eliminado</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+192"/>
         <source>The server did not provide the file permissions</source>
         <translation>El servidor no proporcionó los permisos del archivo.</translation>
     </message>

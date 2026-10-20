@@ -2,6 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ko">
 <context>
+    <name>AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버의 계정이 비활성화되어 있습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버의 로그인 서비스가 이 응용 프로그램을 허용하지 않습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버의 로그인 서비스가 요청을 거부했습니다(%1).</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버의 로그인 서비스를 일시적으로 사용할 수 없습니다(%1).</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버의 로그인 서비스를 사용할 수 없습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
+    </message>
+</context>
+<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -655,7 +688,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+249"/>
+        <location filename="../src/gui/accountstate.cpp" line="+277"/>
         <source>The server is not supported by this client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>이 클라이언트는 이 서버를 지원하지 않습니다.</translation>
@@ -671,6 +704,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>사용자 설정과 서버 기능을 가져올 수 없습니다.</translation>
+    </message>
+    <message>
+        <location line="+404"/>
+        <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>로그인 정보를 시스템 키체인에 저장할 수 없습니다(%1). 동기화는 계속되지만 다시 시작한 후 다시 로그인해야 할 수 있습니다.</translation>
     </message>
 </context>
 <context>
@@ -721,7 +760,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+115"/>
         <location line="+54"/>
         <source>Log in</source>
         <translation>로그인</translation>
@@ -865,7 +904,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>잘못된 연결 상태</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+96"/>
         <source>Folder not added</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>폴더가 추가되지 않음</translation>
@@ -2729,7 +2768,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>고급</translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+151"/>
         <source>Sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>로그인</translation>
@@ -2762,7 +2801,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>로그인했습니다</translation>
@@ -2774,7 +2813,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>이제 데스크톱에서 %1을(를) 사용해 보십시오.</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+118"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>서버에서 오류 반환함: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2826,7 +2865,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>애플리케이션 이름 로고 %1</translation>
@@ -2898,7 +2937,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>위의 버튼으로 인증 URL을 복사하여 이 정보를 지원팀에 전달하십시오.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>WebFinger 인스턴스를 조회하지 못했습니다: %1</translation>
@@ -3420,12 +3459,12 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+11"/>
-        <location line="+195"/>
+        <location line="+209"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>%1을(를) 업로드하면 폴더 할당량을 초과함</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-161"/>
         <location line="+31"/>
         <source>%1 the file is currently in use</source>
         <translation>%1  파일은  현재 이용 중입니다</translation>
@@ -3436,7 +3475,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>파일이 제거됨</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+192"/>
         <source>The server did not provide the file permissions</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>서버가 파일 권한을 제공하지 않았습니다</translation>

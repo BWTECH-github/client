@@ -2,6 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="et_EE">
 <context>
+    <name>AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sinu konto on serveris keelatud (%1). Võta ühendust oma süsteemiadministraatoriga.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serveri sisselogimisteenus ei luba seda rakendust (%1). Võta ühendust oma süsteemiadministraatoriga.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serveri sisselogimisteenus lükkas päringu tagasi (%1).</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serveri sisselogimisteenus pole ajutiselt saadaval (%1).</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serveri sisselogimisteenus pole saadaval (%1). Võta ühendust oma süsteemiadministraatoriga.</translation>
+    </message>
+</context>
+<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -648,7 +681,7 @@ Loo konto, valides nupu Rohkem menüüst valiku „Lisa konto...“.</translatio
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+249"/>
+        <location filename="../src/gui/accountstate.cpp" line="+277"/>
         <source>The server is not supported by this client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>See klient ei toeta seda serverit.</translation>
@@ -664,6 +697,12 @@ Loo konto, valides nupu Rohkem menüüst valiku „Lisa konto...“.</translatio
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kasutaja seadeid ja serveri võimekust ei õnnestunud pärida.</translation>
+    </message>
+    <message>
+        <location line="+404"/>
+        <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Sisselogimist ei õnnestunud süsteemi võtmehoidjasse salvestada (%1). Sünkroniseerimine jätkub, kuid pärast taaskäivitamist võib olla vaja uuesti sisse logida.</translation>
     </message>
 </context>
 <context>
@@ -710,7 +749,7 @@ Loo konto, valides nupu Rohkem menüüst valiku „Lisa konto...“.</translatio
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+115"/>
         <location line="+54"/>
         <source>Log in</source>
         <translation>Logi sisse</translation>
@@ -851,7 +890,7 @@ Loo konto, valides nupu Rohkem menüüst valiku „Lisa konto...“.</translatio
         <translation>Vigane ühenduse olek</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+96"/>
         <source>Folder not added</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kausta ei lisatud</translation>
@@ -2693,7 +2732,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Täpsemad seaded</translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+151"/>
         <source>Sign in</source>
         <translation>Logi sisse</translation>
     </message>
@@ -2724,7 +2763,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sisselogimine õnnestus</translation>
@@ -2736,7 +2775,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Nüüd avasta %1 oma töölaual.</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+118"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Serverist tagastatud viga:&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2788,7 +2827,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
         <source>Application Name Logo %1</source>
         <translation>Rakendus Nimi Logo %1</translation>
     </message>
@@ -2855,7 +2894,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Kopeeri autentimise URL ülaloleva nupuga ja edasta see teave toele.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>WebFingeri eksemplaride otsing ebaõnnestus: %1</translation>
@@ -3373,12 +3412,12 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
     </message>
     <message>
         <location line="+11"/>
-        <location line="+195"/>
+        <location line="+209"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>%1 üleslaadimine ületab kausta piirmäära</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-161"/>
         <location line="+31"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 fail on hetkel kasutuses</translation>
@@ -3389,7 +3428,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Fail eemaldatud</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+192"/>
         <source>The server did not provide the file permissions</source>
         <translation>Server ei väljastanud faili õiguseid</translation>
     </message>

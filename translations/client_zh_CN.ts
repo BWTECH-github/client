@@ -2,6 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="zh_CN">
 <context>
+    <name>AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>您在服务器上的账户已被停用（%1）。请联系您的系统管理员。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>服务器的登录服务不接受此应用程序（%1）。请联系您的系统管理员。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>服务器的登录服务拒绝了该请求（%1）。</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>服务器的登录服务暂时不可用（%1）。</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>服务器的登录服务不可用（%1）。请联系您的系统管理员。</translation>
+    </message>
+</context>
+<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -663,7 +696,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+249"/>
+        <location filename="../src/gui/accountstate.cpp" line="+277"/>
         <source>The server is not supported by this client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>此客户端不支持该服务器。</translation>
@@ -679,6 +712,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无法获取用户设置和服务器功能。</translation>
+    </message>
+    <message>
+        <location line="+404"/>
+        <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>无法将登录信息保存到系统钥匙串（%1）。同步将继续，但重启后您可能需要重新登录。</translation>
     </message>
 </context>
 <context>
@@ -730,7 +769,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+115"/>
         <location line="+54"/>
         <source>Log in</source>
         <translation>登录</translation>
@@ -876,7 +915,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>无效的连接状态</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+96"/>
         <source>Folder not added</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>未添加文件夹</translation>
@@ -2754,7 +2793,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>高级</translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+151"/>
         <source>Sign in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登录</translation>
@@ -2787,7 +2826,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登录成功</translation>
@@ -2799,7 +2838,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>现在，在桌面上体验 %1 吧。</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+118"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>来自服务器返回的错误&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2852,7 +2891,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>应用名称徽标 %1</translation>
@@ -2924,7 +2963,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>请使用上方的按钮复制认证 URL，并将此信息提供给技术支持。</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>查找 WebFinger 实例失败：%1</translation>
@@ -3447,12 +3486,12 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+11"/>
-        <location line="+195"/>
+        <location line="+209"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>上传 %1 超出了此文件夹的限额</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-161"/>
         <location line="+31"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 文件当前正在使用中</translation>
@@ -3463,7 +3502,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>已移除文件</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+192"/>
         <source>The server did not provide the file permissions</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>服务器未提供文件权限</translation>

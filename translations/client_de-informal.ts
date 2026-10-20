@@ -2,6 +2,34 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
+    <name>AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translation>Dein Konto ist auf dem Server deaktiviert (%1). Bitte wende dich an deinen Systemadministrator.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translation>Der Anmeldedienst des Servers lässt diese Anwendung nicht zu (%1). Bitte wende dich an deinen Systemadministrator.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translation>Der Anmeldedienst des Servers hat die Anfrage abgelehnt (%1).</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translation>Der Anmeldedienst des Servers ist vorübergehend nicht verfügbar (%1).</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translation>Der Anmeldedienst des Servers ist nicht verfügbar (%1). Bitte wende dich an deinen Systemadministrator.</translation>
+    </message>
+</context>
+<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -611,7 +639,7 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+249"/>
+        <location filename="../src/gui/accountstate.cpp" line="+277"/>
         <source>The server is not supported by this client.</source>
         <translation>Dieser Client unterstützt diesen Server nicht.</translation>
     </message>
@@ -624,6 +652,11 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
         <location line="+7"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translation>Benutzereinstellungen und Serverfunktionen konnten nicht abgerufen werden.</translation>
+    </message>
+    <message>
+        <location line="+404"/>
+        <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
+        <translation>Die Anmeldung konnte nicht im Schlüsselbund des Systems gespeichert werden (%1). Die Synchronisation läuft weiter, nach einem Neustart musst du dich aber womöglich neu anmelden.</translation>
     </message>
 </context>
 <context>
@@ -669,7 +702,7 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+115"/>
         <location line="+54"/>
         <source>Log in</source>
         <translation>Anmelden</translation>
@@ -800,7 +833,7 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
         <translation>Ungültiger Verbindungsstatus</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+96"/>
         <source>Folder not added</source>
         <translation>Ordner nicht hinzugefügt</translation>
     </message>
@@ -2487,7 +2520,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Erweitert</translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+151"/>
         <source>Sign in</source>
         <translation>Anmelden</translation>
     </message>
@@ -2518,7 +2551,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
         <source>Successfully signed in</source>
         <translation>Erfolgreich angemeldet</translation>
     </message>
@@ -2528,7 +2561,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Erkunde nun %1 auf deinem Desktop.</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+118"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Fehler vom Server zurückgegeben: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2579,7 +2612,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
         <source>Application Name Logo %1</source>
         <translation>Anwendungsname Logo %1</translation>
     </message>
@@ -2639,7 +2672,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Bitte kopiere die Authentifizierungs-URL mithilfe der Schaltfläche oben und gib diese Informationen an den Support weiter.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>Fehler beim Auffinden von WebFinger-Instanzen: %1</translation>
     </message>
@@ -3142,12 +3175,12 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
     <message>
         <location line="+11"/>
-        <location line="+195"/>
+        <location line="+209"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>Das Hochladen von %1 überschreitet das Speicherkontingent des Ordners</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-161"/>
         <location line="+31"/>
         <source>%1 the file is currently in use</source>
         <translation>Datei %1 wird gerade benutzt</translation>
@@ -3158,7 +3191,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Datei entfernt</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+192"/>
         <source>The server did not provide the file permissions</source>
         <translation>Der Server hat die Dateiberechtigungen nicht bereitgestellt</translation>
     </message>

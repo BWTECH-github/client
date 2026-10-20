@@ -2,6 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="pl">
 <context>
+    <name>AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Twoje konto na serwerze jest wyłączone (%1). Skontaktuj się z administratorem systemu.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usługa logowania serwera nie akceptuje tej aplikacji (%1). Skontaktuj się z administratorem systemu.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usługa logowania serwera odrzuciła żądanie (%1).</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usługa logowania serwera jest tymczasowo niedostępna (%1).</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Usługa logowania serwera jest niedostępna (%1). Skontaktuj się z administratorem systemu.</translation>
+    </message>
+</context>
+<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -629,7 +662,7 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+249"/>
+        <location filename="../src/gui/accountstate.cpp" line="+277"/>
         <source>The server is not supported by this client.</source>
         <translation>Serwer nie jest obsługiwany przez tego klienta.</translation>
     </message>
@@ -644,6 +677,12 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Nie można pobrać ustawień użytkownika i możliwości serwera.</translation>
+    </message>
+    <message>
+        <location line="+404"/>
+        <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie udało się zapisać logowania w pęku kluczy systemu (%1). Synchronizacja trwa dalej, ale po ponownym uruchomieniu może być konieczne ponowne zalogowanie.</translation>
     </message>
 </context>
 <context>
@@ -691,7 +730,7 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+115"/>
         <location line="+54"/>
         <source>Log in</source>
         <translation>Zaloguj</translation>
@@ -831,7 +870,7 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
         <translation>Nieprawidłowy stan połączenia</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+96"/>
         <source>Folder not added</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Folder nie został dodany</translation>
@@ -2649,7 +2688,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Zaawansowane</translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+151"/>
         <source>Sign in</source>
         <translation>Zaloguj</translation>
     </message>
@@ -2680,7 +2719,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
         <source>Successfully signed in</source>
         <translation>Pomyślnie zalogowano</translation>
     </message>
@@ -2690,7 +2729,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Teraz poznaj %1 na komputerze.</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+118"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Błąd zwrócony przez serwer: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2741,7 +2780,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
         <source>Application Name Logo %1</source>
         <translation>Nazwa aplikacji Logo %1</translation>
     </message>
@@ -2804,7 +2843,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Skopiuj adres URL uwierzytelniania za pomocą przycisku powyżej i przekaż te informacje działowi pomocy technicznej.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>Nie udało się wyszukać instancji WebFinger: %1</translation>
     </message>
@@ -3308,12 +3347,12 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
     <message>
         <location line="+11"/>
-        <location line="+195"/>
+        <location line="+209"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>Przesłanie %1 przekracza limit dla folderu</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-161"/>
         <location line="+31"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 plik jest obecnie używany</translation>
@@ -3324,7 +3363,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Usunięto plik</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+192"/>
         <source>The server did not provide the file permissions</source>
         <translation>Serwer nie zapewnił uprawnień do pliku</translation>
     </message>

@@ -2,6 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="lo">
 <context>
+    <name>AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບັນຊີຂອງທ່ານໃນເຊີບເວີຖືກປິດການໃຊ້ງານ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີບໍ່ຍອມຮັບແອັບພລິເຄຊັນນີ້ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີປະຕິເສດຄຳຮ້ອງຂໍ (%1).</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີບໍ່ສາມາດໃຊ້ງານໄດ້ຊົ່ວຄາວ (%1).</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີບໍ່ສາມາດໃຊ້ງານໄດ້ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
+    </message>
+</context>
+<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -626,7 +659,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+249"/>
+        <location filename="../src/gui/accountstate.cpp" line="+277"/>
         <source>The server is not supported by this client.</source>
         <translation>ເຊີບເວີນີ້ບໍ່ຮອງຮັບໂດຍໂປຣແກຣມນີ້.</translation>
     </message>
@@ -639,6 +672,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <location line="+7"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translation>ບໍ່ສາມາດດຶງຂໍ້ມູນການຕັ້ງຄ່າຜູ້ໃຊ້ ແລະ ຄວາມສາມາດຂອງເຊີບເວີໄດ້.</translation>
+    </message>
+    <message>
+        <location line="+404"/>
+        <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດບັນທຶກການເຂົ້າສູ່ລະບົບໄວ້ໃນພວງກະແຈຂອງລະບົບໄດ້ (%1). ການຊິງຄ໌ຍັງດຳເນີນຕໍ່ໄປ, ແຕ່ຫຼັງຈາກເລີ່ມໃໝ່ ທ່ານອາດຕ້ອງເຂົ້າສູ່ລະບົບອີກຄັ້ງ.</translation>
     </message>
 </context>
 <context>
@@ -685,7 +724,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+115"/>
         <location line="+54"/>
         <source>Log in</source>
         <translation>ເຂົ້າສູ່ລະບົບ</translation>
@@ -818,7 +857,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>ສະຖານະການເຊື່ອມຕໍ່ບໍ່ຖືກຕ້ອງ</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+96"/>
         <source>Folder not added</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບໍ່ໄດ້ເພີ່ມໂຟນເດີ</translation>
@@ -2623,7 +2662,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ຂັ້ນສູງ</translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+151"/>
         <source>Sign in</source>
         <translation>ລອງໃໝ່</translation>
     </message>
@@ -2654,7 +2693,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
         <source>Successfully signed in</source>
         <translation>ເຂົ້າສູ່ລະບົບສຳເລັດແລ້ວ</translation>
     </message>
@@ -2664,7 +2703,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ດຽວນີ້, ສຳຫຼວດ %1 ໃນເດັສທັອບ.</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+118"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>ຂໍ້ຜິດພາດທີ່ສົ່ງຄືນຈາກເຊີບເວີ: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2715,7 +2754,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
         <source>Application Name Logo %1</source>
         <translation>ໂລໂກ້ຊື່ແອັບພລິເຄຊັນ %1</translation>
     </message>
@@ -2777,7 +2816,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ກະລຸນາສຳເນົາ URL ການຢືນຢັນຕົວຕົນໂດຍໃຊ້ປຸ່ມຂ້າງເທິງ, ແລະ ສົ່ງຂໍ້ມູນນີ້ໃຫ້ກັບຝ່າຍຊ່ວຍເຫຼືອ.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>ຄົ້ນຫາ WebFinger instances ບໍ່ສຳເລັດ: %1</translation>
     </message>
@@ -3281,12 +3320,12 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+11"/>
-        <location line="+195"/>
+        <location line="+209"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>ການອັບໂຫຼດ %1 ເກີນໂຄຕ້າຂອງໂຟເດີ</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-161"/>
         <location line="+31"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 ໄຟລ໌ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
@@ -3297,7 +3336,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ໄຟລ໌ຖືກລຶບອອກແລ້ວ</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+192"/>
         <source>The server did not provide the file permissions</source>
         <translation>ເຊີບເວີບໍ່ໄດ້ໃຫ້ສິດໃນການເຂົ້າເຖິງໄຟລ໌</translation>
     </message>

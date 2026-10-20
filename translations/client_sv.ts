@@ -2,6 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="sv">
 <context>
+    <name>AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ditt konto på servern är inaktiverat (%1). Kontakta din systemadministratör.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serverns inloggningstjänst accepterar inte det här programmet (%1). Kontakta din systemadministratör.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serverns inloggningstjänst avvisade begäran (%1).</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serverns inloggningstjänst är tillfälligt otillgänglig (%1).</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serverns inloggningstjänst är inte tillgänglig (%1). Kontakta din systemadministratör.</translation>
+    </message>
+</context>
+<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -626,7 +659,7 @@ Skapa ett konto genom att välja alternativet &quot;Lägg till konto...&quot; i 
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+249"/>
+        <location filename="../src/gui/accountstate.cpp" line="+277"/>
         <source>The server is not supported by this client.</source>
         <translation>Servern stöds inte av den här klienten.</translation>
     </message>
@@ -639,6 +672,12 @@ Skapa ett konto genom att välja alternativet &quot;Lägg till konto...&quot; i 
         <location line="+7"/>
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translation>Kan inte hämta användarinställningar och serverfunktioner.</translation>
+    </message>
+    <message>
+        <location line="+404"/>
+        <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Inloggningen kunde inte sparas i systemets nyckelring (%1). Synkroniseringen fortsätter, men efter en omstart kan du behöva logga in igen.</translation>
     </message>
 </context>
 <context>
@@ -686,7 +725,7 @@ Skapa ett konto genom att välja alternativet &quot;Lägg till konto...&quot; i 
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+115"/>
         <location line="+54"/>
         <source>Log in</source>
         <translation>Logga in</translation>
@@ -819,7 +858,7 @@ Skapa ett konto genom att välja alternativet &quot;Lägg till konto...&quot; i 
         <translation>Ogiltig anslutningsstatus</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+96"/>
         <source>Folder not added</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Mappen lades inte till</translation>
@@ -2617,7 +2656,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Avancerad</translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+151"/>
         <source>Sign in</source>
         <translation>Logga in</translation>
     </message>
@@ -2648,7 +2687,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
         <source>Successfully signed in</source>
         <translation>Inloggningen lyckades</translation>
     </message>
@@ -2658,7 +2697,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Utforska nu %1 på skrivbordet.</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+118"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Fel returnerat från server: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2709,7 +2748,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
         <source>Application Name Logo %1</source>
         <translation>Programlogotyp %1</translation>
     </message>
@@ -2771,7 +2810,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Kopiera autentiserings-URL:en med knappen ovan och lämna informationen till supporten.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translation>Det gick inte att slå upp WebFinger-instanser: %1</translation>
     </message>
@@ -3275,12 +3314,12 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
     </message>
     <message>
         <location line="+11"/>
-        <location line="+195"/>
+        <location line="+209"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>Uppladdningen av %1 överstiger kvoten för mappen</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-161"/>
         <location line="+31"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 filen används för närvarande</translation>
@@ -3291,7 +3330,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Filen Raderad</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+192"/>
         <source>The server did not provide the file permissions</source>
         <translation>Servern angav inte filbehörigheterna</translation>
     </message>

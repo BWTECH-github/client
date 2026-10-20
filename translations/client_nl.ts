@@ -2,6 +2,39 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="nl">
 <context>
+    <name>AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Uw account op de server is uitgeschakeld (%1). Neem contact op met uw systeembeheerder.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De aanmelddienst van de server accepteert deze toepassing niet (%1). Neem contact op met uw systeembeheerder.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De aanmelddienst van de server heeft het verzoek geweigerd (%1).</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De aanmelddienst van de server is tijdelijk niet beschikbaar (%1).</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De aanmelddienst van de server is niet beschikbaar (%1). Neem contact op met uw systeembeheerder.</translation>
+    </message>
+</context>
+<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -625,7 +658,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountState</name>
     <message>
-        <location filename="../src/gui/accountstate.cpp" line="+249"/>
+        <location filename="../src/gui/accountstate.cpp" line="+277"/>
         <source>The server is not supported by this client.</source>
         <translation>De server wordt niet ondersteund door deze client</translation>
     </message>
@@ -640,6 +673,12 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <source>Unable to retrieve user settings and server capabilities.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kan de gebruikersinstellingen en de servermogelijkheden niet ophalen.</translation>
+    </message>
+    <message>
+        <location line="+404"/>
+        <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De aanmelding kon niet in de sleutelbos van het systeem worden opgeslagen (%1). De synchronisatie gaat door, maar na een herstart moet u zich mogelijk opnieuw aanmelden.</translation>
     </message>
 </context>
 <context>
@@ -686,7 +725,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountViewController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+110"/>
+        <location filename="../src/gui/accountsgui/accountviewcontroller.cpp" line="+115"/>
         <location line="+54"/>
         <source>Log in</source>
         <translation>Aanmelden</translation>
@@ -826,7 +865,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>Ongeldige verbindingsstatus</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+96"/>
         <source>Folder not added</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Map niet toegevoegd</translation>
@@ -2635,7 +2674,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Geavanceerd</translation>
     </message>
     <message>
-        <location line="+150"/>
+        <location line="+151"/>
         <source>Sign in</source>
         <translation>Inloggen</translation>
     </message>
@@ -2666,7 +2705,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+227"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
         <source>Successfully signed in</source>
         <translation>Succesvol aangemeld</translation>
     </message>
@@ -2677,7 +2716,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Ontdek nu %1 op uw desktop.</translation>
     </message>
     <message>
-        <location line="+115"/>
+        <location line="+118"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Fout gemeld door de server: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -2730,7 +2769,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+70"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logo van de applicatie %1</translation>
@@ -2796,7 +2835,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Kopieer de authenticatie-URL met de knop hierboven en geef deze informatie door aan de ondersteuning.</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+36"/>
         <source>Failed to look up WebFinger instances: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Opzoeken van WebFinger-instanties mislukt: %1</translation>
@@ -3305,12 +3344,12 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     </message>
     <message>
         <location line="+11"/>
-        <location line="+195"/>
+        <location line="+209"/>
         <source>Upload of %1 exceeds the quota for the folder</source>
         <translation>Upload van %1 overtreft de quota van de folder</translation>
     </message>
     <message>
-        <location line="-147"/>
+        <location line="-161"/>
         <location line="+31"/>
         <source>%1 the file is currently in use</source>
         <translation>%1 is in gebruik</translation>
@@ -3321,7 +3360,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Bestand verwijderd</translation>
     </message>
     <message>
-        <location line="+178"/>
+        <location line="+192"/>
         <source>The server did not provide the file permissions</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>De server heeft de bestandsrechten niet geleverd</translation>
