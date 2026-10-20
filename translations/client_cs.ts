@@ -2,39 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="cs_CZ">
 <context>
-    <name>AccountBasedOAuth</name>
-    <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
-        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Váš účet na serveru je deaktivován (%1). Obraťte se na správce systému.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Přihlašovací služba serveru tuto aplikaci nepřijímá (%1). Obraťte se na správce systému.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The sign-in service of the server rejected the request (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Přihlašovací služba serveru požadavek odmítla (%1).</translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Přihlašovací služba serveru je dočasně nedostupná (%1).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Přihlašovací služba serveru není dostupná (%1). Obraťte se na správce systému.</translation>
-    </message>
-</context>
-<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -472,6 +439,39 @@ Nástroj pro synchronizaci souborů na desktopu.</translation>
         <location filename="../src/libsync/account.cpp" line="+179"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Váš účet na serveru je deaktivován (%1). Obraťte se na správce systému.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Přihlašovací služba serveru tuto aplikaci nepřijímá (%1). Obraťte se na správce systému.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Přihlašovací služba serveru je dočasně nedostupná (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Přihlašovací služba serveru požadavek odmítla (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Přihlašovací služba serveru není dostupná (%1). Obraťte se na správce systému.</translation>
     </message>
 </context>
 <context>
@@ -2845,7 +2845,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Přihlášení proběhlo úspěšně</translation>

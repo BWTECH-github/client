@@ -2,39 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ko">
 <context>
-    <name>AccountBasedOAuth</name>
-    <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
-        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>서버의 계정이 비활성화되어 있습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>서버의 로그인 서비스가 이 응용 프로그램을 허용하지 않습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The sign-in service of the server rejected the request (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>서버의 로그인 서비스가 요청을 거부했습니다(%1).</translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>서버의 로그인 서비스를 일시적으로 사용할 수 없습니다(%1).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>서버의 로그인 서비스를 사용할 수 없습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
-    </message>
-</context>
-<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -461,6 +428,39 @@ File synchronization desktop utility.</source>
         <location filename="../src/libsync/account.cpp" line="+179"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버의 계정이 비활성화되어 있습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버의 로그인 서비스가 이 응용 프로그램을 허용하지 않습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버의 로그인 서비스를 일시적으로 사용할 수 없습니다(%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버의 로그인 서비스가 요청을 거부했습니다(%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버의 로그인 서비스를 사용할 수 없습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
     </message>
 </context>
 <context>
@@ -2801,7 +2801,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>로그인했습니다</translation>

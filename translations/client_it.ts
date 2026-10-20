@@ -2,39 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="it">
 <context>
-    <name>AccountBasedOAuth</name>
-    <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
-        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Il tuo account sul server è disattivato (%1). Contatta l&apos;amministratore di sistema.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Il servizio di accesso del server non accetta questa applicazione (%1). Contatta l&apos;amministratore di sistema.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The sign-in service of the server rejected the request (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Il servizio di accesso del server ha rifiutato la richiesta (%1).</translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Il servizio di accesso del server è temporaneamente non disponibile (%1).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Il servizio di accesso del server non è disponibile (%1). Contatta l&apos;amministratore di sistema.</translation>
-    </message>
-</context>
-<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -446,6 +413,39 @@ Utilità desktop per la sincronizzazione dei file.</translation>
         <location filename="../src/libsync/account.cpp" line="+179"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Il tuo account sul server è disattivato (%1). Contatta l&apos;amministratore di sistema.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Il servizio di accesso del server non accetta questa applicazione (%1). Contatta l&apos;amministratore di sistema.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Il servizio di accesso del server è temporaneamente non disponibile (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Il servizio di accesso del server ha rifiutato la richiesta (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Il servizio di accesso del server non è disponibile (%1). Contatta l&apos;amministratore di sistema.</translation>
     </message>
 </context>
 <context>
@@ -2715,7 +2715,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Accesso eseguito correttamente</translation>

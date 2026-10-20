@@ -2,39 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="lo">
 <context>
-    <name>AccountBasedOAuth</name>
-    <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
-        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ບັນຊີຂອງທ່ານໃນເຊີບເວີຖືກປິດການໃຊ້ງານ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີບໍ່ຍອມຮັບແອັບພລິເຄຊັນນີ້ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The sign-in service of the server rejected the request (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີປະຕິເສດຄຳຮ້ອງຂໍ (%1).</translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີບໍ່ສາມາດໃຊ້ງານໄດ້ຊົ່ວຄາວ (%1).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີບໍ່ສາມາດໃຊ້ງານໄດ້ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
-    </message>
-</context>
-<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -447,6 +414,39 @@ File synchronization desktop utility.</source>
         <location filename="../src/libsync/account.cpp" line="+179"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບັນຊີຂອງທ່ານໃນເຊີບເວີຖືກປິດການໃຊ້ງານ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີບໍ່ຍອມຮັບແອັບພລິເຄຊັນນີ້ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີບໍ່ສາມາດໃຊ້ງານໄດ້ຊົ່ວຄາວ (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີປະຕິເສດຄຳຮ້ອງຂໍ (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີບໍ່ສາມາດໃຊ້ງານໄດ້ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
     </message>
 </context>
 <context>
@@ -2693,7 +2693,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
         <source>Successfully signed in</source>
         <translation>ເຂົ້າສູ່ລະບົບສຳເລັດແລ້ວ</translation>
     </message>

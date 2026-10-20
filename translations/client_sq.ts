@@ -2,39 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="sq">
 <context>
-    <name>AccountBasedOAuth</name>
-    <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
-        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Llogaria juaj në shërbyes është çaktivizuar (%1). Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Shërbimi i hyrjes i shërbyesit nuk e pranon këtë aplikacion (%1). Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The sign-in service of the server rejected the request (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Shërbimi i hyrjes i shërbyesit e hodhi poshtë kërkesën (%1).</translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Shërbimi i hyrjes i shërbyesit është përkohësisht jashtë funksionimi (%1).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Shërbimi i hyrjes i shërbyesit s’është i passhëm (%1). Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
-    </message>
-</context>
-<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -446,6 +413,39 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <location filename="../src/libsync/account.cpp" line="+179"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Llogaria juaj në shërbyes është çaktivizuar (%1). Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbimi i hyrjes i shërbyesit nuk e pranon këtë aplikacion (%1). Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbimi i hyrjes i shërbyesit është përkohësisht jashtë funksionimi (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbimi i hyrjes i shërbyesit e hodhi poshtë kërkesën (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shërbimi i hyrjes i shërbyesit s’është i passhëm (%1). Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
     </message>
 </context>
 <context>
@@ -2692,7 +2692,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
         <source>Successfully signed in</source>
         <translation>U hy me sukses</translation>
     </message>

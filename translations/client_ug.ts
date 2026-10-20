@@ -2,39 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ug">
 <context>
-    <name>AccountBasedOAuth</name>
-    <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
-        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>مۇلازىمېتىردىكى ھېساباتىڭىز چەكلەنگەن (%1). سىستېما باشقۇرغۇچىڭىز بىلەن ئالاقىلىشىڭ.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>مۇلازىمېتىرنىڭ كىرىش مۇلازىمىتى بۇ ئەپنى قوبۇل قىلمايدۇ (%1). سىستېما باشقۇرغۇچىڭىز بىلەن ئالاقىلىشىڭ.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The sign-in service of the server rejected the request (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>مۇلازىمېتىرنىڭ كىرىش مۇلازىمىتى ئىلتىماسنى رەت قىلدى (%1).</translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>مۇلازىمېتىرنىڭ كىرىش مۇلازىمىتىنى ۋاقىتلىق ئىشلەتكىلى بولمايدۇ (%1).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>مۇلازىمېتىرنىڭ كىرىش مۇلازىمىتىنى ئىشلەتكىلى بولمايدۇ (%1). سىستېما باشقۇرغۇچىڭىز بىلەن ئالاقىلىشىڭ.</translation>
-    </message>
-</context>
-<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -477,6 +444,39 @@ File synchronization desktop utility.</source>
         <source>%1@%2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1@%2</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىردىكى ھېساباتىڭىز چەكلەنگەن (%1). سىستېما باشقۇرغۇچىڭىز بىلەن ئالاقىلىشىڭ.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىرنىڭ كىرىش مۇلازىمىتى بۇ ئەپنى قوبۇل قىلمايدۇ (%1). سىستېما باشقۇرغۇچىڭىز بىلەن ئالاقىلىشىڭ.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىرنىڭ كىرىش مۇلازىمىتىنى ۋاقىتلىق ئىشلەتكىلى بولمايدۇ (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىرنىڭ كىرىش مۇلازىمىتى ئىلتىماسنى رەت قىلدى (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىرنىڭ كىرىش مۇلازىمىتىنى ئىشلەتكىلى بولمايدۇ (%1). سىستېما باشقۇرغۇچىڭىز بىلەن ئالاقىلىشىڭ.</translation>
     </message>
 </context>
 <context>
@@ -2847,7 +2847,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇۋەپپەقىيەتلىك كىردى</translation>

@@ -23,6 +23,7 @@
 #include "oauthhtmlpage.h"
 #include "theme.h"
 
+#include <QCoreApplication>
 #include <QDesktopServices>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -677,7 +678,8 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
             // Alles andere ist kein Urteil über das Refresh-Token: Netz, Zeitüberschreitung, 5xx, eine Weiterleitung oder
             // HTML statt JSON (oauth2-App aus), ein deaktiviertes Konto (unauthorized_client) oder ein Fehler in der
             // Einrichtung (invalid_client, invalid_request). Die Meldung nennt die Ursache für den Kontostatus, die
-            // technische Angabe steht in Klammern.
+            // technische Angabe steht in Klammern. Der Kontext steht ausdrücklich da: tr() in diesen verschachtelten
+            // Lambdas ordnet das lupdate aus Qt 6.8 ohne Namensraum zu, zur Laufzeit gilt aber OCC::AccountBasedOAuth.
             const QString oauthError = description.isEmpty() ? error : QStringLiteral("%1: %2").arg(error, description);
             const QString httpDetail = jsonParseError.error != QJsonParseError::NoError
                 ? QStringLiteral("HTTP %1: %2").arg(QString::number(httpStatus), jsonParseError.errorString())
@@ -685,19 +687,22 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
             QString reason;
             if (error == QLatin1String("unauthorized_client")) {
                 // die oauth2-App: Konto deaktiviert oder gelöscht („user not enabled“)
-                reason = tr("Your account on the server is disabled (%1). Please contact your system administrator.").arg(oauthError);
+                reason = QCoreApplication::translate("OCC::AccountBasedOAuth", "Your account on the server is disabled (%1). Please contact your system administrator.")
+                             .arg(oauthError);
             } else if (error == QLatin1String("invalid_client")) {
-                reason = tr("The sign-in service of the server does not accept this application (%1). Please contact your system administrator.")
+                reason = QCoreApplication::translate(
+                    "OCC::AccountBasedOAuth", "The sign-in service of the server does not accept this application (%1). Please contact your system administrator.")
                              .arg(oauthError);
             } else if (error == QLatin1String("server_error") || error == QLatin1String("temporarily_unavailable") || (error.isEmpty() && httpStatus >= 500)) {
                 // vorübergehende Störung: 5xx oder die Fehlercodes dafür aus RFC 6749
-                reason = tr("The sign-in service of the server is temporarily unavailable (%1).")
+                reason = QCoreApplication::translate("OCC::AccountBasedOAuth", "The sign-in service of the server is temporarily unavailable (%1).")
                              .arg(error.isEmpty() ? QStringLiteral("HTTP %1").arg(QString::number(httpStatus)) : oauthError);
             } else if (!error.isEmpty()) {
-                reason = tr("The sign-in service of the server rejected the request (%1).").arg(oauthError);
+                reason = QCoreApplication::translate("OCC::AccountBasedOAuth", "The sign-in service of the server rejected the request (%1).").arg(oauthError);
             } else if (httpStatus != 0) {
                 // Weiterleitung auf die Anmeldeseite, HTML statt JSON, 404: die oauth2-App fehlt oder ist abgeschaltet
-                reason = tr("The sign-in service of the server is not available (%1). Please contact your system administrator.").arg(httpDetail);
+                reason = QCoreApplication::translate("OCC::AccountBasedOAuth", "The sign-in service of the server is not available (%1). Please contact your system administrator.")
+                             .arg(httpDetail);
             } else {
                 reason = networkReplyErrorString(*reply);
             }

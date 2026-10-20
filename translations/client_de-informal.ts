@@ -2,34 +2,6 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de">
 <context>
-    <name>AccountBasedOAuth</name>
-    <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+688"/>
-        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
-        <translation>Dein Konto ist auf dem Server deaktiviert (%1). Bitte wende dich an deinen Systemadministrator.</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
-        <translation>Der Anmeldedienst des Servers lässt diese Anwendung nicht zu (%1). Bitte wende dich an deinen Systemadministrator.</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>The sign-in service of the server rejected the request (%1).</source>
-        <translation>Der Anmeldedienst des Servers hat die Anfrage abgelehnt (%1).</translation>
-    </message>
-    <message>
-        <location line="-3"/>
-        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
-        <translation>Der Anmeldedienst des Servers ist vorübergehend nicht verfügbar (%1).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
-        <translation>Der Anmeldedienst des Servers ist nicht verfügbar (%1). Bitte wende dich an deinen Systemadministrator.</translation>
-    </message>
-</context>
-<context>
     <name>AppImageUpdateAvailableWidgetUi</name>
     <message>
         <location filename="../src/gui/updater/appimageupdateavailablewidget.ui" line="+123"/>
@@ -431,6 +403,34 @@ Datei Synchronisations-Applikation.</translation>
         <location filename="../src/libsync/account.cpp" line="+179"/>
         <source>%1@%2</source>
         <translation>%1@%2</translation>
+    </message>
+</context>
+<context>
+    <name>OCC::AccountBasedOAuth</name>
+    <message>
+        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
+        <translation>Dein Konto ist auf dem Server deaktiviert (%1). Bitte wende dich an deinen Systemadministrator.</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
+        <translation>Der Anmeldedienst des Servers lässt diese Anwendung nicht zu (%1). Bitte wende dich an deinen Systemadministrator.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The sign-in service of the server is temporarily unavailable (%1).</source>
+        <translation>Der Anmeldedienst des Servers ist vorübergehend nicht verfügbar (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server rejected the request (%1).</source>
+        <translation>Der Anmeldedienst des Servers hat die Anfrage abgelehnt (%1).</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>The sign-in service of the server is not available (%1). Please contact your system administrator.</source>
+        <translation>Der Anmeldedienst des Servers ist nicht verfügbar (%1). Bitte wende dich an deinen Systemadministrator.</translation>
     </message>
 </context>
 <context>
@@ -2551,7 +2551,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-473"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
         <source>Successfully signed in</source>
         <translation>Erfolgreich angemeldet</translation>
     </message>
