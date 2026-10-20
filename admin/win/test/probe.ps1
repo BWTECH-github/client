@@ -233,6 +233,8 @@ foreach ($name in 'OC_USER', 'OC_PASS', 'OC_URL', 'GH_TOKEN', 'GITHUB_TOKEN') {
 }
 # assistent-basic: so stünde der Zugang in einem Authorization-Kopf (Basic) - darf nirgends auftauchen
 $loginToken = if ($loginUser -and $loginPass) { [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("${loginUser}:$loginPass")) } else { $null }
+# der Anmeldename nur als eigenes Wort: mitten in einem anderen Wort ersetzt, verriete die Maske ihn erst
+$loginUserPattern = if ($loginUser -and $loginUser.Length -ge 3) { '(?<![\p{L}\p{N}])' + [regex]::Escape($loginUser) + '(?![\p{L}\p{N}])' } else { $null }
 
 if (-not $AllowLocal -and $env:GITHUB_ACTIONS -ne 'true') {
     [Console]::Error.WriteLine('probe.ps1 installiert und deinstalliert Software und legt Client-Spuren an. Nur auf einer Wegwerf-Maschine ausführen (CI-Runner oder VM-Snapshot); außerhalb von GitHub Actions nur mit -AllowLocal.')
@@ -2123,9 +2125,10 @@ function Protect-Text {
     $Text = [regex]::Replace($Text, '(?i)([?&]code=)[^&\s"''<>]+', '$1[entfernt]')
     $Text = [regex]::Replace($Text, '(?i)((?:access_token|refresh_token|id_token|code_verifier|client_secret|password)["'']?\s*[:=]\s*["'']?)[^"''&\s,}<>]+', '$1[entfernt]')
     $Text = [regex]::Replace($Text, '(?i)\b(Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{8,}', '$1 [entfernt]')
-    foreach ($secret in @($loginToken, $loginPass, $loginUser)) {
+    foreach ($secret in @($loginToken, $loginPass)) {
         if ($secret -and $secret.Length -ge 3) { $Text = $Text.Replace($secret, '[testkonto]') }
     }
+    if ($loginUserPattern) { $Text = [regex]::Replace($Text, $loginUserPattern, '[testkonto]', 'IgnoreCase') }
     return $Text
 }
 
@@ -3495,16 +3498,14 @@ function Invoke-UiClick {
 # Lage der Elemente, die den Anmeldenamen des Testkontos zeigen (Eingabefeld, Kontoname, Anmeldename im Dialog)
 function Get-AccountNameRects {
     param($Items)
-    $rects = New-Object 'System.Collections.Generic.List[object]'
-    if (-not $Items -or -not $loginUser -or $loginUser.Length -lt 3) { return , $rects.ToArray() }
+    if (-not $Items -or -not $loginUserPattern) { return }
     foreach ($item in $Items) {
         if (-not $item.Visible) { continue }
         $value = if ($item.Type -eq 'Edit') { Get-UiValue $item } else { '' }
-        if ($item.Name.IndexOf($loginUser, [StringComparison]::OrdinalIgnoreCase) -ge 0 -or $value.IndexOf($loginUser, [StringComparison]::OrdinalIgnoreCase) -ge 0) {
-            $rects.Add($item.Rect)
+        if ([regex]::IsMatch($item.Name, $loginUserPattern, 'IgnoreCase') -or [regex]::IsMatch($value, $loginUserPattern, 'IgnoreCase')) {
+            $item.Rect
         }
     }
-    return , $rects.ToArray()
 }
 
 # ganzer Bildschirm als PNG in OutDir, der Anmeldename des Testkontos geschwärzt (das Artefakt ist öffentlich)
@@ -3936,6 +3937,9 @@ function Invoke-BasicFlow {
     $Ctx.Finished = $true
     $Ctx.Reached = 'Abschließen'
     Add-Timeline ('Klick: "{0}" ({1})' -f $finish.Name, $how)
+    # das Konto entsteht, die Verbindung wird geprüft: Hauptfenster, bevor etwas anderes geschieht
+    Start-Sleep -Milliseconds 600
+    $null = Write-BasicStep $Ctx 'nach-abschliessen' 'kurz nach "Abschließen"'
     Watch-BasicSetup $Ctx $logStart
     if ($Ctx.Process.HasExited -or -not $Ctx.SyncStarted) { return }
     Invoke-SignOutIn $Ctx $Exe
