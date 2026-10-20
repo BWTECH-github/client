@@ -456,7 +456,15 @@ QUrl OAuth::authorisationLink() const
         // todo: #20 oc10 as fallback!
         query.addQueryItem(QStringLiteral("user"), davUser);
     }
-    return Utility::concatUrlPath(_authEndpoint, {}, query);
+    // owncloud.online: den Endpunkt so lassen, wie ihn die OpenID-Konfiguration nennt, auch mit „//“ im Pfad oder eigenen
+    // Parametern des Anbieters (etwa „p=…“ bei Azure AD B2C); Utility::concatUrlPath() bräche bei beidem mit Q_ASSERT ab
+    QUrl link = _authEndpoint;
+    if (_authEndpoint.hasQuery()) {
+        link.setQuery(_authEndpoint.query(QUrl::FullyEncoded) + QLatin1Char('&') + query.query(QUrl::FullyEncoded));
+    } else {
+        link.setQuery(query);
+    }
+    return link;
 }
 
 void OAuth::fetchWellKnown()

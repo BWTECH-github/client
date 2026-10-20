@@ -94,7 +94,9 @@ WebFingerLookupResult WebFingerLookupAdapter::getResult()
             continue;
         }
 
-        result.urls.append(QUrl::fromUserInput(href));
+        // owncloud.online: die Adresse der Instanz wird die des Kontos; Anfragen daran baut Utility::concatUrlPath, das weder
+        // „//“ im Pfad noch eine Anfrage verträgt (Q_ASSERT, in Beta-Builds ein Absturz)
+        result.urls.append(Utility::withoutDoubledSlashes(QUrl::fromUserInput(href).adjusted(QUrl::RemoveQuery | QUrl::RemoveFragment)));
     }
     if (result.urls.isEmpty())
         result.error = tr("WebFinger lookup returned no links");

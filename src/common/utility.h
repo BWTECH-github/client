@@ -198,6 +198,13 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
      */
     OCSYNC_EXPORT QString concatUrlPathItems(QStringList && items, const QLatin1Char delimiter = QLatin1Char('/'));
 
+    /**
+     * owncloud.online: fasst „//“ im Pfad von @p url zu „/“ zusammen; der Pfad wird kodiert bearbeitet, ein Prozentzeichen
+     * bleibt, was es war. Für Adressen, die ein Server nennt (WebFinger, OpenID-Konfiguration), bevor sie an concatUrlPath()
+     * gehen: Das verlangt Pfade ohne „//“ (Q_ASSERT, in Beta-Builds ein Absturz).
+     */
+    OCSYNC_EXPORT QUrl withoutDoubledSlashes(const QUrl &url);
+
     /** Appends concatPath and queryItems to the url */
     OCSYNC_EXPORT QUrl concatUrlPath(
         const QUrl &url, const QString &concatPath,

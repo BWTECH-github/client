@@ -14,6 +14,7 @@
 #include "urlpagecontroller.h"
 
 #include "accessmanager.h"
+#include "common/utility.h"
 #include "config/appconfig.h"
 #include "iconresources.h"
 #include "mainwindow/colormanager.h"
@@ -265,7 +266,10 @@ bool UrlPageController::validate()
     // in case any kind of error occurs, we assume the WebFinger service is not available
     if (webfingerServiceResult.success()) {
         _results.baseServerUrl = givenUrl;
-        _results.webfingerServiceUrl = QUrl(webfingerServiceResult.href);
+        // die Adresse nennt der Server: ein Issuer hat weder Anfrage noch Fragment (OpenID Connect Discovery), und mit „//“
+        // im Pfad bräche die Anmeldung in Utility::concatUrlPath ab
+        _results.webfingerServiceUrl =
+            Utility::withoutDoubledSlashes(QUrl(webfingerServiceResult.href).adjusted(QUrl::RemoveQuery | QUrl::RemoveFragment));
         // WebFinger nennt einen OpenID-Connect-Anbieter: Anmeldung im Browser
         _results.authType = AuthenticationType::OAuth;
     } else {

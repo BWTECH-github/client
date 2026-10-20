@@ -285,6 +285,29 @@ private Q_SLOTS:
         CHECK_NORMALIZE_ETAG("\"foo-gzip\"", "foo");
     }
 
+    // Adressen, die ein Server nennt, vor concatUrlPath(): „//“ im Pfad zusammengefasst, sonst unverändert
+    void testWithoutDoubledSlashes_data()
+    {
+        QTest::addColumn<QString>("input");
+        QTest::addColumn<QString>("expected");
+
+        QTest::newRow("unchanged") << QStringLiteral("https://idp.example.org/realms/a") << QStringLiteral("https://idp.example.org/realms/a");
+        QTest::newRow("trailing") << QStringLiteral("https://idp.example.org//") << QStringLiteral("https://idp.example.org/");
+        QTest::newRow("inside") << QStringLiteral("https://idp.example.org/realms///a//b") << QStringLiteral("https://idp.example.org/realms/a/b");
+        QTest::newRow("encoded stays encoded") << QStringLiteral("https://example.org//a%2Fb%20c//") << QStringLiteral("https://example.org/a%2Fb%20c/");
+        QTest::newRow("query kept") << QStringLiteral("https://example.org//authorize?p=b2c//x") << QStringLiteral("https://example.org/authorize?p=b2c//x");
+    }
+
+    void testWithoutDoubledSlashes()
+    {
+        QFETCH(QString, input);
+        QFETCH(QString, expected);
+        const QUrl result = OCC::Utility::withoutDoubledSlashes(QUrl(input));
+        QCOMPARE(result.toString(QUrl::FullyEncoded), expected);
+        // so übersteht die Adresse concatUrlPath()
+        QVERIFY(!OCC::Utility::concatUrlPath(result.adjusted(QUrl::RemoveQuery), QStringLiteral("/.well-known/openid-configuration")).path().contains(QLatin1String("//")));
+    }
+
     void testFileMetaData()
     {
         using namespace OCC::TestUtils;

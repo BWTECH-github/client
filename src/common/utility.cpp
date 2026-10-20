@@ -344,6 +344,18 @@ QString Utility::concatUrlPathItems(QStringList &&items, const QLatin1Char delim
     return items.join(delimiter);
 }
 
+QUrl Utility::withoutDoubledSlashes(const QUrl &url)
+{
+    const QString path = url.path(QUrl::FullyEncoded);
+    if (!path.contains(QLatin1String("//"))) {
+        return url;
+    }
+    static const QRegularExpression doubledSlashes(QStringLiteral("/{2,}"));
+    QUrl result = url;
+    result.setPath(QString(path).replace(doubledSlashes, QStringLiteral("/")), QUrl::TolerantMode);
+    return result;
+}
+
 QUrl Utility::concatUrlPath(const QUrl &url, const QString &concatPath,
     const QUrlQuery &queryItems)
 {
