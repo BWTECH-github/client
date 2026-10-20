@@ -418,7 +418,7 @@ Skrivbordsverktyg för filsynkronisering.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ditt konto på servern är inaktiverat (%1). Kontakta din systemadministratör.</translation>
@@ -674,7 +674,7 @@ Skapa ett konto genom att välja alternativet &quot;Lägg till konto...&quot; i 
         <translation>Kan inte hämta användarinställningar och serverfunktioner.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Inloggningen kunde inte sparas i systemets nyckelring (%1). Synkroniseringen fortsätter, men efter en omstart kan du behöva logga in igen.</translation>
@@ -867,7 +867,7 @@ Skapa ett konto genom att välja alternativet &quot;Lägg till konto...&quot; i 
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translation>Det gick inte att skapa ett nytt konto</translation>
@@ -907,7 +907,7 @@ Kontrollera att servern är tillgänglig och kör sedan guiden igen.</translatio
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translation>Avancerade inställningar</translation>
     </message>
@@ -922,22 +922,22 @@ Kontrollera att servern är tillgänglig och kör sedan guiden igen.</translatio
         <translation>Nedladdningsplats</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translation>Synkronisera och ladda ner filer när du använder dem (sparar diskutrymme)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translation>Synkronisera och ladda ner mappar och filer automatiskt</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translation>Synkronisera och ladda ner mappar manuellt</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translation>Nedladdningsplats på den lokala datorn</translation>
     </message>
@@ -1086,7 +1086,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translation>Programlogotyp %1</translation>
     </message>
@@ -1114,7 +1114,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
         <translation>Lösenord:</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logga in på %1 med ditt användarnamn och lösenord.</translation>
@@ -2746,7 +2746,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translation>Inga feluppgifter är tillgängliga</translation>
     </message>
@@ -2819,7 +2819,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translation>Inloggningen lyckades</translation>
     </message>
@@ -5385,7 +5385,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translation>%1-logotyp</translation>
     </message>
@@ -5422,7 +5422,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Ytterligare logotyp definierad av organisationen</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translation>Ogiltig server-URL: %1</translation>
     </message>
@@ -5432,7 +5432,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Ogiltigt URL-schema. Endast https accepteras.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>Den begärda URL:en misslyckades med frågevärdet: %1</translation>
     </message>
@@ -5543,7 +5543,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Det gick inte att hämta användarinformation</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translation>WebFinger-uppslagningen returnerade inga länkar</translation>
     </message>

@@ -435,7 +435,7 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sunucudaki hesabınız devre dışı (%1). Lütfen sistem yöneticinize başvurun.</translation>
@@ -711,7 +711,7 @@ Lütfen Diğer düğmesinin menüsünden &quot;Hesap ekle...&quot; seçeneğini 
         <translation>Kullanıcı ayarları ve sunucu yetenekleri alınamadı.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Oturum açma bilgisi sistem anahtar zincirine kaydedilemedi (%1). Eşitleme devam ediyor, ancak yeniden başlattıktan sonra yeniden oturum açmanız gerekebilir.</translation>
@@ -918,7 +918,7 @@ Lütfen Diğer düğmesinin menüsünden &quot;Hesap ekle...&quot; seçeneğini 
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -962,7 +962,7 @@ Lütfen sunucunun erişilebilir olduğunu denetleyin ve sihirbazı yeniden çal�
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Gelişmiş ayarlar</translation>
@@ -980,25 +980,25 @@ Lütfen sunucunun erişilebilir olduğunu denetleyin ve sihirbazı yeniden çal�
         <translation>İndirme konumu</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Dosyaları kullandıkça eşitle ve indir (disk alanından tasarruf sağlar)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Klasörleri ve dosyaları otomatik olarak eşitle ve indir</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Klasörleri elle eşitle ve indir</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Bu bilgisayardaki indirme konumu</translation>
@@ -1163,7 +1163,7 @@ Güncelleme arka planda gerçekleştirilecek ve mevcut AppImage dosyasının üz
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Uygulama adı logosu %1</translation>
@@ -1193,7 +1193,7 @@ Güncelleme arka planda gerçekleştirilecek ve mevcut AppImage dosyasının üz
         <translation>Parola:</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kullanıcı adınız ve parolanızla %1 üzerinde oturum açın.</translation>
@@ -2881,7 +2881,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>hata ayrıntısı yok</translation>
@@ -2959,7 +2959,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Oturum başarıyla açıldı</translation>
@@ -5597,7 +5597,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 logosu</translation>
@@ -5638,7 +5638,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Kuruluş tarafından tanımlanan ek logo</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Geçersiz sunucu URL&apos;si: %1</translation>
@@ -5650,7 +5650,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Geçersiz URL şeması. Yalnızca https kabul edilir.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>İstenen URL şu sorgu değeriyle başarısız oldu: %1</translation>
@@ -5775,7 +5775,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Kullanıcı bilgileri alınamadı</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>WebFinger araması bağlantı döndürmedi</translation>

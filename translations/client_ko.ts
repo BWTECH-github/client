@@ -433,7 +433,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>서버의 계정이 비활성화되어 있습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
@@ -706,7 +706,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>사용자 설정과 서버 기능을 가져올 수 없습니다.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>로그인 정보를 시스템 키체인에 저장할 수 없습니다(%1). 동기화는 계속되지만 다시 시작한 후 다시 로그인해야 할 수 있습니다.</translation>
@@ -913,7 +913,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -957,7 +957,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>고급 설정</translation>
@@ -975,25 +975,25 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>다운로드 위치</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>사용할 때 파일 동기화 및 다운로드 (디스크 공간 절약)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>폴더와 파일을 자동으로 동기화 및 다운로드</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>폴더를 수동으로 동기화 및 다운로드</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>이 컴퓨터의 다운로드 위치</translation>
@@ -1158,7 +1158,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>애플리케이션 이름 로고 %1</translation>
@@ -1188,7 +1188,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>암호:</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>사용자 이름과 암호로 %1에 로그인하십시오.</translation>
@@ -2864,7 +2864,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>오류 세부 정보가 없습니다</translation>
@@ -2943,7 +2943,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>로그인했습니다</translation>
@@ -5582,7 +5582,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 로고</translation>
@@ -5623,7 +5623,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>조직에서 지정한 추가 로고</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>잘못된 서버 URL: %1</translation>
@@ -5635,7 +5635,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>잘못된 URL 스키마입니다. https만 허용됩니다.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>요청한 URL이 다음 쿼리 값으로 실패했습니다: %1</translation>
@@ -5759,7 +5759,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>사용자 정보 검색 실패</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>WebFinger 조회 결과 링크가 없습니다</translation>

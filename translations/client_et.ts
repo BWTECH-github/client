@@ -429,7 +429,7 @@ Failide sünkroniseerimise töölaua rakendus.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sinu konto on serveris keelatud (%1). Võta ühendust oma süsteemiadministraatoriga.</translation>
@@ -699,7 +699,7 @@ Loo konto, valides nupu Rohkem menüüst valiku „Lisa konto...“.</translatio
         <translation>Kasutaja seadeid ja serveri võimekust ei õnnestunud pärida.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sisselogimist ei õnnestunud süsteemi võtmehoidjasse salvestada (%1). Sünkroniseerimine jätkub, kuid pärast taaskäivitamist võib olla vaja uuesti sisse logida.</translation>
@@ -899,7 +899,7 @@ Loo konto, valides nupu Rohkem menüüst valiku „Lisa konto...“.</translatio
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -942,7 +942,7 @@ Kontrolli serveri kättesaadavust ja käivita viisard uuesti.</translation>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translation>Lisavalikud</translation>
     </message>
@@ -959,25 +959,25 @@ Kontrolli serveri kättesaadavust ja käivita viisard uuesti.</translation>
         <translation>Allalaadimise asukoht</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sünkroniseeri ja laadi failid alla siis, kui neid kasutad (säästab kettaruumi)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sünkroniseeri ja laadi kaustad ning failid automaatselt alla</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sünkroniseeri ja laadi kaustad käsitsi alla</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Allalaadimise asukoht kohalikus arvutis</translation>
@@ -1136,7 +1136,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translation>Rakendus Nimi Logo %1</translation>
     </message>
@@ -1164,7 +1164,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
         <translation>Parool:</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logi aadressil %1 sisse oma kasutajanime ja parooliga.</translation>
@@ -2822,7 +2822,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>vea üksikasjad pole saadaval</translation>
@@ -2898,7 +2898,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sisselogimine õnnestus</translation>
@@ -5499,7 +5499,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translation>%1 logo</translation>
     </message>
@@ -5538,7 +5538,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Organisatsiooni poolt defineeritud täiendav logo</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translation>Vigane serveri URL: %1</translation>
     </message>
@@ -5548,7 +5548,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Vigane URL skeem. Ainult https on lubatud.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>Päring küsitud URL-ile ebaõnnestus päringu väärtusega: %1</translation>
     </message>
@@ -5667,7 +5667,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Kasutaja info kättesaamine ebaõnnestus</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translation>WebFinger otsing ei tagastanud ühtegi linki</translation>
     </message>

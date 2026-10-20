@@ -418,7 +418,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Llogaria juaj në shërbyes është çaktivizuar (%1). Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
@@ -676,7 +676,7 @@ Ju lutemi, krijoni një llogari duke përzgjedhur mundësinë “Shtoni llogari�
         <translation>S’arrihet të merren rregullimet e përdoruesit dhe aftësitë e shërbyesit.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Hyrja s’u ruajt dot te vargu i kyçeve të sistemit (%1). Njëkohësimi vazhdon, por pas rinisjes mund t’ju duhet të hyni sërish.</translation>
@@ -871,7 +871,7 @@ Ju lutemi, krijoni një llogari duke përzgjedhur mundësinë “Shtoni llogari�
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translation>Dështim llogarie të re</translation>
@@ -911,7 +911,7 @@ Ju lutemi, kontrolloni qenien në punë të shërbyesit dhe rixhironi ndihmësin
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translation>Rregullime të mëtejshme</translation>
     </message>
@@ -926,22 +926,22 @@ Ju lutemi, kontrolloni qenien në punë të shërbyesit dhe rixhironi ndihmësin
         <translation>Vendndodhje shkarkimi</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translation>Njëkohësoni dhe shkarkoni kartela dora-dorës që i përdorni (kursen hapësirë disku) drive space)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translation>Njëkohëso dhe shkarko automatikisht dosje dhe kartela</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translation>Njëkohësoni dhe shkarkoni dosje dhe kartela dorazi</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translation>Vendndodhje shakrkimesh te makina vendore</translation>
     </message>
@@ -1090,7 +1090,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translation>Stemë Emri Aplikacioni %1</translation>
     </message>
@@ -1118,7 +1118,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
         <translation>Fjalëkalim:</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Hyni te %1 me emrin tuaj të përdoruesit dhe fjalëkalimin.</translation>
@@ -2751,7 +2751,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translation>s’ka hollësi gabimi</translation>
     </message>
@@ -2824,7 +2824,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translation>U hy me sukses</translation>
     </message>
@@ -5386,7 +5386,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translation>Stemë e %1</translation>
     </message>
@@ -5423,7 +5423,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Stemë shtesë e përcaktuar nga enti</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translation>URL e pavlefshme shërbyesi: %1</translation>
     </message>
@@ -5433,7 +5433,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Skemë URL-sh e pavlefshme. Pranohet vetëm https.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>URL-ja e kërkuar dështoi me vlerë kërkese: %1</translation>
     </message>
@@ -5544,7 +5544,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>S’u arrit të merren hollësi përdoruesi</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translation>Kërkimi WebFinger s’dha ndonjë lidhje</translation>
     </message>

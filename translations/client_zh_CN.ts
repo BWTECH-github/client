@@ -437,7 +437,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>您在服务器上的账户已被停用（%1）。请联系您的系统管理员。</translation>
@@ -714,7 +714,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>无法获取用户设置和服务器功能。</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无法将登录信息保存到系统钥匙串（%1）。同步将继续，但重启后您可能需要重新登录。</translation>
@@ -924,7 +924,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -968,7 +968,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>高级设置</translation>
@@ -986,25 +986,25 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>下载位置</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>在使用文件时才同步和下载（节省硬盘空间）</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>自动同步和下载文件夹及文件</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>手动同步和下载文件夹</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>本机上的下载位置</translation>
@@ -1171,7 +1171,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>应用名称徽标 %1</translation>
@@ -1201,7 +1201,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>密码：</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>请使用您的用户名和密码登录 %1。</translation>
@@ -2888,7 +2888,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>没有可用的错误详情</translation>
@@ -2968,7 +2968,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登录成功</translation>
@@ -5615,7 +5615,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 徽标</translation>
@@ -5656,7 +5656,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>组织定义的附加徽标</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无效的服务器 URL：%1</translation>
@@ -5668,7 +5668,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>无效的 URL 协议。仅接受 https。</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>请求的 URL 失败，查询值：%1</translation>
@@ -5793,7 +5793,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>无法获取用户信息</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>WebFinger 查找未返回任何链接</translation>

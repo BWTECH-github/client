@@ -419,7 +419,7 @@ Bestandssynchronisatie desktop software tool.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Uw account op de server is uitgeschakeld (%1). Neem contact op met uw systeembeheerder.</translation>
@@ -675,7 +675,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>Kan de gebruikersinstellingen en de servermogelijkheden niet ophalen.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>De aanmelding kon niet in de sleutelbos van het systeem worden opgeslagen (%1). De synchronisatie gaat door, maar na een herstart moet u zich mogelijk opnieuw aanmelden.</translation>
@@ -874,7 +874,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translation>Nieuw account fout</translation>
@@ -912,7 +912,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translation>Geavanceerde instellingen</translation>
     </message>
@@ -927,22 +927,22 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>Download locatie</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translation>Synchroniseer en download bestanden wanneer ze worden gebruikt (bespaart disk ruimte)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translation>Synchroniseer en download folders en files automatisch</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translation>Synchroniseer en download folders handmatig</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translation>Download locatie op de lokale computer</translation>
     </message>
@@ -1092,7 +1092,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logo van de applicatie %1</translation>
@@ -1121,7 +1121,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <translation>Wachtwoord:</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Meld u aan bij %1 met uw gebruikersnaam en wachtwoord.</translation>
@@ -2766,7 +2766,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translation>Geen andere versies beschikbaar</translation>
     </message>
@@ -2839,7 +2839,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translation>Succesvol aangemeld</translation>
     </message>
@@ -5426,7 +5426,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translation>%1 logo</translation>
     </message>
@@ -5464,7 +5464,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Extra logo gedefiniëerd door de organisatie</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translation>Ongeldige server URL: %1</translation>
     </message>
@@ -5474,7 +5474,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Ongeldig URL schema. Alleen https wordt ondersteund.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>De opgevraagde URL is mislukt met querywaarde: %1</translation>
@@ -5594,7 +5594,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Kon gebruiker informatie niet ophalen</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>WebFinger-opzoeking leverde geen links op</translation>

@@ -426,7 +426,7 @@ Utilitaire de synchronisation de fichiers pour ordinateur de bureau.</translatio
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Votre compte est désactivé sur le serveur (%1). Veuillez contacter votre administrateur système.</translation>
@@ -695,7 +695,7 @@ Veuillez créer un compte en choisissant l&apos;option « Ajouter un compte… �
         <translation>Impossible de récupérer les paramètres utilisateur et les fonctionnalités du serveur.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>La connexion n&apos;a pas pu être enregistrée dans le trousseau du système (%1). La synchronisation continue, mais après un redémarrage, vous devrez peut-être vous reconnecter.</translation>
@@ -894,7 +894,7 @@ Veuillez créer un compte en choisissant l&apos;option « Ajouter un compte… �
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translation>Erreur de nouveau compte</translation>
@@ -934,7 +934,7 @@ Veuillez vérifier la disponibilité du serveur, puis relancez l&apos;assistant.
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translation>Paramètres avancés</translation>
     </message>
@@ -949,22 +949,22 @@ Veuillez vérifier la disponibilité du serveur, puis relancez l&apos;assistant.
         <translation>Emplacement de téléchargement</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translation>Synchronisez et téléchargez les fichiers au fur et à mesure que vous les utilisez (pour économiser de l&apos;espace sur votre disque dur)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translation>Synchronisez et téléchargez automatiquement des dossiers et des fichiers</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translation>Synchroniser et télécharger des dossiers manuellement</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translation>Emplacement de téléchargement sur l&apos;ordinateur local</translation>
     </message>
@@ -1114,7 +1114,7 @@ La mise à jour sera effectuée en arrière-plan et va écraser le fichier Appim
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translation>Nom de l&apos;application Logo %1</translation>
     </message>
@@ -1142,7 +1142,7 @@ La mise à jour sera effectuée en arrière-plan et va écraser le fichier Appim
         <translation>Mot de passe :</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Connectez-vous à %1 avec votre nom d&apos;utilisateur et votre mot de passe.</translation>
@@ -2785,7 +2785,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translation>aucune information sur l&apos;erreur n&apos;est disponible</translation>
     </message>
@@ -2858,7 +2858,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translation>Identification réussie</translation>
     </message>
@@ -5430,7 +5430,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translation>logo de %1</translation>
     </message>
@@ -5467,7 +5467,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Logo supplémentaire défini par l&apos;organisation</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translation>URL du serveur non valide : %1</translation>
     </message>
@@ -5477,7 +5477,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Schéma d&apos;URL non valide. Seul le protocole https est accepté.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>L&apos;URL demandée a échoué avec la valeur de requête : %1</translation>
     </message>
@@ -5592,7 +5592,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Echec de la récupération des informations de l&apos;utilisateur</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translation>La recherche WebFinger n&apos;a renvoyé aucun lien.</translation>
     </message>

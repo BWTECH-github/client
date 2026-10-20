@@ -418,7 +418,7 @@ File synchronization desktop utility.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Your account on the server is disabled (%1). Please contact your system administrator.</translation>
@@ -677,7 +677,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>Unable to retrieve user settings and server capabilities.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</translation>
@@ -872,7 +872,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translation>New account failure</translation>
@@ -912,7 +912,7 @@ Please check the server&apos;s availability then run the wizard again.</translat
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translation>Advanced settings</translation>
     </message>
@@ -927,22 +927,22 @@ Please check the server&apos;s availability then run the wizard again.</translat
         <translation>Download location</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translation>Sync and download files as you use them (saves hard drive space)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translation>Automatically sync and download folders and files</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translation>Sync and download folders manually</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translation>Download location on the local machine</translation>
     </message>
@@ -1091,7 +1091,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translation>Application Name Logo %1</translation>
     </message>
@@ -1119,7 +1119,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>Password:</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sign in to %1 with your user name and password.</translation>
@@ -2752,7 +2752,7 @@ Note that using any logging command line options will override the settings.</tr
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translation>no error details are available</translation>
     </message>
@@ -2825,7 +2825,7 @@ Note that using any logging command line options will override the settings.</tr
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translation>Successfully signed in</translation>
     </message>
@@ -5390,7 +5390,7 @@ Note that using any logging command line options will override the settings.</tr
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translation>%1 logo</translation>
     </message>
@@ -5427,7 +5427,7 @@ Note that using any logging command line options will override the settings.</tr
         <translation>Additional logo defined by the organization</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translation>Invalid server URL: %1</translation>
     </message>
@@ -5437,7 +5437,7 @@ Note that using any logging command line options will override the settings.</tr
         <translation>Invalid URL scheme. Only https is accepted.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>The requested URL failed with query value: %1</translation>
     </message>
@@ -5548,7 +5548,7 @@ Note that using any logging command line options will override the settings.</tr
         <translation>Failed to retrieve user info</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translation>WebFinger lookup returned no links</translation>
     </message>

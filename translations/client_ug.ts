@@ -449,7 +449,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىردىكى ھېساباتىڭىز چەكلەنگەن (%1). سىستېما باشقۇرغۇچىڭىز بىلەن ئالاقىلىشىڭ.</translation>
@@ -723,7 +723,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>ئىشلەتكۈچى تەڭشەكلىرى ۋە مۇلازىمېتىر ئىقتىدارلىرىغا ئېرىشەلمىدى.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>كىرىش ئۇچۇرىنى سىستېما ئاچقۇچ زەنجىرىگە ساقلىغىلى بولمىدى (%1). ماس قەدەملەش داۋاملىشىدۇ، ئەمما قايتا قوزغاتقاندىن كېيىن قايتا كىرىشىڭىز كېرەك بولۇشى مۇمكىن.</translation>
@@ -926,7 +926,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -970,7 +970,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translation>ئىلغار تەڭشەكلەر</translation>
     </message>
@@ -987,25 +987,25 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>چۈشۈرۈش ئورنى</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھۆججەتلەرنى ئىشلەتكەندە ماس قەدەملەش ۋە چۈشۈرۈش (دىسكا بوشلۇقىنى تېجەيدۇ)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>قىسقۇچ ۋە ھۆججەتلەرنى ئاپتوماتىك ماس قەدەملەش ۋە چۈشۈرۈش</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>قىسقۇچلارنى قولدا ماس قەدەملەش ۋە چۈشۈرۈش</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>بۇ كومپيۇتېردىكى چۈشۈرۈش ئورنى</translation>
@@ -1172,7 +1172,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئەپ نامى تامغىسى %1</translation>
@@ -1202,7 +1202,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ئىم:</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىشلەتكۈچى ئاتى ۋە ئىمىڭىز بىلەن %1 گە كىرىڭ.</translation>
@@ -2911,7 +2911,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>خاتالىق تەپسىلاتى يوق</translation>
@@ -2988,7 +2988,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇۋەپپەقىيەتلىك كىردى</translation>
@@ -5685,7 +5685,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 تامغىسى</translation>
@@ -5727,7 +5727,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>تەشكىلات بەلگىلىگەن قوشۇمچە تامغا</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىناۋەتسىز مۇلازىمېتىر URL: %1</translation>
@@ -5739,7 +5739,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ئىناۋەتسىز URL لايىھەسى. پەقەت https قوبۇل قىلىنىدۇ.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تەلەپ قىلىنغان URL مەغلۇپ بولدى، سوئال قىممىتى: %1</translation>
@@ -5866,7 +5866,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ئىشلەتكۈچى ئۇچۇرىغا ئېرىشەلمىدى</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>WebFinger ئىزدەش ھېچقانداق ئۇلانما قايتۇرمىدى</translation>

@@ -418,7 +418,7 @@ Utilità desktop per la sincronizzazione dei file.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Il tuo account sul server è disattivato (%1). Contatta l&apos;amministratore di sistema.</translation>
@@ -674,7 +674,7 @@ Crea un account selezionando l&apos;opzione &quot;Aggiungi account...&quot; nel 
         <translation>Impossibile recuperare le impostazioni utente e le funzionalità del server.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Non è stato possibile salvare l&apos;accesso nel portachiavi di sistema (%1). La sincronizzazione continua, ma dopo un riavvio potrebbe essere necessario accedere di nuovo.</translation>
@@ -866,7 +866,7 @@ Crea un account selezionando l&apos;opzione &quot;Aggiungi account...&quot; nel 
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translation>Errore nel nuovo account</translation>
@@ -906,7 +906,7 @@ Verificare la disponibilità del server, quindi eseguire nuovamente la procedura
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translation>Impostazioni avanzate</translation>
     </message>
@@ -921,22 +921,22 @@ Verificare la disponibilità del server, quindi eseguire nuovamente la procedura
         <translation>Percorso di download</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translation>Sincronizza e scarica i file solo quando li utilizzi (risparmia spazio sul disco locale)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translation>Sincronizza e scarica automaticamente cartelle e file</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translation>Sincronizza e scarica le cartelle manualmente</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translation>Percorso di download sulla macchina locale</translation>
     </message>
@@ -1086,7 +1086,7 @@ L&apos;aggiornamento verrà eseguito in background e sovrascriverà il file AppI
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translation>Logo del nome dell&apos;applicazione %1</translation>
     </message>
@@ -1114,7 +1114,7 @@ L&apos;aggiornamento verrà eseguito in background e sovrascriverà il file AppI
         <translation>Password:</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Accedi a %1 con il tuo nome utente e la tua password.</translation>
@@ -2773,7 +2773,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>non sono disponibili dettagli sull&apos;errore</translation>
@@ -2850,7 +2850,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Accesso eseguito correttamente</translation>
@@ -5454,7 +5454,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translation>logo %1</translation>
     </message>
@@ -5493,7 +5493,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
         <translation>Logo aggiuntivo definito dall&apos;organizzazione</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>URL del server non valido: %1</translation>
@@ -5505,7 +5505,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
         <translation>Schema URL non valido. È accettato solo https.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>Il URL richiesto ha fallito con valuta query: %1</translation>
     </message>
@@ -5628,7 +5628,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
         <translation>Impossibile recuperare le informazioni dell&apos;utente</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>La ricerca WebFinger non ha restituito alcun collegamento</translation>

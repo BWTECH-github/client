@@ -419,7 +419,7 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Twoje konto na serwerze jest wyłączone (%1). Skontaktuj się z administratorem systemu.</translation>
@@ -679,7 +679,7 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
         <translation>Nie można pobrać ustawień użytkownika i możliwości serwera.</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+408"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Nie udało się zapisać logowania w pęku kluczy systemu (%1). Synchronizacja trwa dalej, ale po ponownym uruchomieniu może być konieczne ponowne zalogowanie.</translation>
@@ -879,7 +879,7 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
 <context>
     <name>OCC::AccountsGuiController</name>
     <message>
-        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+175"/>
+        <location filename="../src/gui/accountsgui/accountsguicontroller.cpp" line="+202"/>
         <location line="+113"/>
         <source>New account failure</source>
         <translation>Błąd nowego konta</translation>
@@ -919,7 +919,7 @@ Sprawdź dostępność serwera, a następnie ponownie uruchom kreatora.</transla
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+98"/>
         <source>Advanced settings</source>
         <translation>Ustawienia zaawansowane</translation>
     </message>
@@ -934,22 +934,22 @@ Sprawdź dostępność serwera, a następnie ponownie uruchom kreatora.</transla
         <translation>Lokalizacja pobierania</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+21"/>
         <source>Sync and download files as you use them (saves hard drive space)</source>
         <translation>Synchronizuj i pobieraj pliki w miarę ich używania (oszczędza miejsce na dysku twardym)</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+7"/>
         <source>Automatically sync and download folders and files</source>
         <translation>Automatyczna synchronizacja i pobieranie folderów i plików</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+7"/>
         <source>Sync and download folders manually</source>
         <translation>Synchronizuj i pobieraj foldery ręcznie</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+19"/>
         <source>Download location on the local machine</source>
         <translation>Lokalizacja pobierania na komputerze lokalnym</translation>
     </message>
@@ -1098,7 +1098,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::BasicCredentialsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/basiccredentialspagecontroller.cpp" line="+59"/>
         <source>Application Name Logo %1</source>
         <translation>Nazwa aplikacji Logo %1</translation>
     </message>
@@ -1126,7 +1126,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
         <translation>Hasło:</translation>
     </message>
     <message>
-        <location line="+32"/>
+        <location line="+33"/>
         <source>Sign in to %1 with your user name and password.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Zaloguj się do %1 przy użyciu nazwy użytkownika i hasła.</translation>
@@ -2778,7 +2778,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::NewAccountBuilder</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/newaccountbuilder.cpp" line="+62"/>
         <source>no error details are available</source>
         <translation>brak dostępnych szczegółów błędu</translation>
     </message>
@@ -2851,7 +2851,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
         <source>Successfully signed in</source>
         <translation>Pomyślnie zalogowano</translation>
     </message>
@@ -5419,7 +5419,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+86"/>
         <source>%1 logo</source>
         <translation>%1 logo</translation>
     </message>
@@ -5456,7 +5456,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Dodatkowe logo zdefiniowane przez organizację</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+123"/>
         <source>Invalid server URL: %1</source>
         <translation>Nieprawidłowy adres URL serwera: %1</translation>
     </message>
@@ -5466,7 +5466,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Nieprawidłowy schemat adresu URL. Akceptowany jest tylko protokół https.</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+33"/>
         <source>The requested URL failed with query value: %1</source>
         <translation>Żądany adres URL nie powiódł się, a wartość zapytania wynosi: %1</translation>
     </message>
@@ -5577,7 +5577,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Nie udało się pobrać informacji o użytkowniku</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>WebFinger lookup returned no links</source>
         <translation>Wyszukiwanie WebFinger nie zwróciło żadnych linków</translation>
     </message>
