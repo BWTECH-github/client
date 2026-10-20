@@ -6,6 +6,24 @@
 #include "libsync/config/appconfig.h"
 #include "libsync/owncloudtheme.h"
 
+#ifdef Q_OS_WIN
+#include <qt_windows.h>
+
+namespace {
+// ohne QSettings: das legte den Schlüssel beim Öffnen selbst an
+bool policiesKeyExists(const QString &path)
+{
+    const QString prefix = QStringLiteral("HKEY_LOCAL_MACHINE\\");
+    HKEY key = nullptr;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t *>(path.mid(prefix.size()).utf16()), 0, KEY_READ, &key) != ERROR_SUCCESS) {
+        return false;
+    }
+    RegCloseKey(key);
+    return true;
+}
+}
+#endif
+
 static const std::string_view iniData{
     "[Setup]\n"
     "ServerUrl=https://cloud.example.com\n"
@@ -58,6 +76,29 @@ private Q_SLOTS:
         QCOMPARE(OCC::AppConfig::configPath(QOperatingSystemVersion::Windows, t), QString("HKEY_LOCAL_MACHINE\\Software\\Policies\\BW-Tech GmbH\\owncloud.online"));
         QCOMPARE(OCC::AppConfig::configPath(QOperatingSystemVersion::MacOS, t), QString("/Library/Preferences/online.owncloud.desktopclient/owncloud.online.ini"));
         QCOMPARE(OCC::AppConfig::configPath(QOperatingSystemVersion::Unknown, t), QString("/etc/owncloud.online/owncloud.online.ini"));
+    }
+
+    // Windows: Fehlen Richtlinien, legt das Lesen keinen leeren Schlüssel unter HKLM\Software\Policies an. Mit
+    // Administratorrechten (oder ohne Benutzerkontensteuerung) blieb er sonst nach jedem Start zurück, und keine
+    // Deinstallation entfernt ihn. Ohne Schreibrecht auf HKLM besagt der Test nichts; die CI läuft mit.
+    void testMissingPoliciesAreNotCreated()
+    {
+#ifdef Q_OS_WIN
+        // Arrange
+        const QString path = OCC::AppConfig::configPath(QOperatingSystemVersion::Windows, *OCC::Theme::instance());
+        if (policiesKeyExists(path)) {
+            QSKIP("Richtlinien sind auf diesem Rechner eingerichtet");
+        }
+
+        // Act
+        const OCC::AppConfig appConfig;
+        Q_UNUSED(appConfig)
+
+        // Assert
+        QVERIFY2(!policiesKeyExists(path), qPrintable(path));
+#else
+        QSKIP("This test only works on Windows");
+#endif
     }
 
     void testFromFile()
