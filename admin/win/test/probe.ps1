@@ -3769,12 +3769,34 @@ function Get-AccountNameRects {
     }
 }
 
+# Explorer-Fenster (etwa nach „Ordner … öffnen“): Reiter, Adresszeile und Navigationsbereich nennen Konten als „Anmeldename@Server“, der
+# Navigationsbereich auch die anderer Ordner - jede Stelle mit einem Anmeldenamen oder einem „@“ wird geschwärzt
+function Get-ExplorerNameRects {
+    $patterns = @(@($loginUserPattern, $loginUserPattern2) | Where-Object { $_ })
+    foreach ($window in @(Get-ExplorerWindows)) {
+        foreach ($element in @(Get-ShellElements $window.Element)) {
+            try {
+                $current = $element.Current
+                $text = [string]$current.Name
+                if ($current.ControlType -eq [System.Windows.Automation.ControlType]::Edit) {
+                    try { $text += ' ' + [string]$element.GetCurrentPropertyValue([System.Windows.Automation.ValuePattern]::ValueProperty) } catch { }
+                }
+                if (-not $text.Contains('@') -and @($patterns | Where-Object { [regex]::IsMatch($text, $_, 'IgnoreCase') }).Count -eq 0) { continue }
+                $rect = $current.BoundingRectangle
+                if (-not $current.IsOffscreen -and -not $rect.IsEmpty -and $rect.Width -gt 0 -and $rect.Height -gt 0) { $rect }
+            } catch {
+                # Element inzwischen verschwunden
+            }
+        }
+    }
+}
+
 # ganzer Bildschirm als PNG in OutDir, der Anmeldename des Testkontos geschwärzt (das Artefakt ist öffentlich)
 function Save-BasicShot {
     param([string] $Name, $Items)
     $script:shotCount++
     $file = Join-Path $OutDir ('foto-{0:D2}-{1}.png' -f $script:shotCount, $Name)
-    $hidden = @(Get-AccountNameRects $Items)
+    $hidden = @(Get-AccountNameRects $Items) + @(Get-ExplorerNameRects)
     try {
         $bounds = [System.Windows.Forms.SystemInformation]::VirtualScreen
         $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
@@ -6210,9 +6232,10 @@ function Invoke-Dauerlauf {
         Start-Sleep -Seconds 2
         $shot = Write-BasicStep $ctx 'explorer' ('Explorer-Fenster „{0}“' -f $window.Name)
         Close-ExplorerWindow $window
-        $leaves = @($dl.Folder1Path, $dl.Folder2Path | Where-Object { $_ } | ForEach-Object { Split-Path -Leaf (ConvertTo-LocalPath $_) })
-        $matching = @($leaves | Where-Object { $window.Name -like ('*' + $_ + '*') }).Count -gt 0
-        $detail = 'über {0}: „{1}“; Explorer-Fenster „{2}“ (erwartet einer von: {3}); Foto {4}' -f $way, $entryName, $window.Name, ($leaves -join ', '), $shot
+        # Titel: der Ordnername oder, für einen Sync-Root mit virtuellen Dateien, dessen Anzeigename („owncloud.online - Konto - /Serverordner/“)
+        $expected = @(@($dl.Folders[0], $dl.Folders[1]) + @(@($dl.Folder1Path, $dl.Folder2Path) | Where-Object { $_ } | ForEach-Object { Split-Path -Leaf (ConvertTo-LocalPath $_) }))
+        $matching = @($expected | Where-Object { $window.Name -like ('*' + $_ + '*') }).Count -gt 0
+        $detail = 'über {0}: „{1}“; Explorer-Fenster „{2}“ (erwartet einer von: {3}); Foto {4}' -f $way, $entryName, $window.Name, ($expected -join ', '), $shot
         if (-not $matching) { return @{ Status = 'WARNUNG'; Detail = ('Titel des Explorer-Fensters passt zu keinem Ordner des Kontos; ' + $detail) } }
         return $detail
     }
