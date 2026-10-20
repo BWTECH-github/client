@@ -9,7 +9,7 @@ if ( NOT DEFINED MIRALL_VERSION_SUFFIX )
     # den Update-Kanal (updater.cpp: Vorabversion -> "beta", sonst "stable").
     # Für das Release wird er leer gesetzt. Nightly/Dev-Bauten überschreiben ihn
     # per -DMIRALL_VERSION_SUFFIX=git auf der CMake-Zeile.
-    set( MIRALL_VERSION_SUFFIX "beta3")
+    set( MIRALL_VERSION_SUFFIX "beta4")
 endif( NOT DEFINED MIRALL_VERSION_SUFFIX )
 
 if( NOT DEFINED MIRALL_VERSION_BUILD )
