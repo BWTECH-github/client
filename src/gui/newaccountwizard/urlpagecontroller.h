@@ -18,6 +18,7 @@
 #include <QSslCertificate>
 #include <QUrl>
 
+#include "creds/credentialssupport.h"
 #include "wizardpagevalidator.h"
 
 class QWizardPage;
@@ -35,6 +36,7 @@ namespace OCC {
  *   available
  *   trustedCertificates holds any certificates the user accepted in the course of validation. This will only be non-empty in
  *   exceptional cases (eg with very poorly configured hosts that do not provide legit, signed certs)
+ *   authType is how the server wants its users to sign in: OAuth (browser) or Basic (user name and password)
  *   error holds a beautified error message. This may go away as I don't think the owner of the controller needs to do anything with it.
  */
 struct UrlPageResults
@@ -42,6 +44,7 @@ struct UrlPageResults
     QUrl baseServerUrl;
     QUrl webfingerServiceUrl;
     QSet<QSslCertificate> certificates;
+    AuthenticationType authType = AuthenticationType::Unknown;
 
     QString error;
 };
@@ -86,8 +89,7 @@ Q_SIGNALS:
 
     /**
      * @brief success is emitted when the validation has succeeded.
-     * note we do not track the authentication method anymore since there is only one. If OAuth is not supported by the target server the
-     * whole validation will fail.
+     * results.authType tells whether the user signs in in the browser (OAuth) or with user name and password (Basic).
      */
     void success(const OCC::UrlPageResults &);
     /**

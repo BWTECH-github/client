@@ -31,6 +31,8 @@ struct UserInfoResult
     QString userId;
     QString displayName;
     QString error;
+    /// der Server hat die Zugangsdaten abgelehnt (401); error nennt das auch, aber weniger genau
+    bool invalidCredentials = false;
 
     bool success() const { return error.isEmpty() && !userId.isEmpty() && !displayName.isEmpty(); }
 };
@@ -54,6 +56,11 @@ public:
     explicit UserInfoAdapter(QNetworkAccessManager *nam, const QString &authToken, const QUrl &url, QObject *parent = nullptr);
 
     /**
+     * Wie oben, aber mit einem fertigen Authorization-Kopf, etwa basicAuthorizationHeader() für Benutzername und Kennwort
+     */
+    explicit UserInfoAdapter(QNetworkAccessManager *nam, const QByteArray &authorizationHeader, const QUrl &url, QObject *parent = nullptr);
+
+    /**
      * @brief getResult runs the network request/reply synchronously
      * @return the results from the reply, cleanly bundled in the result struct
      */
@@ -62,6 +69,6 @@ public:
 private:
     QNetworkAccessManager *_nam;
     QUrl _url;
-    QString _authorizationHeader;
+    QByteArray _authorizationHeader;
 };
 }

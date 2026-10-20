@@ -367,6 +367,9 @@ private Q_SLOTS:
     {
         QFETCH(bool, redirect);
         AuthProbeAM fakeAM;
+        // Verlangt DAV Benutzername und Kennwort, gilt das als Anmeldung mit Kennwort (testDetermineAuthType_Basic). Als
+        // fehlende App zählt nur eine Ablehnung ohne bekanntes Verfahren (etwa hinter einem Proxy, der den Kopf entfernt).
+        fakeAM.propfind = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) { return fakeAM.challenge(op, req, {}); };
         if (!redirect) {
             fakeAM.token = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) -> QNetworkReply * {
                 return new FakeErrorReply(op, req, &fakeAM, 404, QByteArrayLiteral("<html><body>Not Found</body></html>"));
@@ -389,6 +392,9 @@ private Q_SLOTS:
     void testDetermineAuthType_ProbesAreShort()
     {
         AuthProbeAM fakeAM;
+        fakeAM.propfind = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) {
+            return fakeAM.challenge(op, req, QByteArrayLiteral("Negotiate"));
+        };
 
         DetermineAuthTypeAdapter adapter(&fakeAM, testUrl());
         adapter.getResult();
@@ -419,6 +425,7 @@ private Q_SLOTS:
     {
         // antwortet die App am Token-Endpunkt, fehlt sie nicht, auch wenn DAV keinen Bearer-Token verlangt
         AuthProbeAM fakeAM;
+        fakeAM.propfind = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) { return fakeAM.challenge(op, req, {}); };
         fakeAM.token = [&fakeAM](QNetworkAccessManager::Operation op, const QNetworkRequest &req) { return fakeAM.oauth2InvalidRequest(op, req); };
 
         DetermineAuthTypeAdapter adapter(&fakeAM, testUrl());
@@ -452,11 +459,51 @@ private Q_SLOTS:
 
         DetermineAuthTypeAdapter adapter(&fakeAM, testUrl());
         const DetermineAuthTypeResult result = adapter.getResult();
-        QCOMPARE(result.success(), bearer);
-        QCOMPARE(result.issue, bearer ? ServerDiagnostics::Issue::None : ServerDiagnostics::Issue::Other);
+        // ohne Bearer-Challenge entscheidet die OpenID-Konfiguration: Anmeldung im Browser, nicht mit Kennwort
+        QVERIFY(result.success());
+        QCOMPARE(result.type, AuthenticationType::OAuth);
+        QCOMPARE(result.issue, ServerDiagnostics::Issue::None);
         QCOMPARE(fakeAM.openIdRequests, bearer ? 0 : 1);
         QCOMPARE(fakeAM.tokenRequests, 0);
         QCOMPARE(fakeAM.unexpectedRequests, 0);
+    }
+
+    // Server ohne die App „OAuth2“ und ohne OpenID Connect (testoo): Anmeldung mit Benutzername und Kennwort statt Fehler
+    void testDetermineAuthType_Basic()
+    {
+        AuthProbeAM fakeAM;
+
+        DetermineAuthTypeAdapter adapter(&fakeAM, testUrl());
+        const DetermineAuthTypeResult result = adapter.getResult();
+        QVERIFY(result.success());
+        QCOMPARE(result.type, AuthenticationType::Basic);
+        QCOMPARE(result.issue, ServerDiagnostics::Issue::None);
+        QCOMPARE(fakeAM.openIdRequests, 1);
+        QVERIFY2(fakeAM.openIdTimeoutMs > 0 && fakeAM.openIdTimeoutMs <= 15000, qPrintable(QString::number(fakeAM.openIdTimeoutMs)));
+        QCOMPARE(fakeAM.tokenRequests, 0);
+        QCOMPARE(fakeAM.unexpectedRequests, 0);
+    }
+
+    void testAuthenticationTypeFromChallenge_data()
+    {
+        QTest::addColumn<QByteArray>("challenge");
+        QTest::addColumn<int>("type");
+
+        QTest::newRow("basic") << QByteArray("Basic realm=\"owncloud.online\", charset=\"UTF-8\"") << int(AuthenticationType::Basic);
+        QTest::newRow("basic upper case") << QByteArray("BASIC realm=\"x\"") << int(AuthenticationType::Basic);
+        QTest::newRow("bearer") << QByteArray("Bearer realm=\"owncloud.online\"") << int(AuthenticationType::OAuth);
+        QTest::newRow("basic and bearer") << QByteArray("Basic realm=\"x\", Bearer realm=\"x\"") << int(AuthenticationType::OAuth);
+        QTest::newRow("bearer without parameters") << QByteArray("Basic realm=\"x\", Bearer") << int(AuthenticationType::OAuth);
+        QTest::newRow("realm named basic") << QByteArray("Negotiate, Digest realm=\"basic\"") << int(AuthenticationType::Unknown);
+        QTest::newRow("scheme with prefix") << QByteArray("XBasic realm=\"x\"") << int(AuthenticationType::Unknown);
+        QTest::newRow("empty") << QByteArray() << int(AuthenticationType::Unknown);
+    }
+
+    void testAuthenticationTypeFromChallenge()
+    {
+        QFETCH(QByteArray, challenge);
+        QFETCH(int, type);
+        QCOMPARE(int(authenticationTypeFromChallenge(challenge)), type);
     }
 
     void testDetermineAuthType_ServerProblems_data()

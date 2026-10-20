@@ -40,6 +40,22 @@ bool NewAccountWizard::validateCurrentPage()
     return false;
 }
 
+int NewAccountWizard::nextId() const
+{
+    if (_nextIdResolver) {
+        const int next = _nextIdResolver(currentId());
+        if (next >= 0) {
+            return next;
+        }
+    }
+    return QWizard::nextId();
+}
+
+void NewAccountWizard::setNextIdResolver(const NextIdResolver &resolver)
+{
+    _nextIdResolver = resolver;
+}
+
 int NewAccountWizard::addPage(QWizardPage *page, WizardPageValidator *validator)
 {
     _pageValidators.insert(page, validator);

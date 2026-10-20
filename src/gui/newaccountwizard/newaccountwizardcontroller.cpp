@@ -50,6 +50,13 @@ void NewAccountWizardController::presetServerUrl(const QUrl &url)
     }
 }
 
+void NewAccountWizardController::presetLoginUser(const QString &loginUser)
+{
+    if (_basicController && !loginUser.isEmpty()) {
+        _basicController->presetLoginUser(loginUser);
+    }
+}
+
 void NewAccountWizardController::setupWizard()
 {
     if (!_wizard) {
@@ -95,6 +102,14 @@ void NewAccountWizardController::buildPages()
     connect(_oauthController, &OAuthPageController::failure, this, &NewAccountWizardController::onOauthValidationFailed);
     _oauthPageIndex = _wizard->addPage(oauthPage, _oauthController);
 
+    // Server ohne die App „OAuth2“: Benutzername und Kennwort statt Browser. Welche der beiden Seiten folgt, entscheidet
+    // die Adressprüfung (onUrlValidationCompleted), die Abschlussseite folgt auf beide.
+    QWizardPage *basicPage = new QWizardPage(_wizard);
+    _basicController = new BasicCredentialsPageController(basicPage, _accessManager, this);
+    connect(_colorManager, &ColorManager::appColorsChanged, _basicController, &BasicCredentialsPageController::updateColorsAndIcons);
+    connect(_basicController, &BasicCredentialsPageController::success, this, &NewAccountWizardController::onBasicValidationCompleted);
+    _basicPageIndex = _wizard->addPage(basicPage, _basicController);
+
     QWizardPage *authSuccessPage = new QWizardPage(_wizard);
     AuthSuccessPageController *authSuccessController = new AuthSuccessPageController(authSuccessPage, this);
     connect(_colorManager, &ColorManager::appColorsChanged, authSuccessController, &AuthSuccessPageController::updateIcons);
@@ -111,6 +126,17 @@ void NewAccountWizardController::buildPages()
     AdvancedSettingsResult defaultAdvancedSettings = advancedSettingsController->defaultResult();
     _model->setDefaultSyncRoot(defaultAdvancedSettings.syncRoot);
     _model->setSyncType(defaultAdvancedSettings.syncType);
+
+    // Reihenfolge der Seiten je nach Anmeldeart des Servers (das Modell kennt sie nach der Adressprüfung)
+    _wizard->setNextIdResolver([this](int currentId) {
+        if (currentId == _urlPageIndex) {
+            return _model && _model->authType() == AuthenticationType::Basic ? _basicPageIndex : _oauthPageIndex;
+        }
+        if (currentId == _oauthPageIndex || currentId == _basicPageIndex) {
+            return _authSuccessPageIndex;
+        }
+        return -1;
+    });
 }
 
 void NewAccountWizardController::buildButtonLayouts()
@@ -123,6 +149,7 @@ void NewAccountWizardController::buildButtonLayouts()
         _buttonLayouts.insert(_oauthPageIndex,
             QList<QWizard::WizardButton>{
                 QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CancelButton, QWizard::WizardButton::NextButton});
+        _buttonLayouts.insert(_basicPageIndex, _buttonLayouts.value(_oauthPageIndex));
         _buttonLayouts.insert(_authSuccessPageIndex,
             QList<QWizard::WizardButton>{QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CustomButton1,
                 QWizard::WizardButton::CancelButton, QWizard::WizardButton::FinishButton});
@@ -135,6 +162,7 @@ void NewAccountWizardController::buildButtonLayouts()
         _buttonLayouts.insert(_oauthPageIndex,
             QList<QWizard::WizardButton>{
                 QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::NextButton, QWizard::WizardButton::CancelButton});
+        _buttonLayouts.insert(_basicPageIndex, _buttonLayouts.value(_oauthPageIndex));
         _buttonLayouts.insert(_authSuccessPageIndex,
             QList<QWizard::WizardButton>{QWizard::WizardButton::BackButton, QWizard::Stretch, QWizard::WizardButton::CustomButton1,
                 QWizard::WizardButton::FinishButton, QWizard::WizardButton::CancelButton});
@@ -163,6 +191,19 @@ void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResu
     _model->setServerUrl(result.baseServerUrl);
     _model->setWebfingerAuthenticationUrl(result.webfingerServiceUrl);
     _model->setTrustedCertificates(result.certificates);
+    _model->setAuthType(result.authType);
+    // ein Kennwort aus einer Anmeldung an der vorigen Adresse gilt nicht für diese
+    _model->setLoginUser({});
+    _model->setPassword({});
+
+    if (result.authType == AuthenticationType::Basic) {
+        // Benutzername und Kennwort: die nächste Seite (nextId()) ist die Kennwortseite, der Nutzer füllt sie selbst aus;
+        // eine noch wartende Anmeldung im Browser für eine vorige Adresse endet
+        _basicController->setServerUrl(_model->serverUrl());
+        _oauthController->setAuthenticationUrl(QUrl());
+        _autoValidateOAuthPage = false;
+        return;
+    }
 
     // and then we have to explicitly set login url on the controller for the next page...
     // yes this combination of values is gross however I do not want to pass the server and auth urls in the same function as it's way too easy to mix up the
@@ -177,6 +218,19 @@ void NewAccountWizardController::onUrlValidationCompleted(const OCC::UrlPageResu
     // it already succeeded!
     // so we just set a flag to auto-validate the oauth page and handle that when we are notified that the page actually changed -> see onPageChanged
     _autoValidateOAuthPage = true;
+}
+
+void NewAccountWizardController::onBasicValidationCompleted(const OCC::BasicCredentialsPageResults &results)
+{
+    if (!_wizard || !_model)
+        return;
+    // die Prüfung lief synchron in validate(): der Assistent geht danach von selbst zur Abschlussseite (nextId())
+    _model->setAuthType(AuthenticationType::Basic);
+    _model->setLoginUser(results.loginUser);
+    _model->setPassword(results.password);
+    _model->setDisplayName(results.displayName);
+    _model->setDavUser(results.userId);
+    _model->setCapabilities(results.capabilities);
 }
 
 void NewAccountWizardController::onOAuthValidationCompleted(const OCC::OAuthPageResults &results)
@@ -223,6 +277,12 @@ void NewAccountWizardController::onPageChanged(int newPageIndex)
     if (newPageIndex == _urlPageIndex) {
         _wizard->setButtonLayout(_buttonLayouts[_urlPageIndex]);
         _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Sign in"));
+        // zurück zur Adresse: ein eingegebenes Kennwort gehört nicht zur nächsten Adresse
+        _basicController->clearPassword();
+    } else if (newPageIndex == _basicPageIndex) {
+        _wizard->setButtonLayout(_buttonLayouts[_basicPageIndex]);
+        _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Sign in"));
+        _basicController->focusInput();
     } else if (newPageIndex == _oauthPageIndex) {
         _wizard->setButtonLayout(_buttonLayouts[_oauthPageIndex]);
         _wizard->setButtonText(QWizard::WizardButton::NextButton, tr("Open sign in again"));

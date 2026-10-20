@@ -15,6 +15,8 @@
 
 #include <QWizard>
 
+#include <functional>
+
 namespace OCC {
 class WizardPageValidator;
 
@@ -23,9 +25,19 @@ class NewAccountWizard : public QWizard
     Q_OBJECT
 
 public:
+    /// liefert zur aktuellen Seite die nächste, oder -1 für die Reihenfolge der Seiten (QWizard::nextId())
+    using NextIdResolver = std::function<int(int currentId)>;
+
     NewAccountWizard(QWidget *parent);
 
     bool validateCurrentPage() override;
+
+    /**
+     * Die nächste Seite hängt vom Server ab: nach der Adressseite die Anmeldung im Browser oder die mit Benutzername und
+     * Kennwort, danach jeweils die Abschlussseite. Der Controller setzt den Auflöser, sobald die Anmeldeart feststeht.
+     */
+    int nextId() const override;
+    void setNextIdResolver(const NextIdResolver &resolver);
 
     /** overload of QWizard::addPage which also accepts the associated page validator */
     int addPage(QWizardPage *page, WizardPageValidator *validator);
@@ -36,5 +48,6 @@ public Q_SLOTS:
 
 private:
     QHash<QWizardPage *, WizardPageValidator *> _pageValidators;
+    NextIdResolver _nextIdResolver;
 };
 }

@@ -36,13 +36,15 @@ class FetchCapabilitiesAdapter : public QObject
     Q_OBJECT
 public:
     explicit FetchCapabilitiesAdapter(QNetworkAccessManager *nam, const QString &authToken, const QUrl &url, QObject *parent = nullptr);
+    /// mit einem fertigen Authorization-Kopf, etwa basicAuthorizationHeader() für Benutzername und Kennwort
+    explicit FetchCapabilitiesAdapter(QNetworkAccessManager *nam, const QByteArray &authorizationHeader, const QUrl &url, QObject *parent = nullptr);
 
     FetchCapabilitiesResult getResult();
 
 private:
     QNetworkAccessManager *_nam;
     QUrl _url;
-    QString _authorizationHeader;
+    QByteArray _authorizationHeader;
 };
 
 }
