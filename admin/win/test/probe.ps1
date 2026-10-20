@@ -36,10 +36,27 @@
       upgrade-beta2  wie upgrade-beta1 mit der veröffentlichten
                   11.0.0-beta2. Die Einstellungen sind eine Konto- und
                   Ordnerkonfiguration, wie beta2 sie schreibt (Konto auf
-                  probe.invalid, ein Ordnerpaar auf den Sync-Ordner). Nach dem
-                  Update startet der Prüfling einmal und wird mit --quit
-                  beendet: Er muss das Ordnerpaar lesen (Protokoll) und Konto,
-                  Ordnerpaar und Einstellungen ohne Verlust zurückschreiben
+                  probe.invalid, ein Ordnerpaar auf den Sync-Ordner,
+                  Einstellungen an der Wurzel [General], zwei davon abweichend
+                  vom Standard). Nach dem Update startet der Prüfling und wird
+                  mit --quit beendet: Er muss das Ordnerpaar lesen (Protokoll)
+                  und Konto, Ordnerpaar und Einstellungen ohne Verlust
+                  zurückschreiben. Ein zweiter Start mit demselben Ordnerpaar
+                  als Platzhalter-Ordner (virtualFilesMode=wincfapi, unter
+                  Windows die Vorgabe von beta2) prüft, dass auch diese
+                  Ordnerdefinition bleibt; ob der Runner den Sync-Root anmelden
+                  kann, steht als Information im Bericht
+      deinstall-policies  Leerer Richtlinien-Schlüssel HKLM\Software\Policies\
+                  BW-Tech GmbH\owncloud.online, wie beta1/beta2 ihn mit
+                  Administratorrechten anlegten. Je Durchgang: Setup, Schlüssel
+                  anlegen, Deinstallation still (/S) oder über die Oberfläche
+                  (Vorauswahl der Wahlseite; die Abschlussseite wird beendet,
+                  ohne "Fertig stellen" zu wählen - dort ist "Jetzt neu
+                  starten" vorausgewählt). Der leere Schlüssel und ein leerer
+                  Elternschlüssel müssen danach weg sein; eine Richtlinie (Wert
+                  im Schlüssel oder in Setup\ServerUrl) und fremde Richtlinien
+                  unter BW-Tech GmbH bleiben unverändert. Am Ende Rückstände
+                  gegen den Ausgang
 
     Client-Spuren, nachgebildet nach dem Client-Code (Geheimnis = Zufallswert,
     wird nie ausgegeben): Anmeldeinformation <app>_credentials:<host>:<uuid>:
@@ -61,7 +78,8 @@
     2 = Probe abgebrochen.
 
 .PARAMETER Scenario
-    frisch, koexistenz, upgrade, upgrade-beta1 oder upgrade-beta2.
+    frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2 oder
+    deinstall-policies.
 
 .PARAMETER Setup
     Setup des Prüflings (*-Setup.exe aus dem CI-Artefakt windows-cl-x86_64).
@@ -91,7 +109,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2')]
+    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2', 'deinstall-policies')]
     [string] $Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -140,6 +158,12 @@ $OutDir = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPat
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
 $hkcu = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::CurrentUser, [Microsoft.Win32.RegistryView]::Registry64)
+$hklm = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, [Microsoft.Win32.RegistryView]::Registry64)
+
+# deinstall-policies: Richtlinien liest der Client aus HKLM\Software\Policies\<Hersteller>\<Produkt>
+# (AppConfig::configPath, 64-Bit-Sicht; Software\Policies teilen sich beide Sichten)
+$policyVendorPath = 'SOFTWARE\Policies\BW-Tech GmbH'
+$policyKeyPath = "$policyVendorPath\$appName"
 
 $checks = New-Object 'System.Collections.Generic.List[object]'
 $runs = New-Object 'System.Collections.Generic.List[object]'
@@ -147,21 +171,24 @@ $lists = New-Object 'System.Collections.Generic.List[string]'
 $snapshotCount = 0
 
 # upgrade-beta2: Konto- und Ordnerkonfiguration, wie 11.0.0-beta2 sie schreibt
-# (AccountManager::saveAccount, FolderDefinition::save und die Liste der
-# Anmeldedaten im CredentialManager). Erzeugt mit QSettings aus Qt 6.8 mit
-# denselben Schlüsseln und Typen; QUuid, QUrl und die Capabilities stehen
-# deshalb als @Variant darin; davUrl ohne Schrägstrich am Ende, den
-# FolderDefinition schon in beta2 entfernt. Get-Beta2Config setzt Sync-Ordner
-# und Version ein. Das Konto zeigt auf probe.invalid: Der Prüfling erreicht
-# keinen Server, liest und schreibt aber Konto und Ordnerpaar.
+# (ConfigFile, AccountManager::saveAccount, FolderDefinition::save und die
+# Liste der Anmeldedaten im CredentialManager). Erzeugt mit QSettings aus Qt
+# 6.8 mit denselben Schlüsseln und Typen; QUuid, QUrl und die Capabilities
+# stehen deshalb als @Variant darin; davUrl ohne Schrägstrich am Ende, den
+# FolderDefinition schon in beta2 entfernt. ConfigFile schreibt ohne Gruppe,
+# QSettings legt das als [General] ab ([%General] wäre eine Gruppe "General",
+# die der Client nie liest); optionalDesktopNotifications und monoIcons weichen
+# vom Standard ab. Get-Beta2Config setzt Sync-Ordner, Version und VFS-Modus
+# ein. Das Konto zeigt auf probe.invalid: Der Prüfling erreicht keinen Server,
+# liest und schreibt aber Konto und Ordnerpaar.
 $beta2AccountId = '3f1c2b7e-5a64-4d2e-9b1f-0c7d8e9a1b2c'
 $beta2FolderId = '8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57'
 $beta2ConfigTemplate = @'
-[%General]
+[General]
 clientVersion=PROBE_CLIENTVERSION
 probe=true
-optionalDesktopNotifications=true
-monoIcons=false
+optionalDesktopNotifications=false
+monoIcons=true
 
 [Accounts]
 0\url=https://probe.invalid
@@ -180,7 +207,7 @@ monoIcons=false
 0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\paused=false
 0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\deployed=false
 0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\priority=0
-0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\virtualFilesMode=off
+0\Folders\8d5e2c41-7b3a-4f69-a0d2-6e1f4b9c3a57\virtualFilesMode=PROBE_VFSMODE
 
 [Credentials]
 owncloud.online_credentials%3Aprobe.invalid%3A3f1c2b7e-5a64-4d2e-9b1f-0c7d8e9a1b2c\http\oauthtoken=true
@@ -196,6 +223,8 @@ $trace = @{
     SyncDir    = Join-Path $env:USERPROFILE $appName
     UserHash   = $null
     ConfigWritten = $false
+    # upgrade-beta2: clientVersion der Vorversion, wie sie in deren Konfiguration steht
+    PreviousVersion = ''
 }
 $trace.UserFile = Join-Path $trace.SyncDir 'Probe-Nutzerdatei.txt'
 $traceErrors = @{}
@@ -355,6 +384,16 @@ function Get-EntryValue {
 
 # --- Setups -----------------------------------------------------------------
 
+# Ereignis 1074: ein Prozess hat Neustart oder Herunterfahren ausgelöst
+function Get-RestartEventCount {
+    param([datetime] $Since)
+    try {
+        return @(Get-WinEvent -FilterHashtable @{ LogName = 'System'; Id = 1074; StartTime = $Since } -ErrorAction Stop).Count
+    } catch {
+        return 0
+    }
+}
+
 function Invoke-Step {
     param([string] $Label, [string] $File, [string] $Arguments)
     Write-Host "== $Label"
@@ -379,13 +418,7 @@ function Invoke-Step {
     } else {
         $exitCode = $process.ExitCode
     }
-    # Ereignis 1074: ein Prozess hat Neustart oder Herunterfahren ausgelöst
-    $restarts = 0
-    try {
-        $restarts = @(Get-WinEvent -FilterHashtable @{ LogName = 'System'; Id = 1074; StartTime = $start } -ErrorAction Stop).Count
-    } catch {
-        $restarts = 0
-    }
+    $restarts = Get-RestartEventCount $start
     $run = [pscustomobject]@{
         schritt             = $Label
         befehl              = "$File $Arguments"
@@ -443,7 +476,9 @@ function Find-ClientExe {
     return $null
 }
 
+# $Interactive: der UninstallString, den Programme und Features beim Deinstallieren von Hand startet
 function Get-OwnUninstallCommand {
+    param([switch] $Interactive)
     foreach ($root in 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
                       'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall',
                       'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall') {
@@ -453,7 +488,7 @@ function Get-OwnUninstallCommand {
             $name = Get-Property $values 'DisplayName'
             if (-not $name -or $name -notmatch $ownPattern) { continue }
             $quiet = Get-Property $values 'QuietUninstallString'
-            if ($quiet) { return [string]$quiet }
+            if ($quiet -and -not $Interactive) { return [string]$quiet }
             $plain = Get-Property $values 'UninstallString'
             if ($plain) { return [string]$plain }
         }
@@ -478,6 +513,229 @@ function Uninstall-Candidate {
     if ($arguments -cnotmatch '(^|\s)/S(\s|$)') { $arguments = "/S $arguments" }
     $run = Invoke-Step 'Deinstallation (Prüfling)' $parts[0] ("$arguments $extra/norestart".Trim())
     Test-Run $run $Id $title
+}
+
+# Fenster und Steuerelemente eines anderen Prozesses lesen und eine Schaltfläche auslösen (Win32).
+# Texte über WM_GETTEXT, das Windows zwischen Prozessen überträgt.
+$uiSource = @'
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Text;
+
+namespace OcProbe
+{
+    public class UiControl
+    {
+        public IntPtr Handle;
+        public string ClassName;
+        public int Id;
+        public int Style;
+        public bool Visible;
+        public string Text;
+    }
+
+    public static class Ui
+    {
+        private delegate bool EnumProc(IntPtr hwnd, IntPtr lParam);
+
+        [DllImport("user32.dll")]
+        private static extern bool EnumWindows(EnumProc callback, IntPtr lParam);
+        [DllImport("user32.dll")]
+        private static extern bool EnumChildWindows(IntPtr parent, EnumProc callback, IntPtr lParam);
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hwnd, out uint processId);
+        [DllImport("user32.dll")]
+        private static extern bool IsWindowVisible(IntPtr hwnd);
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern int GetClassName(IntPtr hwnd, StringBuilder name, int size);
+        [DllImport("user32.dll")]
+        private static extern int GetDlgCtrlID(IntPtr hwnd);
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetDlgItem(IntPtr dialog, int id);
+        [DllImport("user32.dll", EntryPoint = "GetWindowLongW")]
+        private static extern int GetWindowLong(IntPtr hwnd, int index);
+        [DllImport("user32.dll", EntryPoint = "SendMessageTimeoutW", CharSet = CharSet.Unicode)]
+        private static extern IntPtr SendMessageTimeoutText(IntPtr hwnd, uint message, IntPtr wParam, StringBuilder lParam, uint flags, uint timeout, out IntPtr result);
+        [DllImport("user32.dll", EntryPoint = "SendMessageTimeoutW")]
+        private static extern IntPtr SendMessageTimeout(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam, uint flags, uint timeout, out IntPtr result);
+        [DllImport("user32.dll", EntryPoint = "PostMessageW")]
+        private static extern bool PostMessage(IntPtr hwnd, uint message, IntPtr wParam, IntPtr lParam);
+
+        private const uint WM_GETTEXT = 0x000D;
+        private const uint WM_COMMAND = 0x0111;
+        private const uint BM_GETCHECK = 0x00F0;
+        private const uint SMTO_ABORTIFHUNG = 0x0002;
+
+        // sichtbare Fenster oberster Ebene eines Prozesses
+        public static UiControl[] TopWindows(int processId)
+        {
+            List<UiControl> found = new List<UiControl>();
+            EnumWindows(delegate (IntPtr hwnd, IntPtr lParam)
+            {
+                uint owner;
+                GetWindowThreadProcessId(hwnd, out owner);
+                if (owner == (uint)processId && IsWindowVisible(hwnd)) { found.Add(Describe(hwnd)); }
+                return true;
+            }, IntPtr.Zero);
+            return found.ToArray();
+        }
+
+        // alle Nachfahren eines Fensters
+        public static UiControl[] Controls(IntPtr top)
+        {
+            List<UiControl> found = new List<UiControl>();
+            EnumChildWindows(top, delegate (IntPtr hwnd, IntPtr lParam)
+            {
+                found.Add(Describe(hwnd));
+                return true;
+            }, IntPtr.Zero);
+            return found.ToArray();
+        }
+
+        private static UiControl Describe(IntPtr hwnd)
+        {
+            StringBuilder name = new StringBuilder(256);
+            GetClassName(hwnd, name, name.Capacity);
+            UiControl control = new UiControl();
+            control.Handle = hwnd;
+            control.ClassName = name.ToString();
+            control.Id = GetDlgCtrlID(hwnd);
+            control.Style = GetWindowLong(hwnd, -16);
+            control.Visible = IsWindowVisible(hwnd);
+            control.Text = Text(hwnd);
+            return control;
+        }
+
+        public static string Text(IntPtr hwnd)
+        {
+            StringBuilder text = new StringBuilder(1024);
+            IntPtr result;
+            if (SendMessageTimeoutText(hwnd, WM_GETTEXT, new IntPtr(text.Capacity), text, SMTO_ABORTIFHUNG, 2000, out result) == IntPtr.Zero) { return ""; }
+            return text.ToString();
+        }
+
+        public static bool IsChecked(IntPtr hwnd)
+        {
+            IntPtr result;
+            if (SendMessageTimeout(hwnd, BM_GETCHECK, IntPtr.Zero, IntPtr.Zero, SMTO_ABORTIFHUNG, 2000, out result) == IntPtr.Zero) { return false; }
+            return result.ToInt64() == 1;
+        }
+
+        // wie ein Klick: WM_COMMAND/BN_CLICKED an den Dialog, der die Schaltfläche enthält
+        public static bool Click(IntPtr dialog, int id)
+        {
+            IntPtr button = GetDlgItem(dialog, id);
+            if (button == IntPtr.Zero) { return false; }
+            return PostMessage(dialog, WM_COMMAND, new IntPtr(id), button);
+        }
+    }
+}
+'@
+
+# Deinstallation über die Oberfläche, wie von Hand aus Programme und Features (UninstallString): die
+# Vorauswahl der Wahlseite übernehmen und "Deinstallieren" wählen. Die Abschlussseite bietet den
+# Neustart an, "Jetzt neu starten" ist vorausgewählt - die Probe wählt dort nichts, sondern beendet
+# das Programm; die Deinstallation ist dann abgeschlossen (die Seite folgt erst danach).
+function Uninstall-CandidateInteractive {
+    param([string] $Id)
+    $title = 'Deinstallation über die Oberfläche (Vorauswahl), ohne Neustart'
+    $command = Get-OwnUninstallCommand -Interactive
+    if (-not $command) {
+        Add-Check $Id $title 'FEHLER' 'kein Eintrag mit owncloud.online in Programme und Features' 'H19'
+        return
+    }
+    $parts = @(Split-CommandLine $command)
+    if ($parts[1] -cmatch '(^|\s)/S(\s|$)') {
+        Add-Check $Id $title 'FEHLER' "der UninstallString deinstalliert still: $command" 'H19'
+        return
+    }
+    if (-not ('OcProbe.Ui' -as [type])) { Add-Type -TypeDefinition $uiSource -Language CSharp }
+    $label = 'Deinstallation (Prüfling, über die Oberfläche)'
+    Write-Host "== $label"
+    Write-Host "   $command"
+    Write-Annotation 'notice' "Start: $label"
+    $start = Get-Date
+    if ($parts[1]) {
+        $process = Start-Process -FilePath $parts[0] -ArgumentList $parts[1] -PassThru
+    } else {
+        $process = Start-Process -FilePath $parts[0] -PassThru
+    }
+    $null = $process.Handle
+    $deadline = $start.AddMinutes($TimeoutMinutes)
+    $phase = 'Start'
+    $sawProgress = $false
+    $timedOut = $false
+    $choices = ''
+    $problem = ''
+    $page = ''
+    while (-not $process.HasExited) {
+        if ((Get-Date) -gt $deadline) {
+            $timedOut = $true
+            $problem = "nach $TimeoutMinutes min nicht auf der Abschlussseite"
+            break
+        }
+        Start-Sleep -Milliseconds 500
+        # Dialogfenster: die Seiten des Programms und Meldungsfenster
+        $windows = @([OcProbe.Ui]::TopWindows($process.Id) | Where-Object { $_.ClassName -eq '#32770' })
+        if ($windows.Count -eq 0) { continue }
+        if ($windows.Count -gt 1) {
+            # neben der Seite ein Meldungsfenster, z. B. "Deinstallation fehlgeschlagen"
+            $texts = foreach ($window in $windows) {
+                @([OcProbe.Ui]::Controls($window.Handle) | Where-Object { $_.Visible -and $_.Text -and $_.ClassName -ne 'Button' } | ForEach-Object { $_.Text }) -join ' '
+            }
+            $problem = 'Meldungsfenster: ' + ((@($texts) -replace '\s+', ' ') -join ' | ')
+            break
+        }
+        $controls = @([OcProbe.Ui]::Controls($windows[0].Handle) | Where-Object { $_.Visible })
+        $page = (@($controls | Where-Object { $_.Text } | ForEach-Object { '{0} "{1}"' -f $_.ClassName, ($_.Text -replace '\s+', ' ') })) -join ', '
+        # Schaltflächenart (BS_TYPEMASK): 2/3 Kontrollkästchen, 4/9 Optionsfeld
+        $boxes = @($controls | Where-Object { $_.ClassName -eq 'Button' -and (($_.Style -band 0xF) -eq 2 -or ($_.Style -band 0xF) -eq 3) })
+        $radios = @($controls | Where-Object { $_.ClassName -eq 'Button' -and (($_.Style -band 0xF) -eq 4 -or ($_.Style -band 0xF) -eq 9) })
+        $progress = @($controls | Where-Object { $_.ClassName -eq 'msctls_progress32' })
+        # Abschlussseite: Neustart-Wahl, oder die Fortschrittsseite ist nach getaner Arbeit weg
+        if ($radios.Count -gt 0 -or ($sawProgress -and $progress.Count -eq 0)) {
+            $phase = 'Abschlussseite'
+            break
+        }
+        if ($progress.Count -gt 0) {
+            $sawProgress = $true
+        } elseif ($phase -eq 'Start' -and $boxes.Count -gt 0) {
+            # Wahlseite: Vorauswahl festhalten und genau einmal "Deinstallieren" (Schaltfläche 1)
+            $choices = (@($boxes | ForEach-Object { '{0}: {1}' -f ($_.Text -replace '&', '').Trim(), $(if ([OcProbe.Ui]::IsChecked($_.Handle)) { 'an' } else { 'aus' }) })) -join '; '
+            if (-not [OcProbe.Ui]::Click($windows[0].Handle, 1)) {
+                $problem = 'Schaltfläche zum Deinstallieren nicht gefunden'
+                break
+            }
+            $phase = 'Deinstallation'
+        }
+    }
+    if (-not $process.HasExited) {
+        # nie "Fertig stellen": dort wäre "Jetzt neu starten" gewählt
+        $null = & taskkill.exe /PID $process.Id /T /F
+        $null = $process.WaitForExit(30 * 1000)
+    } elseif ($phase -ne 'Abschlussseite' -and -not $problem) {
+        $problem = 'ohne Abschlussseite beendet'
+    }
+    $exitCode = if ($process.HasExited) { $process.ExitCode } else { $null }
+    $restarts = Get-RestartEventCount $start
+    if ($restarts -gt 0) { $problem = (@($problem, 'Neustart ausgelöst (Ereignis 1074)') | Where-Object { $_ }) -join '; ' }
+    $run = [pscustomobject]@{
+        schritt             = $(if ($phase -eq 'Abschlussseite') { "$label, auf der Abschlussseite beendet" } else { $label })
+        befehl              = $command
+        exitcode            = $exitCode
+        sekunden            = [int]((Get-Date) - $start).TotalSeconds
+        zeitueberschreitung = $timedOut
+        haengt              = $(if ($problem) { $page } else { '' })
+        neustartereignisse  = $restarts
+    }
+    $runs.Add($run)
+    Write-Host ('   {0} nach {1} s' -f $(if ($problem) { $problem } else { 'Abschlussseite erreicht' }), $run.sekunden)
+    if ($problem) {
+        Add-Check $Id $title 'FEHLER' ('{0}; Seite: {1}' -f $problem, $(if ($page) { $page } else { '-' })) 'H7'
+    } else {
+        Add-Check $Id $title 'OK' ('Abschlussseite nach {0} s, dort beendet; Wahlseite: {1}' -f $run.sekunden, $(if ($choices) { $choices } else { 'nicht gesehen' })) 'H7'
+    }
 }
 
 # --- Client-Spuren ----------------------------------------------------------
@@ -516,7 +774,11 @@ function Add-ClientTraces {
         }
         'Einstellungen'      = {
             New-Item -ItemType Directory -Force -Path $trace.ConfigDir | Out-Null
-            $content = if ($Scenario -eq 'upgrade-beta2') { Get-Beta2Config $ClientExe } else { "[General]`r`nprobe=true`r`n" }
+            $content = "[General]`r`nprobe=true`r`n"
+            if ($Scenario -eq 'upgrade-beta2') {
+                $trace.PreviousVersion = Get-VersionWithBuild $ClientExe
+                $content = Get-Beta2Config $trace.PreviousVersion
+            }
             [IO.File]::WriteAllText((Join-Path $trace.ConfigDir "$appName.cfg"), $content)
             $trace.ConfigWritten = $true
         }
@@ -721,17 +983,25 @@ function Test-UpgradeFromBeta {
     }
 }
 
-# upgrade-beta2: Konfiguration von beta2 mit dem Sync-Ordner dieses Rechners und der Dateiversion der Vorversion
+# Version mit Buildnummer, wie der Client sie als clientVersion ablegt (Version::versionWithBuildNumber):
+# die vier Zahlen der FILEVERSION seiner Programmdatei; leer, wenn nicht lesbar
+function Get-VersionWithBuild {
+    param([string] $Exe)
+    if (-not $Exe -or -not (Test-Path -LiteralPath $Exe -PathType Leaf)) { return '' }
+    $info = (Get-Item -LiteralPath $Exe).VersionInfo
+    if ($info.FileMajorPart -lt 1) { return '' }
+    return '{0}.{1}.{2}.{3}' -f $info.FileMajorPart, $info.FileMinorPart, $info.FileBuildPart, $info.FilePrivatePart
+}
+
+# upgrade-beta2: Konfiguration von beta2 mit dem Sync-Ordner dieses Rechners, der Version der Vorversion
+# (clientVersion, ConfigFile::setClientVersionWithBuildNumberString) und dem VFS-Modus des Ordnerpaars
 function Get-Beta2Config {
-    param([string] $ClientExe)
+    param([string] $Version, [ValidateSet('off', 'wincfapi')] [string] $VfsMode = 'off')
     $syncDir = $trace.SyncDir -replace '\\', '/'
     # QSettings schreibt einen solchen Pfad unmaskiert; mit Sonderzeichen passte die Vorlage nicht mehr
     if ($syncDir -notmatch '^[A-Za-z]:/[A-Za-z0-9._/-]+$') { throw "Sync-Ordner '$syncDir' passt nicht in die Vorlage" }
-    # clientVersion trägt die Version mit Buildnummer (ConfigFile::setClientVersionWithBuildNumberString)
-    $version = ''
-    if ($ClientExe -and (Test-Path -LiteralPath $ClientExe -PathType Leaf)) { $version = [string](Get-Item -LiteralPath $ClientExe).VersionInfo.FileVersion }
-    if ($version -notmatch '^\d+(\.\d+){2,3}$') { $version = '11.0.0' }
-    return ($beta2ConfigTemplate -replace "`r`n", "`n").Replace('C:/PROBE_SYNCDIR', $syncDir).Replace('PROBE_CLIENTVERSION', $version)
+    if (-not $Version) { $Version = '11.0.0.0' }
+    return ($beta2ConfigTemplate -replace "`r`n", "`n").Replace('C:/PROBE_SYNCDIR', $syncDir).Replace('PROBE_CLIENTVERSION', $Version).Replace('PROBE_VFSMODE', $VfsMode)
 }
 
 # Rohwerte einer Qt-INI-Datei, Schlüssel "Abschnitt|Schlüssel"
@@ -748,6 +1018,13 @@ function Read-IniValues {
     return $values
 }
 
+# Abschnitte einer Qt-INI-Datei in der Reihenfolge der Datei, doppelte eingeschlossen
+function Get-IniSections {
+    param([string] $Path)
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return @() }
+    return @(foreach ($line in [IO.File]::ReadAllLines($Path)) { if ($line -match '^\[(.+)\]$') { $Matches[1] } })
+}
+
 # Datei lesen, die ein laufender Prozess noch schreibt
 function Read-SharedText {
     param([string] $Path)
@@ -760,28 +1037,21 @@ function Read-SharedText {
     }
 }
 
-# upgrade-beta2: Der Prüfling startet einmal mit der Konfiguration von beta2 und wird wie von
-# Hand über --quit beendet. Er muss das Ordnerpaar lesen (Protokoll) und Konto, Ordnerpaar und
-# Einstellungen beim Beenden ohne Verlust zurückschreiben (FolderMan::shutdown, AccountManager).
-function Test-Beta2ConfigAfterStart {
-    param([string] $Exe)
-    $titles = [ordered]@{
-        U14 = 'Prüfling startet mit der Konfiguration von beta2 und endet über --quit'
-        U15 = 'Ordnerpaar von beta2 vom Prüfling gelesen (Protokoll)'
-        U16 = 'Konto und Ordnerpaar nach dem Start ohne Verlust (owncloud.online.cfg)'
-        U17 = 'Einstellungen und Anmeldedaten nach dem Start erhalten'
-    }
+# Prüfling mit der vorbereiteten Konfiguration starten und wie von Hand über --quit beenden.
+# Belege in OutDir: <Name>-start.log und die Konfiguration vorher/nachher (sie enthält keine
+# Geheimnisse, das Refresh-Token liegt im Schlüsselbund).
+function Start-CandidateWithConfig {
+    param([string] $Exe, [string] $Name, [string] $Label, [string] $QuitLabel)
     $config = Join-Path $trace.ConfigDir "$appName.cfg"
-    if (-not $Exe -or -not $trace.ConfigWritten) {
-        foreach ($id in $titles.Keys) { Add-Check $id $titles[$id] 'NICHT GEPRÜFT' 'Programmdatei oder Konfiguration fehlt' '' }
-        return
-    }
     $before = Read-IniValues $config
-    # Belege: die Konfiguration enthält keine Geheimnisse (das Refresh-Token liegt im Schlüsselbund)
-    Copy-Item -LiteralPath $config -Destination (Join-Path $OutDir 'pruefling-konfiguration-vorher.cfg') -ErrorAction SilentlyContinue
-    $log = Join-Path $OutDir 'pruefling-start.log'
-    Write-Host '== Prüfling mit der Konfiguration von beta2 starten'
-    Write-Annotation 'notice' 'Start: Prüfling mit der Konfiguration von beta2'
+    $result = [pscustomobject]@{
+        Before = $before; After = @{}; Sections = @(); Log = ''
+        EndedEarly = $false; Exited = $false; ExitCode = $null; QuitExitCode = $null
+    }
+    Copy-Item -LiteralPath $config -Destination (Join-Path $OutDir "$Name-konfiguration-vorher.cfg") -ErrorAction SilentlyContinue
+    $log = Join-Path $OutDir "$Name-start.log"
+    Write-Host "== $Label"
+    Write-Annotation 'notice' "Start: $Label"
     $process = Start-Process -FilePath $Exe -ArgumentList @('--logfile', ('"{0}"' -f $log), '--logdebug', '--logflush') -PassThru
     $null = $process.Handle
     # bis die Ordner aus der Konfiguration eingerichtet sind, höchstens 3 min
@@ -791,75 +1061,240 @@ function Test-Beta2ConfigAfterStart {
         $text = Read-SharedText $log
         if ($text -match 'Setup folders from settings file' -and $text -match '(Adding folder to Folder Map|Unable to rebuild previous folder|Unable to create Folder for|validation failed for folder)') { break }
     }
-    # Konto und Ordner arbeiten lassen: Schlüsselbund, Verbindungsversuch, Speichern
+    # Konto und Ordner arbeiten lassen: Schlüsselbund, Verbindungsversuch, Sync-Root, Speichern
     Start-Sleep -Seconds 10
-    $endedEarly = $process.HasExited
-    $exited = $endedEarly
-    if (-not $endedEarly) {
+    $result.EndedEarly = $process.HasExited
+    $result.Exited = $result.EndedEarly
+    if (-not $result.EndedEarly) {
         # nur an eine laufende Instanz: sonst würde dieser Aufruf selbst zum Client
-        $null = Invoke-Step 'Prüfling beenden (--quit)' $Exe '--quit'
-        $exited = $process.WaitForExit(90 * 1000)
-        if (-not $exited) { $null = & taskkill.exe /PID $process.Id /T /F }
+        $quit = Invoke-Step $QuitLabel $Exe '--quit'
+        $result.QuitExitCode = $quit.exitcode
+        $result.Exited = $process.WaitForExit(90 * 1000)
+        if (-not $result.Exited) { $null = & taskkill.exe /PID $process.Id /T /F }
     }
-    $text = Read-SharedText $log
-    $after = Read-IniValues $config
-    Copy-Item -LiteralPath $config -Destination (Join-Path $OutDir 'pruefling-konfiguration-nachher.cfg') -ErrorAction SilentlyContinue
+    if ($result.Exited) { $result.ExitCode = $process.ExitCode }
+    $result.Log = Read-SharedText $log
+    $result.After = Read-IniValues $config
+    $result.Sections = @(Get-IniSections $config)
+    Copy-Item -LiteralPath $config -Destination (Join-Path $OutDir "$Name-konfiguration-nachher.cfg") -ErrorAction SilentlyContinue
+    return $result
+}
 
-    if ($endedEarly) {
-        Add-Check 'U14' $titles.U14 'FEHLER' ('vor --quit beendet, Exit-Code {0}, siehe pruefling-start.log' -f $process.ExitCode) ''
-    } elseif (-not $exited) {
-        Add-Check 'U14' $titles.U14 'FEHLER' 'nach --quit nicht in 90 s beendet, Prozess abgebrochen' ''
-    } else {
-        Add-Check 'U14' $titles.U14 'OK' ('Exit-Code {0}' -f $process.ExitCode) ''
+# Ende über --quit: Prüfling und der Aufruf, der --quit überbringt, enden mit 0; leer = in Ordnung
+function Get-CandidateExitProblem {
+    param($Result)
+    if ($Result.EndedEarly) { return ('vor --quit beendet, Exit-Code {0}' -f $Result.ExitCode) }
+    if (-not $Result.Exited) { return 'nach --quit nicht in 90 s beendet, Prozess abgebrochen' }
+    if ($Result.QuitExitCode -ne 0) {
+        $code = if ($null -eq $Result.QuitExitCode) { 'Zeitüberschreitung' } else { "Exit-Code $($Result.QuitExitCode)" }
+        return "der Aufruf mit --quit endete mit $code"
     }
+    if ($Result.ExitCode -ne 0) { return ('Exit-Code {0} statt 0' -f $Result.ExitCode) }
+    return ''
+}
 
-    # Einrichten des Ordnerpaars laut Protokoll; Meldungen, nach denen der Client Konto oder Ordner verwirft
-    $folderPath = ($trace.SyncDir -replace '\\', '/') + '/'
-    $lines = @($text -split "`r?`n")
-    $added = @($lines | Where-Object { $_.Contains('Adding folder to Folder Map') -and $_.Contains($folderPath) })
-    $lossPattern = 'Unable to rebuild previous folder|will be removed from the configuration|are not supported by this client|Folder Definition validation failed|Unable to create Folder for|missing from Config|No URL for account|No user name provided'
+# Einrichten des Ordnerpaars laut Protokoll und Meldungen, nach denen der Client Konto oder Ordner verwirft
+function Get-FolderSetupResult {
+    param([string] $Text, [string] $FolderPath, [string] $LogName)
+    $lines = @($Text -split "`r?`n")
+    $added = @($lines | Where-Object { $_.Contains('Adding folder to Folder Map') -and $_.Contains($FolderPath) })
+    $lossPattern = 'Unable to rebuild previous folder|will be removed from the configuration|are not supported by this client|Folder Definition validation failed|Unable to create Folder for|missing from Config|No URL for account|No user name provided|Could not load vfs plugin'
     $loss = @($lines | Where-Object { $_ -match $lossPattern })
-    if (-not $text) {
-        Add-Check 'U15' $titles.U15 'FEHLER' 'kein Protokoll (pruefling-start.log fehlt oder ist leer)' ''
+    $result = [pscustomobject]@{ Status = 'FEHLER'; Detail = "kein 'Adding folder to Folder Map' für $FolderPath, siehe $LogName"; Loss = $loss }
+    if (-not $Text) {
+        $result.Detail = "kein Protokoll ($LogName fehlt oder ist leer)"
     } elseif ($loss.Count -gt 0) {
-        Add-Check 'U15' $titles.U15 'FEHLER' ('{0} Meldungen, z. B. {1}' -f $loss.Count, $loss[0].Trim()) ''
-        Add-List 'U15 Meldungen beim Einrichten der Ordner' $loss
-    } elseif ($added.Count -gt 0 -and $text.Contains('Setup folders from settings file')) {
-        Add-Check 'U15' $titles.U15 'OK' $folderPath ''
-    } else {
-        Add-Check 'U15' $titles.U15 'FEHLER' "kein 'Adding folder to Folder Map' für $folderPath, siehe pruefling-start.log" ''
+        $result.Detail = '{0} Meldungen, z. B. {1}' -f $loss.Count, $loss[0].Trim()
+    } elseif ($added.Count -gt 0 -and $Text.Contains('Setup folders from settings file')) {
+        $result.Status = 'OK'
+        $result.Detail = $FolderPath
     }
+    return $result
+}
 
-    # Konto und Ordnerpaar unverändert, auch QUuid, Capabilities und QUrl (@Variant, Byte für Byte wie von beta2)
+# Konto und Ordnerpaar der Vorlage; nach dem Start unverändert, auch QUuid, Capabilities und QUrl
+# (@Variant, Byte für Byte wie von beta2)
+function Get-Beta2Keys {
     $account = 'Accounts|0\'
     $folder = "Accounts|0\Folders\$beta2FolderId\"
-    $keys = @('url', 'dav_user', 'display-name', 'uuid', 'capabilities', 'default_sync_root' | ForEach-Object { $account + $_ }) +
+    return @('url', 'dav_user', 'display-name', 'uuid', 'capabilities', 'default_sync_root' | ForEach-Object { $account + $_ }) +
         @('localPath', 'journalPath', 'targetPath', 'davUrl', 'displayName', 'paused', 'virtualFilesMode' | ForEach-Object { $folder + $_ })
-    $problems = New-Object 'System.Collections.Generic.List[string]'
-    foreach ($key in $keys) {
-        if (-not $after.ContainsKey($key)) { $problems.Add("$key fehlt") }
-        elseif ($after[$key] -cne $before[$key]) { $problems.Add(('{0}: {1} -> {2}' -f $key, $before[$key], $after[$key])) }
+}
+
+# Werte, die nach dem Start fehlen oder sich verändert haben
+function Get-ChangedValues {
+    param([hashtable] $Before, [hashtable] $After, [string[]] $Keys)
+    foreach ($key in $Keys) {
+        if (-not $After.ContainsKey($key)) { "$key fehlt" }
+        elseif ($After[$key] -cne $Before[$key]) { '{0}: {1} -> {2}' -f $key, $Before[$key], $After[$key] }
     }
+}
+
+# Einstellungen an der Wurzel, wie beta2 sie schreibt: die Werte der Vorlage unverändert,
+# clientVersion auf der Version des Prüflings (checkClientVersion), genau ein Abschnitt [General]
+function Get-Beta2SettingsProblems {
+    param([hashtable] $Before, [hashtable] $After, [string[]] $Sections, [string] $ExpectedVersion)
+    foreach ($key in 'General|probe', 'General|optionalDesktopNotifications', 'General|monoIcons') {
+        if (-not $After.ContainsKey($key)) { "$key fehlt" }
+        elseif ($After[$key] -cne $Before[$key]) { '{0}: {1} -> {2}' -f $key, $Before[$key], $After[$key] }
+    }
+    $version = $After['General|clientVersion']
+    if (-not $version) { 'General|clientVersion fehlt' }
+    elseif ($ExpectedVersion -and $version -cne $ExpectedVersion) { 'General|clientVersion: {0} statt {1} (Version des Prüflings)' -f $version, $ExpectedVersion }
+    # ein zweiter Abschnitt hieße: der Client hat die Werte der Vorlage nicht als seine gelesen
+    $general = @($Sections | Where-Object { $_ -eq 'General' -or $_ -eq '%General' })
+    if ($general.Count -ne 1 -or $general[0] -cne 'General') {
+        'Abschnitte für Einstellungen: {0} statt genau einem [General]' -f $(if ($general.Count) { ($general | ForEach-Object { "[$_]" }) -join ', ' } else { 'keiner' })
+    }
+}
+
+# Sync-Roots des Clients laut SyncRootManager (Kennung "owncloud.online!<SID>!<Hash>", ältere "owncloud.online_<Hash>")
+function Get-OwnSyncRoots {
+    $manager = $hklm.OpenSubKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\SyncRootManager', $false)
+    if ($null -eq $manager) { return }
+    try {
+        foreach ($id in $manager.GetSubKeyNames()) {
+            if (-not ($id.StartsWith("$appName!", [StringComparison]::OrdinalIgnoreCase) -or $id.StartsWith("${appName}_", [StringComparison]::OrdinalIgnoreCase))) { continue }
+            $paths = @()
+            $userRoots = $manager.OpenSubKey("$id\UserSyncRoots", $false)
+            if ($userRoots) {
+                try { $paths = @($userRoots.GetValueNames() | ForEach-Object { [string]$userRoots.GetValue($_) }) } finally { $userRoots.Close() }
+            }
+            [pscustomobject]@{ Id = $id; Paths = $paths }
+        }
+    } finally {
+        $manager.Close()
+    }
+}
+
+# upgrade-beta2: Der Prüfling startet mit der Konfiguration von beta2 und wird wie von Hand über
+# --quit beendet. Er muss das Ordnerpaar lesen (Protokoll) und Konto, Ordnerpaar und Einstellungen
+# beim Beenden ohne Verlust zurückschreiben (FolderMan::shutdown, AccountManager).
+function Test-Beta2ConfigAfterStart {
+    param([string] $Exe)
+    $titles = [ordered]@{
+        U14 = 'Prüfling startet mit der Konfiguration von beta2 und endet über --quit'
+        U15 = 'Ordnerpaar von beta2 vom Prüfling gelesen (Protokoll)'
+        U16 = 'Konto und Ordnerpaar nach dem Start ohne Verlust (owncloud.online.cfg)'
+        U17 = 'Einstellungen und Anmeldedaten nach dem Start erhalten'
+    }
+    if (-not $Exe -or -not $trace.ConfigWritten) {
+        foreach ($id in $titles.Keys) { Add-Check $id $titles[$id] 'NICHT GEPRÜFT' 'Programmdatei oder Konfiguration fehlt' '' }
+        return
+    }
+    $run = Start-CandidateWithConfig $Exe 'pruefling' 'Prüfling mit der Konfiguration von beta2 starten' 'Prüfling beenden (--quit)'
+
+    $problem = Get-CandidateExitProblem $run
+    if ($problem) {
+        Add-Check 'U14' $titles.U14 'FEHLER' "$problem, siehe pruefling-start.log" ''
+    } else {
+        Add-Check 'U14' $titles.U14 'OK' 'Exit-Code 0' ''
+    }
+
+    $setup = Get-FolderSetupResult $run.Log (($trace.SyncDir -replace '\\', '/') + '/') 'pruefling-start.log'
+    Add-Check 'U15' $titles.U15 $setup.Status $setup.Detail ''
+    Add-List 'U15 Meldungen beim Einrichten der Ordner' $setup.Loss
+
+    $keys = @(Get-Beta2Keys)
+    $problems = @(Get-ChangedValues $run.Before $run.After $keys)
     if ($problems.Count -eq 0) {
         Add-Check 'U16' $titles.U16 'OK' ('{0} Werte unverändert' -f $keys.Count) ''
     } else {
         Add-Check 'U16' $titles.U16 'FEHLER' ('{0} Werte verloren oder verändert, z. B. {1}' -f $problems.Count, $problems[0]) ''
-        Add-List 'U16 Konto und Ordnerpaar nach dem Start' $problems.ToArray()
+        Add-List 'U16 Konto und Ordnerpaar nach dem Start' $problems
     }
 
-    # Einstellungen der Probe, Liste der Anmeldedaten und der Eintrag im Schlüsselbund
-    $lost = New-Object 'System.Collections.Generic.List[string]'
-    foreach ($key in '%General|probe', '%General|optionalDesktopNotifications', '%General|monoIcons') {
-        if ($after[$key] -cne $before[$key]) { $lost.Add(('{0}: {1} -> {2}' -f $key, $before[$key], $after[$key])) }
+    # Einstellungen an der Wurzel, Liste der Anmeldedaten und der Eintrag im Schlüsselbund
+    if (-not $run.Before.ContainsKey('General|monoIcons')) {
+        Add-Check 'U17' $titles.U17 'NICHT GEPRÜFT' 'die Vorlage enthält keine Einstellungen an der Wurzel ([General])' 'E4'
+        return
     }
-    if (-not $after.ContainsKey("Credentials|owncloud.online_credentials%3Aprobe.invalid%3A$beta2AccountId\http\oauthtoken")) { $lost.Add('Liste der Anmeldedaten ohne das Konto') }
+    $lost = New-Object 'System.Collections.Generic.List[string]'
+    foreach ($entry in @(Get-Beta2SettingsProblems $run.Before $run.After $run.Sections (Get-VersionWithBuild $Exe))) { $lost.Add($entry) }
+    if (-not $run.After.ContainsKey("Credentials|owncloud.online_credentials%3Aprobe.invalid%3A$beta2AccountId\http\oauthtoken")) { $lost.Add('Liste der Anmeldedaten ohne das Konto') }
     $listed = (& cmdkey.exe "/list:$($trace.Credential)" | Out-String)
     if (-not $listed.Contains($trace.Credential)) { $lost.Add('Anmeldedaten im Schlüsselbund fehlen') }
     if ($lost.Count -eq 0) {
-        Add-Check 'U17' $titles.U17 'OK' '' 'E4'
+        Add-Check 'U17' $titles.U17 'OK' ('optionalDesktopNotifications={0}, monoIcons={1}, clientVersion={2}' -f $run.After['General|optionalDesktopNotifications'], $run.After['General|monoIcons'], $run.After['General|clientVersion']) 'E4'
     } else {
         Add-Check 'U17' $titles.U17 'FEHLER' ($lost -join '; ') 'E4'
     }
+}
+
+# upgrade-beta2 mit Platzhalter-Ordner: Unter Windows legte beta2 neue Ordnerpaare als
+# Platzhalter-Ordner an (Vorgabe im Assistenten, sobald das CfApi-Plug-in lädt). Der Prüfling
+# startet ein zweites Mal mit der Konfiguration von beta2, nun mit virtualFilesMode=wincfapi.
+# Scheitert addFolder(), entfernt der Client die Ordnerdefinition aus der Konfiguration
+# (FolderMan::addFoldersFromConfigByAccount) - etwa wenn das Plug-in nicht lädt. Ein Fehler beim
+# Anmelden des Sync-Roots kommt später (Folder::startVfs) und lässt die Definition stehen.
+function Test-Beta2VfsAfterStart {
+    param([string] $Exe)
+    $titles = [ordered]@{
+        U18 = 'Prüfling startet mit dem Platzhalter-Ordner von beta2 (wincfapi) und endet über --quit'
+        U19 = 'Platzhalter-Ordnerpaar von beta2 vom Prüfling gelesen (Protokoll)'
+        U20 = 'Ordnerdefinition des Platzhalter-Ordners nach dem Start erhalten (owncloud.online.cfg)'
+        U21 = 'Platzhalter (CfApi) auf diesem Rechner'
+    }
+    $config = Join-Path $trace.ConfigDir "$appName.cfg"
+    $why = ''
+    if (-not $Exe -or -not $trace.ConfigWritten) {
+        $why = 'Programmdatei oder Konfiguration fehlt'
+    } else {
+        try {
+            [IO.File]::WriteAllText($config, (Get-Beta2Config $trace.PreviousVersion -VfsMode 'wincfapi'))
+        } catch {
+            $why = 'Konfiguration nicht schreibbar: ' + $_.Exception.Message
+        }
+    }
+    if ($why) {
+        foreach ($id in $titles.Keys) { Add-Check $id $titles[$id] 'NICHT GEPRÜFT' $why '' }
+        return
+    }
+    $run = Start-CandidateWithConfig $Exe 'pruefling-vfs' 'Prüfling mit dem Platzhalter-Ordner von beta2 starten' 'Prüfling beenden (--quit, Platzhalter-Ordner)'
+
+    $problem = Get-CandidateExitProblem $run
+    if ($problem) {
+        Add-Check 'U18' $titles.U18 'FEHLER' "$problem, siehe pruefling-vfs-start.log" ''
+    } else {
+        Add-Check 'U18' $titles.U18 'OK' 'Exit-Code 0' ''
+    }
+
+    $setup = Get-FolderSetupResult $run.Log (($trace.SyncDir -replace '\\', '/') + '/') 'pruefling-vfs-start.log'
+    Add-Check 'U19' $titles.U19 $setup.Status $setup.Detail ''
+    Add-List 'U19 Meldungen beim Einrichten des Platzhalter-Ordners' $setup.Loss
+
+    $keys = @(Get-Beta2Keys)
+    $problems = @(Get-ChangedValues $run.Before $run.After $keys)
+    if ($run.Before["Accounts|0\Folders\$beta2FolderId\virtualFilesMode"] -cne 'wincfapi') {
+        Add-Check 'U20' $titles.U20 'NICHT GEPRÜFT' 'die Konfiguration vor dem Start hat kein Ordnerpaar mit virtualFilesMode=wincfapi' ''
+    } elseif ($problems.Count -eq 0) {
+        Add-Check 'U20' $titles.U20 'OK' ('{0} Werte unverändert, virtualFilesMode=wincfapi' -f $keys.Count) ''
+    } else {
+        Add-Check 'U20' $titles.U20 'FEHLER' ('{0} Werte verloren oder verändert, z. B. {1}; Ursache siehe U19/U21' -f $problems.Count, $problems[0]) ''
+        Add-List 'U20 Platzhalter-Ordner nach dem Start' $problems
+    }
+
+    # was der Runner kann: Plug-in geladen, Sync-Root angemeldet (bleibt nach --quit angemeldet)
+    $lines = @($run.Log -split "`r?`n")
+    $plugin = @($lines | Where-Object { $_ -match 'Created VFS instance from plugin .*vfs_wincfapi|Could not load (vfs )?plugin|Plugin failed to load|Plugin doesn.t exist|Plugin has wrong' })
+    $cfapi = @($lines | Where-Object { $_ -match 'Error registering StorageProvider|Could not find StorageFolder|Could not retrieve StorageFolder|managed by another sync client|used by a different client|Downgrading the folder|Virtual filesystem feature' })
+    $roots = @(Get-OwnSyncRoots)
+    if ($plugin.Count -eq 0) {
+        $note = 'Plug-in: keine Meldung im Protokoll'
+    } elseif ($plugin[0] -match 'Created VFS instance') {
+        $note = 'Plug-in wincfapi geladen'
+    } else {
+        $note = 'Plug-in nicht geladen: ' + $plugin[0].Trim()
+    }
+    if ($roots.Count -gt 0) {
+        $note += '; Sync-Root angemeldet: ' + (($roots | ForEach-Object { '{0} -> {1}' -f $_.Id, ($_.Paths -join ', ') }) -join '; ')
+    } elseif ($cfapi.Count -gt 0) {
+        $note += '; kein Sync-Root angemeldet: ' + $cfapi[0].Trim()
+    } else {
+        $note += '; kein Sync-Root angemeldet, keine Ursache im Protokoll'
+    }
+    Add-Check 'U21' $titles.U21 'INFO' $note ''
+    Add-List 'U21 Meldungen zu Plug-in und Sync-Root' ($plugin + $cfapi)
 }
 
 # --- Prüfungen --------------------------------------------------------------
@@ -1096,6 +1531,83 @@ function Test-Footprint {
     }
 }
 
+# --- Richtlinien (deinstall-policies) ---------------------------------------
+
+# Teilbaum unter HKLM\$Path als "Schlüssel" bzw. "Schlüssel :: Wert" -> Inhalt
+function Get-RegistryTree {
+    param([string] $Path)
+    $items = New-Object 'System.Collections.Generic.SortedDictionary[string,string]' ([StringComparer]::OrdinalIgnoreCase)
+    Add-RegistryTreeItems $items $Path
+    # sonst zählte PowerShell das Wörterbuch Eintrag für Eintrag auf
+    return , $items
+}
+
+function Add-RegistryTreeItems {
+    param($Items, [string] $Path)
+    $key = $hklm.OpenSubKey($Path, $false)
+    if ($null -eq $key) { return }
+    try {
+        $Items["HKLM\$Path"] = '(Schlüssel)'
+        foreach ($name in $key.GetValueNames()) {
+            $shown = if ($name) { $name } else { '(Standard)' }
+            $Items["HKLM\$Path :: $shown"] = '{0}: {1}' -f $key.GetValueKind($name), (@($key.GetValue($name)) -join ' | ')
+        }
+        foreach ($sub in $key.GetSubKeyNames()) { Add-RegistryTreeItems $Items "$Path\$sub" }
+    } finally {
+        $key.Close()
+    }
+}
+
+# Ausgangslage eines Durchgangs:
+#   leer     der Schlüssel ohne Inhalt, wie beta1/beta2 ihn anlegten (samt Elternschlüssel)
+#   wert     eine Richtlinie als Wert direkt im Schlüssel
+#   setup    eine Richtlinie, wie AppConfig sie liest (Setup\ServerUrl, Unterschlüssel ohne Wert im Schlüssel)
+#   nachbar  der leere Schlüssel neben der Richtlinie eines anderen Produkts unter BW-Tech GmbH
+function Set-PolicyLayout {
+    param([string] $Layout)
+    $string = [Microsoft.Win32.RegistryValueKind]::String
+    $key = $hklm.CreateSubKey($policyKeyPath)
+    try {
+        if ($Layout -eq 'wert') { $key.SetValue('InstallProbe', 'Richtlinie der Install-Probe', $string) }
+        if ($Layout -eq 'setup') {
+            $setup = $key.CreateSubKey('Setup')
+            try { $setup.SetValue('ServerUrl', 'https://probe.invalid', $string) } finally { $setup.Close() }
+        }
+    } finally {
+        $key.Close()
+    }
+    if ($Layout -eq 'nachbar') {
+        $neighbor = $hklm.CreateSubKey("$policyVendorPath\Probe-Nachbar")
+        try { $neighbor.SetValue('InstallProbe', 'fremde Richtlinie der Install-Probe', $string) } finally { $neighbor.Close() }
+    }
+}
+
+# Erwarteter Teilbaum nach der Deinstallation: leere Schlüssel des Clients weg (der Elternschlüssel,
+# wenn er dadurch leer wird), jede Richtlinie unverändert
+function Get-ExpectedPolicyTree {
+    param($Before, [string] $Layout)
+    $expected = New-Object 'System.Collections.Generic.SortedDictionary[string,string]' ([StringComparer]::OrdinalIgnoreCase)
+    if ($Layout -ne 'leer') {
+        foreach ($entry in $Before.GetEnumerator()) {
+            if ($Layout -eq 'nachbar' -and $entry.Key -eq "HKLM\$policyKeyPath") { continue }
+            $expected[$entry.Key] = $entry.Value
+        }
+    }
+    return , $expected
+}
+
+# Unterschiede zwischen erwartetem und tatsächlichem Teilbaum
+function Compare-RegistryTree {
+    param($Expected, $Actual)
+    foreach ($entry in $Expected.GetEnumerator()) {
+        if (-not $Actual.ContainsKey($entry.Key)) { 'fehlt: {0} = {1}' -f $entry.Key, $entry.Value }
+        elseif ($Actual[$entry.Key] -cne $entry.Value) { 'verändert: {0} = {1} -> {2}' -f $entry.Key, $entry.Value, $Actual[$entry.Key] }
+    }
+    foreach ($entry in $Actual.GetEnumerator()) {
+        if (-not $Expected.ContainsKey($entry.Key)) { 'noch da: {0} = {1}' -f $entry.Key, $entry.Value }
+    }
+}
+
 # --- offizieller Client -----------------------------------------------------
 
 function Get-OfficialProcess {
@@ -1210,6 +1722,7 @@ function Invoke-Upgrade {
     if ($Scenario -eq 'upgrade-beta2') {
         Test-UpgradeFromBeta $previous $installed $previousExe $previousExeHash $exe '11.0.0-beta2'
         Test-Beta2ConfigAfterStart $exe
+        Test-Beta2VfsAfterStart $exe
     }
     Uninstall-Candidate 'D1'
     $removed = New-Snapshot 'deinstalliert' 'Prüfling deinstalliert'
@@ -1277,6 +1790,46 @@ function Invoke-Coexistence {
     }
     $final = New-Snapshot 'offiziell-entfernt' 'Offizieller Client entfernt, Prüfling bleibt'
     Test-Footprint $ownFootprint $final 'K7' 'Unser Client nach Entfernen des offiziellen unverändert' 'H3'
+}
+
+# O1: beta1/beta2 legten HKLM\Software\Policies\BW-Tech GmbH\owncloud.online leer an, wenn der Client
+# mit Administratorrechten lief. Die Deinstallation muss leere Schlüssel entfernen und jede Richtlinie
+# eines Administrators stehen lassen - still und über die Oberfläche. Die Ausgangslagen decken ab,
+# woran ein "nur wenn leer" scheitern kann: ein Wert direkt im Schlüssel (wert), nur ein
+# Unterschlüssel mit Wert (setup), ein anderes Produkt unter demselben Hersteller (nachbar).
+function Invoke-PolicyScenario {
+    $base = New-Snapshot 'ausgang' 'Ausgangszustand'
+    Assert-Fresh $base
+    if ((Get-RegistryTree $policyVendorPath).Count -gt 0) { throw "kein frischer Rechner, HKLM\$policyVendorPath besteht schon" }
+    # Durchgang, Ausgangslage, über die Oberfläche, Prüfung, Audit
+    $passes = @(
+        @('P1', 'leer', $false, 'Leerer Richtlinien-Schlüssel samt Elternschlüssel nach stiller Deinstallation entfernt', 'H6'),
+        @('P2', 'leer', $true, 'Leerer Richtlinien-Schlüssel samt Elternschlüssel nach Deinstallation über die Oberfläche entfernt', 'H6'),
+        @('P3', 'wert', $false, 'Richtlinie (Wert im Schlüssel) bleibt bei stiller Deinstallation unverändert', ''),
+        @('P4', 'setup', $true, 'Richtlinie (Setup\ServerUrl) bleibt bei Deinstallation über die Oberfläche unverändert', ''),
+        @('P5', 'nachbar', $false, 'Leerer Schlüssel entfernt, fremde Richtlinie unter BW-Tech GmbH bleibt (still)', 'H6')
+    )
+    foreach ($pass in $passes) {
+        $id, $layout, $interactive, $title, $audit = $pass
+        Install-Candidate "${id}a" "Setup (Prüfling, Durchgang $id)"
+        Set-PolicyLayout $layout
+        $before = Get-RegistryTree $policyVendorPath
+        if ($interactive) { Uninstall-CandidateInteractive "${id}b" } else { Uninstall-Candidate "${id}b" }
+        $after = Get-RegistryTree $policyVendorPath
+        $differences = @(Compare-RegistryTree (Get-ExpectedPolicyTree $before $layout) $after | Sort-Object)
+        if ($differences.Count -gt 0) {
+            Add-Check $id $title 'FEHLER' ('{0} Abweichungen, z. B. {1}' -f $differences.Count, $differences[0]) $audit
+            Add-List "$id $title" $differences
+        } elseif ($layout -eq 'leer') {
+            Add-Check $id $title 'OK' "HKLM\$policyVendorPath entfernt" $audit
+        } else {
+            Add-Check $id $title 'OK' ('{0} Einträge wie erwartet' -f $after.Count) $audit
+        }
+        # eigene Schlüssel der Probe für den nächsten Durchgang entfernen (vorher bestand keiner)
+        $hklm.DeleteSubKeyTree($policyVendorPath, $false)
+    }
+    $final = New-Snapshot 'ende' 'Nach allen Durchgängen'
+    Test-Residue $base $final 'ausgang-ende' @{}
 }
 
 # ---------------------------------------------------------------------------
@@ -1380,6 +1933,7 @@ try {
         'upgrade' { Invoke-Upgrade }
         'upgrade-beta1' { Invoke-Upgrade }
         'upgrade-beta2' { Invoke-Upgrade }
+        'deinstall-policies' { Invoke-PolicyScenario }
     }
 } catch {
     $abort = '{0} (Zeile {1})' -f $_.Exception.Message, $_.InvocationInfo.ScriptLineNumber

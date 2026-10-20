@@ -11,7 +11,9 @@ name: Install-Probe
 # muss unverändert bleiben) | upgrade (Release v7.11.0 vorher) | upgrade-beta1
 # (veröffentlichte v11.0.0-beta1 vorher, gleiche Kennung) | upgrade-beta2 (veröffentlichte
 # v11.0.0-beta2 vorher, mit Konto- und Ordnerkonfiguration wie beta2; der Prüfling startet
-# danach einmal und muss sie ohne Verlust lesen) | alle.
+# danach mit normalem und mit Platzhalter-Ordner und muss sie ohne Verlust lesen) |
+# deinstall-policies (leerer Richtlinien-Schlüssel von beta1/beta2 muss mit der Deinstallation
+# gehen, Richtlinien eines Administrators bleiben; still und über die Oberfläche) | alle.
 
 on:
   workflow_dispatch:
@@ -20,9 +22,9 @@ on:
         description: "ID des CI-Laufs (ownCloud CI), dessen Artefakt windows-cl-x86_64 geprüft wird"
         required: true
       szenario:
-        description: "frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2 oder alle (je Szenario ein eigener Runner)"
+        description: "frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies oder alle (je Szenario ein eigener Runner)"
         type: choice
-        options: [alle, frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2]
+        options: [alle, frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies]
         default: alle
   # GitHub nimmt workflow_dispatch für einen Workflow, der nicht auf dem Standardzweig
   # liegt, erst nach einem ersten Lauf an. Dieser Auslöser registriert ihn nur; der Job
@@ -47,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        szenario: ${{ fromJSON(inputs.szenario == 'alle' && '["frisch","koexistenz","upgrade","upgrade-beta1","upgrade-beta2"]' || format('["{0}"]', inputs.szenario)) }}
+        szenario: ${{ fromJSON(inputs.szenario == 'alle' && '["frisch","koexistenz","upgrade","upgrade-beta1","upgrade-beta2","deinstall-policies"]' || format('["{0}"]', inputs.szenario)) }}
     defaults:
       run:
         # Windows PowerShell 5.1 - darauf sind die Skripte lokal geprüft
