@@ -100,6 +100,9 @@ set_target_properties(OAuthTest PROPERTIES AUTOUIC ON)
 # Desktop-Client: Erneuern der OAuth2-Anmeldung (Refresh vor der Anmeldeaufforderung, Pausen, Schlüsselbund, Konto-Status)
 owncloud_add_test(Credentials)
 
+# Aktivitäten und Benachrichtigungen für ein Konto, das sich wie nach „Fertigstellen“ im Assistenten verbindet
+owncloud_add_test(ServerActivityFetcher)
+
 # owncloudcmd mit OAuth2-Token-Datei: Bearer, Erneuern nach 401 und bei Ablauf, Exit-Codes
 owncloud_add_test(CmdOAuth ../src/cmd/cmdsession.cpp ../src/cmd/httpoauthcredentials.cpp ../src/cmd/oauthtokenfile.cpp)
 target_include_directories(CmdOAuthTest PRIVATE "${CMAKE_SOURCE_DIR}/src/cmd")
