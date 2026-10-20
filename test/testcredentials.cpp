@@ -10,12 +10,14 @@
 // Ruhezustand, Pausen bei Netz- und Serverfehlern, eine neue Anmeldung nur bei invalid_grant, das neue Refresh-Token
 // zuerst im Schlüsselbund.
 
+#include "accountmanager.h"
 #include "accountstate.h"
 #include "common/syncjournaldb.h"
 #include "common/vfs.h"
 #include "creds/credentials.h"
 #include "gui/networkinformation.h"
 #include "networkjobs/jsonjob.h"
+#include "newaccountwizard/newaccountmodel.h"
 #include "syncengine.h"
 #include "syncoptions.h"
 #include "testutils/syncenginetestutils.h"
@@ -1202,6 +1204,29 @@ private Q_SLOTS:
         // Assert: vorbeugend erneuert
         QVERIFY(f.credentials->ready());
         QTRY_COMPARE_WITH_TIMEOUT(f.server.tokenRequests, 2, 5000);
+    }
+
+    // Assistent: Das Konto übernimmt den Ablaufzeitpunkt aus dem Modell (AccountManager::createAccount()). Ein inzwischen
+    // abgelaufenes Token gilt gleich als abgelaufen; ohne Angabe (0) wie bisher, bis der Server es ablehnt.
+    void testNewAccountTakesTheTokenExpiry()
+    {
+        // Arrange
+        NewAccountModel model(nullptr);
+        model.setServerUrl(serverUrlC);
+        model.setDavUser(QStringLiteral("admin"));
+        model.setAuthToken(QStringLiteral("access-1"));
+        model.setRefreshToken(QStringLiteral("refresh-1"));
+        model.setCapabilities({serverUrlC, serverCapabilities()});
+
+        // Act
+        model.setAccessTokenExpiresAt(QDateTime::currentSecsSinceEpoch() - 1);
+        const std::unique_ptr<Account> expired(AccountManager::instance()->createAccount(model));
+        model.setAccessTokenExpiresAt(0);
+        const std::unique_ptr<Account> unknown(AccountManager::instance()->createAccount(model));
+
+        // Assert
+        QVERIFY(!expired->credentials()->ready());
+        QVERIFY(unknown->credentials()->ready());
     }
 
     // Lässt sich das neue Refresh-Token dauerhaft nicht speichern, zeigt das Konto einen Hinweis (nach einem Neustart droht eine

@@ -97,8 +97,9 @@ owncloud_add_test(OAuth ../src/gui/creds/oauth.cpp ../src/gui/networkadapters/us
 # accountmodalwidget.ui
 set_target_properties(OAuthTest PROPERTIES AUTOUIC ON)
 
-# Desktop-Client: Erneuern der OAuth2-Anmeldung (Refresh vor der Anmeldeaufforderung, Pausen, Schlüsselbund, Konto-Status)
-owncloud_add_test(Credentials)
+# Desktop-Client: Erneuern der OAuth2-Anmeldung (Refresh vor der Anmeldeaufforderung, Pausen, Schlüsselbund, Konto-Status);
+# NewAccountModel für das Konto aus dem Assistenten (nicht exportiert)
+owncloud_add_test(Credentials ../src/gui/newaccountwizard/newaccountmodel.cpp ../src/gui/newaccountwizard/newaccountenums.h)
 
 # owncloudcmd mit OAuth2-Token-Datei: Bearer, Erneuern nach 401 und bei Ablauf, Exit-Codes
 owncloud_add_test(CmdOAuth ../src/cmd/cmdsession.cpp ../src/cmd/httpoauthcredentials.cpp ../src/cmd/oauthtokenfile.cpp)
