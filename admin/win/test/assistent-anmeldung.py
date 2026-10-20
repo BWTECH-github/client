@@ -22,6 +22,7 @@ Exit: 0 Weiterleitung beim Client abgeliefert, 4 der Server lehnt die Anfrage ab
 
 import argparse
 import importlib.util
+import json
 import os
 import sys
 import urllib.error
@@ -111,6 +112,22 @@ def complete(login, authorize_url, user, password):
     print(f'Rückruf beim Client abgeliefert: HTTP {status}')
     if status not in (200, 303):
         raise login.Failed(f'der Client beantwortete den Rückruf mit HTTP {status}')
+    report_capabilities(browser, f'{parts.scheme}://{parts.netloc}')
+
+
+def report_capabilities(browser, server):
+    """Welche Abfragen der Client nach dem Verbinden stellt, hängt an den Capabilities des Kontos: Benachrichtigungen
+    nur mit notifications/ocs-endpoints (Capabilities::notificationsAvailable). Mit der Sitzung des Browsers gelesen."""
+    status, _, body = browser.request(server + '/ocs/v2.php/cloud/capabilities?format=json',
+                                      headers={'OCS-APIRequest': 'true', 'Accept': 'application/json'})
+    try:
+        capabilities = json.loads(body)['ocs']['data']['capabilities']
+    except (ValueError, KeyError, TypeError):
+        print(f'Capabilities: nicht lesbar (HTTP {status})')
+        return
+    notifications = isinstance(capabilities.get('notifications'), dict) and 'ocs-endpoints' in capabilities['notifications']
+    print('Capabilities: notifications mit ocs-endpoints: {}; activity: {}'.format(
+        'ja' if notifications else 'nein', 'ja' if 'activity' in capabilities else 'nein'))
 
 
 def main():

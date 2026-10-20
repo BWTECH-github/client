@@ -1942,6 +1942,8 @@ function Invoke-PolicyScenario {
 $rawRoot = Join-Path $(if ($env:RUNNER_TEMP) { $env:RUNNER_TEMP } else { [IO.Path]::GetTempPath() }) 'assistent-roh'
 $dumpDir = Join-Path $rawRoot 'speicherabbilder'
 $timeline = New-Object 'System.Collections.Generic.List[string]'
+# Speicherabbilder, die schon einem Durchgang gehören (WerFault schreibt manchmal noch, wenn der nächste beginnt)
+$knownDumps = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
 $shotCount = 0
 $cdbPath = $null
 $cdbSource = ''
@@ -1952,7 +1954,7 @@ $legacyNewAccountPattern = '^(Neues Konto einrichten|Set up a new account)$'
 $legacyTitlePattern = '^(Vom offiziellen Client übernehmen|Import from the official client)$'
 $wizardTitlePattern = '^(Konto hinzufügen|Add account)'
 $nextPattern = '^(Anmelden|Sign in|Anmeldung erneut öffnen|Open sign in again)$'
-$finishPattern = '^(Fertigstellen|Fertig stellen|Fertig|Finish|Done)$'
+$finishPattern = '^(Abschließen|Fertigstellen|Fertig stellen|Fertig|Finish|Done)$'
 $copyLinkPattern = '^(Anmelde-?URL kopieren|Anmeldelink kopieren|Copy sign in URL)$'
 
 # Vordergrund und Tastatur für den Durchgang ohne UI Automation: Eingaben wie von Hand (SendInput)
@@ -2540,8 +2542,9 @@ function Invoke-BrowserLogin {
     [IO.File]::WriteAllText((Join-Path $OutDir ('{0}-anmeldung.txt' -f $Ctx.Name)), $output + "`r`n", (New-Object System.Text.UTF8Encoding $false))
     $result.ExitCode = $process.ExitCode
     $result.Ok = $process.ExitCode -eq 0
-    $last = @($output -split "`r?`n" | Where-Object { $_.Trim() }) | Select-Object -Last 1
-    $result.Summary += 'Exit-Code {0}: {1}' -f $process.ExitCode, $last
+    $last = @($output -split "`r?`n" | Where-Object { $_ -match 'Rückruf|Capabilities|Fehler|abgelehnt|ohne oauth2|fehlen' }) | Select-Object -Last 2
+    if (-not $last) { $last = @($output -split "`r?`n" | Where-Object { $_.Trim() }) | Select-Object -Last 1 }
+    $result.Summary += 'Exit-Code {0}: {1}' -f $process.ExitCode, (@($last) -join ' / ')
     return $result
 }
 
@@ -2801,22 +2804,25 @@ function Invoke-KeyboardFlow {
     $logStart = (Read-SharedText $Ctx.Log).Length
     Complete-Login $Ctx
     if (-not $Ctx.LoginDone -or $Ctx.Process.HasExited) { return }
-    # nach dem Rückruf fragt der Assistent Benutzer und Capabilities ab und wechselt dann zur Erfolgsseite
+    # Nach dem Rückruf prüft der Assistent Benutzer und Capabilities (UserInfoAdapter, FetchCapabilitiesAdapter) und
+    # wechselt zur Erfolgsseite. Diese Anfragen stehen nicht im Protokoll (sync.httplogger loggt erst ab Warnung):
+    # den Rückruf abwarten, dann 10 s für die Prüfungen; das Foto belegt die Seite
     $done = Wait-Ui $Ctx {
         $text = Read-SharedText $Ctx.Log
         $new = if ($text.Length -gt $logStart) { $text.Substring($logStart) } else { '' }
-        if ($new -match 'Browser callback received' -and $new -match 'capabilities') { @{ State = 'erfolg' } }
-    } 120
-    Start-Sleep -Seconds 3
-    if (Test-Crashed $Ctx 'Prüfung des Kontos nach dem Rückruf (bis zur Erfolgsseite)') { return }
+        if ($new -match 'Browser callback received') { @{ State = 'rueckruf' } }
+    } 60
     if (-not $done) {
-        $Ctx.Problem = 'keine Abfrage der Capabilities im Protokoll innerhalb von 120 s nach der Browser-Anmeldung'
-        Write-StepRecord $Ctx 'keine-erfolgsseite' $Ctx.Problem
+        if (Test-Crashed $Ctx 'Rückruf des Browsers') { return }
+        $Ctx.Problem = 'kein "Browser callback received" im Protokoll innerhalb von 60 s nach der Browser-Anmeldung'
+        Write-StepRecord $Ctx 'kein-rueckruf' $Ctx.Problem
         return
     }
+    Start-Sleep -Seconds 10
+    if (Test-Crashed $Ctx 'Prüfung des Kontos nach dem Rückruf (bis zur Erfolgsseite)') { return }
     $Ctx.SuccessPage = $true
-    $Ctx.Reached = 'Erfolgsseite (laut Protokoll)'
-    Write-StepRecord $Ctx 'erfolgsseite' 'Erfolgsseite (Protokoll: Rückruf, Benutzer, Capabilities)'
+    $Ctx.Reached = 'Erfolgsseite (Foto)'
+    Write-StepRecord $Ctx 'erfolgsseite' 'Erfolgsseite erwartet: Rückruf im Protokoll, 10 s für die Prüfung des Kontos (siehe Foto)'
     # "Fertigstellen" hat auf der Erfolgsseite den Fokus (NewAccountWizardController::onPageChanged)
     $active = [OcProbe.Desk]::Activate($wizard.Window.Handle)
     $null = [OcProbe.Desk]::Press(0x0D, $false)
@@ -2848,8 +2854,9 @@ function Get-CrashEvidence {
     if ($eventLines.Count -eq 0) { $Ctx.Evidence.Add('Ereignisprotokoll: kein Application Error/Windows Error Reporting zu owncloud.online') }
     [IO.File]::WriteAllLines((Join-Path $OutDir ('{0}-ereignisse.txt' -f $Ctx.Name)), [string[]]$eventLines, (New-Object System.Text.UTF8Encoding $false))
 
-    $dumps = @(Get-ChildItem -LiteralPath $dumpDir -Filter '*.dmp' -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -ge $Ctx.Since.AddSeconds(-5) })
+    $dumps = @(Get-ChildItem -LiteralPath $dumpDir -Filter '*.dmp' -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -ge $Ctx.Since.AddSeconds(-5) -and -not $knownDumps.Contains($_.FullName) })
     foreach ($dump in $dumps) {
+        $null = $knownDumps.Add($dump.FullName)
         $Ctx.Dumps.Add($dump.FullName)
         $Ctx.Evidence.Add(('Speicherabbild: {0} ({1:N0} MB)' -f $dump.Name, ($dump.Length / 1MB)))
     }
@@ -2965,6 +2972,35 @@ function Get-CdbSummary {
     return , $summary.ToArray()
 }
 
+# Aufrufstelle im Client eingrenzen: ohne PDB nennt cdb nur den nächstgelegenen Export. Die Befehle vor den
+# Rücksprungadressen in owncloudGui zeigen das Aufrufziel (Import) und die geladenen Zeichenketten: direkt
+# (QStringLiteral, UTF-16) oder über ein QString-Objekt (d, ptr, size - der Text liegt hinter ptr).
+function Get-CallerDetail {
+    param([string] $Dump, [string] $Text, [string] $OutFile)
+    $frames = @([regex]::Matches($Text, '(?m)^[0-9a-f`]+\s+[0-9a-f`]+\s+:.*:\s+(owncloudGui!\S+)') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique -First 2)
+    if ($frames.Count -eq 0) { return @('Aufrufer: kein Rahmen in owncloudGui im Stack') }
+    $disassembly = Invoke-Cdb $Dump ((@($frames | ForEach-Object { ".echo ===AUFRUFER $_===; ub $_ L48; u $_ L4" }) -join '; ') + '; q') ''
+    $targets = @([regex]::Matches($disassembly, 'lea\s+\w+,\[[^\]]*\(([0-9a-f`]{8,17})\)\]') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique -First 40)
+    $direct = ''
+    $indirect = ''
+    if ($targets.Count -gt 0) {
+        $direct = Invoke-Cdb $Dump ((@($targets | ForEach-Object { "du $_ L40; dq $_ L3" }) -join '; ') + '; q') ''
+        # zweites Wort eines QString-Objekts: Zeiger auf den Text
+        $pointers = @([regex]::Matches($direct, '(?m)^[0-9a-f`]{17}\s+[0-9a-f`]{17}\s+([0-9a-f`]{17})') | ForEach-Object { $_.Groups[1].Value } | Where-Object { $_ -notmatch '^0{8}`0{8}$' } | Select-Object -Unique -First 40)
+        if ($pointers.Count -gt 0) {
+            $indirect = Invoke-Cdb $Dump ((@($pointers | ForEach-Object { "du $_ L60" }) -join '; ') + '; q') ''
+        }
+    }
+    [IO.File]::WriteAllText($OutFile, ($disassembly + "`r`n===ZEICHENKETTEN (lea)===`r`n" + $direct + "`r`n===ZEICHENKETTEN (QString)===`r`n" + $indirect), (New-Object System.Text.UTF8Encoding $false))
+    $calls = @([regex]::Matches($disassembly, 'call\s+qword ptr \[[^\]]*?(?:__imp_|!)([^\s\]\(]+)') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)
+    $strings = @([regex]::Matches($direct + "`n" + $indirect, '(?m)^[0-9a-f`]+\s+"([ -~]{3,})"') | ForEach-Object { $_.Groups[1].Value } | Select-Object -Unique)
+    return @(
+        ('Aufrufer: {0}' -f ($frames -join ', ')),
+        ('Aufrufe dort: {0}' -f $(if ($calls.Count) { Limit-Text ($calls -join ', ') 900 } else { '-' })),
+        ('Zeichenketten dort: {0}' -f $(if ($strings.Count) { Limit-Text (($strings | ForEach-Object { '"' + $_ + '"' }) -join ', ') 900 } else { '-' }))
+    )
+}
+
 # Speicherabbilder mit cdb auswerten. Ins Artefakt nur, was keine Tokens enthalten kann: das vollständige
 # Abbild, wenn der Client noch keine Anmeldung hatte, sonst ein Auszug ohne Heap (.dump /m)
 function Invoke-DumpAnalysis {
@@ -2980,6 +3016,11 @@ function Invoke-DumpAnalysis {
         } else {
             $Ctx.Analysis.Add("cdb ($script:cdbSource): $name.txt")
             foreach ($line in (Get-CdbSummary $text)) { $Ctx.Analysis.Add($line) }
+            try {
+                foreach ($line in (Get-CallerDetail $dump $text (Join-Path $OutDir "$name-aufrufer.txt"))) { $Ctx.Analysis.Add($line) }
+            } catch {
+                $Ctx.Analysis.Add('Aufrufer nicht ermittelbar: ' + $_.Exception.Message)
+            }
         }
         if (-not $Ctx.TokensPossible) {
             Copy-Item -LiteralPath $dump -Destination (Join-Path $OutDir ('{0}-{1}' -f $Ctx.Name, (Split-Path -Leaf $dump)))
@@ -3025,7 +3066,9 @@ function Add-AssistentChecks {
         Add-Check "$id.6" 'Konto nach "Fertigstellen" angelegt' $(if ($Ctx.AccountSaved -and -not $Ctx.Crashed) { 'OK' } else { 'FEHLER' }) $detail ''
     }
     if ($Ctx.Crashed) {
-        $detail = @("Absturz während: $($Ctx.CrashStep)") + @($Ctx.Evidence | Select-Object -First 6)
+        # die Meldung des qFatal zuerst: die Tabelle der Zusammenfassung kürzt lange Zellen
+        $assert = @($Ctx.Assert | ForEach-Object { ($_ -replace '^.*?\]:\s*', '') })
+        $detail = @("Absturz während: $($Ctx.CrashStep)") + $assert + @($Ctx.Evidence | Select-Object -First 6)
         Add-Check $id ('Durchgang {0}: kein Absturz' -f $Ctx.Name) 'FEHLER' ($detail -join '; ') ''
     } else {
         Add-Check $id ('Durchgang {0}: kein Absturz' -f $Ctx.Name) 'OK' ('bis "{0}"{1}' -f $Ctx.Reached, $(if ($Ctx.Problem) { '; ' + $Ctx.Problem } else { '' })) ''
