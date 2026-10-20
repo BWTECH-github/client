@@ -21,6 +21,11 @@
 !define REGKEY "${VENDORKEY}\${PRODUCT}"
 !define UNINSTKEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT}"
 
+; Richtlinien (GPO), die der Client liest: HKLM\Software\Policies\<Hersteller>\
+; <Produkt> (AppConfig::configPath, Hersteller und Name aus OWNCLOUD.cmake)
+!define POLICY_VENDORKEY "Software\Policies\BW-Tech GmbH"
+!define POLICYKEY "${POLICY_VENDORKEY}\${PRODUCT}"
+
 ; Identität bis 7.11 (upstream-Blueprint). Diese Namen teilt der offizielle
 ; ownCloud-Client - sein MSI (6.x) startet z. B. den UninstallString von
 ; Uninstall\ownCloud bei jeder Installation, Reparatur und Deinstallation als

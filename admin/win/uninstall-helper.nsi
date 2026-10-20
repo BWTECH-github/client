@@ -55,6 +55,15 @@ Unicode true
   !define VERSION "0.0.0"
 !endif
 
+; Schritt 9 verlässt sich darauf, dass DeleteRegKey /ifempty nur einen Schlüssel
+; ohne Werte UND ohne Unterschlüssel löscht. So gilt das erst ab NSIS 3.06
+; (Source/script.cpp: DELREGKEY_ONLYIFNOSUBKEYS|DELREGKEY_ONLYIFNOVALUES), davor
+; löschte /ifempty auch einen Schlüssel mit Werten - etwa eine vom Administrator
+; gesetzte Richtlinie.
+!if ${NSIS_PACKEDVERSION} < 0x03006000
+  !error "NSIS 3.06 or newer required: DeleteRegKey /ifempty must also check for values"
+!endif
+
 ; marker written by navigationpanehelper.cpp: ApplicationName == appNameGUI()
 ; == APPLICATION_NAME == "owncloud.online"
 !define APPNAME_MARKER "${PRODUCT}"
@@ -452,6 +461,14 @@ Section "-remove"
   DeleteRegKey HKCU "${UNINSTKEY}"
   DeleteRegKey HKCU "${REGKEY}"
   DeleteRegKey /ifempty HKCU "${VENDORKEY}"
+  ; Leerer Richtlinien-Schlüssel: Mit Administratorrechten gestartet, legte der
+  ; Client (7.4 bis 11.0.0-beta2) ihn beim Lesen der Richtlinien an (QSettings
+  ; erzeugt den Schlüssel beim Öffnen). Nur ohne Werte und ohne Unterschlüssel,
+  ; ebenso danach der Herstellerschlüssel: Vom Administrator gesetzte
+  ; Richtlinien (GPO) bleiben, auch die anderer Produkte. HKLM\Software\Policies
+  ; ist in beiden Registry-Ansichten derselbe Schlüssel.
+  DeleteRegKey /ifempty HKLM "${POLICYKEY}"
+  DeleteRegKey /ifempty HKLM "${POLICY_VENDORKEY}"
   SetRegView 32
 
   ; Interactive: keep offering the Windows restart on the finish page (the
