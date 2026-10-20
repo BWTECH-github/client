@@ -103,6 +103,18 @@ owncloud_add_test(Credentials)
 # Aktivitäten und Benachrichtigungen für ein Konto, das sich wie nach „Fertigstellen“ im Assistenten verbindet
 owncloud_add_test(ServerActivityFetcher)
 
+# Adressseite des Kontoassistenten: Meldungen in jeder Sprache vollständig lesbar, Adressen mit „//“ ohne Abbruch
+owncloud_add_test(WizardUrlPage
+    ../src/gui/newaccountwizard/urlpagecontroller.cpp
+    ../src/gui/networkadapters/discoverwebfingerserviceadapter.cpp
+    ../src/gui/networkadapters/resolveurladapter.cpp
+    ../src/gui/networkadapters/determineauthtypeadapter.cpp
+    ../src/gui/networkadapters/serverdiagnostics.cpp
+    ../src/gui/tlserrordialog.cpp
+    ../src/gui/mainwindow/colormanager.cpp)
+# tlserrordialog.ui
+set_target_properties(WizardUrlPageTest PROPERTIES AUTOUIC ON)
+
 # owncloudcmd mit OAuth2-Token-Datei: Bearer, Erneuern nach 401 und bei Ablauf, Exit-Codes
 owncloud_add_test(CmdOAuth ../src/cmd/cmdsession.cpp ../src/cmd/httpoauthcredentials.cpp ../src/cmd/oauthtokenfile.cpp)
 target_include_directories(CmdOAuthTest PRIVATE "${CMAKE_SOURCE_DIR}/src/cmd")

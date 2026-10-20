@@ -12,6 +12,8 @@ target_sources(owncloudGui PRIVATE
     advancedsettingspagecontroller.cpp
     advancedsettingspagecontroller.h
     wizardpagevalidator.h
+    wizardpagelayout.cpp
+    wizardpagelayout.h
     newaccountwizard.cpp
     newaccountwizard.h
     newaccountbuilder.cpp

@@ -22,15 +22,27 @@
 #include "networkadapters/resolveurladapter.h"
 #include "networkadapters/serverdiagnostics.h"
 #include "theme.h"
+#include "wizardpagelayout.h"
 
 #include <QGuiApplication>
 #include <QLabel>
 #include <QLineEdit>
+#include <QRegularExpression>
 #include <QSignalBlocker>
 #include <QVBoxLayout>
 #include <QWizardPage>
 
 namespace OCC {
+
+namespace {
+    // „//“ im Pfad zu „/“ zusammenfassen: Utility::concatUrlPath() verlangt Pfade ohne „//“ (Q_ASSERT, in Beta-Builds ein
+    // Absturz), und eine eingefügte Adresse bringt sie leicht mit („https://server//“, an eine Adresse angehängt)
+    QString withoutDoubledSlashes(QString path)
+    {
+        static const QRegularExpression doubledSlashes(QStringLiteral("/{2,}"));
+        return path.replace(doubledSlashes, QStringLiteral("/"));
+    }
+}
 
 UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessManager, QObject *parent)
     : QObject(parent)
@@ -79,6 +91,8 @@ void UrlPageController::buildPage()
     welcomeLabel->setFont(welcomeFont);
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    // eine längere Übersetzung oder große Schrift bricht um, statt am Rand abgeschnitten zu werden
+    welcomeLabel->setWordWrap(true);
 
     _instructionLabel = new QLabel(tr("Enter your server address to get started. Your web browser will be opened to complete sign in."), _page);
     QFont font = _instructionLabel->font();
@@ -129,7 +143,7 @@ void UrlPageController::buildPage()
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel);
     layout->addStretch(1);
-    _page->setLayout(layout);
+    setScrollableWizardPageLayout(_page, layout);
 
     updateColorsAndIcons();
 
@@ -162,6 +176,8 @@ void UrlPageController::setUrl(const QString &urlText)
 
 void UrlPageController::handleError(const QString &error)
 {
+    // Platz für die Meldung, die mehrere Zeilen braucht: Das Logo hat seinen Zweck auf dieser Seite dann erfüllt
+    _logoLabel->setVisible(false);
     _errorField->setText(error);
     _results.error = error;
     Q_EMIT failure(_results);
@@ -172,7 +188,10 @@ QUrl UrlPageController::checkUrl()
     if (!_accessManager)
         return QUrl();
 
-    QString userUrl = _urlField->text();
+    QString userUrl = _urlField->text().trimmed();
+    // eingefügt in ein Feld, in dem „https://“ schon stand: „https://https://server“ hätte den Host „https“
+    static const QRegularExpression doubledScheme(QStringLiteral("^(?:https?://)+(?=https?://)"), QRegularExpression::CaseInsensitiveOption);
+    userUrl.remove(doubledScheme);
 
     // we need to check the scheme to be sure it's not there, but using the old "string matching" technique was not great
     // because it added https:// to urls that had valid schemes but which did not match http or https. That was more complicating
@@ -201,6 +220,8 @@ QUrl UrlPageController::checkUrl()
 
     if (finalUrl.isValid()) {
         finalUrl = finalUrl.adjusted(QUrl::RemoveUserInfo | QUrl::RemoveQuery);
+        // kodiert bearbeiten: Ein Prozentzeichen im Pfad bleibt, was es war
+        finalUrl.setPath(withoutDoubledSlashes(finalUrl.path(QUrl::FullyEncoded)), QUrl::TolerantMode);
         const QString serverPathOverride = Theme::instance()->overrideServerPath();
         if (!serverPathOverride.isEmpty()) {
             finalUrl.setPath(serverPathOverride);
@@ -225,8 +246,9 @@ bool UrlPageController::validate()
     QUrl givenUrl = checkUrl();
     if (!givenUrl.isValid()) {
         QString fullError = givenUrl.errorString();
-        QStringList parts = fullError.split(QStringLiteral(";"), Qt::SkipEmptyParts);
-        handleError(tr("Invalid server URL: %1").arg(parts[0] + parts[1]));
+        // die ersten beiden Teile der Qt-Meldung; sie hat nicht immer zwei, und parts[1] bräche dann ab
+        const QStringList parts = fullError.split(QStringLiteral(";"), Qt::SkipEmptyParts);
+        handleError(tr("Invalid server URL: %1").arg(parts.mid(0, 2).join(QString())));
         return false;
     } else if (givenUrl.scheme().isEmpty() || givenUrl.scheme() != QStringLiteral("https")) // scheme should not be empty but who knows
     {
