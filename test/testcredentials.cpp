@@ -14,6 +14,7 @@
 #include "common/syncjournaldb.h"
 #include "common/vfs.h"
 #include "creds/credentials.h"
+#include "gui/networkinformation.h"
 #include "networkjobs/jsonjob.h"
 #include "syncengine.h"
 #include "syncoptions.h"
@@ -1025,6 +1026,47 @@ private Q_SLOTS:
 
         // Assert
         QTRY_COMPARE_WITH_TIMEOUT(state->state(), AccountState::Connected, 10000);
+        QCOMPARE(f.server.tokenRequests, 2);
+        QCOMPARE(f.credentials->askedUser, 0);
+    }
+
+    // Nur die Rückkehr ins Netz (aus „getrennt“) zieht den nächsten Versuch vor. Ein Wechsel zwischen erreichbaren Zuständen
+    // (Windows bewertet die Verbindung neu: Online, Site, Local, Unknown) ist kein Anlass, sonst ginge er an der Pause vorbei.
+    void testOnlyNetworkReturnEndsThePause()
+    {
+        // Arrange: die Erneuerung scheitert, lange Pause; ein echter Anlass dürfte sofort erneuern
+        Fixture f;
+        QObject scope;
+        auto *network = NetworkInformation::instance();
+        Q_EMIT network->reachabilityChanged(NetworkInformation::Reachability::Online);
+        f.credentials->retryDelay = 10min;
+        f.credentials->explicitRetry = 0ms;
+        f.server.tokenFailures = {{503, QByteArrayLiteral("<html>Service Unavailable</html>")}};
+        f.server.expireAccessToken();
+        QSignalSpy delayedSpy(f.credentials, &AbstractCredentials::authenticationDelayed);
+        const auto request = f.get(&scope);
+        QTRY_COMPARE_WITH_TIMEOUT(delayedSpy.count(), 1, 10000);
+        QCOMPARE(f.server.tokenRequests, 1);
+
+        // Act: das Netz wechselt zwischen erreichbaren Zuständen
+        for (const auto reachability : {NetworkInformation::Reachability::Site, NetworkInformation::Reachability::Unknown,
+                 NetworkInformation::Reachability::Local, NetworkInformation::Reachability::Online}) {
+            Q_EMIT network->reachabilityChanged(reachability);
+        }
+        // länger als der Abstand, mit dem die Rückkehr ins Netz den nächsten Versuch vorzieht (2 s)
+        QTest::qWait(2500);
+
+        // Assert: die Pause läuft weiter
+        QCOMPARE(f.server.tokenRequests, 1);
+        QVERIFY(!request->finished);
+
+        // Act: das Netz war weg und ist wieder da
+        Q_EMIT network->reachabilityChanged(NetworkInformation::Reachability::Disconnected);
+        Q_EMIT network->reachabilityChanged(NetworkInformation::Reachability::Online);
+
+        // Assert: der nächste Versuch kommt gleich, die angehaltene Anfrage geht mit dem neuen Token durch
+        QTRY_VERIFY_WITH_TIMEOUT(request->finished, 10000);
+        QCOMPARE(request->error, QNetworkReply::NoError);
         QCOMPARE(f.server.tokenRequests, 2);
         QCOMPARE(f.credentials->askedUser, 0);
     }

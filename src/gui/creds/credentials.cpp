@@ -138,9 +138,16 @@ Credentials::Credentials(const QString &token, const QString &refreshToken, Acco
     _storeRetryTimer.setSingleShot(true);
     connect(&_storeRetryTimer, &QTimer::timeout, this, &Credentials::writeRefreshToken);
 
-    // wieder im Netz: nicht die volle Pause abwarten
-    connect(NetworkInformation::instance(), &NetworkInformation::reachabilityChanged, this, [this] {
-        if (_refreshRetryTimer.isActive() && networkAvailable()) {
+    // wieder im Netz: nicht die volle Pause abwarten. Das ist nur der Übergang aus Disconnected; ein Wechsel zwischen
+    // erreichbaren Zuständen (Windows bewertet die Verbindung neu: Online, Site, Local, Unknown) ist kein Anlass.
+    auto *network = NetworkInformation::instance();
+    if (const auto *qni = QNetworkInformation::instance()) {
+        _reachability = qni->reachability();
+    }
+    connect(network, &NetworkInformation::reachabilityChanged, this, [this](NetworkInformation::Reachability reachability) {
+        const bool back = _reachability == NetworkInformation::Reachability::Disconnected && reachability != NetworkInformation::Reachability::Disconnected;
+        _reachability = reachability;
+        if (back && _refreshRetryTimer.isActive() && networkAvailable()) {
             qCInfo(lcCredentials) << "Network is back, retrying the token refresh soon";
             bringRetryForward(networkBackRetryDelay);
         }

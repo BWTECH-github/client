@@ -14,9 +14,10 @@ sign-in only when the server rejects it (invalid_grant). Network and server
 errors, timeouts, maintenance mode, unexpected answers, a disabled account
 and a disabled sign-in service keep the refresh token and are retried after
 30 seconds, growing to 5 minutes. The regular connection check of the
-account does not shorten this pause; only a returning network, a server
-that answers again after an outage or maintenance, or an accepted
-certificate brings the next attempt forward, at most every 10 seconds. The
+account does not shorten this pause; only a network that comes back after
+being disconnected, a server that answers again after an outage or
+maintenance, or an accepted certificate brings the next attempt forward, at
+most every 10 seconds. The
 account status names the cause, for example "Your account on the server is
 disabled" or "The sign-in service of the server is not available". Only one
 refresh runs at a time, and all requests rejected in the meantime are sent
