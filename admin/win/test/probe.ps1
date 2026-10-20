@@ -5081,16 +5081,19 @@ function Invoke-Dauerlauf {
         if (-not $local) { Stop-Step 'kein Ordner des Kontos mit Kennwort eingerichtet (D2 und D5 gescheitert)' }
         $dl.ServerFileName = 'probe-serverdatei-{0}.txt' -f [guid]::NewGuid().ToString('N').Substring(0, 8)
         $dl.ServerFileBytes = [Text.Encoding]::UTF8.GetBytes((("owncloud.online Dauerlauf {0}`r`n" -f [guid]::NewGuid()) * 40))
+        $mark = Get-LogMark $ctx
         $code = Invoke-Dav 'PUT' ('{0}/{1}' -f $remote, $dl.ServerFileName) $dl.ServerFileBytes
         if ($code -notin 201, 204) { Stop-Step ('PUT {0}/{1}: HTTP {2}' -f $remote, $dl.ServerFileName, $code) }
         $start = Get-Date
         $path = Join-Path $local $dl.ServerFileName
         $seen = Wait-Ui $ctx { if (Test-Path -LiteralPath $path) { $true } } 300
-        if (-not $seen) { Stop-Step ('{0} nach 300 s nicht lokal in {1}' -f $dl.ServerFileName, $local) }
+        # ETagWatcher (ab 97e61936e): ein geändertes ETag des Serverordners reiht den Sync ein
+        $etagSyncs = [regex]::Matches((Get-LogSince $ctx $mark), 'due to an etag change').Count
+        if (-not $seen) { Stop-Step ('{0} nach 300 s nicht lokal in {1}; Syncs wegen eines geänderten ETags im Protokoll: {2}' -f $dl.ServerFileName, $local, $etagSyncs) }
         $dl.ServerFileLocal = $path
         $state = Get-PlaceholderState $path
         $shot = Write-BasicStep $ctx 'serverdatei' 'Datei vom Server lokal angekommen'
-        return ('{0}: HTTP {1}, lokal nach {2} s; Attribute {3}; Foto {4}' -f $dl.ServerFileName, $code, [int]((Get-Date) - $start).TotalSeconds, $state.Text, $shot)
+        return ('{0}: HTTP {1}, lokal nach {2} s; Syncs wegen eines geänderten ETags im Protokoll: {3}; Attribute {4}; Foto {5}' -f $dl.ServerFileName, $code, [int]((Get-Date) - $start).TotalSeconds, $etagSyncs, $state.Text, $shot)
     }
 
     $null = Invoke-DauerStep $dl 'D7' 'Platzhalter durch Lesen heruntergeladen, Inhalt gleich dem auf dem Server' {
@@ -5131,12 +5134,13 @@ function Invoke-Dauerlauf {
         if (-not $view) { Stop-Step 'Ansicht "Aktivität" erschien nicht (20 s)' }
         Start-Sleep -Seconds 2
         $items = Get-UiItems $ctx.Process.Id -IncludeMain
-        $entries = @($items | Where-Object { $_.Visible -and $_.Id -like '*LocalActivityWidget*' -and $_.Name -and $_.Type -notin 'Text', 'Button', 'Edit', 'Group', 'Custom', 'Image' }).Count
+        # Zellen der Tabelle (ohne Spaltenköpfe); die Kontoansicht ist verdeckt, sichtbare Zellen gehören zur Aktivität
+        $cells = @($items | Where-Object { $_.Visible -and $_.Name -and $_.Type -in 'DataItem', 'ListItem', 'TreeItem' }).Count
         $listed = [bool]($dl.ServerFileName -and @($items | Where-Object { $_.Visible -and $_.Name -like ('*' + $dl.ServerFileName + '*') }).Count -gt 0)
         $shot = Write-BasicStep $ctx 'aktivitaet' 'Ansicht "Aktivität"'
         $back = Select-AccountView $ctx $dl.BasicUuid
         if (-not $back) { Stop-Step ('zurück zur Kontoansicht nicht möglich; Foto {0}' -f $shot) }
-        return ('Foto {0}; Einträge: {1}; Datei vom Server aufgeführt: {2}' -f $shot, $entries, $(if ($listed) { 'ja' } else { 'nein' }))
+        return ('Foto {0}; Zellen in der Liste: {1}; Datei vom Server aufgeführt: {2}' -f $shot, $cells, $(if ($listed) { 'ja' } else { 'nein' }))
     }
 
     $null = Invoke-DauerStep $dl 'D10' '"Mehr" → "Einstellungen …" geöffnet und mit "Schließen" geschlossen' {
