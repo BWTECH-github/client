@@ -920,7 +920,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>詳細設定</translation>
     </message>
@@ -2110,7 +2110,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>公式クライアントが実行中で、フォルダー %1 も同期しています。2 つのプログラムが同時にフォルダーを同期しないよう、公式クライアントを終了してください。</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>スペースは引き継がれません。ログイン後に追加してください。</translation>
@@ -2163,7 +2163,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: 設定済みです。</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2171,27 +2171,53 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>公式クライアントからインポート</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>公式クライアントのすべてのアカウントはすでに設定済みです。</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: 引き継がれませんでした。サーバーで「OAuth2」アプリがインストールされていないか、有効になっていません。</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>このコンピューターには公式デスクトップクライアントが設定されています。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>このコンピューターには公式デスクトップクライアントが設定されています。そのアカウントと同期フォルダーを引き継ぎますか?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>ログインに必要な「OAuth2」アプリがサーバーにインストールされていないか、有効になっていないため、%n 個のアカウントを引き継げません:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>「OAuth2」アプリを「Market」からインストールし、すべてのユーザーに対して有効にするよう管理者に依頼してください。その後、メニューで「公式クライアントからインポート...」を選択してください。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>アカウントごとにブラウザーで一度ログインします。すでに同期されているフォルダーは認識され、再ダウンロードされません。公式クライアントには何も変更が加えられません。</translation>
@@ -2203,19 +2229,19 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>インポート</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>新しいアカウントを設定</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>キャンセル</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>公式クライアントがまだ実行中です。インポートする前に終了し、自動起動をオフにしてください。そうしないと、両方のプログラムが同じフォルダーを同期します。</translation>
@@ -2275,7 +2301,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: 引き継がれませんでした。%2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: アカウントを作成できませんでした: %2</translation>
@@ -2287,10 +2313,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>インポート完了</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>フォルダーが二重に同期されないよう、公式クライアントを完全に終了してください(自動起動をオフにするか、アンインストールしてください)。</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>引き継がれなかったアカウントは公式クライアントにのみ設定されています。両方のプログラムが同じフォルダーを同期しないよう、公式クライアントを再び起動する前に、引き継いだアカウントをそこから削除してください。</translation>
     </message>
 </context>
 <context>
@@ -2783,7 +2815,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>アプリケーション名ロゴ %1</translation>
     </message>
@@ -3732,7 +3764,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>サーバーに接続できないため、通知を閉じられませんでした。</translation>
@@ -5284,7 +5316,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ログインを完了するために Web ブラウザーが開きます。</translation>
@@ -5300,7 +5332,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1 へようこそ</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>まずサーバーのアドレスを入力してください。ログインを完了するために Web ブラウザーが開きます。</translation>
@@ -5324,7 +5356,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>組織が定義した追加のロゴ</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無効なサーバー URL: %1</translation>
@@ -5582,16 +5614,10 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1 に owncloud.online サーバーが見つかりませんでした。アドレスを確認してください。</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>このサーバーでは「OAuth2」アプリがインストールされていないか、有効になっていません。「Market」からインストールして有効にするよう管理者に依頼してください。</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>管理者の方へ: デスクトップクライアントは「OAuth2」アプリを通じてログインします。「Market」からインストールし、すべてのユーザーに対して有効にしてください (コマンドライン: occ app:enable oauth2)。</translation>
+        <translation>ログインには、このサーバーで「OAuth2」アプリが必要ですが、インストールされていないか、有効になっていません。「Market」からインストールし、すべてのユーザーに対して有効にするよう管理者に依頼してください (コマンドライン: occ app:enable oauth2)。</translation>
     </message>
     <message>
         <location line="+6"/>

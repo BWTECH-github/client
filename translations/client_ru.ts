@@ -958,7 +958,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Расширенные настройки</translation>
     </message>
@@ -2194,7 +2194,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>Официальный клиент запущен и тоже синхронизирует папку %1. Закройте его, чтобы папку не синхронизировали две программы одновременно.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Пространства не переносятся; добавьте их после входа.</translation>
@@ -2247,7 +2247,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: уже настроено.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2257,27 +2257,55 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Импорт из официального клиента</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Все учётные записи официального клиента уже настроены.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: не перенесено, приложение «OAuth2» не установлено или не включено на сервере.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>На этом компьютере настроен официальный настольный клиент.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>На этом компьютере настроен официальный настольный клиент. Перенести его учётные записи и папки синхронизации?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n учётную запись нельзя перенести, так как приложение «OAuth2», необходимое для входа, не установлено или не включено на сервере:</numerusform>
+            <numerusform>%n учётные записи нельзя перенести, так как приложение «OAuth2», необходимое для входа, не установлено или не включено на сервере:</numerusform>
+            <numerusform>%n учётных записей нельзя перенести, так как приложение «OAuth2», необходимое для входа, не установлено или не включено на сервере:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Попросите администратора установить приложение «OAuth2» через «Market» и включить его для всех пользователей. Затем выберите в меню «Импорт из официального клиента...».</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Вы входите в браузере один раз для каждой учётной записи. Уже синхронизированные папки распознаются и не скачиваются повторно. В официальном клиенте ничего не меняется.</translation>
@@ -2289,19 +2317,19 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>Импортировать</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Настроить новую учётную запись</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Официальный клиент всё ещё запущен. Закройте его и отключите его автозапуск перед импортом, иначе обе программы будут синхронизировать одни и те же папки.</translation>
@@ -2361,7 +2389,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: не перенесено. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: не удалось создать учётную запись: %2</translation>
@@ -2373,10 +2401,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>Импорт завершён</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Закройте официальный клиент навсегда (отключите его автозапуск или удалите его), чтобы папки не синхронизировались дважды.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Учётные записи, которые не были перенесены, настроены только в официальном клиенте. Прежде чем снова запустить его, удалите из него перенесённые учётные записи, чтобы обе программы не синхронизировали одни и те же папки.</translation>
     </message>
 </context>
 <context>
@@ -2881,7 +2915,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Логотип приложения %1</translation>
@@ -3838,7 +3872,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Не удалось закрыть уведомление, так как сервер недоступен.</translation>
@@ -5412,7 +5446,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Для завершения входа откроется веб-браузер.</translation>
@@ -5429,7 +5463,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>Добро пожаловать в %1</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Чтобы начать, введите адрес сервера. Для завершения входа откроется веб-браузер.</translation>
@@ -5453,7 +5487,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>Дополнительный логотип, заданный организацией</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Недопустимый URL сервера: %1</translation>
@@ -5720,16 +5754,10 @@ Note that using any logging command line options will override the settings.</so
         <translation>По адресу %1 сервер owncloud.online не найден. Проверьте адрес.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Приложение «OAuth2» не установлено или не включено на этом сервере. Попросите администратора установить и включить его через «Market».</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Для администраторов: настольный клиент выполняет вход через приложение «OAuth2». Установите его через «Market» и включите для всех пользователей (командная строка: occ app:enable oauth2).</translation>
+        <translation>Для входа этому серверу нужно приложение «OAuth2», но оно не установлено или не включено. Попросите администратора установить его через «Market» и включить для всех пользователей (командная строка: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

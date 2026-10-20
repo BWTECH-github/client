@@ -879,7 +879,7 @@ Bitte prüfe die Serververfügbarkeit und führe den Assistenten erneut aus.</tr
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Erweiterte Einstellungen</translation>
     </message>
@@ -1980,7 +1980,7 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
 <context>
     <name>OCC::LegacyClient</name>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translation>Spaces werden nicht übernommen; füge sie nach der Anmeldung hinzu.</translation>
     </message>
@@ -2030,7 +2030,7 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>%1: bereits eingerichtet.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translation>
             <numerusform>• %1 – %n Sync-Ordner</numerusform>
@@ -2038,24 +2038,47 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translation>Vom offiziellen Client übernehmen</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translation>Alle Konten des offiziellen Clients sind bereits eingerichtet.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translation>%1: nicht übernommen, auf dem Server ist die App „OAuth2“ nicht installiert oder nicht aktiviert.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translation>Auf diesem Computer ist der offizielle Desktop-Client eingerichtet.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translation>Auf diesem Computer ist der offizielle Desktop-Client eingerichtet. Möchtest du seine Konten und Sync-Ordner übernehmen?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translation>
+            <numerusform>%n Konto lässt sich nicht übernehmen, weil auf dem Server die für die Anmeldung nötige App „OAuth2“ nicht installiert oder nicht aktiviert ist:</numerusform>
+            <numerusform>%n Konten lassen sich nicht übernehmen, weil auf dem Server die für die Anmeldung nötige App „OAuth2“ nicht installiert oder nicht aktiviert ist:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translation>Bitte deinen Administrator, die App „OAuth2“ im „Markt“ zu installieren und für alle Benutzer zu aktivieren. Wähle danach im Menü „Vom offiziellen Client übernehmen…“.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translation>Du meldest dich je Konto einmal im Browser an. Bereits synchronisierte Ordner werden erkannt und nicht erneut heruntergeladen. Am offiziellen Client wird nichts verändert.</translation>
     </message>
@@ -2065,17 +2088,17 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>Übernehmen</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translation>Neues Konto einrichten</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translation>Der offizielle Client läuft noch. Beende ihn und schalte seinen Autostart aus, bevor du übernimmst – sonst synchronisieren beide Programme dieselben Ordner.</translation>
     </message>
@@ -2125,7 +2148,7 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>%1: nicht übernommen. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translation>%1: das Konto konnte nicht angelegt werden: %2</translation>
     </message>
@@ -2135,9 +2158,14 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>Übernahme abgeschlossen</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translation>Beende den offiziellen Client dauerhaft (Autostart ausschalten oder deinstallieren), damit die Ordner nicht doppelt synchronisiert werden.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translation>Die nicht übernommenen Konten sind nur im offiziellen Client eingerichtet. Entferne dort die übernommenen Konten, bevor du ihn wieder startest, damit nicht beide Programme dieselben Ordner synchronisieren.</translation>
     </message>
 </context>
 <context>
@@ -2612,7 +2640,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>Anwendungsname Logo %1</translation>
     </message>
@@ -3512,7 +3540,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translation>Die Benachrichtigung konnte nicht verworfen werden, weil der Server nicht erreichbar ist.</translation>
     </message>
@@ -4909,7 +4937,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Dein Webbrowser wird geöffnet, um die Anmeldung abzuschließen.</translation>
     </message>
@@ -4924,7 +4952,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Willkommen bei %1</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation>Gib deine Serveradresse ein, um zu beginnen. Dein Webbrowser wird geöffnet, um die Anmeldung abzuschließen.</translation>
     </message>
@@ -4944,7 +4972,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Zusätzliches, von der Organisation definiertes Logo</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translation>Ungültige Server-URL: %1</translation>
     </message>
@@ -5188,14 +5216,9 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Unter %1 wurde kein owncloud.online-Server gefunden. Bitte prüfe die Adresse.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translation>Auf diesem Server ist die App „OAuth2“ nicht installiert oder nicht aktiviert. Bitte deinen Administrator, sie über den „Markt“ zu installieren und zu aktivieren.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translation>Hinweis für Administratoren: Der Desktop-Client meldet sich über die App „OAuth2“ an. Installiere sie über den „Markt“ und aktiviere sie für alle Benutzer (Kommandozeile: occ app:enable oauth2).</translation>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translation>Für die Anmeldung braucht dieser Server die App „OAuth2“, sie ist aber nicht installiert oder nicht aktiviert. Bitte deinen Administrator, sie im „Markt“ zu installieren und für alle Benutzer zu aktivieren (Kommandozeile: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

@@ -993,7 +993,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>الإعدادات المتقدمة</translation>
@@ -2262,7 +2262,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>العميل الرسمي قيد التشغيل ويزامن المجلد %1 أيضًا. أغلقه حتى لا يزامن برنامجان المجلد في الوقت نفسه.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>لا تُنقل المساحات؛ أضفها بعد تسجيل الدخول.</translation>
@@ -2315,7 +2315,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: مُعدّ بالفعل.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2328,27 +2328,58 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>الاستيراد من العميل الرسمي</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>جميع حسابات العميل الرسمي مُعدّة بالفعل.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: لم يُنقل، تطبيق &quot;OAuth2&quot; غير مثبّت أو غير مفعّل على الخادم.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>عميل سطح المكتب الرسمي مُعدّ على هذا الحاسوب.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>عميل سطح المكتب الرسمي مُعدّ على هذا الحاسوب. هل تريد نقل حساباته ومجلدات المزامنة الخاصة به؟</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>لا يمكن نقل %n حساب لأن تطبيق &quot;OAuth2&quot; اللازم لتسجيل الدخول غير مثبّت أو غير مفعّل على الخادم:</numerusform>
+            <numerusform>لا يمكن نقل %n حساب لأن تطبيق &quot;OAuth2&quot; اللازم لتسجيل الدخول غير مثبّت أو غير مفعّل على الخادم:</numerusform>
+            <numerusform>لا يمكن نقل %n حسابا لأن تطبيق &quot;OAuth2&quot; اللازم لتسجيل الدخول غير مثبّت أو غير مفعّل على الخادم:</numerusform>
+            <numerusform>لا يمكن نقل %n حسابات لأن تطبيق &quot;OAuth2&quot; اللازم لتسجيل الدخول غير مثبّت أو غير مفعّل على الخادم:</numerusform>
+            <numerusform>لا يمكن نقل %n حسابًا لأن تطبيق &quot;OAuth2&quot; اللازم لتسجيل الدخول غير مثبّت أو غير مفعّل على الخادم:</numerusform>
+            <numerusform>لا يمكن نقل %n حساب لأن تطبيق &quot;OAuth2&quot; اللازم لتسجيل الدخول غير مثبّت أو غير مفعّل على الخادم:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يُرجى أن تطلب من المسؤول تثبيت تطبيق &quot;OAuth2&quot; عبر &quot;Market&quot; وتفعيله لجميع المستخدمين. بعد ذلك اختر &quot;الاستيراد من العميل الرسمي...&quot; من القائمة.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ستسجّل الدخول مرة واحدة لكل حساب في المتصفح. يُتعرَّف على المجلدات المتزامنة بالفعل ولا تُنزَّل مجددًا. لا يُغيَّر أي شيء في العميل الرسمي.</translation>
@@ -2360,19 +2391,19 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>استيراد</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>إعداد حساب جديد</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>إلغاء</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>العميل الرسمي لا يزال قيد التشغيل. أغلقه وأوقف تشغيله التلقائي قبل الاستيراد، وإلا فسيزامن البرنامجان المجلدات نفسها.</translation>
@@ -2432,7 +2463,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: لم يُنقل. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: تعذّر إنشاء الحساب: %2</translation>
@@ -2444,10 +2475,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>اكتمل الاستيراد</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>أغلق العميل الرسمي نهائيًا (أوقف تشغيله التلقائي أو أزل تثبيته)، حتى لا تُزامن المجلدات مرتين.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>الحسابات التي لم تُنقل مُعدّة في العميل الرسمي فقط. قبل تشغيله مرة أخرى، أزل منه الحسابات المنقولة، حتى لا يُزامن البرنامجان المجلدات نفسها.</translation>
     </message>
 </context>
 <context>
@@ -2965,7 +3002,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>شعار اسم التطبيق %1</translation>
@@ -3965,7 +4002,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تعذّر إغلاق الإشعار لأنه لا يمكن الوصول إلى الخادم.</translation>
@@ -5565,7 +5602,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>سيُفتح متصفح الويب لإكمال تسجيل الدخول.</translation>
@@ -5583,7 +5620,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>مرحبًا بك في %1</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>أدخل عنوان الخادم للبدء. سيُفتح متصفح الويب لإكمال تسجيل الدخول.</translation>
@@ -5607,7 +5644,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>شعار إضافي حددته المؤسسة</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>عنوان URL للخادم غير صالح: %1</translation>
@@ -5889,16 +5926,10 @@ Note that using any logging command line options will override the settings.</so
         <translation>لم يُعثر على خادم owncloud.online على %1. يُرجى التحقق من العنوان.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>تطبيق &quot;OAuth2&quot; غير مثبّت أو غير مفعّل على هذا الخادم. يُرجى أن تطلب من المسؤول تثبيته وتفعيله عبر &quot;Market&quot;.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ملاحظة للمسؤولين: يسجّل عميل سطح المكتب الدخول عبر تطبيق &quot;OAuth2&quot;. ثبّته عبر &quot;Market&quot; وفعّله لجميع المستخدمين (سطر الأوامر: occ app:enable oauth2).</translation>
+        <translation>يتطلب تسجيل الدخول وجود تطبيق &quot;OAuth2&quot; على هذا الخادم، لكنه غير مثبّت أو غير مفعّل. يُرجى أن تطلب من المسؤول تثبيته عبر &quot;Market&quot; وتفعيله لجميع المستخدمين (سطر الأوامر: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

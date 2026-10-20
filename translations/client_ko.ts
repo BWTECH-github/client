@@ -957,7 +957,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>고급 설정</translation>
@@ -2178,7 +2178,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>공식 클라이언트가 실행 중이며 폴더 %1도 동기화하고 있습니다. 두 프로그램이 동시에 폴더를 동기화하지 않도록 공식 클라이언트를 종료하십시오.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>스페이스는 가져오지 않습니다. 로그인한 후 추가하십시오.</translation>
@@ -2231,7 +2231,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: 이미 설정되어 있습니다.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2239,27 +2239,53 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>공식 클라이언트에서 가져오기</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>공식 클라이언트의 모든 계정이 이미 설정되어 있습니다.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: 가져오지 않음, 서버에 &quot;OAuth2&quot; 앱이 설치되어 있지 않거나 활성화되어 있지 않습니다.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>이 컴퓨터에 공식 데스크톱 클라이언트가 설정되어 있습니다.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>이 컴퓨터에 공식 데스크톱 클라이언트가 설정되어 있습니다. 해당 계정과 동기화 폴더를 가져오시겠습니까?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>로그인에 필요한 &quot;OAuth2&quot; 앱이 서버에 설치되어 있지 않거나 활성화되어 있지 않아 계정 %n개를 가져올 수 없습니다:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>관리자에게 &quot;Market&quot;에서 &quot;OAuth2&quot; 앱을 설치하고 모든 사용자에게 활성화해 달라고 요청하십시오. 그런 다음 메뉴에서 &quot;공식 클라이언트에서 가져오기...&quot;를 선택하십시오.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>계정마다 브라우저에서 한 번 로그인합니다. 이미 동기화된 폴더는 인식되며 다시 다운로드되지 않습니다. 공식 클라이언트에서는 아무것도 변경되지 않습니다.</translation>
@@ -2271,19 +2297,19 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>가져오기</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>새 계정 설정</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>취소</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>공식 클라이언트가 아직 실행 중입니다. 가져오기 전에 종료하고 자동 시작을 끄십시오. 그렇지 않으면 두 프로그램이 같은 폴더를 동기화합니다.</translation>
@@ -2343,7 +2369,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: 가져오지 않았습니다. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: 계정을 만들 수 없습니다: %2</translation>
@@ -2355,10 +2381,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>가져오기 완료</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>폴더가 두 번 동기화되지 않도록 공식 클라이언트를 완전히 종료하십시오(자동 시작을 끄거나 제거하십시오).</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>가져오지 않은 계정은 공식 클라이언트에만 설정되어 있습니다. 두 프로그램이 같은 폴더를 동기화하지 않도록, 공식 클라이언트를 다시 시작하기 전에 가져온 계정을 공식 클라이언트에서 제거하십시오.</translation>
     </message>
 </context>
 <context>
@@ -2865,7 +2897,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>애플리케이션 이름 로고 %1</translation>
@@ -3829,7 +3861,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>서버에 연결할 수 없어 알림을 닫을 수 없습니다.</translation>
@@ -5402,7 +5434,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>로그인을 완료하기 위해 웹 브라우저가 열립니다.</translation>
@@ -5419,7 +5451,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1에 오신 것을 환영합니다</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>시작하려면 서버 주소를 입력하십시오. 로그인을 완료하기 위해 웹 브라우저가 열립니다.</translation>
@@ -5443,7 +5475,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>조직에서 지정한 추가 로고</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>잘못된 서버 URL: %1</translation>
@@ -5705,16 +5737,10 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1에서 owncloud.online 서버를 찾을 수 없습니다. 주소를 확인하십시오.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>이 서버에 &quot;OAuth2&quot; 앱이 설치되어 있지 않거나 활성화되어 있지 않습니다. 관리자에게 &quot;Market&quot;에서 설치하고 활성화해 달라고 요청하십시오.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>관리자 참고 사항: 데스크톱 클라이언트는 &quot;OAuth2&quot; 앱을 통해 로그인합니다. &quot;Market&quot;에서 앱을 설치하고 모든 사용자에게 활성화하십시오 (명령줄: occ app:enable oauth2).</translation>
+        <translation>로그인하려면 이 서버에 &quot;OAuth2&quot; 앱이 필요하지만 설치되어 있지 않거나 활성화되어 있지 않습니다. 관리자에게 &quot;Market&quot;에서 앱을 설치하고 모든 사용자에게 활성화해 달라고 요청하십시오 (명령줄: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

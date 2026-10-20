@@ -906,7 +906,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>ການຕັ້ງຄ່າຂັ້ນສູງ</translation>
     </message>
@@ -2092,7 +2092,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>ໄຄລເອັນທາງການກຳລັງເຮັດວຽກ ແລະ ກຳລັງຊິງໂຟນເດີ %1 ນຳ. ໃຫ້ປິດມັນ ເພື່ອບໍ່ໃຫ້ສອງໂປຣແກຣມຊິງໂຟນເດີໃນເວລາດຽວກັນ.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ພື້ນທີ່ຈະບໍ່ຖືກໂອນມາ; ໃຫ້ເພີ່ມພວກມັນຫຼັງຈາກເຂົ້າສູ່ລະບົບ.</translation>
@@ -2145,7 +2145,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: ຕັ້ງຄ່າແລ້ວ.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2154,27 +2154,54 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ນຳເຂົ້າຈາກໄຄລເອັນທາງການ</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບັນຊີທັງໝົດຂອງໄຄລເອັນທາງການຖືກຕັ້ງຄ່າແລ້ວ.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: ບໍ່ໄດ້ໂອນມາ, ແອັບ &quot;OAuth2&quot; ບໍ່ໄດ້ຕິດຕັ້ງ ຫຼື ບໍ່ໄດ້ເປີດໃຊ້ໃນເຊີບເວີ.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໄຄລເອັນເດັສທັອບທາງການຖືກຕັ້ງຄ່າໃນຄອມພິວເຕີນີ້.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ໄຄລເອັນເດັສທັອບທາງການຖືກຕັ້ງຄ່າໃນຄອມພິວເຕີນີ້. ທ່ານຕ້ອງການໂອນບັນຊີ ແລະ ໂຟນເດີຊິງຂອງມັນມາບໍ?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>ບໍ່ສາມາດໂອນ %n ບັນຊີໄດ້ ເພາະແອັບ &quot;OAuth2&quot; ທີ່ຈຳເປັນສຳລັບການເຂົ້າສູ່ລະບົບບໍ່ໄດ້ຕິດຕັ້ງ ຫຼື ບໍ່ໄດ້ເປີດໃຊ້ໃນເຊີບເວີ:</numerusform>
+            <numerusform>ບໍ່ສາມາດໂອນ %n ບັນຊີໄດ້ ເພາະແອັບ &quot;OAuth2&quot; ທີ່ຈຳເປັນສຳລັບການເຂົ້າສູ່ລະບົບບໍ່ໄດ້ຕິດຕັ້ງ ຫຼື ບໍ່ໄດ້ເປີດໃຊ້ໃນເຊີບເວີ:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ກະລຸນາຂໍໃຫ້ຜູ້ດູແລລະບົບຂອງທ່ານຕິດຕັ້ງແອັບ &quot;OAuth2&quot; ຜ່ານ &quot;Market&quot; ແລະ ເປີດໃຊ້ສຳລັບຜູ້ໃຊ້ທຸກຄົນ. ຈາກນັ້ນເລືອກ &quot;ນຳເຂົ້າຈາກໄຄລເອັນທາງການ...&quot; ໃນເມນູ.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ທ່ານເຂົ້າສູ່ລະບົບໜຶ່ງຄັ້ງຕໍ່ບັນຊີໃນບຣາວເຊີ. ໂຟນເດີທີ່ຊິງແລ້ວຈະຖືກຮັບຮູ້ ແລະ ບໍ່ຖືກດາວໂຫຼດອີກ. ບໍ່ມີຫຍັງຖືກປ່ຽນແປງໃນໄຄລເອັນທາງການ.</translation>
@@ -2186,19 +2213,19 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>ນຳເຂົ້າ</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ຕັ້ງຄ່າບັນຊີໃໝ່</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ຍົກເລີກ</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ໄຄລເອັນທາງການຍັງເຮັດວຽກຢູ່. ໃຫ້ປິດມັນ ແລະ ປິດການເລີ່ມອັດຕະໂນມັດຂອງມັນກ່ອນນຳເຂົ້າ, ບໍ່ດັ່ງນັ້ນທັງສອງໂປຣແກຣມຈະຊິງໂຟນເດີດຽວກັນ.</translation>
@@ -2258,7 +2285,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: ບໍ່ໄດ້ໂອນມາ. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: ບໍ່ສາມາດສ້າງບັນຊີໄດ້: %2</translation>
@@ -2270,10 +2297,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>ນຳເຂົ້າສຳເລັດແລ້ວ</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ປິດໄຄລເອັນທາງການຖາວອນ (ປິດການເລີ່ມອັດຕະໂນມັດຂອງມັນ ຫຼື ຖອນການຕິດຕັ້ງມັນ), ເພື່ອບໍ່ໃຫ້ໂຟນເດີຖືກຊິງສອງເທື່ອ.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບັນຊີທີ່ບໍ່ໄດ້ໂອນມາຖືກຕັ້ງຄ່າໄວ້ໃນໄຄລເອັນທາງການເທົ່ານັ້ນ. ກ່ອນເລີ່ມມັນອີກຄັ້ງ, ໃຫ້ລຶບບັນຊີທີ່ໂອນມາແລ້ວອອກຈາກມັນ, ເພື່ອບໍ່ໃຫ້ທັງສອງໂປຣແກຣມຊິງໂຟນເດີດຽວກັນ.</translation>
     </message>
 </context>
 <context>
@@ -2754,7 +2787,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>ໂລໂກ້ຊື່ແອັບພລິເຄຊັນ %1</translation>
     </message>
@@ -3669,7 +3702,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບໍ່ສາມາດປິດການແຈ້ງເຕືອນໄດ້ ເພາະບໍ່ສາມາດເຊື່ອມຕໍ່ເຊີບເວີໄດ້.</translation>
@@ -5221,7 +5254,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>ເວັບເບຣົາເຊີຂອງທ່ານຈະຖືກເປີດຂຶ້ນເພື່ອສຳເລັດການເຂົ້າສູ່ລະບົບ.</translation>
     </message>
@@ -5236,7 +5269,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ຍິນດີຕ້ອນຮັບສູ່ %1</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation>ປ້ອນທີ່ຢູ່ເຊີບເວີຂອງທ່ານເພື່ອເລີ່ມຕົ້ນ. ເວັບເບຣົາເຊີຂອງທ່ານຈະຖືກເປີດຂຶ້ນເພື່ອສຳເລັດການເຂົ້າສູ່ລະບົບ.</translation>
     </message>
@@ -5256,7 +5289,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ໂລໂກ້ເພີ່ມເຕີມທີ່ກຳນົດໂດຍອົງກອນ</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translation>URL ເຊີບເວີບໍ່ຖືກຕ້ອງ: %1</translation>
     </message>
@@ -5507,16 +5540,10 @@ Note that using any logging command line options will override the settings.</so
         <translation>ບໍ່ພົບເຊີບເວີ owncloud.online ທີ່ %1. ກະລຸນາກວດສອບທີ່ຢູ່.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ແອັບ &quot;OAuth2&quot; ບໍ່ໄດ້ຕິດຕັ້ງ ຫຼື ບໍ່ໄດ້ເປີດໃຊ້ໃນເຊີບເວີນີ້. ກະລຸນາຂໍໃຫ້ຜູ້ດູແລລະບົບຂອງທ່ານຕິດຕັ້ງ ແລະ ເປີດໃຊ້ມັນຜ່ານ &quot;Market&quot;.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ໝາຍເຫດສຳລັບຜູ້ດູແລລະບົບ: ໄຄລເອັນເດັສທັອບເຂົ້າສູ່ລະບົບຜ່ານແອັບ &quot;OAuth2&quot;. ຕິດຕັ້ງມັນຜ່ານ &quot;Market&quot; ແລະ ເປີດໃຊ້ສຳລັບຜູ້ໃຊ້ທຸກຄົນ (ແຖວຄຳສັ່ງ: occ app:enable oauth2).</translation>
+        <translation>ການເຂົ້າສູ່ລະບົບຕ້ອງການແອັບ &quot;OAuth2&quot; ໃນເຊີບເວີນີ້, ແຕ່ມັນບໍ່ໄດ້ຕິດຕັ້ງ ຫຼື ບໍ່ໄດ້ເປີດໃຊ້. ກະລຸນາຂໍໃຫ້ຜູ້ດູແລລະບົບຂອງທ່ານຕິດຕັ້ງມັນຜ່ານ &quot;Market&quot; ແລະ ເປີດໃຊ້ສຳລັບຜູ້ໃຊ້ທຸກຄົນ (ແຖວຄຳສັ່ງ: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

@@ -911,7 +911,7 @@ Ju lutemi, kontrolloni qenien në punë të shërbyesit dhe rixhironi ndihmësin
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Rregullime të mëtejshme</translation>
     </message>
@@ -2091,7 +2091,7 @@ Objektet mbi të cilët lejohet fshirja do të fshihen, nëse pengojnë heqjen e
         <translation>Klienti zyrtar po xhiron dhe njëkohëson gjithashtu dosjen %1. Mbylleni, që dosja të mos njëkohësohet nga dy programe njëherësh.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Hapësirat nuk merren përsipër; shtojini pas hyrjes.</translation>
@@ -2144,7 +2144,7 @@ Objektet mbi të cilët lejohet fshirja do të fshihen, nëse pengojnë heqjen e
         <translation>%1: ujdisur tashmë.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2153,27 +2153,54 @@ Objektet mbi të cilët lejohet fshirja do të fshihen, nëse pengojnë heqjen e
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Importo nga klienti zyrtar</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Krejt llogaritë e klientit zyrtar janë ujdisur tashmë.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: s’u mor përsipër, aplikacioni &quot;OAuth2&quot; s’është i instaluar, ose s’është aktivizuar në shërbyes.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Në këtë kompjuter është ujdisur klienti zyrtar për desktop.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Në këtë kompjuter është ujdisur klienti zyrtar për desktop. Doni të merren përsipër llogaritë dhe dosjet e tij të njëkohësimit?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n llogari s’mund të merret përsipër, ngaqë aplikacioni &quot;OAuth2&quot;, i domosdoshëm për hyrjen, s’është i instaluar, ose s’është aktivizuar në shërbyes:</numerusform>
+            <numerusform>%n llogari s’mund të merren përsipër, ngaqë aplikacioni &quot;OAuth2&quot;, i domosdoshëm për hyrjen, s’është i instaluar, ose s’është aktivizuar në shërbyes:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ju lutemi, kërkojini përgjegjësit tuaj të instalojë aplikacionin &quot;OAuth2&quot; përmes &quot;Market&quot; dhe ta aktivizojë për krejt përdoruesit. Mandej zgjidhni te menuja &quot;Importo nga klienti zyrtar...&quot;.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Hyni një herë për çdo llogari, te shfletuesi. Dosjet që njëkohësohen tashmë njihen dhe nuk shkarkohen sërish. Te klienti zyrtar s’ndryshohet gjë.</translation>
@@ -2185,19 +2212,19 @@ Objektet mbi të cilët lejohet fshirja do të fshihen, nëse pengojnë heqjen e
         <translation>Importo</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ujdisni një llogari të re</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Anuloje</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Klienti zyrtar është ende në punë. Mbylleni dhe çaktivizoni nisjen e tij të vetvetishme përpara importimit, përndryshe të dy programet njëkohësojnë të njëjtat dosje.</translation>
@@ -2257,7 +2284,7 @@ Objektet mbi të cilët lejohet fshirja do të fshihen, nëse pengojnë heqjen e
         <translation>%1: s’u mor përsipër. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: llogaria s’u krijua dot: %2</translation>
@@ -2269,10 +2296,16 @@ Objektet mbi të cilët lejohet fshirja do të fshihen, nëse pengojnë heqjen e
         <translation>Importimi përfundoi</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Mbylleni përgjithmonë klientin zyrtar (çaktivizoni nisjen e tij të vetvetishme, ose çinstalojeni), që dosjet të mos njëkohësohen dy herë.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Llogaritë që s’u morën përsipër janë ujdisur vetëm te klienti zyrtar. Para se ta rinisni, hiqni prej tij llogaritë e marra përsipër, që të dy programet të mos njëkohësojnë të njëjtat dosje.</translation>
     </message>
 </context>
 <context>
@@ -2753,7 +2786,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>Stemë Emri Aplikacioni %1</translation>
     </message>
@@ -3670,7 +3703,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Njoftimi s’u hodh dot tej, ngaqë shërbyesi s’është i kapshëm.</translation>
@@ -5217,7 +5250,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Shfletuesi juaj do të hapet që të plotësoni hyrjen.</translation>
     </message>
@@ -5232,7 +5265,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Mirë se vini te %1</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation>Që t’ia filloni, jepni adresën e shërbyesit tuaj. Shfletuesi juaj do të hapet që të plotësoni hyrjen.</translation>
     </message>
@@ -5252,7 +5285,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Stemë shtesë e përcaktuar nga enti</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translation>URL e pavlefshme shërbyesi: %1</translation>
     </message>
@@ -5500,16 +5533,10 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>S’u gjet shërbyes owncloud.online te %1. Ju lutemi, kontrolloni adresën.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Aplikacioni &quot;OAuth2&quot; s’është i instaluar, ose s’është aktivizuar në këtë shërbyes. Ju lutemi, kërkojini përgjegjësit tuaj ta instalojë dhe aktivizojë përmes &quot;Market&quot;.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Shënim për përgjegjës: klienti desktop bën hyrjen përmes aplikacionit &quot;OAuth2&quot;. Instalojeni përmes &quot;Market&quot; dhe aktivizojeni për krejt përdoruesit (rresht urdhrash: occ app:enable oauth2).</translation>
+        <translation>Për hyrjen, ky shërbyes lyp aplikacionin &quot;OAuth2&quot;, por s’është i instaluar, ose s’është aktivizuar. Ju lutemi, kërkojini përgjegjësit tuaj ta instalojë përmes &quot;Market&quot; dhe ta aktivizojë për krejt përdoruesit (rresht urdhrash: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

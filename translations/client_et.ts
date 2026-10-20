@@ -942,7 +942,7 @@ Kontrolli serveri kättesaadavust ja käivita viisard uuesti.</translation>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Lisavalikud</translation>
     </message>
@@ -2154,7 +2154,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>Ametlik klient töötab ja sünkroniseerib samuti kausta %1. Sulge see, et kausta ei sünkroniseeriks korraga kaks programmi.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ruume üle ei võeta; lisa need pärast sisselogimist.</translation>
@@ -2207,7 +2207,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: juba seadistatud.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2216,27 +2216,54 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Impordi ametlikust kliendist</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kõik ametliku kliendi kontod on juba seadistatud.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: üle ei võetud, rakendus „OAuth2“ pole serveris paigaldatud või lubatud.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Selles arvutis on seadistatud ametlik töölauaklient.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Selles arvutis on seadistatud ametlik töölauaklient. Kas soovid üle võtta selle kontod ja sünkroniseerimiskaustad?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n kontot ei saa üle võtta, sest sisselogimiseks vajalik rakendus „OAuth2“ pole serveris paigaldatud või lubatud:</numerusform>
+            <numerusform>%n kontot ei saa üle võtta, sest sisselogimiseks vajalik rakendus „OAuth2“ pole serveris paigaldatud või lubatud:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Palu oma administraatoril rakendus „OAuth2“ „Market“ kaudu paigaldada ja kõigile kasutajatele lubada. Seejärel vali menüüst „Impordi ametlikust kliendist...“.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logid iga konto jaoks üks kord brauseris sisse. Juba sünkroniseeritud kaustad tuvastatakse ja neid uuesti alla ei laadita. Ametlikus kliendis ei muudeta midagi.</translation>
@@ -2248,19 +2275,19 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>Impordi</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Seadista uus konto</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Loobu</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ametlik klient töötab endiselt. Sulge see ja lülita selle automaatkäivitus enne importimist välja, muidu sünkroniseerivad mõlemad programmid samu kaustu.</translation>
@@ -2320,7 +2347,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: üle ei võetud. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: kontot ei õnnestunud luua: %2</translation>
@@ -2332,10 +2359,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>Importimine lõpetatud</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sulge ametlik klient jäädavalt (lülita selle automaatkäivitus välja või eemalda see), et kaustu ei sünkroniseeritaks kaks korda.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Üle võtmata kontod on seadistatud ainult ametlikus kliendis. Enne selle uuesti käivitamist eemalda sealt üle võetud kontod, et mõlemad programmid ei sünkroniseeriks samu kaustu.</translation>
     </message>
 </context>
 <context>
@@ -2827,7 +2860,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>Rakendus Nimi Logo %1</translation>
     </message>
@@ -3769,7 +3802,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Teavitust ei õnnestunud loobuda, sest server pole kättesaadav.</translation>
@@ -5327,7 +5360,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sisselogimise lõpetamiseks avatakse sinu veebibrauser.</translation>
@@ -5343,7 +5376,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Tere tulemast %1&apos;i</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation>Alustamiseks sisesta oma serveri aadress. Sisselogimise lõpuleviimiseks avatakse veebibrauser.</translation>
     </message>
@@ -5365,7 +5398,7 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Organisatsiooni poolt defineeritud täiendav logo</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translation>Vigane serveri URL: %1</translation>
     </message>
@@ -5621,16 +5654,10 @@ Pange tähele, et mistahes logimise käsurea suvandite kasutamine tühistab sead
         <translation>Aadressilt %1 ei leitud owncloud.online serverit. Kontrolli aadressi.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Rakendus „OAuth2“ pole selles serveris paigaldatud või lubatud. Palu oma administraatoril see „Market“ kaudu paigaldada ja lubada.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Märkus administraatoritele: töölauaklient logib sisse rakenduse „OAuth2“ kaudu. Paigalda see „Market“ kaudu ja luba see kõigile kasutajatele (käsurida: occ app:enable oauth2).</translation>
+        <translation>Sisselogimiseks vajab see server rakendust „OAuth2“, kuid see pole paigaldatud või lubatud. Palu oma administraatoril see „Market“ kaudu paigaldada ja kõigile kasutajatele lubada (käsurida: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

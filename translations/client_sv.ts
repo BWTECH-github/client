@@ -907,7 +907,7 @@ Kontrollera att servern är tillgänglig och kör sedan guiden igen.</translatio
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Avancerade inställningar</translation>
     </message>
@@ -2086,7 +2086,7 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
         <translation>Den officiella klienten körs och synkroniserar också mappen %1. Avsluta den så att mappen inte synkroniseras av två program samtidigt.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Utrymmen tas inte över; lägg till dem efter inloggningen.</translation>
@@ -2139,7 +2139,7 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
         <translation>%1: redan konfigurerat.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2148,27 +2148,54 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Importera från den officiella klienten</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Alla konton i den officiella klienten är redan konfigurerade.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: togs inte över, appen &quot;OAuth2&quot; är inte installerad eller inte aktiverad på servern.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Den officiella skrivbordsklienten är konfigurerad på den här datorn.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Den officiella skrivbordsklienten är konfigurerad på den här datorn. Vill du ta över dess konton och synkroniseringsmappar?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n konto kan inte tas över eftersom appen &quot;OAuth2&quot;, som behövs för inloggning, inte är installerad eller inte aktiverad på servern:</numerusform>
+            <numerusform>%n konton kan inte tas över eftersom appen &quot;OAuth2&quot;, som behövs för inloggning, inte är installerad eller inte aktiverad på servern:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Be din administratör att installera appen &quot;OAuth2&quot; via &quot;Market&quot; och aktivera den för alla användare. Välj sedan &quot;Importera från officiell klient...&quot; i menyn.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Du loggar in en gång per konto i webbläsaren. Mappar som redan synkroniseras känns igen och laddas inte ned igen. Ingenting ändras i den officiella klienten.</translation>
@@ -2180,19 +2207,19 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
         <translation>Importera</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Konfigurera ett nytt konto</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Avbryt</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Den officiella klienten körs fortfarande. Avsluta den och stäng av dess autostart innan du importerar, annars synkroniserar båda programmen samma mappar.</translation>
@@ -2252,7 +2279,7 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
         <translation>%1: togs inte över. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: kontot kunde inte skapas: %2</translation>
@@ -2264,10 +2291,16 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
         <translation>Importen är klar</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Avsluta den officiella klienten permanent (stäng av dess autostart eller avinstallera den), så att mapparna inte synkroniseras två gånger.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kontona som inte togs över är bara konfigurerade i den officiella klienten. Ta bort de övertagna kontona från den innan du startar den igen, så att inte båda programmen synkroniserar samma mappar.</translation>
     </message>
 </context>
 <context>
@@ -2748,7 +2781,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>Programlogotyp %1</translation>
     </message>
@@ -3663,7 +3696,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Aviseringen kunde inte avfärdas eftersom servern inte kan nås.</translation>
@@ -5216,7 +5249,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Webbläsaren öppnas för att slutföra inloggningen.</translation>
     </message>
@@ -5231,7 +5264,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Välkommen till %1</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation>Ange serveradressen för att komma igång. Webbläsaren öppnas för att slutföra inloggningen.</translation>
     </message>
@@ -5251,7 +5284,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Ytterligare logotyp definierad av organisationen</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translation>Ogiltig server-URL: %1</translation>
     </message>
@@ -5499,16 +5532,10 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Ingen owncloud.online-server hittades på %1. Kontrollera adressen.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Appen &quot;OAuth2&quot; är inte installerad eller inte aktiverad på den här servern. Be din administratör att installera och aktivera den via &quot;Market&quot;.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Information till administratörer: skrivbordsklienten loggar in via appen &quot;OAuth2&quot;. Installera den via &quot;Market&quot; och aktivera den för alla användare (kommandorad: occ app:enable oauth2).</translation>
+        <translation>För inloggning behöver den här servern appen &quot;OAuth2&quot;, men den är inte installerad eller inte aktiverad. Be din administratör att installera den via &quot;Market&quot; och aktivera den för alla användare (kommandorad: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

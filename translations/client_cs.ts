@@ -969,7 +969,7 @@ Zkontrolujte dostupnost serveru a spusťte průvodce znovu.</translation>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Pokročilá nastavení</translation>
     </message>
@@ -2219,7 +2219,7 @@ Položky, u kterých je povoleno mazání, budou smazány, pokud brání odstran
         <translation>Oficiální klient je spuštěný a také synchronizuje složku %1. Ukončete ho, aby složku nesynchronizovaly současně dva programy.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Prostory se nepřebírají; přidejte je po přihlášení.</translation>
@@ -2272,7 +2272,7 @@ Položky, u kterých je povoleno mazání, budou smazány, pokud brání odstran
         <translation>%1: již nastaveno.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2282,27 +2282,55 @@ Položky, u kterých je povoleno mazání, budou smazány, pokud brání odstran
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Importovat z oficiálního klienta</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Všechny účty oficiálního klienta jsou již nastaveny.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: nepřevzato, aplikace „OAuth2“ není na serveru nainstalována nebo zapnuta.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Na tomto počítači je nastaven oficiální desktopový klient.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Na tomto počítači je nastaven oficiální desktopový klient. Chcete převzít jeho účty a synchronizované složky?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n účet nelze převzít, protože aplikace „OAuth2“, potřebná k přihlášení, není na serveru nainstalována nebo zapnuta:</numerusform>
+            <numerusform>%n účty nelze převzít, protože aplikace „OAuth2“, potřebná k přihlášení, není na serveru nainstalována nebo zapnuta:</numerusform>
+            <numerusform>%n účtů nelze převzít, protože aplikace „OAuth2“, potřebná k přihlášení, není na serveru nainstalována nebo zapnuta:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Požádejte správce, aby nainstaloval aplikaci „OAuth2“ přes „Market“ a zapnul ji pro všechny uživatele. Poté v nabídce zvolte „Importovat z oficiálního klienta...“.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Přihlásíte se jednou za každý účet v prohlížeči. Již synchronizované složky budou rozpoznány a nebudou znovu stahovány. V oficiálním klientovi se nic nezmění.</translation>
@@ -2314,19 +2342,19 @@ Položky, u kterých je povoleno mazání, budou smazány, pokud brání odstran
         <translation>Importovat</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Nastavit nový účet</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Zrušit</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Oficiální klient stále běží. Před importem ho ukončete a vypněte jeho automatické spouštění, jinak budou oba programy synchronizovat stejné složky.</translation>
@@ -2386,7 +2414,7 @@ Položky, u kterých je povoleno mazání, budou smazány, pokud brání odstran
         <translation>%1: nepřevzato. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: účet nebylo možné vytvořit: %2</translation>
@@ -2398,10 +2426,16 @@ Položky, u kterých je povoleno mazání, budou smazány, pokud brání odstran
         <translation>Import dokončen</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ukončete oficiálního klienta natrvalo (vypněte jeho automatické spouštění nebo ho odinstalujte), aby se složky nesynchronizovaly dvakrát.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nepřevzaté účty jsou nastaveny pouze v oficiálním klientovi. Než ho znovu spustíte, odeberte z něj převzaté účty, aby oba programy nesynchronizovaly stejné složky.</translation>
     </message>
 </context>
 <context>
@@ -2910,7 +2944,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logo aplikace %1</translation>
@@ -3888,7 +3922,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Oznámení nelze zavřít, protože server není dostupný.</translation>
@@ -5468,7 +5502,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>K dokončení přihlášení se otevře webový prohlížeč.</translation>
@@ -5485,7 +5519,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Výtejte na %1</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Pro začátek zadejte adresu serveru. K dokončení přihlášení se otevře webový prohlížeč.</translation>
@@ -5509,7 +5543,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Doplňkové logo určené organizací</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Neplatná URL serveru: %1</translation>
@@ -5778,16 +5812,10 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Na adrese %1 nebyl nalezen žádný server owncloud.online. Zkontrolujte adresu.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Aplikace „OAuth2“ není na tomto serveru nainstalována nebo zapnuta. Požádejte správce, aby ji nainstaloval a zapnul přes „Market“.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Poznámka pro správce: desktopový klient se přihlašuje přes aplikaci „OAuth2“. Nainstalujte ji přes „Market“ a zapněte ji pro všechny uživatele (příkazový řádek: occ app:enable oauth2).</translation>
+        <translation>Pro přihlášení vyžaduje tento server aplikaci „OAuth2“, ta však není nainstalována nebo zapnuta. Požádejte správce, aby ji nainstaloval přes „Market“ a zapnul ji pro všechny uživatele (příkazový řádek: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

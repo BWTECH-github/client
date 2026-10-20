@@ -962,7 +962,7 @@ Lütfen sunucunun erişilebilir olduğunu denetleyin ve sihirbazı yeniden çal�
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Gelişmiş ayarlar</translation>
@@ -2194,7 +2194,7 @@ Bir dizinin kaldırılmasını engelliyorlarsa işaretli ögeler de silinecektir
         <translation>Resmi istemci çalışıyor ve %1 klasörünü de eşitliyor. Klasörün aynı anda iki program tarafından eşitlenmemesi için onu kapatın.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Alanlar aktarılmaz; oturum açtıktan sonra bunları ekleyin.</translation>
@@ -2247,7 +2247,7 @@ Bir dizinin kaldırılmasını engelliyorlarsa işaretli ögeler de silinecektir
         <translation>%1: zaten ayarlanmış.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2255,27 +2255,53 @@ Bir dizinin kaldırılmasını engelliyorlarsa işaretli ögeler de silinecektir
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Resmi istemciden içe aktar</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Resmi istemcinin tüm hesapları zaten ayarlanmış.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: devralınmadı, &quot;OAuth2&quot; uygulaması sunucuda yüklü veya etkin değil.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Bu bilgisayarda resmi masaüstü istemcisi ayarlanmış.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Bu bilgisayarda resmi masaüstü istemcisi ayarlanmış. Hesaplarını ve eşitleme klasörlerini devralmak istiyor musunuz?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n hesap devralınamıyor, çünkü oturum açmak için gereken &quot;OAuth2&quot; uygulaması sunucuda yüklü veya etkin değil:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Lütfen yöneticinizden &quot;OAuth2&quot; uygulamasını &quot;Market&quot; üzerinden yükleyip tüm kullanıcılar için etkinleştirmesini isteyin. Ardından menüden &quot;Resmi istemciden içe aktar...&quot; seçeneğini seçin.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Her hesap için tarayıcıda bir kez oturum açarsınız. Zaten eşitlenen klasörler tanınır ve yeniden indirilmez. Resmi istemcide hiçbir şey değiştirilmez.</translation>
@@ -2287,19 +2313,19 @@ Bir dizinin kaldırılmasını engelliyorlarsa işaretli ögeler de silinecektir
         <translation>İçe aktar</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Yeni bir hesap ayarla</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>İptal</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Resmi istemci hâlâ çalışıyor. İçe aktarmadan önce onu kapatın ve otomatik başlatmasını kapatın; aksi takdirde iki program da aynı klasörleri eşitler.</translation>
@@ -2359,7 +2385,7 @@ Bir dizinin kaldırılmasını engelliyorlarsa işaretli ögeler de silinecektir
         <translation>%1: devralınmadı. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: hesap oluşturulamadı: %2</translation>
@@ -2371,10 +2397,16 @@ Bir dizinin kaldırılmasını engelliyorlarsa işaretli ögeler de silinecektir
         <translation>İçe aktarma tamamlandı</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Klasörlerin iki kez eşitlenmemesi için resmi istemciyi kalıcı olarak kapatın (otomatik başlatmasını kapatın veya kaldırın).</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Devralınmayan hesaplar yalnızca resmi istemcide ayarlı. Resmi istemciyi yeniden başlatmadan önce devralınan hesapları ondan kaldırın; böylece iki program aynı klasörleri eşitlemez.</translation>
     </message>
 </context>
 <context>
@@ -2884,7 +2916,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Uygulama adı logosu %1</translation>
@@ -3845,7 +3877,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sunucuya ulaşılamadığı için bildirim kapatılamadı.</translation>
@@ -5417,7 +5449,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Oturum açmayı tamamlamak için web tarayıcınız açılacak.</translation>
@@ -5434,7 +5466,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>%1&apos;e Hoşgeldiniz</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Başlamak için sunucu adresinizi girin. Oturum açmayı tamamlamak için web tarayıcınız açılacak.</translation>
@@ -5458,7 +5490,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Kuruluş tarafından tanımlanan ek logo</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Geçersiz sunucu URL&apos;si: %1</translation>
@@ -5721,16 +5753,10 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>%1 adresinde owncloud.online sunucusu bulunamadı. Lütfen adresi denetleyin.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>&quot;OAuth2&quot; uygulaması bu sunucuda yüklü veya etkin değil. Lütfen yöneticinizden uygulamayı &quot;Market&quot; üzerinden yükleyip etkinleştirmesini isteyin.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Yöneticiler için not: masaüstü istemcisi &quot;OAuth2&quot; uygulaması üzerinden oturum açar. Uygulamayı &quot;Market&quot; üzerinden yükleyin ve tüm kullanıcılar için etkinleştirin (komut satırı: occ app:enable oauth2).</translation>
+        <translation>Oturum açmak için bu sunucuda &quot;OAuth2&quot; uygulaması gerekiyor, ancak uygulama yüklü veya etkin değil. Lütfen yöneticinizden uygulamayı &quot;Market&quot; üzerinden yükleyip tüm kullanıcılar için etkinleştirmesini isteyin (komut satırı: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

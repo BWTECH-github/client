@@ -912,7 +912,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Geavanceerde instellingen</translation>
     </message>
@@ -2099,7 +2099,7 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
         <translation>De officiële client is actief en synchroniseert ook de map %1. Sluit deze af, zodat de map niet door twee programma&apos;s tegelijk wordt gesynchroniseerd.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Spaces worden niet overgenomen; voeg ze toe nadat u bent aangemeld.</translation>
@@ -2152,7 +2152,7 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
         <translation>%1: al ingesteld.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2161,27 +2161,54 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Importeren uit de officiële client</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Alle accounts van de officiële client zijn al ingesteld.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: niet overgenomen, de app &quot;OAuth2&quot; is niet geïnstalleerd of niet ingeschakeld op de server.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Op deze computer is de officiële desktopclient ingesteld.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Op deze computer is de officiële desktopclient ingesteld. Wilt u de accounts en synchronisatiemappen daarvan overnemen?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n account kan niet worden overgenomen, omdat de app &quot;OAuth2&quot;, die nodig is om aan te melden, niet is geïnstalleerd of niet is ingeschakeld op de server:</numerusform>
+            <numerusform>%n accounts kunnen niet worden overgenomen, omdat de app &quot;OAuth2&quot;, die nodig is om aan te melden, niet is geïnstalleerd of niet is ingeschakeld op de server:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Vraag uw beheerder om de app &quot;OAuth2&quot; via &quot;Market&quot; te installeren en voor alle gebruikers in te schakelen. Kies daarna &quot;Importeren uit officiële client...&quot; in het menu.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>U meldt zich per account één keer aan in de browser. Mappen die al worden gesynchroniseerd, worden herkend en niet opnieuw gedownload. In de officiële client wordt niets gewijzigd.</translation>
@@ -2193,19 +2220,19 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
         <translation>Importeren</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Nieuw account instellen</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Annuleren</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>De officiële client is nog actief. Sluit deze af en schakel het automatisch starten uit voordat u importeert, anders synchroniseren beide programma&apos;s dezelfde mappen.</translation>
@@ -2265,7 +2292,7 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
         <translation>%1: niet overgenomen. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: het account kon niet worden aangemaakt: %2</translation>
@@ -2277,10 +2304,16 @@ Items waar verwijderen is toegestaan zullen gewist worden als ze voorkomen dat e
         <translation>Importeren voltooid</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sluit de officiële client definitief af (schakel het automatisch starten uit of verwijder het programma), zodat de mappen niet dubbel worden gesynchroniseerd.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De accounts die niet zijn overgenomen, zijn alleen in de officiële client ingesteld. Verwijder daar de overgenomen accounts voordat u hem opnieuw start, zodat de twee programma&apos;s niet dezelfde mappen synchroniseren.</translation>
     </message>
 </context>
 <context>
@@ -2769,7 +2802,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logo van de applicatie %1</translation>
@@ -3702,7 +3735,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>De melding kon niet worden gesloten omdat de server niet bereikbaar is.</translation>
@@ -5255,7 +5288,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Uw webbrowser wordt geopend om de aanmelding te voltooien.</translation>
@@ -5271,7 +5304,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Welkom bij %1</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Voer uw serveradres in om te beginnen. Uw webbrowser wordt geopend om de aanmelding te voltooien.</translation>
@@ -5293,7 +5326,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Extra logo gedefiniëerd door de organisatie</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translation>Ongeldige server URL: %1</translation>
     </message>
@@ -5551,16 +5584,10 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Er is geen owncloud.online-server gevonden op %1. Controleer het adres.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>De app &quot;OAuth2&quot; is niet geïnstalleerd of niet ingeschakeld op deze server. Vraag uw beheerder om deze via &quot;Market&quot; te installeren en in te schakelen.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Opmerking voor beheerders: de desktopclient meldt zich aan via de app &quot;OAuth2&quot;. Installeer deze via &quot;Market&quot; en schakel hem in voor alle gebruikers (opdrachtregel: occ app:enable oauth2).</translation>
+        <translation>Voor het aanmelden heeft deze server de app &quot;OAuth2&quot; nodig, maar die is niet geïnstalleerd of niet ingeschakeld. Vraag uw beheerder om deze via &quot;Market&quot; te installeren en voor alle gebruikers in te schakelen (opdrachtregel: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>

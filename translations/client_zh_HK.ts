@@ -985,7 +985,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>進階設定</translation>
@@ -2235,7 +2235,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>官方用戶端正在執行,並且也在同步資料夾 %1。請結束官方用戶端,以免兩個程式同時同步該資料夾。</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>不會轉移空間;請在登入後新增。</translation>
@@ -2288,7 +2288,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1:已設定。</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>
@@ -2296,27 +2296,53 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>從官方用戶端匯入</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>官方用戶端的所有帳號皆已設定。</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>%1：未轉移，伺服器上未安裝或未啟用「OAuth2」應用程式。</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>此電腦上已設定官方桌面用戶端。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>此電腦上已設定官方桌面用戶端。是否要轉移其帳號和同步資料夾?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n 個帳號無法轉移，因為伺服器上未安裝或未啟用登入所需的「OAuth2」應用程式：</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>請要求您的管理員透過「Market」安裝「OAuth2」應用程式，並為所有使用者啟用。然後在選單中選擇「從官方用戶端匯入...」。</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>每個帳號需在瀏覽器中登入一次。已同步的資料夾會被辨識,不會重新下載。官方用戶端中不會做任何變更。</translation>
@@ -2328,19 +2354,19 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>匯入</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>設定新帳號</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>取消</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>官方用戶端仍在執行。匯入前請結束它並關閉其自動啟動,否則兩個程式會同步相同的資料夾。</translation>
@@ -2400,7 +2426,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1:未轉移。%2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>%1:無法建立帳號:%2</translation>
@@ -2412,10 +2438,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>匯入完成</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>請徹底結束官方用戶端(關閉其自動啟動或將其解除安裝),以免資料夾被同步兩次。</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>未轉移的帳號僅在官方用戶端中設定。再次啟動官方用戶端之前，請先從中移除已轉移的帳號，以免兩個程式同步相同的資料夾。</translation>
     </message>
 </context>
 <context>
@@ -2950,7 +2982,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>應用程式名稱標誌 %1</translation>
@@ -3971,7 +4003,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>由於無法連線到伺服器，無法關閉此通知。</translation>
@@ -5573,7 +5605,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>將開啟您的網頁瀏覽器以完成登入。</translation>
@@ -5591,7 +5623,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>歡迎%1!</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>請輸入您的伺服器位址以開始。將開啟您的網頁瀏覽器以完成登入。</translation>
@@ -5615,7 +5647,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>組織指定的附加標誌</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無效的伺服器網址：%1</translation>
@@ -5884,16 +5916,10 @@ Note that using any logging command line options will override the settings.</so
         <translation>在 %1 找不到 owncloud.online 伺服器。請檢查位址。</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>此伺服器未安裝或未啟用「OAuth2」應用程式。請要求您的管理員透過「Market」安裝並啟用它。</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>管理員須知：桌面用戶端透過「OAuth2」應用程式登入。請透過「Market」安裝它，並為所有使用者啟用（命令列：occ app:enable oauth2）。</translation>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>登入需要此伺服器上的「OAuth2」應用程式，但它未安裝或未啟用。請要求您的管理員透過「Market」安裝它，並為所有使用者啟用（命令列：occ app:enable oauth2）。</translation>
     </message>
     <message>
         <location line="+6"/>

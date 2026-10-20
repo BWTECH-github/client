@@ -919,7 +919,7 @@ Sprawdź dostępność serwera, a następnie ponownie uruchom kreatora.</transla
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Ustawienia zaawansowane</translation>
     </message>
@@ -2113,7 +2113,7 @@ Elementy, których usunięcie jest dozwolone, zostaną usunięte, jeśli uniemo�
         <translation>Oficjalny klient jest uruchomiony i również synchronizuje folder %1. Zamknij go, aby folder nie był synchronizowany jednocześnie przez dwa programy.</translation>
     </message>
     <message>
-        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+90"/>
+        <location filename="../src/gui/legacyclient/legacyclientimport.cpp" line="+165"/>
         <source>Spaces are not taken over; add them after signing in.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Przestrzenie nie są przejmowane; dodaj je po zalogowaniu.</translation>
@@ -2166,7 +2166,7 @@ Elementy, których usunięcie jest dozwolone, zostaną usunięte, jeśli uniemo�
         <translation>%1: już skonfigurowane.</translation>
     </message>
     <message numerus="yes">
-        <location line="+4"/>
+        <location line="+25"/>
         <source>• %1 – %n sync folder(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -2176,27 +2176,55 @@ Elementy, których usunięcie jest dozwolone, zostaną usunięte, jeśli uniemo�
         </translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+5"/>
-        <location line="+20"/>
+        <location line="-18"/>
+        <location line="+44"/>
+        <location line="+29"/>
         <source>Import from the official client</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Importuj z oficjalnego klienta</translation>
     </message>
     <message>
-        <location line="-25"/>
+        <location line="-73"/>
         <source>All accounts of the official client are already set up.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Wszystkie konta oficjalnego klienta są już skonfigurowane.</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+21"/>
+        <source>%1: not taken over, the &quot;OAuth2&quot; app is not installed or not enabled on the server.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1: nie przejęto, aplikacja „OAuth2” nie jest zainstalowana lub włączona na serwerze.</translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>The official desktop client is set up on this computer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Na tym komputerze skonfigurowano oficjalnego klienta desktopowego.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>The official desktop client is set up on this computer. Do you want to take over its accounts and sync folders?</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Na tym komputerze skonfigurowano oficjalnego klienta desktopowego. Czy chcesz przejąć jego konta i foldery synchronizacji?</translation>
     </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n account(s) cannot be taken over because the &quot;OAuth2&quot; app, which is needed to sign in, is not installed or not enabled on the server:</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>%n konto nie może zostać przejęte, ponieważ aplikacja „OAuth2”, potrzebna do logowania, nie jest zainstalowana lub włączona na serwerze:</numerusform>
+            <numerusform>%n konta nie mogą zostać przejęte, ponieważ aplikacja „OAuth2”, potrzebna do logowania, nie jest zainstalowana lub włączona na serwerze:</numerusform>
+            <numerusform>%n kont nie może zostać przejętych, ponieważ aplikacja „OAuth2”, potrzebna do logowania, nie jest zainstalowana lub włączona na serwerze:</numerusform>
+        </translation>
+    </message>
     <message>
         <location line="+3"/>
+        <source>Please ask your administrator to install the &quot;OAuth2&quot; app via &quot;Market&quot; and enable it for all users. Afterwards, choose &quot;Import from official client...&quot; in the menu.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Poproś administratora o zainstalowanie aplikacji „OAuth2” przez „Market” i włączenie jej dla wszystkich użytkowników. Następnie wybierz w menu „Importuj z oficjalnego klienta...”.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>You sign in once per account in the browser. Folders that are already synchronized are recognized and not downloaded again. Nothing is changed in the official client.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logujesz się raz na każde konto w przeglądarce. Już synchronizowane foldery zostaną rozpoznane i nie będą pobierane ponownie. W oficjalnym kliencie nic nie zostanie zmienione.</translation>
@@ -2208,19 +2236,19 @@ Elementy, których usunięcie jest dozwolone, zostaną usunięte, jeśli uniemo�
         <translation>Importuj</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+4"/>
         <source>Set up a new account</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Skonfiguruj nowe konto</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="+5"/>
         <source>Cancel</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Anuluj</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>The official client is still running. Quit it and turn off its autostart before importing, otherwise both programs synchronize the same folders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Oficjalny klient nadal działa. Zamknij go i wyłącz jego autostart przed importem, w przeciwnym razie oba programy będą synchronizować te same foldery.</translation>
@@ -2280,7 +2308,7 @@ Elementy, których usunięcie jest dozwolone, zostaną usunięte, jeśli uniemo�
         <translation>%1: nie przejęto. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: nie można utworzyć konta: %2</translation>
@@ -2292,10 +2320,16 @@ Elementy, których usunięcie jest dozwolone, zostaną usunięte, jeśli uniemo�
         <translation>Import zakończony</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Zamknij oficjalnego klienta na stałe (wyłącz jego autostart lub odinstaluj go), aby foldery nie były synchronizowane podwójnie.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nieprzejęte konta są skonfigurowane tylko w oficjalnym kliencie. Zanim uruchomisz go ponownie, usuń z niego przejęte konta, aby oba programy nie synchronizowały tych samych folderów.</translation>
     </message>
 </context>
 <context>
@@ -2780,7 +2814,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>Nazwa aplikacji Logo %1</translation>
     </message>
@@ -3700,7 +3734,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Nie można odrzucić powiadomienia, ponieważ serwer jest nieosiągalny.</translation>
@@ -5250,7 +5284,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+58"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+70"/>
         <source>Your web browser will be opened to complete sign in.</source>
         <translation>Przeglądarka internetowa zostanie otwarta w celu dokończenia logowania.</translation>
     </message>
@@ -5265,7 +5299,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Witaj w %1</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>Enter your server address to get started. Your web browser will be opened to complete sign in.</source>
         <translation>Wprowadź adres serwera, aby rozpocząć. Twoja przeglądarka internetowa zostanie otwarta, aby dokończyć logowanie.</translation>
     </message>
@@ -5285,7 +5319,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Dodatkowe logo zdefiniowane przez organizację</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+120"/>
         <source>Invalid server URL: %1</source>
         <translation>Nieprawidłowy adres URL serwera: %1</translation>
     </message>
@@ -5537,16 +5571,10 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Pod adresem %1 nie znaleziono serwera owncloud.online. Sprawdź adres.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
+        <location line="+5"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Aplikacja „OAuth2” nie jest zainstalowana lub nie jest włączona na tym serwerze. Poproś administratora o jej zainstalowanie i włączenie przez „Market”.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Informacja dla administratorów: klient desktopowy loguje się przez aplikację „OAuth2”. Zainstaluj ją przez „Market” i włącz dla wszystkich użytkowników (wiersz poleceń: occ app:enable oauth2).</translation>
+        <translation>Do logowania ten serwer wymaga aplikacji „OAuth2”, ale nie jest ona zainstalowana lub włączona. Poproś administratora o jej zainstalowanie przez „Market” i włączenie dla wszystkich użytkowników (wiersz poleceń: occ app:enable oauth2).</translation>
     </message>
     <message>
         <location line="+6"/>
