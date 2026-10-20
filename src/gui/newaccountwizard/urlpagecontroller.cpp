@@ -236,6 +236,8 @@ bool UrlPageController::validate()
 {
     _results = {};
     _errorField->clear();
+    // handleError() blendet das Logo für die Meldung aus; ohne Meldung gehört es wieder hin (auch nach „Zurück“)
+    _logoLabel->setVisible(true);
 
     if (!_accessManager) {
         handleError(QStringLiteral("No valid access manager is available"));
