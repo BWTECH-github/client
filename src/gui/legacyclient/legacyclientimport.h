@@ -111,6 +111,8 @@ private:
     QList<LegacyClient::Account> _pending;
     std::optional<LegacyClient::Account> _current;
     QStringList _report;
+    /** übernommene Ordner des Fremd-Clients: nur dann gibt es etwas doppelt zu synchronisieren */
+    int _takenOverFolders = 0;
     QList<QUuid> _folderWizardAccounts;
     QPointer<MainWindow> _window;
     ColorManager *_colorManager = nullptr;

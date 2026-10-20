@@ -419,13 +419,13 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບັນຊີຂອງທ່ານໃນເຊີບເວີຖືກປິດການໃຊ້ງານ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບໍລິການເຂົ້າສູ່ລະບົບຂອງເຊີບເວີບໍ່ຍອມຮັບແອັບພລິເຄຊັນນີ້ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
@@ -906,7 +906,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>ການຕັ້ງຄ່າຂັ້ນສູງ</translation>
     </message>
@@ -1325,7 +1325,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+77"/>
         <source>server sent invalid content type: %1.</source>
         <translation>ເຊີບເວີສົ່ງ content type ທີ່ບໍ່ຖືກຕ້ອງ: %1.</translation>
     </message>
@@ -2384,7 +2384,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: ບໍ່ໄດ້ໂອນມາ. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: ບໍ່ສາມາດສ້າງບັນຊີໄດ້: %2</translation>
@@ -2396,10 +2396,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>ນຳເຂົ້າສຳເລັດແລ້ວ</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ປິດໄຄລເອັນທາງການຖາວອນ (ປິດການເລີ່ມອັດຕະໂນມັດຂອງມັນ ຫຼື ຖອນການຕິດຕັ້ງມັນ), ເພື່ອບໍ່ໃຫ້ໂຟນເດີຖືກຊິງສອງເທື່ອ.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບັນຊີທີ່ບໍ່ໄດ້ໂອນມາຖືກຕັ້ງຄ່າໄວ້ໃນໄຄລເອັນທາງການເທົ່ານັ້ນ. ກ່ອນເລີ່ມມັນອີກຄັ້ງ, ໃຫ້ລຶບບັນຊີທີ່ໂອນມາແລ້ວອອກຈາກມັນ, ເພື່ອບໍ່ໃຫ້ທັງສອງໂປຣແກຣມຊິງໂຟນເດີດຽວກັນ.</translation>
     </message>
 </context>
 <context>
@@ -2820,7 +2826,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
         <source>Successfully signed in</source>
         <translation>ເຂົ້າສູ່ລະບົບສຳເລັດແລ້ວ</translation>
     </message>
@@ -2881,7 +2887,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>ໂລໂກ້ຊື່ແອັບພລິເຄຊັນ %1</translation>
     </message>
@@ -3796,7 +3802,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບໍ່ສາມາດປິດການແຈ້ງເຕືອນໄດ້ ເພາະບໍ່ສາມາດເຊື່ອມຕໍ່ເຊີບເວີໄດ້.</translation>
@@ -3893,7 +3899,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+510"/>
+        <location filename="../src/gui/servermove.cpp" line="+512"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ກຳລັງກວດສອບ %1…</translation>
@@ -3924,7 +3930,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+11"/>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ກຳລັງກວດສອບວ່າແມ່ນເຊີບເວີດຽວກັນ ແລະ ຜູ້ໃຊ້ດຽວກັນ…</translation>
@@ -4011,7 +4017,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-525"/>
+        <location line="-527"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບໍ່ສາມາດເຂົ້າເຖິງເຊີບເວີໃດໆທີ່ %1 ໄດ້.</translation>
@@ -5386,7 +5392,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
         <source>%1 logo</source>
         <translation>ໂລໂກ້ %1</translation>
     </message>
@@ -5402,7 +5408,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ເຂົ້າສູ່ລະບົບເພື່ອເລີ່ມຕົ້ນ.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Enter your server address to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ປ້ອນທີ່ຢູ່ເຊີບເວີຂອງທ່ານເພື່ອເລີ່ມຕົ້ນ.</translation>
@@ -5423,7 +5429,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ໂລໂກ້ເພີ່ມເຕີມທີ່ກຳນົດໂດຍອົງກອນ</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+121"/>
         <source>Invalid server URL: %1</source>
         <translation>URL ເຊີບເວີບໍ່ຖືກຕ້ອງ: %1</translation>
     </message>
@@ -5441,7 +5447,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+77"/>
         <source>Network request to collect user info failed</source>
         <translation>ການຮ້ອງຂໍເຄືອຂ່າຍເພື່ອເກັບກຳຂໍ້ມູນຜູ້ໃຊ້ລົ້ມເຫຼວ</translation>
     </message>
@@ -5490,7 +5496,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+609"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5674,27 +5680,21 @@ Note that using any logging command line options will override the settings.</so
         <translation>ບໍ່ພົບເຊີບເວີ owncloud.online ທີ່ %1. ກະລຸນາກວດສອບທີ່ຢູ່.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ແອັບ &quot;OAuth2&quot; ບໍ່ໄດ້ຕິດຕັ້ງ ຫຼື ບໍ່ໄດ້ເປີດໃຊ້ໃນເຊີບເວີນີ້. ກະລຸນາຂໍໃຫ້ຜູ້ດູແລລະບົບຂອງທ່ານຕິດຕັ້ງ ແລະ ເປີດໃຊ້ມັນຜ່ານ &quot;Market&quot;.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ໝາຍເຫດສຳລັບຜູ້ດູແລລະບົບ: ໄຄລເອັນເດັສທັອບເຂົ້າສູ່ລະບົບຜ່ານແອັບ &quot;OAuth2&quot;. ຕິດຕັ້ງມັນຜ່ານ &quot;Market&quot; ແລະ ເປີດໃຊ້ສຳລັບຜູ້ໃຊ້ທຸກຄົນ (ແຖວຄຳສັ່ງ: occ app:enable oauth2).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+11"/>
         <source>Could not detect compatible server at %1</source>
         <translation>ບໍ່ສາມາດກວດພົບເຊີບເວີທີ່ເຂົ້າກັນໄດ້ທີ່ %1</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການເຂົ້າສູ່ລະບົບຕ້ອງການແອັບ &quot;OAuth2&quot; ໃນເຊີບເວີນີ້, ແຕ່ມັນບໍ່ໄດ້ຕິດຕັ້ງ ຫຼື ບໍ່ໄດ້ເປີດໃຊ້. ກະລຸນາຂໍໃຫ້ຜູ້ດູແລລະບົບຂອງທ່ານຕິດຕັ້ງມັນຜ່ານ &quot;Market&quot; ແລະ ເປີດໃຊ້ສຳລັບຜູ້ໃຊ້ທຸກຄົນ (ແຖວຄຳສັ່ງ: occ app:enable oauth2).</translation>
     </message>
 </context>
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-312"/>
+        <location filename="../src/gui/servermove.cpp" line="-313"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ກະລຸນາປ້ອນທີ່ຢູ່ໃໝ່ຂອງເຊີບເວີຂອງທ່ານ.</translation>
@@ -5724,11 +5724,11 @@ Note that using any logging command line options will override the settings.</so
         <translation>ທີ່ຢູ່ຕ້ອງບໍ່ມີ “?” ຫຼື “#”.</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+112"/>
+        <location line="+114"/>
         <location line="+28"/>
         <location line="+73"/>
         <source>The account no longer exists.</source>
@@ -5736,7 +5736,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ບັນຊີບໍ່ມີຢູ່ອີກແລ້ວ.</translation>
     </message>
     <message>
-        <location line="-589"/>
+        <location line="-591"/>
         <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5770,7 +5770,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ການຊິງຂອງບັນຊີຍັງດຳເນີນຢູ່. ທີ່ຢູ່ບໍ່ໄດ້ຖືກປ່ຽນ, ກະລຸນາລອງໃໝ່.</translation>
     </message>
     <message>
-        <location line="+557"/>
+        <location line="+559"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ການປ່ຽນທີ່ຢູ່ເຊີບເວີຂອງບັນຊີ</translation>

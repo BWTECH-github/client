@@ -334,6 +334,7 @@ void LegacyClientImportController::importFolders(AccountState *accountState, Syn
             // wie ein neu eingerichtetes Konto, damit es nicht ohne Ordner bleibt, und mit der Wahl aus dem Assistenten
             setUpLikeNewAccount(accountState, choice);
         }
+        _takenOverFolders += imported;
     }
     QTimer::singleShot(0, this, &LegacyClientImportController::importNextAccount);
 }
@@ -353,8 +354,16 @@ void LegacyClientImportController::showReport()
         return;
     }
     QMessageBox box(QMessageBox::Information, tr("Import finished"), _report.join(QLatin1Char('\n')), QMessageBox::Ok, _window);
-    box.setInformativeText(tr("Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not "
-                              "synchronized twice."));
+    // doppelt synchronisiert würden nur übernommene Ordner. Hat der offizielle Client noch Konten, die hier fehlen (Anmeldung
+    // abgebrochen oder gescheitert), braucht der Nutzer ihn dafür weiter: dann nicht zum Deinstallieren raten.
+    if (_takenOverFolders > 0) {
+        const bool everyAccountSetUp = std::all_of(_config.accounts.cbegin(), _config.accounts.cend(),
+            [](const LegacyClient::Account &account) { return AccountManager::instance()->accountForLoginExists(account.url, account.davUser); });
+        box.setInformativeText(everyAccountSetUp
+                ? tr("Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.")
+                : tr("The accounts that were not taken over are only set up in the official client. Before you start it again, remove the "
+                     "accounts taken over from it, so that both programs do not synchronize the same folders."));
+    }
     _window->ensureVisible();
     box.exec();
 }

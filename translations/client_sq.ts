@@ -418,13 +418,13 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Llogaria juaj në shërbyes është çaktivizuar (%1). Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Shërbimi i hyrjes i shërbyesit nuk e pranon këtë aplikacion (%1). Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
@@ -911,7 +911,7 @@ Ju lutemi, kontrolloni qenien në punë të shërbyesit dhe rixhironi ndihmësin
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Rregullime të mëtejshme</translation>
     </message>
@@ -1328,7 +1328,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+77"/>
         <source>server sent invalid content type: %1.</source>
         <translation>shërbyesi dërgoi lloj të pavlefshëm lënde: %1.</translation>
     </message>
@@ -2382,7 +2382,7 @@ Objektet mbi të cilët lejohet fshirja do të fshihen, nëse pengojnë heqjen e
         <translation>%1: s’u mor përsipër. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: llogaria s’u krijua dot: %2</translation>
@@ -2394,10 +2394,16 @@ Objektet mbi të cilët lejohet fshirja do të fshihen, nëse pengojnë heqjen e
         <translation>Importimi përfundoi</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Mbylleni përgjithmonë klientin zyrtar (çaktivizoni nisjen e tij të vetvetishme, ose çinstalojeni), që dosjet të mos njëkohësohen dy herë.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Llogaritë që s’u morën përsipër janë ujdisur vetëm te klienti zyrtar. Para se ta rinisni, hiqni prej tij llogaritë e marra përsipër, që të dy programet të mos njëkohësojnë të njëjtat dosje.</translation>
     </message>
 </context>
 <context>
@@ -2818,7 +2824,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
         <source>Successfully signed in</source>
         <translation>U hy me sukses</translation>
     </message>
@@ -2879,7 +2885,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>Stemë Emri Aplikacioni %1</translation>
     </message>
@@ -3796,7 +3802,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Njoftimi s’u hodh dot tej, ngaqë shërbyesi s’është i kapshëm.</translation>
@@ -3892,7 +3898,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+510"/>
+        <location filename="../src/gui/servermove.cpp" line="+512"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Po kontrollohet %1…</translation>
@@ -3923,7 +3929,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
     <message>
         <location line="+11"/>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Po kontrollohet nëse është i njëjti shërbyes dhe i njëjti përdorues…</translation>
@@ -4010,7 +4016,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-525"/>
+        <location line="-527"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>S’u kap dot ndonjë shërbyes te %1.</translation>
@@ -5380,7 +5386,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
         <source>%1 logo</source>
         <translation>Stemë e %1</translation>
     </message>
@@ -5396,7 +5402,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Që t’ia filloni, bëni hyrjen.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Enter your server address to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Që t’ia filloni, jepni adresën e shërbyesit tuaj.</translation>
@@ -5417,7 +5423,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Stemë shtesë e përcaktuar nga enti</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+121"/>
         <source>Invalid server URL: %1</source>
         <translation>URL e pavlefshme shërbyesi: %1</translation>
     </message>
@@ -5435,7 +5441,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+77"/>
         <source>Network request to collect user info failed</source>
         <translation>Dështoi kërkesë rrjeti për të grumbulluar informacion mbi përdoruesin</translation>
     </message>
@@ -5484,7 +5490,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+609"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5665,27 +5671,21 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>S’u gjet shërbyes owncloud.online te %1. Ju lutemi, kontrolloni adresën.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Aplikacioni &quot;OAuth2&quot; s’është i instaluar, ose s’është aktivizuar në këtë shërbyes. Ju lutemi, kërkojini përgjegjësit tuaj ta instalojë dhe aktivizojë përmes &quot;Market&quot;.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Shënim për përgjegjës: klienti desktop bën hyrjen përmes aplikacionit &quot;OAuth2&quot;. Instalojeni përmes &quot;Market&quot; dhe aktivizojeni për krejt përdoruesit (rresht urdhrash: occ app:enable oauth2).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+11"/>
         <source>Could not detect compatible server at %1</source>
         <translation>S’u pikas dot shërbyes i përputhshmë te %1</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Për hyrjen, ky shërbyes lyp aplikacionin &quot;OAuth2&quot;, por s’është i instaluar, ose s’është aktivizuar. Ju lutemi, kërkojini përgjegjësit tuaj ta instalojë përmes &quot;Market&quot; dhe ta aktivizojë për krejt përdoruesit (rresht urdhrash: occ app:enable oauth2).</translation>
     </message>
 </context>
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-312"/>
+        <location filename="../src/gui/servermove.cpp" line="-313"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ju lutemi, jepni adresën e re të shërbyesit tuaj.</translation>
@@ -5715,11 +5715,11 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Adresa s’duhet të përmbajë “?” apo “#”.</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+112"/>
+        <location line="+114"/>
         <location line="+28"/>
         <location line="+73"/>
         <source>The account no longer exists.</source>
@@ -5727,7 +5727,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Llogaria s’ekziston më.</translation>
     </message>
     <message>
-        <location line="-589"/>
+        <location line="-591"/>
         <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5761,7 +5761,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Ende po xhiron një njëkohësim i llogarisë. Adresa s’u ndryshua, ju lutemi, riprovoni.</translation>
     </message>
     <message>
-        <location line="+557"/>
+        <location line="+559"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ndryshim i adresës së shërbyesit të llogarisë</translation>

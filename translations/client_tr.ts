@@ -435,13 +435,13 @@ Dosya senkronizasyonu masaüstü yardımcı programı.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sunucudaki hesabınız devre dışı (%1). Lütfen sistem yöneticinize başvurun.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sunucunun oturum açma hizmeti bu uygulamayı kabul etmiyor (%1). Lütfen sistem yöneticinize başvurun.</translation>
@@ -962,7 +962,7 @@ Lütfen sunucunun erişilebilir olduğunu denetleyin ve sihirbazı yeniden çal�
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Gelişmiş ayarlar</translation>
@@ -1414,7 +1414,7 @@ Güncelleme arka planda gerçekleştirilecek ve mevcut AppImage dosyasının üz
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+77"/>
         <source>server sent invalid content type: %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>sunucu geçersiz içerik türü gönderdi: %1.</translation>
@@ -2494,7 +2494,7 @@ Bir dizinin kaldırılmasını engelliyorlarsa işaretli ögeler de silinecektir
         <translation>%1: devralınmadı. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: hesap oluşturulamadı: %2</translation>
@@ -2506,10 +2506,16 @@ Bir dizinin kaldırılmasını engelliyorlarsa işaretli ögeler de silinecektir
         <translation>İçe aktarma tamamlandı</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Klasörlerin iki kez eşitlenmemesi için resmi istemciyi kalıcı olarak kapatın (otomatik başlatmasını kapatın veya kaldırın).</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Devralınmayan hesaplar yalnızca resmi istemcide ayarlı. Resmi istemciyi yeniden başlatmadan önce devralınan hesapları ondan kaldırın; böylece iki program aynı klasörleri eşitlemez.</translation>
     </message>
 </context>
 <context>
@@ -2953,7 +2959,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Oturum başarıyla açıldı</translation>
@@ -3020,7 +3026,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Uygulama adı logosu %1</translation>
@@ -3981,7 +3987,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sunucuya ulaşılamadığı için bildirim kapatılamadı.</translation>
@@ -4078,7 +4084,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+510"/>
+        <location filename="../src/gui/servermove.cpp" line="+512"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 denetleniyor…</translation>
@@ -4109,7 +4115,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
     </message>
     <message>
         <location line="+11"/>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Aynı sunucu ve aynı kullanıcı olduğu denetleniyor…</translation>
@@ -4196,7 +4202,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-525"/>
+        <location line="-527"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 adresinde hiçbir sunucuya ulaşılamadı.</translation>
@@ -5591,7 +5597,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 logosu</translation>
@@ -5608,7 +5614,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Başlamak için oturum açın.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Enter your server address to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Başlamak için sunucu adresinizi girin.</translation>
@@ -5632,7 +5638,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Kuruluş tarafından tanımlanan ek logo</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+121"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Geçersiz sunucu URL&apos;si: %1</translation>
@@ -5653,7 +5659,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+77"/>
         <source>Network request to collect user info failed</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kullanıcı bilgilerini almak için yapılan ağ isteği başarısız oldu</translation>
@@ -5707,7 +5713,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+609"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5895,27 +5901,21 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>%1 adresinde owncloud.online sunucusu bulunamadı. Lütfen adresi denetleyin.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>&quot;OAuth2&quot; uygulaması bu sunucuda yüklü veya etkin değil. Lütfen yöneticinizden uygulamayı &quot;Market&quot; üzerinden yükleyip etkinleştirmesini isteyin.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Yöneticiler için not: masaüstü istemcisi &quot;OAuth2&quot; uygulaması üzerinden oturum açar. Uygulamayı &quot;Market&quot; üzerinden yükleyin ve tüm kullanıcılar için etkinleştirin (komut satırı: occ app:enable oauth2).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+11"/>
         <source>Could not detect compatible server at %1</source>
         <translation>%1 konumunda uyumlu sunucu algılanamadı</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Oturum açmak için bu sunucuda &quot;OAuth2&quot; uygulaması gerekiyor, ancak uygulama yüklü veya etkin değil. Lütfen yöneticinizden uygulamayı &quot;Market&quot; üzerinden yükleyip tüm kullanıcılar için etkinleştirmesini isteyin (komut satırı: occ app:enable oauth2).</translation>
     </message>
 </context>
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-312"/>
+        <location filename="../src/gui/servermove.cpp" line="-313"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Lütfen sunucunuzun yeni adresini girin.</translation>
@@ -5945,11 +5945,11 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Adres “?” veya “#” içeremez.</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+112"/>
+        <location line="+114"/>
         <location line="+28"/>
         <location line="+73"/>
         <source>The account no longer exists.</source>
@@ -5957,7 +5957,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Hesap artık mevcut değil.</translation>
     </message>
     <message>
-        <location line="-589"/>
+        <location line="-591"/>
         <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5991,7 +5991,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Hesabın bir eşitlemesi hâlâ sürüyor. Adres değiştirilmedi, lütfen yeniden deneyin.</translation>
     </message>
     <message>
-        <location line="+557"/>
+        <location line="+559"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>hesabın sunucu adresinin değiştirilmesi</translation>

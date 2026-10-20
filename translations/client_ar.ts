@@ -462,13 +462,13 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>حسابك على الخادم معطّل (%1). يُرجى التواصل مع مسؤول النظام.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>خدمة تسجيل الدخول على الخادم لا تقبل هذا التطبيق (%1). يُرجى التواصل مع مسؤول النظام.</translation>
@@ -993,7 +993,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>الإعدادات المتقدمة</translation>
@@ -1452,7 +1452,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+77"/>
         <source>server sent invalid content type: %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>أرسل الخادم نوع محتوى غير صالح: %1.</translation>
@@ -2567,7 +2567,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: لم يُنقل. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: تعذّر إنشاء الحساب: %2</translation>
@@ -2579,10 +2579,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>اكتمل الاستيراد</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>أغلق العميل الرسمي نهائيًا (أوقف تشغيله التلقائي أو أزل تثبيته)، حتى لا تُزامن المجلدات مرتين.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>الحسابات التي لم تُنقل مُعدّة في العميل الرسمي فقط. قبل تشغيله مرة أخرى، أزل منه الحسابات المنقولة، حتى لا يُزامن البرنامجان المجلدات نفسها.</translation>
     </message>
 </context>
 <context>
@@ -3034,7 +3040,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تم تسجيل الدخول بنجاح</translation>
@@ -3101,7 +3107,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>شعار اسم التطبيق %1</translation>
@@ -4101,7 +4107,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تعذّر إغلاق الإشعار لأنه لا يمكن الوصول إلى الخادم.</translation>
@@ -4198,7 +4204,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+510"/>
+        <location filename="../src/gui/servermove.cpp" line="+512"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>جارٍ التحقق من %1…</translation>
@@ -4229,7 +4235,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+11"/>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>جارٍ التحقق من أنه الخادم نفسه والمستخدم نفسه…</translation>
@@ -4316,7 +4322,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-525"/>
+        <location line="-527"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تعذّر الوصول إلى أي خادم على %1.</translation>
@@ -5739,7 +5745,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>شعار %1</translation>
@@ -5757,7 +5763,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>سجّل الدخول للبدء.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Enter your server address to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>أدخل عنوان الخادم للبدء.</translation>
@@ -5781,7 +5787,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>شعار إضافي حددته المؤسسة</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+121"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>عنوان URL للخادم غير صالح: %1</translation>
@@ -5802,7 +5808,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+77"/>
         <source>Network request to collect user info failed</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>فشل طلب الشبكة لجمع معلومات المستخدم</translation>
@@ -5859,7 +5865,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+609"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -6063,28 +6069,22 @@ Note that using any logging command line options will override the settings.</so
         <translation>لم يُعثر على خادم owncloud.online على %1. يُرجى التحقق من العنوان.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>تطبيق &quot;OAuth2&quot; غير مثبّت أو غير مفعّل على هذا الخادم. يُرجى أن تطلب من المسؤول تثبيته وتفعيله عبر &quot;Market&quot;.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ملاحظة للمسؤولين: يسجّل عميل سطح المكتب الدخول عبر تطبيق &quot;OAuth2&quot;. ثبّته عبر &quot;Market&quot; وفعّله لجميع المستخدمين (سطر الأوامر: occ app:enable oauth2).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+11"/>
         <source>Could not detect compatible server at %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تعذّر اكتشاف خادم متوافق على %1</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يتطلب تسجيل الدخول وجود تطبيق &quot;OAuth2&quot; على هذا الخادم، لكنه غير مثبّت أو غير مفعّل. يُرجى أن تطلب من المسؤول تثبيته عبر &quot;Market&quot; وتفعيله لجميع المستخدمين (سطر الأوامر: occ app:enable oauth2).</translation>
     </message>
 </context>
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-312"/>
+        <location filename="../src/gui/servermove.cpp" line="-313"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>يُرجى إدخال العنوان الجديد لخادمك.</translation>
@@ -6114,11 +6114,11 @@ Note that using any logging command line options will override the settings.</so
         <translation>يجب ألا يحتوي العنوان على «?» أو «#».</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+112"/>
+        <location line="+114"/>
         <location line="+28"/>
         <location line="+73"/>
         <source>The account no longer exists.</source>
@@ -6126,7 +6126,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>الحساب لم يعد موجودًا.</translation>
     </message>
     <message>
-        <location line="-589"/>
+        <location line="-591"/>
         <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -6160,7 +6160,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>لا تزال مزامنة الحساب قيد التشغيل. لم يُغيَّر العنوان، يُرجى المحاولة مجددًا.</translation>
     </message>
     <message>
-        <location line="+557"/>
+        <location line="+559"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تغيير عنوان خادم الحساب</translation>

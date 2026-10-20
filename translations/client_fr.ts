@@ -426,13 +426,13 @@ Utilitaire de synchronisation de fichiers pour ordinateur de bureau.</translatio
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Votre compte est désactivé sur le serveur (%1). Veuillez contacter votre administrateur système.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Le service de connexion du serveur n&apos;accepte pas cette application (%1). Veuillez contacter votre administrateur système.</translation>
@@ -934,7 +934,7 @@ Veuillez vérifier la disponibilité du serveur, puis relancez l&apos;assistant.
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Paramètres avancés</translation>
     </message>
@@ -1354,7 +1354,7 @@ La mise à jour sera effectuée en arrière-plan et va écraser le fichier Appim
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+77"/>
         <source>server sent invalid content type: %1.</source>
         <translation>Le serveur a envoyé un type de contenu non valide : %1.</translation>
     </message>
@@ -2413,7 +2413,7 @@ Les éléments dont la suppression est autorisée seront supprimés s&apos;ils e
         <translation>%1 : non repris. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 : le compte n&apos;a pas pu être créé : %2</translation>
@@ -2425,10 +2425,16 @@ Les éléments dont la suppression est autorisée seront supprimés s&apos;ils e
         <translation>Importation terminée</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Quittez définitivement le client officiel (désactivez son démarrage automatique ou désinstallez-le) afin que les dossiers ne soient pas synchronisés deux fois.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Les comptes non repris ne sont configurés que dans le client officiel. Avant de le redémarrer, supprimez-y les comptes repris, afin que les deux programmes ne synchronisent pas les mêmes dossiers.</translation>
     </message>
 </context>
 <context>
@@ -2852,7 +2858,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
         <source>Successfully signed in</source>
         <translation>Identification réussie</translation>
     </message>
@@ -2913,7 +2919,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>Nom de l&apos;application Logo %1</translation>
     </message>
@@ -3834,7 +3840,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>La notification n&apos;a pas pu être ignorée, car le serveur est injoignable.</translation>
@@ -3930,7 +3936,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+510"/>
+        <location filename="../src/gui/servermove.cpp" line="+512"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Vérification de %1…</translation>
@@ -3961,7 +3967,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
     </message>
     <message>
         <location line="+11"/>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Vérification qu&apos;il s&apos;agit du même serveur et du même utilisateur…</translation>
@@ -4048,7 +4054,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-525"/>
+        <location line="-527"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Aucun serveur n&apos;est joignable à l&apos;adresse %1.</translation>
@@ -5424,7 +5430,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
         <source>%1 logo</source>
         <translation>logo de %1</translation>
     </message>
@@ -5440,7 +5446,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Connectez-vous pour commencer.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Enter your server address to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Entrez l&apos;adresse de votre serveur pour commencer.</translation>
@@ -5461,7 +5467,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Logo supplémentaire défini par l&apos;organisation</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+121"/>
         <source>Invalid server URL: %1</source>
         <translation>URL du serveur non valide : %1</translation>
     </message>
@@ -5479,7 +5485,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+77"/>
         <source>Network request to collect user info failed</source>
         <translation>Échec de la requête réseau visant à collecter les informations utilisateur</translation>
     </message>
@@ -5528,7 +5534,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+609"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5713,27 +5719,21 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Aucun serveur owncloud.online n&apos;a été trouvé à l&apos;adresse %1. Veuillez vérifier l&apos;adresse.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>L&apos;application « OAuth2 » n&apos;est pas installée ou pas activée sur ce serveur. Veuillez demander à votre administrateur de l&apos;installer et de l&apos;activer via « Market ».</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Remarque pour les administrateurs : le client de bureau se connecte via l&apos;application « OAuth2 ». Installez-la via « Market » et activez-la pour tous les utilisateurs (ligne de commande : occ app:enable oauth2).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+11"/>
         <source>Could not detect compatible server at %1</source>
         <translation>Impossible de détecter un serveur compatible à %1</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>La connexion nécessite l&apos;application « OAuth2 » sur ce serveur, mais elle n&apos;est pas installée ou pas activée. Veuillez demander à votre administrateur de l&apos;installer via « Market » et de l&apos;activer pour tous les utilisateurs (ligne de commande : occ app:enable oauth2).</translation>
     </message>
 </context>
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-312"/>
+        <location filename="../src/gui/servermove.cpp" line="-313"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Veuillez saisir la nouvelle adresse de votre serveur.</translation>
@@ -5763,11 +5763,11 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>L&apos;adresse ne doit contenir ni « ? » ni « # ».</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+112"/>
+        <location line="+114"/>
         <location line="+28"/>
         <location line="+73"/>
         <source>The account no longer exists.</source>
@@ -5775,7 +5775,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Le compte n&apos;existe plus.</translation>
     </message>
     <message>
-        <location line="-589"/>
+        <location line="-591"/>
         <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5809,7 +5809,7 @@ Veuillez noter qu’utiliser les options de journalisation en ligne de commande 
         <translation>Une synchronisation du compte est encore en cours. L&apos;adresse n&apos;a pas été modifiée, veuillez réessayer.</translation>
     </message>
     <message>
-        <location line="+557"/>
+        <location line="+559"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>modification de l&apos;adresse du serveur du compte</translation>

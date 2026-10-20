@@ -19,12 +19,13 @@
 #include "accountmanager.h"
 #include "config/appconfig.h"
 #include "iconresources.h"
+#include "mainwindow/colormanager.h"
 #include "networkadapters/fetchcapabilitiesadapter.h"
 #include "networkadapters/userinfoadapter.h"
 #include "networkadapters/webfingerlookupadapter.h"
 #include "template.h"
-#include "mainwindow/colormanager.h"
 #include "theme.h"
+#include "wizardpagelayout.h"
 
 #include <QBuffer>
 #include <QClipboard>
@@ -140,7 +141,7 @@ void OAuthPageController::buildPage()
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel);
     layout->addStretch(1);
-    _page->setLayout(layout);
+    setScrollableWizardPageLayout(_page, layout);
 
     updateIcons();
     // seed the copy button tooltip for the first go

@@ -408,12 +408,12 @@ Anwendung zur Datei-Synchronisation.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translation>Ihr Konto ist auf dem Server deaktiviert (%1). Bitte wenden Sie sich an Ihren Systemadministrator.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
         <translation>Der Anmeldedienst des Servers lässt diese Anwendung nicht zu (%1). Bitte wenden Sie sich an Ihren Systemadministrator.</translation>
     </message>
@@ -879,7 +879,7 @@ Bitte prüfen Sie die Serververfügbarkeit und führen Sie den Assistenten erneu
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Erweiterte Einstellungen</translation>
     </message>
@@ -1279,7 +1279,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+77"/>
         <source>server sent invalid content type: %1.</source>
         <translation>Der Server hat einen ungültigen Inhaltstyp gesendet: %1.</translation>
     </message>
@@ -2239,7 +2239,7 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>%1: nicht übernommen. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translation>%1: das Konto konnte nicht angelegt werden: %2</translation>
     </message>
@@ -2249,9 +2249,14 @@ Objekte, bei denen das Löschen erlaubt ist, werden gelöscht, falls sie die Lö
         <translation>Übernahme abgeschlossen</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translation>Beenden Sie den offiziellen Client dauerhaft (Autostart ausschalten oder deinstallieren), damit die Ordner nicht doppelt synchronisiert werden.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translation>Die nicht übernommenen Konten sind nur im offiziellen Client eingerichtet. Entfernen Sie dort die übernommenen Konten, bevor Sie ihn wieder starten, damit nicht beide Programme dieselben Ordner synchronisieren.</translation>
     </message>
 </context>
 <context>
@@ -2666,7 +2671,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
         <source>Successfully signed in</source>
         <translation>Erfolgreich angemeldet</translation>
     </message>
@@ -2727,7 +2732,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>Anwendungsname Logo %1</translation>
     </message>
@@ -3627,7 +3632,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translation>Die Benachrichtigung konnte nicht verworfen werden, weil der Server nicht erreichbar ist.</translation>
     </message>
@@ -3709,7 +3714,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+510"/>
+        <location filename="../src/gui/servermove.cpp" line="+512"/>
         <source>Checking %1…</source>
         <translation>Prüfe %1…</translation>
     </message>
@@ -3735,7 +3740,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <location line="+11"/>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Checking that this is the same server and the same user…</source>
         <translation>Prüfe, ob es derselbe Server und derselbe Benutzer ist…</translation>
     </message>
@@ -3808,7 +3813,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-525"/>
+        <location line="-527"/>
         <source>No server could be reached at %1.</source>
         <translation>Unter %1 ist kein Server erreichbar.</translation>
     </message>
@@ -5056,7 +5061,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
         <source>%1 logo</source>
         <translation>%1 Logo</translation>
     </message>
@@ -5071,7 +5076,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Melden Sie sich an, um zu beginnen.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Enter your server address to get started.</source>
         <translation>Geben Sie Ihre Serveradresse ein, um zu beginnen.</translation>
     </message>
@@ -5091,7 +5096,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Zusätzliches, von der Organisation definiertes Logo</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+121"/>
         <source>Invalid server URL: %1</source>
         <translation>Ungültige Server-URL: %1</translation>
     </message>
@@ -5109,7 +5114,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+77"/>
         <source>Network request to collect user info failed</source>
         <translation>Netzwerkanfrage zum Abrufen von Benutzerinformationen fehlgeschlagen</translation>
     </message>
@@ -5158,7 +5163,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+609"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5335,25 +5340,20 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Unter %1 wurde kein owncloud.online-Server gefunden. Bitte prüfen Sie die Adresse.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translation>Auf diesem Server ist die App „OAuth2“ nicht installiert oder nicht aktiviert. Bitten Sie Ihren Administrator, sie über den „Markt“ zu installieren und zu aktivieren.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translation>Hinweis für Administratoren: Der Desktop-Client meldet sich über die App „OAuth2“ an. Installieren Sie sie über den „Markt“ und aktivieren Sie sie für alle Benutzer (Kommandozeile: occ app:enable oauth2).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+11"/>
         <source>Could not detect compatible server at %1</source>
         <translation>Ein kompatibler Server konnte unter %1 nicht gefunden werden.</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translation>Für die Anmeldung braucht dieser Server die App „OAuth2“, sie ist aber nicht installiert oder nicht aktiviert. Bitten Sie Ihren Administrator, sie im „Markt“ zu installieren und für alle Benutzer zu aktivieren (Kommandozeile: occ app:enable oauth2).</translation>
     </message>
 </context>
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-312"/>
+        <location filename="../src/gui/servermove.cpp" line="-313"/>
         <source>Please enter the new address of your server.</source>
         <translation>Bitte geben Sie die neue Adresse Ihres Servers ein.</translation>
     </message>
@@ -5378,18 +5378,18 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Die Adresse darf kein „?“ und kein „#“ enthalten.</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+112"/>
+        <location line="+114"/>
         <location line="+28"/>
         <location line="+73"/>
         <source>The account no longer exists.</source>
         <translation>Das Konto gibt es nicht mehr.</translation>
     </message>
     <message>
-        <location line="-589"/>
+        <location line="-591"/>
         <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translation>Die Serveradresse lässt sich nur bei Konten ohne Spaces ändern.</translation>
@@ -5418,7 +5418,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Eine Synchronisation des Kontos läuft noch. Die Adresse wurde nicht geändert, bitte versuchen Sie es erneut.</translation>
     </message>
     <message>
-        <location line="+557"/>
+        <location line="+559"/>
         <source>change of the account&apos;s server address</source>
         <translation>Änderung der Serveradresse des Kontos</translation>
     </message>

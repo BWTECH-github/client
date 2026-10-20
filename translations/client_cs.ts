@@ -444,13 +444,13 @@ Nástroj pro synchronizaci souborů na desktopu.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Váš účet na serveru je deaktivován (%1). Obraťte se na správce systému.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Přihlašovací služba serveru tuto aplikaci nepřijímá (%1). Obraťte se na správce systému.</translation>
@@ -969,7 +969,7 @@ Zkontrolujte dostupnost serveru a spusťte průvodce znovu.</translation>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Pokročilá nastavení</translation>
     </message>
@@ -1421,7 +1421,7 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+77"/>
         <source>server sent invalid content type: %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>server odeslal neplatný typ obsahu: %1.</translation>
@@ -2521,7 +2521,7 @@ Položky, u kterých je povoleno mazání, budou smazány, pokud brání odstran
         <translation>%1: nepřevzato. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: účet nebylo možné vytvořit: %2</translation>
@@ -2533,10 +2533,16 @@ Položky, u kterých je povoleno mazání, budou smazány, pokud brání odstran
         <translation>Import dokončen</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ukončete oficiálního klienta natrvalo (vypněte jeho automatické spouštění nebo ho odinstalujte), aby se složky nesynchronizovaly dvakrát.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nepřevzaté účty jsou nastaveny pouze v oficiálním klientovi. Než ho znovu spustíte, odeberte z něj převzaté účty, aby oba programy nesynchronizovaly stejné složky.</translation>
     </message>
 </context>
 <context>
@@ -2981,7 +2987,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Přihlášení proběhlo úspěšně</translation>
@@ -3046,7 +3052,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logo aplikace %1</translation>
@@ -4024,7 +4030,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Oznámení nelze zavřít, protože server není dostupný.</translation>
@@ -4121,7 +4127,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+510"/>
+        <location filename="../src/gui/servermove.cpp" line="+512"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kontroluje se %1…</translation>
@@ -4152,7 +4158,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     </message>
     <message>
         <location line="+11"/>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kontroluje se, zda jde o stejný server a stejného uživatele…</translation>
@@ -4239,7 +4245,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-525"/>
+        <location line="-527"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Na adrese %1 není dostupný žádný server.</translation>
@@ -5642,7 +5648,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logo %1</translation>
@@ -5659,7 +5665,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Pro začátek se přihlaste.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Enter your server address to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Pro začátek zadejte adresu serveru.</translation>
@@ -5683,7 +5689,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Doplňkové logo určené organizací</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+121"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Neplatná URL serveru: %1</translation>
@@ -5704,7 +5710,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+77"/>
         <source>Network request to collect user info failed</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Síťový požadavek na získání informací o uživateli selhal</translation>
@@ -5759,7 +5765,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+609"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5952,27 +5958,21 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Na adrese %1 nebyl nalezen žádný server owncloud.online. Zkontrolujte adresu.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Aplikace „OAuth2“ není na tomto serveru nainstalována nebo zapnuta. Požádejte správce, aby ji nainstaloval a zapnul přes „Market“.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Poznámka pro správce: desktopový klient se přihlašuje přes aplikaci „OAuth2“. Nainstalujte ji přes „Market“ a zapněte ji pro všechny uživatele (příkazový řádek: occ app:enable oauth2).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+11"/>
         <source>Could not detect compatible server at %1</source>
         <translation>Nepodařilo se detekovat kompatibilní server na %1</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pro přihlášení vyžaduje tento server aplikaci „OAuth2“, ta však není nainstalována nebo zapnuta. Požádejte správce, aby ji nainstaloval přes „Market“ a zapnul ji pro všechny uživatele (příkazový řádek: occ app:enable oauth2).</translation>
     </message>
 </context>
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-312"/>
+        <location filename="../src/gui/servermove.cpp" line="-313"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Zadejte novou adresu svého serveru.</translation>
@@ -6002,11 +6002,11 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Adresa nesmí obsahovat „?“ ani „#“.</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+112"/>
+        <location line="+114"/>
         <location line="+28"/>
         <location line="+73"/>
         <source>The account no longer exists.</source>
@@ -6014,7 +6014,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Účet již neexistuje.</translation>
     </message>
     <message>
-        <location line="-589"/>
+        <location line="-591"/>
         <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -6048,7 +6048,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Synchronizace účtu stále probíhá. Adresa nebyla změněna, zkuste to prosím znovu.</translation>
     </message>
     <message>
-        <location line="+557"/>
+        <location line="+559"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>změna adresy serveru účtu</translation>

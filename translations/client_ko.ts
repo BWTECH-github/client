@@ -433,13 +433,13 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>서버의 계정이 비활성화되어 있습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>서버의 로그인 서비스가 이 응용 프로그램을 허용하지 않습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
@@ -957,7 +957,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>고급 설정</translation>
@@ -1409,7 +1409,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+77"/>
         <source>server sent invalid content type: %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>서버가 잘못된 콘텐츠 유형을 보냈습니다: %1.</translation>
@@ -2478,7 +2478,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1: 가져오지 않았습니다. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: 계정을 만들 수 없습니다: %2</translation>
@@ -2490,10 +2490,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>가져오기 완료</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>폴더가 두 번 동기화되지 않도록 공식 클라이언트를 완전히 종료하십시오(자동 시작을 끄거나 제거하십시오).</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>가져오지 않은 계정은 공식 클라이언트에만 설정되어 있습니다. 두 프로그램이 같은 폴더를 동기화하지 않도록, 공식 클라이언트를 다시 시작하기 전에 가져온 계정을 공식 클라이언트에서 제거하십시오.</translation>
     </message>
 </context>
 <context>
@@ -2937,7 +2943,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>로그인했습니다</translation>
@@ -3001,7 +3007,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>애플리케이션 이름 로고 %1</translation>
@@ -3965,7 +3971,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>서버에 연결할 수 없어 알림을 닫을 수 없습니다.</translation>
@@ -4062,7 +4068,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+510"/>
+        <location filename="../src/gui/servermove.cpp" line="+512"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 확인 중…</translation>
@@ -4093,7 +4099,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+11"/>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>같은 서버이고 같은 사용자인지 확인하는 중…</translation>
@@ -4180,7 +4186,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-525"/>
+        <location line="-527"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1에서 서버에 연결할 수 없습니다.</translation>
@@ -5576,7 +5582,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 로고</translation>
@@ -5593,7 +5599,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>시작하려면 로그인하십시오.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Enter your server address to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>시작하려면 서버 주소를 입력하십시오.</translation>
@@ -5617,7 +5623,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>조직에서 지정한 추가 로고</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+121"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>잘못된 서버 URL: %1</translation>
@@ -5638,7 +5644,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+77"/>
         <source>Network request to collect user info failed</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>사용자 정보를 가져오는 네트워크 요청이 실패했습니다</translation>
@@ -5691,7 +5697,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+609"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5879,27 +5885,21 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1에서 owncloud.online 서버를 찾을 수 없습니다. 주소를 확인하십시오.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>이 서버에 &quot;OAuth2&quot; 앱이 설치되어 있지 않거나 활성화되어 있지 않습니다. 관리자에게 &quot;Market&quot;에서 설치하고 활성화해 달라고 요청하십시오.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>관리자 참고 사항: 데스크톱 클라이언트는 &quot;OAuth2&quot; 앱을 통해 로그인합니다. &quot;Market&quot;에서 앱을 설치하고 모든 사용자에게 활성화하십시오 (명령줄: occ app:enable oauth2).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+11"/>
         <source>Could not detect compatible server at %1</source>
         <translation>%1에서 호환되는 서버를 찾을 수 없음</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>로그인하려면 이 서버에 &quot;OAuth2&quot; 앱이 필요하지만 설치되어 있지 않거나 활성화되어 있지 않습니다. 관리자에게 &quot;Market&quot;에서 앱을 설치하고 모든 사용자에게 활성화해 달라고 요청하십시오 (명령줄: occ app:enable oauth2).</translation>
     </message>
 </context>
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-312"/>
+        <location filename="../src/gui/servermove.cpp" line="-313"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>서버의 새 주소를 입력하십시오.</translation>
@@ -5929,11 +5929,11 @@ Note that using any logging command line options will override the settings.</so
         <translation>주소에는 “?” 또는 “#”을 포함할 수 없습니다.</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+112"/>
+        <location line="+114"/>
         <location line="+28"/>
         <location line="+73"/>
         <source>The account no longer exists.</source>
@@ -5941,7 +5941,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>계정이 더 이상 존재하지 않습니다.</translation>
     </message>
     <message>
-        <location line="-589"/>
+        <location line="-591"/>
         <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5975,7 +5975,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>계정의 동기화가 아직 진행 중입니다. 주소가 변경되지 않았습니다. 다시 시도하십시오.</translation>
     </message>
     <message>
-        <location line="+557"/>
+        <location line="+559"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>계정 서버 주소 변경</translation>

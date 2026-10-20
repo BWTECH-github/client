@@ -449,13 +449,13 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>您在伺服器上的帳戶已停用（%1）。請聯絡您的系統管理員。</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>伺服器的登入服務不接受此應用程式（%1）。請聯絡您的系統管理員。</translation>
@@ -985,7 +985,7 @@ Please check the server&apos;s availability then run the wizard again.</source>
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>進階設定</translation>
@@ -1443,7 +1443,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+77"/>
         <source>server sent invalid content type: %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>伺服器傳送了無效的內容類型：%1。</translation>
@@ -2535,7 +2535,7 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>%1:未轉移。%2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>%1:無法建立帳號:%2</translation>
@@ -2547,10 +2547,16 @@ Items where deletion is allowed will be deleted if they prevent a directory from
         <translation>匯入完成</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>請徹底結束官方用戶端(關閉其自動啟動或將其解除安裝),以免資料夾被同步兩次。</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>未轉移的帳號僅在官方用戶端中設定。再次啟動官方用戶端之前，請先從中移除已轉移的帳號，以免兩個程式同步相同的資料夾。</translation>
     </message>
 </context>
 <context>
@@ -3018,7 +3024,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登入成功</translation>
@@ -3086,7 +3092,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>應用程式名稱標誌 %1</translation>
@@ -4107,7 +4113,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>由於無法連線到伺服器，無法關閉此通知。</translation>
@@ -4204,7 +4210,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+510"/>
+        <location filename="../src/gui/servermove.cpp" line="+512"/>
         <source>Checking %1…</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>正在檢查 %1…</translation>
@@ -4235,7 +4241,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+11"/>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>正在檢查是否為同一台伺服器和同一位使用者…</translation>
@@ -4322,7 +4328,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-525"/>
+        <location line="-527"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>無法連線至 %1 的任何伺服器。</translation>
@@ -5747,7 +5753,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
         <source>%1 logo</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 標誌</translation>
@@ -5765,7 +5771,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>登入以開始。</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Enter your server address to get started.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>請輸入您的伺服器位址以開始。</translation>
@@ -5789,7 +5795,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>組織指定的附加標誌</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+121"/>
         <source>Invalid server URL: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無效的伺服器網址：%1</translation>
@@ -5810,7 +5816,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+77"/>
         <source>Network request to collect user info failed</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>取得使用者資訊的網路要求失敗</translation>
@@ -5867,7 +5873,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+609"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -6058,28 +6064,22 @@ Note that using any logging command line options will override the settings.</so
         <translation>在 %1 找不到 owncloud.online 伺服器。請檢查位址。</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>此伺服器未安裝或未啟用「OAuth2」應用程式。請要求您的管理員透過「Market」安裝並啟用它。</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>管理員須知：桌面用戶端透過「OAuth2」應用程式登入。請透過「Market」安裝它，並為所有使用者啟用（命令列：occ app:enable oauth2）。</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+11"/>
         <source>Could not detect compatible server at %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無法在 %1 偵測到相容的伺服器</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
+        <translation>登入需要此伺服器上的「OAuth2」應用程式，但它未安裝或未啟用。請要求您的管理員透過「Market」安裝它，並為所有使用者啟用（命令列：occ app:enable oauth2）。</translation>
     </message>
 </context>
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-312"/>
+        <location filename="../src/gui/servermove.cpp" line="-313"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>請輸入伺服器的新位址。</translation>
@@ -6109,11 +6109,11 @@ Note that using any logging command line options will override the settings.</so
         <translation>位址不能包含「?」或「#」。</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+112"/>
+        <location line="+114"/>
         <location line="+28"/>
         <location line="+73"/>
         <source>The account no longer exists.</source>
@@ -6121,7 +6121,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>該帳號已不存在。</translation>
     </message>
     <message>
-        <location line="-589"/>
+        <location line="-591"/>
         <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
@@ -6155,7 +6155,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>帳號的同步仍在進行中。位址未變更,請再試一次。</translation>
     </message>
     <message>
-        <location line="+557"/>
+        <location line="+559"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>變更帳號的伺服器位址</translation>

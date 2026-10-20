@@ -17,6 +17,7 @@
 
 #include "mainwindow/colormanager.h"
 #include "theme.h"
+#include "wizardpagelayout.h"
 
 #include <QButtonGroup>
 #include <QFileDialog>
@@ -138,7 +139,7 @@ void AdvancedSettingsPageController::buildPage()
     layout->addWidget(_errorField);
 
     layout->addStretch(1);
-    _page->setLayout(layout);
+    setScrollableWizardPageLayout(_page, layout);
 
     updateColors();
 }

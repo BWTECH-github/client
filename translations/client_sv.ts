@@ -418,13 +418,13 @@ Skrivbordsverktyg för filsynkronisering.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+690"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+693"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ditt konto på servern är inaktiverat (%1). Kontakta din systemadministratör.</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+5"/>
         <source>The sign-in service of the server does not accept this application (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Serverns inloggningstjänst accepterar inte det här programmet (%1). Kontakta din systemadministratör.</translation>
@@ -907,7 +907,7 @@ Kontrollera att servern är tillgänglig och kör sedan guiden igen.</translatio
 <context>
     <name>OCC::AdvancedSettingsPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+50"/>
+        <location filename="../src/gui/newaccountwizard/advancedsettingspagecontroller.cpp" line="+51"/>
         <source>Advanced settings</source>
         <translation>Avancerade inställningar</translation>
     </message>
@@ -1324,7 +1324,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::FetchCapabilitiesAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/fetchcapabilitiesadapter.cpp" line="+77"/>
         <source>server sent invalid content type: %1.</source>
         <translation>servern skickade en ogiltig innehållstyp: %1.</translation>
     </message>
@@ -2377,7 +2377,7 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
         <translation>%1: togs inte över. %2</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+19"/>
         <source>%1: the account could not be created: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1: kontot kunde inte skapas: %2</translation>
@@ -2389,10 +2389,16 @@ Objekt där radering är tillåten raderas om de förhindrar att en katalog tas 
         <translation>Importen är klar</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>Quit the official client for good (turn off its autostart or uninstall it), so that the folders are not synchronized twice.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Avsluta den officiella klienten permanent (stäng av dess autostart eller avinstallera den), så att mapparna inte synkroniseras två gånger.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>The accounts that were not taken over are only set up in the official client. Before you start it again, remove the accounts taken over from it, so that both programs do not synchronize the same folders.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kontona som inte togs över är bara konfigurerade i den officiella klienten. Ta bort de övertagna kontona från den innan du startar den igen, så att inte båda programmen synkroniserar samma mappar.</translation>
     </message>
 </context>
 <context>
@@ -2813,7 +2819,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-476"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-481"/>
         <source>Successfully signed in</source>
         <translation>Inloggningen lyckades</translation>
     </message>
@@ -2874,7 +2880,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OAuthPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+71"/>
+        <location filename="../src/gui/newaccountwizard/oauthpagecontroller.cpp" line="+72"/>
         <source>Application Name Logo %1</source>
         <translation>Programlogotyp %1</translation>
     </message>
@@ -3789,7 +3795,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::ServerActivityFetcher</name>
     <message>
-        <location filename="../src/gui/serveractivityfetcher.cpp" line="+220"/>
+        <location filename="../src/gui/serveractivityfetcher.cpp" line="+221"/>
         <source>The notification could not be dismissed because the server is not reachable.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Aviseringen kunde inte avfärdas eftersom servern inte kan nås.</translation>
@@ -3885,7 +3891,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::ServerMoveController</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="+510"/>
+        <location filename="../src/gui/servermove.cpp" line="+512"/>
         <source>Checking %1…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kontrollerar %1…</translation>
@@ -3916,7 +3922,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
     </message>
     <message>
         <location line="+11"/>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Checking that this is the same server and the same user…</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kontrollerar att det är samma server och samma användare…</translation>
@@ -4003,7 +4009,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::ServerStatusCheck</name>
     <message>
-        <location line="-525"/>
+        <location line="-527"/>
         <source>No server could be reached at %1.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ingen server kunde nås på %1.</translation>
@@ -5379,7 +5385,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::UrlPageController</name>
     <message>
-        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+73"/>
+        <location filename="../src/gui/newaccountwizard/urlpagecontroller.cpp" line="+85"/>
         <source>%1 logo</source>
         <translation>%1-logotyp</translation>
     </message>
@@ -5395,7 +5401,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Logga in för att komma igång.</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>Enter your server address to get started.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ange serveradressen för att komma igång.</translation>
@@ -5416,7 +5422,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Ytterligare logotyp definierad av organisationen</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+121"/>
         <source>Invalid server URL: %1</source>
         <translation>Ogiltig server-URL: %1</translation>
     </message>
@@ -5434,7 +5440,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::UserInfoAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+72"/>
+        <location filename="../src/gui/networkadapters/userinfoadapter.cpp" line="+77"/>
         <source>Network request to collect user info failed</source>
         <translation>Nätverksbegäran för att hämta användarinformation misslyckades</translation>
     </message>
@@ -5483,7 +5489,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+609"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5664,27 +5670,21 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Ingen owncloud.online-server hittades på %1. Kontrollera adressen.</translation>
     </message>
     <message>
-        <location line="+3"/>
-        <source>The &quot;OAuth2&quot; app is not installed or not enabled on this server. Please ask your administrator to install and enable it via &quot;Market&quot;.</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Appen &quot;OAuth2&quot; är inte installerad eller inte aktiverad på den här servern. Be din administratör att installera och aktivera den via &quot;Market&quot;.</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Note for administrators: the desktop client signs in through the &quot;OAuth2&quot; app. Install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Information till administratörer: skrivbordsklienten loggar in via appen &quot;OAuth2&quot;. Installera den via &quot;Market&quot; och aktivera den för alla användare (kommandorad: occ app:enable oauth2).</translation>
-    </message>
-    <message>
-        <location line="+6"/>
+        <location line="+11"/>
         <source>Could not detect compatible server at %1</source>
         <translation>Det gick inte att hitta en kompatibel server på %1</translation>
+    </message>
+    <message>
+        <location line="-6"/>
+        <source>Signing in requires the &quot;OAuth2&quot; app on this server, but it is not installed or not enabled. Please ask your administrator to install it via &quot;Market&quot; and enable it for all users (command line: occ app:enable oauth2).</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>För inloggning behöver den här servern appen &quot;OAuth2&quot;, men den är inte installerad eller inte aktiverad. Be din administratör att installera den via &quot;Market&quot; och aktivera den för alla användare (kommandorad: occ app:enable oauth2).</translation>
     </message>
 </context>
 <context>
     <name>ServerMove</name>
     <message>
-        <location filename="../src/gui/servermove.cpp" line="-312"/>
+        <location filename="../src/gui/servermove.cpp" line="-313"/>
         <source>Please enter the new address of your server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ange den nya adressen till din server.</translation>
@@ -5714,11 +5714,11 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Adressen får inte innehålla ”?” eller ”#”.</translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+144"/>
         <location line="+231"/>
         <location line="+71"/>
         <location line="+78"/>
-        <location line="+112"/>
+        <location line="+114"/>
         <location line="+28"/>
         <location line="+73"/>
         <source>The account no longer exists.</source>
@@ -5726,7 +5726,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Kontot finns inte längre.</translation>
     </message>
     <message>
-        <location line="-589"/>
+        <location line="-591"/>
         <location line="+232"/>
         <source>The server address can only be changed for accounts without Spaces.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5760,7 +5760,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>En synkronisering av kontot pågår fortfarande. Adressen ändrades inte, försök igen.</translation>
     </message>
     <message>
-        <location line="+557"/>
+        <location line="+559"/>
         <source>change of the account&apos;s server address</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ändring av kontots serveradress</translation>

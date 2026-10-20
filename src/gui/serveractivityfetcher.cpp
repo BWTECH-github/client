@@ -144,9 +144,10 @@ void ServerActivityFetcher::fetchActivities(AccountState *accountState, bool for
     }
     data.lastActivityFetch = now;
 
-    // die Antwort braucht nur die jüngsten Einträge; der Job gehört dem Konto und endet mit ihm
+    // die Antwort braucht nur die jüngsten Einträge. Der Job gehört dem AccountState und endet mit ihm, nie dem Konto selbst:
+    // AbstractNetworkJob verlangt account != parent, mit FORCE_ASSERTS (Beta) brach das Programm beim Verbinden ab
     auto *job = new JsonApiJob(account, activityPath, {{QStringLiteral("start"), QStringLiteral("0")}, {QStringLiteral("count"), QStringLiteral("20")}},
-        QNetworkRequest(), account);
+        QNetworkRequest(), accountState);
     // ein 401 dieses optionalen Endpunkts darf keine Neuanmeldung auslösen
     job->setForceIgnoreCredentialFailure(true);
     data.activityJob = job;
@@ -186,7 +187,7 @@ void ServerActivityFetcher::fetchNotifications(AccountState *accountState)
         return;
     }
 
-    auto *job = new JsonApiJob(account, notificationsPath, {}, QNetworkRequest(), account);
+    auto *job = new JsonApiJob(account, notificationsPath, {}, QNetworkRequest(), accountState);
     job->setForceIgnoreCredentialFailure(true);
     data.notificationJob = job;
     connect(job, &JsonApiJob::finishedSignal, this, [this, job, accountId] {
@@ -221,7 +222,7 @@ void ServerActivityFetcher::dismissNotification(const QUuid &accountId, const QS
         return;
     }
     auto *account = accountState->account();
-    auto *job = new JsonApiJob(account, notificationsPath + QLatin1Char('/') + id, QByteArrayLiteral("DELETE"), {}, QNetworkRequest(), account);
+    auto *job = new JsonApiJob(account, notificationsPath + QLatin1Char('/') + id, QByteArrayLiteral("DELETE"), {}, QNetworkRequest(), accountState);
     job->setForceIgnoreCredentialFailure(true);
     connect(job, &JsonApiJob::finishedSignal, this, [this, job, accountId, id] {
         const int httpStatus = job->httpStatusCode();
@@ -262,7 +263,7 @@ void ServerActivityFetcher::runNotificationAction(const QUuid &accountId, const 
         Q_EMIT notificationRequestFailed(tr("The action points to another server and was not carried out."));
         return;
     }
-    auto *job = new JsonApiJob(account, path, action.verb, query, QNetworkRequest(), account);
+    auto *job = new JsonApiJob(account, path, action.verb, query, QNetworkRequest(), accountState);
     job->setForceIgnoreCredentialFailure(true);
     connect(job, &JsonApiJob::finishedSignal, this, [this, job, accountId, id] {
         const int httpStatus = job->httpStatusCode();

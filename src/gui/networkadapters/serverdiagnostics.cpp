@@ -121,12 +121,11 @@ QString ServerDiagnostics::message(Issue issue, const QUrl &url)
     case Issue::NotOwncloudServer:
         return tr("No owncloud.online server was found at %1. Please check the address.").arg(address);
     case Issue::OAuth2AppMissing:
-        // die App-Verwaltung heißt auf owncloud.online-Servern „Market“ (deutsch „Markt“); „Marketplace“ ist nur der Katalog dahinter
-        return tr("The \"OAuth2\" app is not installed or not enabled on this server. Please ask your administrator to install and enable it via "
-                  "\"Market\".")
-            + QStringLiteral("\n\n")
-            + tr("Note for administrators: the desktop client signs in through the \"OAuth2\" app. Install it via \"Market\" and enable it for all "
-                 "users (command line: occ app:enable oauth2).");
+        // ein Absatz für Nutzer und Administrator, ohne Wiederholung: Er muss im Assistenten fester Größe vollständig lesbar
+        // bleiben, auch in der längsten Übersetzung. Die App-Verwaltung heißt auf owncloud.online-Servern „Market“ (deutsch
+        // „Markt“); „Marketplace“ ist nur der Katalog dahinter.
+        return tr("Signing in requires the \"OAuth2\" app on this server, but it is not installed or not enabled. Please ask your administrator to "
+                  "install it via \"Market\" and enable it for all users (command line: occ app:enable oauth2).");
     case Issue::None:
     case Issue::Other:
         break;
