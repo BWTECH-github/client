@@ -248,19 +248,25 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
      */
     OCSYNC_EXPORT QByteArray conflictFileBaseNameFromPattern(const QByteArray &conflictName);
 
+    /**
+     * Die Schlüssel kommen aus Konfigurationsdateien und Serverantworten: Ein unbekannter Schlüssel ergibt -1 (als E), *ok
+     * sagt, ob er bekannt war. Kein Assert, das beendete mit FORCE_ASSERTS (Beta) das Programm wegen fremder Daten.
+     */
     template <class E>
-    E stringToEnum(const char *key)
+    E stringToEnum(const char *key, bool *ok = nullptr)
     {
-        bool ok;
-        auto out = static_cast<E>(QMetaEnum::fromType<E>().keyToValue(key, &ok));
-        Q_ASSERT(ok);
+        bool found = false;
+        auto out = static_cast<E>(QMetaEnum::fromType<E>().keyToValue(key, &found));
+        if (ok) {
+            *ok = found;
+        }
         return out;
     }
 
     template <class E>
-    E stringToEnum(const QString &key)
+    E stringToEnum(const QString &key, bool *ok = nullptr)
     {
-        return stringToEnum<E>(key.toUtf8().constData());
+        return stringToEnum<E>(key.toUtf8().constData(), ok);
     }
 
     template <class E>

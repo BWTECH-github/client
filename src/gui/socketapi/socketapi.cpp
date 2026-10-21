@@ -200,7 +200,11 @@ void SocketApi::slotNewConnection()
     connect(socket, &SocketApiSocket::destroyed, this, [socket, this] {
         _listeners.remove(socket);
     });
-    OC_ASSERT(socket->readAll().isEmpty());
+    // Was vor dem Einrichten schon ankam, gehört zu keinem Befehl und wird verworfen (wie bisher). Das Gegenüber ist ein anderer
+    // Prozess: Das frühere OC_ASSERT beendete dann mit FORCE_ASSERTS (Beta) das Programm.
+    if (const QByteArray early = socket->readAll(); !early.isEmpty()) {
+        qCWarning(lcSocketApi) << "Discarding" << early.size() << "bytes received before the connection was set up";
+    }
 
     auto listener = QSharedPointer<SocketListener>::create(socket);
     _listeners.insert(socket, listener);
@@ -253,8 +257,13 @@ void SocketApi::slotReadSocket()
             } else {
                 functionWithArguments += command.toUtf8() + QByteArrayLiteral("(QString,SocketListener*)");
             }
-            Q_ASSERT(staticMetaObject.normalizedSignature(functionWithArguments.constData()) == functionWithArguments);
-            const auto out = staticMetaObject.indexOfMethod(functionWithArguments.constData());
+            // Die Zeile schickt ein anderer Prozess (Explorer-Erweiterung oder jedes Programm des Nutzers): Was sich nicht als
+            // Methodenname lesen lässt (Leerzeichen, Klammern, Komma), gibt es nicht. Das frühere Q_ASSERT beendete mit
+            // FORCE_ASSERTS (Beta) das Programm wegen einer solchen Zeile.
+            int out = -1;
+            if (staticMetaObject.normalizedSignature(functionWithArguments.constData()) == functionWithArguments) {
+                out = staticMetaObject.indexOfMethod(functionWithArguments.constData());
+            }
             if (out == -1) {
                 listener->sendError(QStringLiteral("Function %1 not found").arg(QString::fromUtf8(functionWithArguments)));
             }
@@ -1036,7 +1045,11 @@ SocketApiJobV2::SocketApiJobV2(const QSharedPointer<SocketListener> &socketListe
     , _jobId(arguments[QStringLiteral("id")].toString())
     , _arguments(arguments[QStringLiteral("arguments")].toObject())
 {
-    OC_ASSERT(!_jobId.isEmpty());
+    // Die Nachricht stammt von einem anderen Prozess: Ohne "id" lässt sich die Antwort nicht zuordnen, mehr nicht. Das frühere
+    // OC_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (_jobId.isEmpty()) {
+        qCWarning(lcSocketApi) << "Received" << command << "without an id";
+    }
 }
 
 void SocketApiJobV2::success(const QJsonObject &response) const

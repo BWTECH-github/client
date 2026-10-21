@@ -39,7 +39,10 @@ RequestEtagJob::RequestEtagJob(Account *account, const QUrl &rootUrl, const QStr
     connect(this, &PropfindJob::directoryListingIterated, this, [this](const QString &, const QMap<QString, QString> &value) {
         _etag = Utility::normalizeEtag(value.value(QStringLiteral("getetag")));
         // the server returned a 207 but no etag, something is wrong
-        if (!OC_ENSURE_NOT(_etag.isEmpty())) {
+        // Das kommt vor (https://github.com/owncloud/ocis/issues/7160); die Aufrufer übergehen ein leeres ETag. Das frühere
+        // OC_ENSURE_NOT beendete mit FORCE_ASSERTS (Beta) das Programm, mit der ETag-Abfrage alle 30 s.
+        if (_etag.isEmpty()) {
+            qCWarning(lcEtagJob) << "The server returned no etag for" << url();
             abort();
         }
     });
@@ -291,7 +294,9 @@ void PropfindJob::finished()
                     [&parser, counter = 0, this](const QString &name, const QMap<QString, QString> &) mutable {
                         counter++;
                         // With a depths of 0 we must receive only one listing
-                        if (OC_ENSURE(counter == 1)) {
+                        // Mehr Einträge sind ein Fehler des Servers, der unten protokolliert wird; das frühere OC_ENSURE beendete
+                        // mit FORCE_ASSERTS (Beta) das Programm wegen dieser Serverantwort.
+                        if (counter == 1) {
                             disconnect(&parser, &LsColXMLParser::directoryListingIterated, this, &PropfindJob::directoryListingIterated);
                         } else {
                             qCCritical(lcPropfindJob) << "Received superfluous directory listing for depth 0 propfind" << counter << "Path:" << name;

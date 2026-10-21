@@ -516,8 +516,9 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
                 continue;
             } else if (item->instruction() != CSYNC_INSTRUCTION_RENAME) {
                 // all is good, the rename will be executed before the directory deletion
+                // Welche Einträge hier landen, hängt vom Zustand auf Server und Datenträger ab; der Eintrag läuft wie ohne Assert
+                // weiter. Das frühere Q_ASSERT(false) („for debug purposes“) beendete mit FORCE_ASSERTS (Beta) das Programm.
                 qCWarning(lcPropagator) << "WARNING:  Job within a removed directory?  This should not happen!" << item->_file << item->instruction();
-                Q_ASSERT(false); // we shouldn't land here, but assert for debug purposes
             }
         }
 
@@ -870,17 +871,16 @@ Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updatePlace
         return error;
     }
 
-    Q_ASSERT([&] {
-        if (item._type == ItemTypeVirtualFileDehydration) {
-            // when dehydrating the file must not be pinned
-            // don't use destination() with suffix placeholder
-            const auto pin = syncOptions().vfs()->pinState(item._file);
-            if (pin && pin.get() == PinState::AlwaysLocal) {
-                return false;
-            }
+    if (item._type == ItemTypeVirtualFileDehydration) {
+        // when dehydrating the file must not be pinned
+        // don't use destination() with suffix placeholder
+        // Die Anheftung ändert der Nutzer im Explorer, auch während des Syncs („Immer auf diesem Gerät behalten“): dann holt der
+        // nächste Sync die Datei wieder. Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+        const auto pin = syncOptions().vfs()->pinState(item._file);
+        if (pin && pin.get() == PinState::AlwaysLocal) {
+            qCWarning(lcPropagator) << "Dehydrating" << item._file << "although it is pinned to stay on this device";
         }
-        return true;
-    }());
+    }
     return syncOptions().vfs()->updateMetadata(item, fileName, replacesFile);
 }
 
@@ -1199,7 +1199,9 @@ void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
             if (_item->instruction() == CSYNC_INSTRUCTION_NEW && _item->_direction == SyncFileItem::Down) {
                 // special case for local MKDIR, set local directory mtime
                 // (it's not synced later at all, but can be nice to have it set initially)
-                OC_ASSERT(FileSystem::setModTime(propagator()->fullLocalPath(_item->destination()), _item->_modtime));
+                // Scheitert das (Ordner von einem anderen Programm geöffnet), bleibt nur die Zeit falsch; setModTime() protokolliert
+                // den Fehler. Das frühere OC_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+                FileSystem::setModTime(propagator()->fullLocalPath(_item->destination()), _item->_modtime);
             }
             // For new directories we always want to update the etag once
             // the directory has been propagated. Otherwise, the directory

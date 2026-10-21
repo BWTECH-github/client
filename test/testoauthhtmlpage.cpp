@@ -35,6 +35,16 @@ private Q_SLOTS:
         QVERIFY(oauth.contains(message));
         QVERIFY(oauth.contains(QStringLiteral("E50101")));
     }
+
+    // Die Fehlerbeschreibung kommt vom Server: Platzhalter darin liefen endlos bzw. brachen mit FORCE_ASSERTS ab
+    void testPlaceholdersFromServer()
+    {
+        const QString message = QStringLiteral("Error returned from the server: <em>@{MESSAGE} @{UNKNOWN}</em>");
+
+        const auto page = OAuthHtmlPage::buildPage(false, QStringLiteral("Login Error @{TITLE}"), message);
+        QVERIFY(page.contains(QStringLiteral("<em>&#64;{MESSAGE} &#64;{UNKNOWN}</em>")));
+        QVERIFY(page.contains(QStringLiteral("Login Error &#64;{TITLE}")));
+    }
 };
 
 QTEST_MAIN(TestOAuthHtmlPage)

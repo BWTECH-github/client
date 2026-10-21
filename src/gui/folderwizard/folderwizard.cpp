@@ -222,8 +222,10 @@ FolderMan::SyncConnectionDescription FolderWizard::result()
     if (!d->_account->hasDefaultSyncRoot()) {
         if (FileSystem::isChildPathOf(localPath, d->defaultSyncRoot())) {
             d->_account->setDefaultSyncRoot(d->defaultSyncRoot());
-            if (!QFileInfo::exists(d->defaultSyncRoot())) {
-                OC_ASSERT(QDir().mkpath(d->defaultSyncRoot()));
+            // scheitert das (Rechte, Laufwerk), meldet das Anlegen des Ordnerpaars den Fehler; das frühere OC_ASSERT beendete
+            // mit FORCE_ASSERTS (Beta) das Programm
+            if (!QFileInfo::exists(d->defaultSyncRoot()) && !QDir().mkpath(d->defaultSyncRoot())) {
+                qCWarning(lcFolderWizard) << "Could not create the default sync root" << d->defaultSyncRoot();
             }
         }
     }

@@ -705,7 +705,12 @@ void WindowsUpdater::slotSetPreviouslySkippedVersion()
 
 void WindowsUpdater::applyUpdateAndRestart()
 {
-    Q_ASSERT(downloadState() == DownloadState::DownloadComplete);
+    // „Erneut versuchen“ nach einem gescheiterten Update (etwa abgelehnte Windows-Abfrage) kommt beim nächsten Start, bevor ein
+    // Download gelaufen ist, und während der Dialog offen ist, kann eine neue Prüfung beginnen. Maßgeblich ist die geprüfte
+    // Datei unten; das frühere Q_ASSERT auf DownloadComplete beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (downloadState() != DownloadState::DownloadComplete) {
+        qCInfo(lcUpdater) << "Applying the downloaded update in state" << downloadState();
+    }
 
     auto settings = ConfigFile::makeQSettings();
     QString updateFile = settings.value(updateAvailableC).toString();

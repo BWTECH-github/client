@@ -137,7 +137,12 @@ FolderMan::~FolderMan()
     // "too late" for it to be effective anyway. Instead we must ensure shutdown is called by the app when quit is
     // underway.
     // hopefully pointless reality check that shutdown was called before destruction:
-    Q_ASSERT(_folders.isEmpty());
+    // Ohne Ereignisschleife gibt es kein shutdown(), etwa wenn main() nach dem Hinweis auf eine ältere Version (Journal zu
+    // neu) zurückkehrt, nachdem schon Ordner geladen waren. Die Ordner löscht dann QObject; das frühere Q_ASSERT beendete mit
+    // FORCE_ASSERTS (Beta) das Programm erst danach, beim Beenden.
+    if (!_folders.isEmpty()) {
+        qCWarning(lcFolderMan) << "FolderMan destroyed without shutdown(), folders of" << _folders.size() << "accounts are still loaded";
+    }
 
     _instance = nullptr;
 }
@@ -1050,7 +1055,12 @@ Folder *FolderMan::folderForPath(const QString &path, QString *relativePath) con
 
 void FolderMan::removeFolderFromGui(Folder *f)
 {
-    Q_ASSERT(f->accountState() && f->accountState()->account());
+    // Die Rückfrage davor ist modal (exec): Inzwischen kann das Konto weg sein, etwa beim Beenden. Das frühere Q_ASSERT
+    // beendete dann mit FORCE_ASSERTS (Beta) das Programm.
+    if (!f || !f->accountState() || !f->accountState()->account()) {
+        qCWarning(lcFolderMan) << "Not removing a folder whose account is gone";
+        return;
+    }
 
     QUuid accountId = f->accountState()->account()->uuid();
     emit folderRemoved(accountId, f);

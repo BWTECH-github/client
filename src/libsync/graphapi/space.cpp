@@ -18,11 +18,15 @@
 #include "libsync/networkjobs.h"
 #include "libsync/networkjobs/resources.h"
 
+#include <QLoggingCategory>
+
 
 using namespace OCC;
 using namespace GraphApi;
 
 namespace {
+
+Q_LOGGING_CATEGORY(lcSpace, "sync.graphapi.space", QtInfoMsg)
 
 const auto personalC = QLatin1String("personal");
 
@@ -59,11 +63,17 @@ bool Space::setDrive(const OpenAPI::OAIDrive &drive)
 {
 
     // first config naturally has an empty drive - reality check that updated drives are always valid
-    Q_ASSERT(drive.isValid());
+    // Die Angaben liefert der Server (Graph-API); Unvollständiges wird übernommen wie bisher ohne Assert und protokolliert.
+    // Die früheren Q_ASSERTs beendeten mit FORCE_ASSERTS (Beta) das Programm wegen dieser Serverantwort.
+    if (!drive.isValid()) {
+        qCWarning(lcSpace) << "The server sent an incomplete drive" << drive.getId();
+    }
 
     QString curTag = _drive.getRoot().getETag();
     QString newTag = drive.getRoot().getETag();
-    Q_ASSERT(!newTag.isEmpty());
+    if (newTag.isEmpty()) {
+        qCWarning(lcSpace) << "The server sent no etag for the drive" << drive.getId();
+    }
     // the tag should change when the space is edited on the server. I verified that it changes on space rename as well
     // as on changing the space image so we may have further wrinkles if there is an error in logic server side, but for now
     // we want to reduce updates to "only when something changed" else everything is auto-refreshed periodically (eg every 30s)

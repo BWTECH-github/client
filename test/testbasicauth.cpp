@@ -19,6 +19,9 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QVBoxLayout>
 #include <QWizard>
 #include <QWizardPage>
 
@@ -165,6 +168,42 @@ private Q_SLOTS:
         QVERIFY(f.error().isEmpty());
         // Benutzer und Capabilities wie im 6.0.3-Client mit OCS-APIREQUEST: die Sitzung des Servers gilt sonst nicht für OCS
         QCOMPARE(f.ocsApiRequestHeaders, (QList<QByteArray>{"true", "true"}));
+    }
+
+    // Kontoansicht niedriger als der Dialog (1024×768, Meldung): Das Logo behält seine Höhe („ONLINE“ war abgeschnitten), der
+    // Inhalt rollt, die Knöpfe bleiben im Dialog sichtbar
+    void testReauthDialogKeepsLogo()
+    {
+        // wie das Hauptfenster: eine eigene Mindestgröße, die nicht mit dem Inhalt wächst
+        QWidget accountView;
+        accountView.setMinimumSize(708, 300);
+        accountView.resize(708, 300);
+        auto *viewLayout = new QVBoxLayout(&accountView);
+        viewLayout->setContentsMargins(0, 0, 0, 0);
+        auto *widget = new BasicAuthenticationWidget(serverUrl, QStringLiteral("anna"), &accountView);
+        widget->setErrorMessage(QStringLiteral("The user name or password is not correct."));
+        viewLayout->addWidget(widget);
+        accountView.show();
+        QVERIFY(QTest::qWaitForWindowExposed(&accountView));
+        QCOMPARE(widget->height(), 300);
+
+        QLabel *logo = nullptr;
+        for (auto *label : widget->findChildren<QLabel *>()) {
+            if (label->accessibleName().startsWith(QLatin1String("Application Name Logo"))) {
+                logo = label;
+            }
+        }
+        QVERIFY(logo);
+        QVERIFY(!logo->pixmap().isNull());
+        QCOMPARE(logo->height(), logo->sizeHint().height());
+
+        auto *scrollArea = widget->findChild<QScrollArea *>();
+        QVERIFY(scrollArea);
+        QVERIFY(scrollArea->verticalScrollBar()->maximum() > 0);
+
+        auto *signIn = widget->findChild<QPushButton *>(QStringLiteral("SignInButton"));
+        QVERIFY(signIn->isVisible());
+        QVERIFY(widget->rect().contains(signIn->geometry()));
     }
 
     // Kontoansicht: Dialog mit maskiertem Kennwort, Enter meldet an; fragt das Konto danach erneut (Server lehnte ab),
