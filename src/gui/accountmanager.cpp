@@ -16,6 +16,7 @@
 #include "accountmanager.h"
 #include "account.h"
 #include "common/asserts.h"
+#include "common/utility.h"
 #include "configfile.h"
 #include "creds/credentialmanager.h"
 #include "creds/credentials.h"
@@ -267,7 +268,9 @@ bool AccountManager::accountForLoginExists(const QUrl &url, const QString &davUs
     for (const auto &state : _accounts) {
         if (state && state->account()) {
             Account *account = state->account();
-            if (account->url() == url && account->davUser() == davUser) {
+            // Wie beim Serverumzug vergleichen: Nach einem Umzug steht die Adresse ggf. ohne „/“ am Ende, und
+            // Benutzernamen unterscheiden auf dem Server keine Groß- und Kleinschreibung.
+            if (Utility::urlEqual(account->url(), url) && account->davUser().compare(davUser, Qt::CaseInsensitive) == 0) {
                 return true;
             }
         }
