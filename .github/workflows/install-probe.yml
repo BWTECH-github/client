@@ -18,7 +18,7 @@ name: Install-Probe
 # Nur einzeln wählbar (nicht in "alle"): assistent - Kontoassistent wie ein Tester (Umstieg-Dialog,
 # "Neues Konto einrichten", Adresse mit Tippfehler, Server ohne OAuth2 mit Kennwortseite und "Zurück",
 # Server mit OAuth2 und Browser-Anmeldung mit dem Testkonto aus den Secrets E2E_ONLINE_USER_1/
-# E2E_ONLINE_PASS_1 über test/e2e/oauth/login.py aus dem Zweig sync-e2e, "Fertigstellen"),
+# E2E_ONLINE_PASS_1 über test/e2e/oauth/login.py, "Fertigstellen"),
 # Bildschirmfotos nach jedem Schritt, bei einem Absturz Speicherabbild (WER) und cdb. Die Meldung zur
 # Adresse mit Tippfehler muss vollständig sichtbar sein, auch französisch mit 150 %; ein Durchgang
 # übernimmt über "Übernehmen" beide Konten des offiziellen Clients (das ohne OAuth2 wird abgebrochen).
@@ -187,12 +187,12 @@ jobs:
           if ($hash -ne $expected) { throw "SHA256 der Vorversion stimmt nicht: $hash statt $expected" }
           "PROBE_VORVERSION=$($setup[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
-      # assistent, dauerlauf, dauerlauf-lang: Browser-Anmeldung wie in der Sync-E2E-Suite (Datei unverändert aus dem Zweig sync-e2e)
-      - name: Check out OAuth login helper (sync-e2e)
+      # assistent, dauerlauf, dauerlauf-lang: Browser-Anmeldung wie in der Sync-E2E-Suite (test/e2e/oauth aus
+      # demselben Stand wie dieser Workflow; der Zweig sync-e2e ist in master aufgegangen)
+      - name: Check out OAuth login helper
         if: matrix.szenario == 'assistent' || startsWith(matrix.szenario, 'dauerlauf')
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: sync-e2e
           path: e2e-oauth
           sparse-checkout: test/e2e/oauth
           persist-credentials: false
