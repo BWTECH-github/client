@@ -1,0 +1,3 @@
+# Skripte der Suite laufen unter Linux-Shells: immer LF, auch bei core.autocrlf=true
+*.sh text eol=lf
+*.py text eol=lf
