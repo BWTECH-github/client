@@ -1249,6 +1249,31 @@ static Result<CF_PLACEHOLDER_BASIC_INFO, HRESULT> getBasicPlaceholderInfo(const 
     return getInfo<CF_PLACEHOLDER_BASIC_INFO>(*handle);
 }
 
+static void markNonPlaceholderAsExcluded(const QString &systemFileName)
+{
+    // Wie convertToPlaceholder() nur mit exklusivem Zugriff umwandeln: Eine Datei, die gerade ein anderes Programm
+    // offen hat (Sperr- und Temp-Dateien von Office, die SQLite-Dateien des Sync-Journals), bleibt unangetastet.
+    // Beim nächsten Statuswechsel wird es erneut versucht.
+    const QString longPath = FileSystem::longWinPath(systemFileName);
+    Utility::Handle oplockHandle { INVALID_HANDLE_VALUE, &CfCloseHandle };
+    HRESULT res = CfOpenFileWithOplock(reinterpret_cast<const wchar_t *>(longPath.utf16()), CF_OPEN_FILE_FLAG_EXCLUSIVE, &oplockHandle.handle());
+    if (FAILED(res)) {
+        qCDebug(lcVfs) << "Not marking" << systemFileName << "as excluded, it is in use:" << Utility::formatWinError(res);
+        return;
+    }
+
+    res = CfConvertToPlaceholder(oplockHandle, nullptr, 0, CF_CONVERT_FLAG_MARK_IN_SYNC, nullptr, nullptr);
+    if (FAILED(res)) {
+        qCWarning(lcVfs) << "Error converting excluded file" << systemFileName << "to placeholder:" << Utility::formatWinError(res);
+        return;
+    }
+
+    res = CfSetPinState(oplockHandle, CF_PIN_STATE_EXCLUDED, CF_SET_PIN_FLAG_RECURSE, nullptr);
+    if (FAILED(res)) {
+        qCWarning(lcVfs) << "Error setting sync exclusion state for" << systemFileName << ":" << Utility::formatWinError(res);
+    }
+}
+
 void VfsWin::onFileStatusChanged(const QString &systemFileName, SyncFileStatus status)
 {
     auto placeholderInfo = getBasicPlaceholderInfo(systemFileName);
@@ -1256,7 +1281,11 @@ void VfsWin::onFileStatusChanged(const QString &systemFileName, SyncFileStatus s
         // This slot will often be called for nonexistant files, that's not an error.
         if (placeholderInfo.error() == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || placeholderInfo.error() == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)) {
             return;
-        } else if (placeholderInfo.error() != HRESULT_FROM_WIN32(ERROR_NOT_A_CLOUD_FILE)) {
+        } else if (placeholderInfo.error() == HRESULT_FROM_WIN32(ERROR_NOT_A_CLOUD_FILE)) {
+            if (status.tag() == SyncFileStatus::StatusExcluded) {
+                markNonPlaceholderAsExcluded(systemFileName);
+            }
+        } else {
             qCWarning(lcVfs) << Q_FUNC_INFO << ": could not retrieve placeholder info for" << systemFileName
                              << Utility::formatWinError(placeholderInfo.error());
         }
