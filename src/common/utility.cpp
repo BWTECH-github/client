@@ -66,7 +66,11 @@ Q_LOGGING_CATEGORY(lcUtility, "sync.utility", QtMsgType::QtInfoMsg)
 
 QString Utility::octetsToString(qint64 octets)
 {
-    OC_ASSERT(octets >= 0)
+    // Größen kommen auch vom Server, der mitunter negative meldet (siehe #4573), und aus Umgebungsvariablen: Die Ausgabe ist dann
+    // eben negativ. Das frühere OC_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (octets < 0) {
+        qCWarning(lcUtility) << "octetsToString: negative size" << octets;
+    }
 
     using namespace FileSystem::SizeLiterals;
 
@@ -344,6 +348,18 @@ QString Utility::concatUrlPathItems(QStringList &&items, const QLatin1Char delim
     return items.join(delimiter);
 }
 
+QUrl Utility::withoutDoubledSlashes(const QUrl &url)
+{
+    const QString path = url.path(QUrl::FullyEncoded);
+    if (!path.contains(QLatin1String("//"))) {
+        return url;
+    }
+    static const QRegularExpression doubledSlashes(QStringLiteral("/{2,}"));
+    QUrl result = url;
+    result.setPath(QString(path).replace(doubledSlashes, QStringLiteral("/")), QUrl::TolerantMode);
+    return result;
+}
+
 QUrl Utility::concatUrlPath(const QUrl &url, const QString &concatPath,
     const QUrlQuery &queryItems)
 {
@@ -358,8 +374,15 @@ QUrl Utility::concatUrlPath(const QUrl &url, const QString &concatPath,
         }
         path += concatPath; // put the complete path together
     }
-    Q_ASSERT(!path.contains(QStringLiteral("//")));
-    Q_ASSERT(url.query().isEmpty());
+    // Adressen und Pfade kommen auch vom Server (Links, Spaces, Umzug) und aus der Konfiguration. „//“ oder eine schon vorhandene
+    // Anfrage bleiben wie ohne Assert (die Anfrage scheitert dann höchstens am Server); die früheren Q_ASSERTs beendeten mit
+    // FORCE_ASSERTS (Beta) das Programm.
+    if (path.contains(QStringLiteral("//"))) {
+        qCWarning(lcUtility) << "concatUrlPath: the path contains //:" << path;
+    }
+    if (!url.query().isEmpty()) {
+        qCWarning(lcUtility) << "concatUrlPath: the query of" << url.toDisplayString() << "is replaced";
+    }
     QUrl tmpUrl = url;
     tmpUrl.setPath(path);
     tmpUrl.setQuery(queryItems);
@@ -477,7 +500,12 @@ QDateTime Utility::parseRFC1123Date(const QString &date)
 {
     if (!date.isEmpty()) {
         auto out = QDateTime::fromString(date, RFC1123PatternC());
-        Q_ASSERT(out.isValid());
+        // Die Angaben schreibt der Server oder ein Proxy (Date, Last-Modified, getlastmodified); ein anderes Format ergibt ein
+        // ungültiges Datum, das die Aufrufer prüfen. Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+        if (!out.isValid()) {
+            qCWarning(lcUtility) << "Not an RFC 1123 date:" << date;
+            return {};
+        }
         out.setTimeZone(QTimeZone::utc());
         return out;
     }

@@ -19,6 +19,7 @@
 
 #include "accessmanager.h"
 #include "account.h"
+#include "creds/credentialssupport.h"
 #include "owncloudlib.h"
 #include <csync.h>
 
@@ -27,6 +28,7 @@ class QNetworkReply;
 namespace OCC {
 
 class AbstractNetworkJob;
+class AccountModalWidget;
 
 class OWNCLOUDSYNC_EXPORT AbstractCredentials : public QObject
 {
@@ -38,6 +40,18 @@ public:
     // No need for virtual destructor - QObject already has one.
 
     virtual AccessManager *createAccessManager() const = 0;
+
+    /**
+     * Anmeldeart dieser Zugangsdaten (OAuth2 oder Benutzername und Kennwort); das Konto speichert sie in der Konfiguration
+     * (http_oauth) und baut beim nächsten Start die passenden Zugangsdaten. Unknown nur in Tests und in owncloudcmd.
+     */
+    virtual AuthenticationType authenticationType() const { return AuthenticationType::Unknown; }
+
+    /**
+     * Anmeldename bei Benutzername und Kennwort (http_user); er kann vom Benutzernamen des Kontos (dav_user) abweichen,
+     * etwa bei LDAP. Leer bei OAuth2.
+     */
+    virtual QString loginUser() const { return {}; }
 
     /** Whether there are credentials that can be used for a connection attempt. */
     virtual bool ready() const = 0;
@@ -90,6 +104,20 @@ public:
      */
     virtual bool refreshAccessToken() = 0;
 
+    /**
+     * Vor jedem Auftrag über die Warteschlange des Kontos (AbstractNetworkJob::sendRequest): Ist das Token nach der Uhr
+     * schon abgelaufen, etwa nach dem Ruhezustand, die Erneuerung jetzt beginnen und die Aufträge anhalten
+     * (authenticationStarted()), statt eine Ablehnung (401) abzuwarten.
+     */
+    virtual void refreshIfExpired() { }
+
+    /**
+     * Ein Anlass, nach dem eine vorübergehend gescheiterte Erneuerung jetzt gelingen kann: Der Server antwortet wieder,
+     * nachdem die Kontoprüfung ihn nicht erreichte oder er in Wartung war, oder ein Zertifikat wurde bestätigt. Den
+     * nächsten Versuch vorziehen statt die Pause abzuwarten. Die regelmäßige Kontoprüfung ist kein solcher Anlass.
+     */
+    virtual void retryRefreshSoon() { }
+
 Q_SIGNALS:
     /** Emitted when fetchFromKeychain() is done.
      *
@@ -102,12 +130,32 @@ Q_SIGNALS:
     void authenticationStarted();
     void authenticationFailed();
 
+    /**
+     * Die Erneuerung der Anmeldung ist vorübergehend gescheitert (Netz, Zeitüberschreitung, Serverfehler; maintenance:
+     * Wartung). Das ist kein Grund für eine neue Anmeldung: Die Credentials versuchen es nach einer Pause selbst wieder,
+     * bis dahin bleiben die Aufträge angehalten. Es folgt später fetched() oder authenticationFailed().
+     */
+    void authenticationDelayed(bool maintenance, const QString &errorString);
+
+    /**
+     * Das Refresh-Token ließ sich wiederholt nicht im Schlüsselbund speichern (error: Meldung des Schlüsselbunds), oder es
+     * klappt wieder (leer). Die Anmeldung gilt bis zum Beenden weiter, nach einem Neustart droht eine neue Anmeldung.
+     */
+    void keychainErrorChanged(const QString &error);
+
     /*
      * Request to log out.
      * The connected account should be marked as logged out
      * and no automatic tries to connect should be made.
      */
     void requestLogout();
+
+    // this is a passthrough to connect to the concrete Credentials RequestAuthenticationController requestAccountModal signal,
+    // which provides the login widget wrapped in an account modal widget.
+    // using a signal to run the auth widget removes hard dependency on mainwindow/accounts gui to somehow provide access to account view publicly.
+    // this is only invoked via the Credentials sublcass. Reminder that this abstraction only exists to support FakeCredentials impl in the tests
+    // which is questionable, but what we have at the moment.
+    void requestAccountModal(OCC::AccountModalWidget *widget);
 
 protected:
     // the account should be the parent of the creds, so it should not go out of scope while we are using this.

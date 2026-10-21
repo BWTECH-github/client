@@ -16,8 +16,13 @@
 #include "accountmanager.h"
 #include "creds/abstractcredentials.h"
 
+#include <QLoggingCategory>
+#include <QPointer>
+#include <QTimer>
 
 namespace OCC {
+
+Q_LOGGING_CATEGORY(lcNewAccountBuilder, "gui.newaccountwizard.builder", QtInfoMsg)
 
 NewAccountBuilder::NewAccountBuilder(const NewAccountModel &model, QObject *parent)
     : QObject{parent}
@@ -46,12 +51,26 @@ void NewAccountBuilder::onAccountStateChanged(AccountState::State state)
     // user has accepted the wizard and the actual account is created, we want to remove the account and notify there was a problem.
     else if (state == AccountState::ServiceUnavailable || state == AccountState::NetworkError || state == AccountState::MaintenanceMode
         || state == AccountState::ConfigurationError) {
+        // Nur die Erneuerung der Anmeldung scheitert vorübergehend (Token beim Fertigstellen abgelaufen oder gleich abgelehnt,
+        // Token-Endpunkt nicht erreichbar): Die Credentials versuchen es selbst wieder. Weiter warten, bis sich das Konto
+        // verbindet, statt die frische Anmeldung zu verwerfen.
+        if (_accountState->isAuthenticationDelayed()) {
+            qCInfo(lcNewAccountBuilder) << "Renewing the sign-in of the new account is delayed, waiting for it to connect";
+            return;
+        }
         disconnect(_accountState, nullptr, this, nullptr);
         QString serverError = _accountState->connectionErrors().isEmpty() ? tr("no error details are available") : _accountState->connectionErrors().first();
         QString error = tr("Unable to connect to server during account creation: %1.").arg(serverError);
-        Q_EMIT unableToCompleteAccountCreation(error);
-        // do this last as the wizard is going to auto-pop as soon as the account is deleted :/
-        AccountManager::instance()->deleteAccount(_accountState);
+        // Nicht hier löschen: stateChanged kommt aus AccountState::setState(), das danach noch auf das Objekt zugreift, und
+        // deleteAccount() startet beim letzten Konto über lastAccountRemoved mitten in diesem Aufruf einen neuen Assistenten.
+        QTimer::singleShot(0, this, [this, error, accountState = QPointer<AccountState>(_accountState)] {
+            Q_EMIT unableToCompleteAccountCreation(error);
+            // do this last as the wizard is going to auto-pop as soon as the account is deleted :/
+            if (accountState) {
+                AccountManager::instance()->deleteAccount(accountState);
+            }
+            deleteLater();
+        });
     }
 }
 
@@ -88,7 +107,7 @@ void NewAccountBuilder::completeAccountSetup()
 
     // if selective sync is selected, we need to run the folder wizard asap.
     if (_syncType == NewAccount::SyncType::SELECTIVE_SYNC)
-        Q_EMIT requestFolderWizard(_account);
+        Q_EMIT requestFolderWizard(_account->uuid());
 
     deleteLater();
 }

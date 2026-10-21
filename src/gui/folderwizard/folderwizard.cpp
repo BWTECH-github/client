@@ -17,6 +17,7 @@
 #include "folderwizard_p.h"
 
 #include "folderwizardlocalpath.h"
+#include "folderwizardremotepath.h"
 #include "folderwizardselectivesync.h"
 
 #include "spacespage.h"
@@ -25,7 +26,6 @@
 #include "common/asserts.h"
 #include "common/vfs.h"
 #include "gui/application.h"
-#include "gui/settingsdialog.h"
 #include "theme.h"
 
 #include "gui/folderman.h"
@@ -89,6 +89,10 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, Account *account)
         if (_account->capabilities().spacesSupport().enabled) {
             _spacesPage = new SpacesPage(account->spacesManager(), q);
             q->setPage(FolderWizard::Page_Space, _spacesPage);
+        } else {
+            // ownCloud 10/owncloud.online: Serverordner wählen oder anlegen
+            _folderWizardRemotePathPage = new FolderWizardRemotePath(this, _account, davUrl());
+            q->setPage(FolderWizard::Page_Target, _folderWizardRemotePathPage);
         }
     }
 
@@ -104,12 +108,21 @@ FolderWizardPrivate::FolderWizardPrivate(FolderWizard *q, Account *account)
 
 QString FolderWizardPrivate::initialLocalPath() const
 {
+    if (_folderWizardRemotePathPage) {
+        return FolderWizardRemotePath::suggestLocalPath(defaultSyncRoot(), remotePath(), _account->uuid());
+    }
+
     if (!_spacesPage || !_spacesPage->currentSpace()) {
         return defaultSyncRoot();
     }
 
     return FolderMan::instance()->findGoodPathForNewSyncFolder(
         defaultSyncRoot(), _spacesPage->currentSpace()->displayName(), FolderMan::NewFolderType::SpacesFolder, _account->uuid());
+}
+
+QString FolderWizardPrivate::remotePath() const
+{
+    return _folderWizardRemotePathPage ? _folderWizardRemotePathPage->targetPath() : QString();
 }
 
 uint32_t FolderWizardPrivate::priority() const
@@ -132,9 +145,6 @@ QUrl FolderWizardPrivate::davUrl() const
     }
 
     auto url = _spacesPage->currentSpace()->webDavUrl();
-    if (!url.path().endsWith(QLatin1Char('/'))) {
-        url.setPath(url.path() + QLatin1Char('/'));
-    }
     return url;
 }
 
@@ -149,6 +159,12 @@ QString FolderWizardPrivate::spaceId() const
 
 QString FolderWizardPrivate::displayName() const
 {
+    // ownCloud 10: ein Unterordner heißt in der Ordnerliste wie auf dem Server
+    const QString remoteName = FolderWizardRemotePath::displayNameForRemotePath(remotePath());
+    if (!remoteName.isEmpty()) {
+        return remoteName;
+    }
+
     if (!_spacesPage || !_spacesPage->currentSpace()) {
         return Theme::instance()->appNameGUI();
     }
@@ -164,10 +180,11 @@ bool FolderWizardPrivate::useVirtualFiles() const
     const auto mode = VfsPluginManager::instance().bestAvailableVfsMode();
     const bool useVirtualFiles = (Theme::instance()->forceVirtualFilesOption() && mode != Vfs::Off) || (_folderWizardSelectiveSyncPage && _folderWizardSelectiveSyncPage->useVirtualFiles());
     if (useVirtualFiles) {
-        QString vfsSupported = Vfs::pathSupportDetail(initialLocalPath(), mode);
+        // den tatsächlich gewählten lokalen Ordner prüfen, nicht den Vorschlag: der Ordner ist frei wählbar
+        QString vfsSupported = Vfs::pathSupportDetail(_folderWizardSourcePage->localPath(), mode);
         if (!vfsSupported.isEmpty()) {
             auto msg = new QMessageBox(QMessageBox::Warning, FolderWizard::tr("Virtual files are not available for the selected folder"), vfsSupported,
-                QMessageBox::Ok, ocApp()->gui()->settingsDialog());
+                QMessageBox::Ok, ocApp()->mainWindow());
             msg->setAttribute(Qt::WA_DeleteOnClose);
             msg->open();
             return false;
@@ -205,8 +222,10 @@ FolderMan::SyncConnectionDescription FolderWizard::result()
     if (!d->_account->hasDefaultSyncRoot()) {
         if (FileSystem::isChildPathOf(localPath, d->defaultSyncRoot())) {
             d->_account->setDefaultSyncRoot(d->defaultSyncRoot());
-            if (!QFileInfo::exists(d->defaultSyncRoot())) {
-                OC_ASSERT(QDir().mkpath(d->defaultSyncRoot()));
+            // scheitert das (Rechte, Laufwerk), meldet das Anlegen des Ordnerpaars den Fehler; das frühere OC_ASSERT beendete
+            // mit FORCE_ASSERTS (Beta) das Programm
+            if (!QFileInfo::exists(d->defaultSyncRoot()) && !QDir().mkpath(d->defaultSyncRoot())) {
+                qCWarning(lcFolderWizard) << "Could not create the default sync root" << d->defaultSyncRoot();
             }
         }
     }

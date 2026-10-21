@@ -15,13 +15,15 @@
 
 #include "folderman.h"
 
+#include "accessmanager.h"
 #include "account.h"
 #include "accountmanager.h"
 #include "accountstate.h"
-#include "accessmanager.h"
 #include "common/asserts.h"
 #include "configfile.h"
 #include "folder.h"
+#include "foldermanagement/folderbuilder.h"
+#include "foldermanagement/foldermanagementutils.h"
 #include "gui/networkinformation.h"
 #include "guiutility.h"
 #include "libsync/syncengine.h"
@@ -38,22 +40,22 @@
 #include "common/utility_win.h"
 #endif
 
+#include <QEventLoop>
 #include <QMessageBox>
 #include <QMutableSetIterator>
 #include <QNetworkProxy>
 #include <QStringLiteral>
+#include <QTimer>
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
 namespace {
-qsizetype numberOfSyncJournals(const QString &path)
-{
-    return QDir(path).entryList({QStringLiteral(".sync_*.db"), QStringLiteral("._sync_*.db")}, QDir::Hidden | QDir::Files).size();
-}
 }
 
 namespace OCC {
+
+
 Q_LOGGING_CATEGORY(lcFolderMan, "gui.folder.manager", QtInfoMsg)
 
 void TrayOverallStatusResult::addResult(Folder *f)
@@ -68,7 +70,9 @@ void TrayOverallStatusResult::addResult(Folder *f)
     }
 
     // use status of the folder
-    auto status = f->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal() || NetworkInformation::instance()->isMetered()
+    // owncloud.online: getaktete Verbindungen pausieren nur, wenn die Einstellung es verlangt (wie FolderItem)
+    auto status = f->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal()
+            || (NetworkInformation::instance()->isMetered() && ConfigFile().pauseSyncWhenMetered())
         ? SyncResult::Paused
         : f->syncResult().status();
     // in case the linked account is not connected -> we are offline
@@ -104,6 +108,13 @@ FolderMan::FolderMan()
         settings.setValue(IgnoreHiddenFilesKey, _ignoreHiddenFiles); // defaults to true
     }
 
+    if (settings.contains(MoveToTrashKey)) {
+        _moveToTrash = settings.value(MoveToTrashKey).toBool();
+    } else {
+        _moveToTrash = Theme::instance()->moveToTrashDefaultValue();
+        settings.setValue(MoveToTrashKey, _moveToTrash);
+    }
+
     connect(AccountManager::instance(), &AccountManager::accountRemoved, this, &FolderMan::slotRemoveFoldersForAccount);
 
     connect(_lockWatcher.data(), &LockWatcher::fileUnlocked, this, [this](const QString &path, FileSystem::LockMode) {
@@ -122,7 +133,17 @@ FolderMan *FolderMan::instance()
 
 FolderMan::~FolderMan()
 {
-    unloadAndDeleteAllFolders();
+    // note we used to call shutdown here, but imo this is risky because it does quite a lot, and actually happens
+    // "too late" for it to be effective anyway. Instead we must ensure shutdown is called by the app when quit is
+    // underway.
+    // hopefully pointless reality check that shutdown was called before destruction:
+    // Ohne Ereignisschleife gibt es kein shutdown(), etwa wenn main() nach dem Hinweis auf eine ältere Version (Journal zu
+    // neu) zurückkehrt, nachdem schon Ordner geladen waren. Die Ordner löscht dann QObject; das frühere Q_ASSERT beendete mit
+    // FORCE_ASSERTS (Beta) das Programm erst danach, beim Beenden.
+    if (!_folders.isEmpty()) {
+        qCWarning(lcFolderMan) << "FolderMan destroyed without shutdown(), folders of" << _folders.size() << "accounts are still loaded";
+    }
+
     _instance = nullptr;
 }
 
@@ -143,10 +164,13 @@ QList<Folder *> FolderMan::foldersForAccount(const QUuid &accountId)
     return {};
 }
 
-void FolderMan::unloadAndDeleteAllFolders()
+void FolderMan::shutdown()
 {
     if (_folders.isEmpty())
         return;
+
+    // ensure no new syncs are started from this point on
+    setSyncEnabled(false);
 
     // notify interested parties *before* the folders are actually deleted - this is important in eg etagwatcher and the activity
     // tabs because they need the original folder pointers to update themselves. todo: review the use of the folder pointers in these
@@ -161,6 +185,13 @@ void FolderMan::unloadAndDeleteAllFolders()
     QList<QUuid> accountIds = _folders.keys();
     for (auto id : std::as_const(accountIds)) {
         for (Folder *folder : std::as_const(_folders[id])) {
+            // kill any running sync and wait for abort to finish
+            if (folder->isSyncRunning()) {
+                folder->slotTerminateSync(tr("Application shutting down"));
+                QEventLoop waitLoop;
+                QObject::connect(folder, &Folder::syncFinished, &waitLoop, &QEventLoop::quit);
+                waitLoop.exec();
+            }
             saveFolder(folder, settings);
             _socketApi->slotUnregisterPath(folder);
             folder->deleteLater();
@@ -189,8 +220,7 @@ std::optional<qsizetype> FolderMan::setupFoldersFromConfig()
 {
     setSyncEnabled(false);
 
-    // todo: #9
-    unloadAndDeleteAllFolders();
+    Q_ASSERT(_folders.isEmpty());
 
     auto settings = ConfigFile::makeQSettings();
     settings.beginGroup("Accounts");
@@ -229,7 +259,10 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
 
     const bool usesSpaces = account->account()->capabilities().spacesSupport().enabled;
 
-    settings.beginGroup(QStringLiteral("%1/Folders").arg(account->account()->groupIndex()));
+    QList<QByteArray> deadFolders;
+
+    QString accountGroup = account->account()->groupIndex();
+    settings.beginGroup(QStringLiteral("%1/Folders").arg(accountGroup));
 
     const auto &childGroups = settings.childGroups();
     for (const auto &folderAlias : childGroups) {
@@ -247,6 +280,14 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
 
         Folder *folder = addFolder(account, folderDefinition);
         if (!folder) {
+            // basically something went wrong when trying to recreate the Folder. Most egregious situation is the user deleted the
+            // local folder manually instead of removing it via the gui, so it's still in the config, but can't possibly work.
+            // Strange behavior results if the space is added back again using the same (original) local folder path, so we should
+            // remove it from the config since it's dead anyway.
+            qCWarning(lcFolderMan) << "Unable to rebuild previous folder associated with space display name:" << folderDefinition.displayName()
+                                   << ". The associated folder definition will be removed from the configuration.";
+            deadFolders.append(folderDefinition.id());
+            settings.endGroup(); // folder alias
             continue;
         }
 
@@ -261,6 +302,14 @@ bool FolderMan::addFoldersFromConfigByAccount(QSettings &settings, AccountState 
         settings.endGroup(); // folderAlias
     }
     settings.endGroup(); // accountId\Folders
+
+    if (!deadFolders.isEmpty()) {
+        settings.beginGroup(accountGroup);
+        for (const auto &folderId : deadFolders) {
+            removeFolderSettings(folderId, settings);
+        }
+        settings.endGroup();
+    }
 
     GraphApi::SpacesManager *spaceMan = account->account()->spacesManager();
     if (usesSpaces) {
@@ -286,7 +335,7 @@ void FolderMan::setUpInitialSyncFolders(AccountState *accountState, bool useVfs)
             setSyncEnabled(false);
 
             const QString localDir(accountState->account()->defaultSyncRoot());
-            if (!prepareFolder(localDir)) {
+            if (!FolderManagementUtils::prepareFolder(localDir)) {
                 setSyncEnabled(true);
                 return;
             }
@@ -343,7 +392,7 @@ void FolderMan::loadSpacesAndCreateFolders(AccountState *accountState, bool useV
         // prepare the root - reality check this as I think the user can change this from default? Yes they can but not for auto-loaded
         // folders eg on account creation, which is what is happening here.
         const QString localDir(accountState->account()->defaultSyncRoot());
-        if (!prepareFolder(localDir)) {
+        if (!FolderManagementUtils::prepareFolder(localDir)) {
             return;
         }
 
@@ -487,7 +536,7 @@ void FolderMan::onSpacesAdded(const QUuid &accountId, QList<GraphApi::Space *> s
             fwr.spaceId = newSpace->id();
             fwr.localPath = folderName;
             fwr.displayName = newSpace->displayName();
-            fwr.useVirtualFiles = Utility::isWindows() ? Theme::instance()->showVirtualFilesOption() : false;
+            fwr.useVirtualFiles = Utility::isWindows() ? VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi) : false;
             fwr.sortPriority = newSpace->sortPriority();
 
             addFolderFromGui(accountState, fwr);
@@ -646,15 +695,56 @@ void FolderMan::slotIsConnectedChanged()
 // this is not the same as Pause and Resume of folders.
 void FolderMan::setSyncEnabled(bool enabled)
 {
-    if (enabled) {
+    // eine Nutzerpause aus dem Tray-Menü überstimmt interne Freigaben, sonst endete sie vorzeitig
+    if (enabled && !_userSyncPaused) {
         // We have things in our queue that were waiting for the connection to come back on.
         scheduler()->start();
     } else {
         scheduler()->stop();
     }
-    qCInfo(lcFolderMan) << Q_FUNC_INFO << enabled;
+    qCInfo(lcFolderMan) << Q_FUNC_INFO << enabled << "user paused:" << _userSyncPaused;
     // force a redraw in case the network connect status changed
     Q_EMIT folderSyncStateChange(nullptr);
+}
+
+void FolderMan::setUserSyncPaused(bool paused)
+{
+    if (paused == _userSyncPaused) {
+        return;
+    }
+    _userSyncPaused = paused;
+    if (paused) {
+        // erst den Scheduler anhalten: sonst startet das Ende eines abgebrochenen Laufs gleich den nächsten
+        scheduler()->stop();
+        for (auto *folder : folders()) {
+            if (folder->isSyncRunning()) {
+                // lokale Änderungen des abgebrochenen Laufs nicht vergessen, wie beim Pausieren eines Ordners
+                folder->slotNextSyncFullLocalDiscovery();
+                folder->slotTerminateSync(tr("Sync paused by user"));
+            }
+        }
+        setSyncEnabled(false);
+    } else {
+        // abgebrochene und während der Pause angefallene Läufe nachholen
+        scheduleAllFolders();
+        setSyncEnabled(true);
+    }
+}
+
+void FolderMan::setAccountSyncPaused(const QUuid &accountId, bool paused)
+{
+    for (auto *folder : foldersForAccount(accountId)) {
+        if (folder->syncPaused() == paused) {
+            continue;
+        }
+        // lokale Änderungen eines abgebrochenen Laufs bzw. aus der Pause nicht übersehen
+        folder->slotNextSyncFullLocalDiscovery();
+        if (paused && folder->isSyncRunning()) {
+            folder->slotTerminateSync(tr("Sync paused by user"));
+        }
+        // gespeichert über syncPausedChanged; fortgesetzte Ordner plant slotFolderSyncPauseChanged ein
+        folder->setSyncPaused(paused);
+    }
 }
 
 void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
@@ -671,8 +761,13 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
     // we always should emit before the folders have actually been deleted. consider renaming
     emit folderListChanged(id, {});
 
-    for (const auto &f : std::as_const(_folders[id])) {
-        removeFolderSettings(f, settings);
+    // über eine Kopie: deleteFolderSync() entfernt den Ordner aus _folders[id], ein Iterator darüber überspränge danach
+    // Einträge (QHash rückt beim Löschen nach). Ohne Spaces hat ein Konto mehrere Ordnerpaare; ein übersprungenes behielte
+    // Journal und Sync-Root-Registrierung und lebte bis zum Neustart weiter.
+    const QList<Folder *> folders = _folders.value(id).values();
+    for (Folder *f : folders) {
+        disconnectAutoSave(f);
+        removeFolderSettings(f->id(), settings);
         deleteFolderSync(f);
     }
 
@@ -682,13 +777,74 @@ void FolderMan::slotRemoveFoldersForAccount(AccountState *accountState)
     emit unsyncedSpaceCountChanged(id, 0, 0);
 }
 
-void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
+bool FolderMan::isAnySyncRunning(const QUuid &accountId) const
 {
-    if (!folder) {
+    const auto folders = _folders.value(accountId);
+    return std::any_of(folders.cbegin(), folders.cend(), [](const Folder *folder) { return folder->isSyncRunning(); });
+}
+
+bool FolderMan::rebuildFoldersForAccount(AccountState *accountState, const std::function<void(FolderDefinition &)> &adjust)
+{
+    if (!accountState || !accountState->account()) {
+        return false;
+    }
+    const QUuid accountId = accountState->account()->uuid();
+    const QList<Folder *> oldFolders = foldersForAccount(accountId);
+    if (oldFolders.isEmpty()) {
+        return true;
+    }
+    // ohne Warteschleife: Ein laufender Ordner darf nicht gelöscht werden (~Folder setzt ein beendetes Engine voraus), und
+    // eine verschachtelte Ereignisschleife mitten im Umbau ließe das Beenden über das Tray zu
+    if (isAnySyncRunning(accountId)) {
+        qCWarning(lcFolderMan) << "Not rebuilding the folders of" << accountState->account()->displayNameWithHost() << "while a sync is running";
+        return false;
+    }
+
+    setSyncEnabled(false);
+    // zuerst melden: Ordnerliste, ETag-Wächter und Protokoll lassen ihre Zeiger los, bevor die Ordner verschwinden
+    emit folderListChanged(accountId, {});
+
+    QSettings settings = ConfigFile::makeQSettings();
+    settings.beginGroup(QStringLiteral("Accounts"));
+
+    QList<FolderDefinition> definitions;
+    for (Folder *folder : oldFolders) {
+        FolderDefinition definition = folder->definition();
+        adjust(definition);
+        // zuerst die Einstellungen: scheitert das Neuladen, gilt beim nächsten Start trotzdem die angepasste Definition
+        settings.beginGroup(QStringLiteral("%1/Folders/%2").arg(accountState->account()->groupIndex(), QString::fromUtf8(definition.id())));
+        FolderDefinition::save(settings, definition);
+        settings.endGroup();
+        definitions.append(definition);
+
+        disconnectAutoSave(folder);
+        disconnectFolder(folder);
+        _disabledFolders.remove(folder);
+        _scheduler->removeFolder(folder);
+        _folders[accountId].remove(folder->mapKey());
+        // sofort löschen, nicht deleteLater(): erst dann sind Journal (exklusiv geöffnet) und Cloud-Files-Verbindung frei
+        delete folder;
+    }
+    settings.sync();
+
+    for (const FolderDefinition &definition : std::as_const(definitions)) {
+        if (!addFolder(accountState, definition)) {
+            qCWarning(lcFolderMan) << "Could not load folder" << definition.localPath() << "again after rebuilding the folders of the account";
+        }
+    }
+
+    emit folderListChanged(accountId, _folders.value(accountId).values());
+    scheduleFoldersForAccount(accountId);
+    setSyncEnabled(true);
+    return true;
+}
+
+void FolderMan::removeFolderSettings(const QByteArray &folderId, QSettings &settings)
+{
+    if (folderId.isEmpty()) {
         return;
     }
-    disconnectAutoSave(folder);
-    QString id = QString::fromUtf8(folder->id());
+    QString id = QString::fromUtf8(folderId);
     if (id.isEmpty())
         return;
     settings.remove(QStringLiteral("Folders/%1").arg(id));
@@ -698,10 +854,13 @@ void FolderMan::removeFolderSettings(Folder *folder, QSettings &settings)
 
 void FolderMan::removeFolderSettings(Folder *folder)
 {
+    if (!folder)
+        return;
+    disconnectAutoSave(folder);
     QSettings settings = ConfigFile::makeQSettings();
     QString accountGroup = QStringLiteral("Accounts/%1").arg(folder->accountState()->account()->groupIndex());
     settings.beginGroup(accountGroup);
-    removeFolderSettings(folder, settings);
+    removeFolderSettings(folder->id(), settings);
 }
 
 void FolderMan::slotServerVersionChanged(Account *account)
@@ -748,10 +907,21 @@ void FolderMan::slotFolderSyncFinished(const SyncResult &)
                         << f->accountState()->account()->displayNameWithHost() << "] with remote [" << f->remoteUrl().toDisplayString() << "]";
 }
 
+// consider moving this to FolderBuilder so we can "make" tests use it someday
 bool FolderMan::validateFolderDefinition(const FolderDefinition &folderDefinition)
 {
-    if (folderDefinition.id().isEmpty() || folderDefinition.journalPath().isEmpty() || !ensureFilesystemSupported(folderDefinition))
+    if (folderDefinition.id().isEmpty() || folderDefinition.webDavUrl().isEmpty() || folderDefinition.journalPath().isEmpty()
+        || !ensureFilesystemSupported(folderDefinition)) {
+        qCWarning(lcFolderMan) << "Folder definition is missing required value(s). Folder cannot be created from this definition.";
         return false;
+    }
+
+    QString pathCheck = FolderManagementUtils::validateFolderPath(folderDefinition.localPath());
+    if (!pathCheck.isEmpty()) {
+        // does this warrant popping an error dialog?
+        qCWarning(lcFolderMan) << "Folder definition path check failed with error: " << pathCheck << ". Folder cannot be created using this path.";
+        return false;
+    }
     return true;
 }
 
@@ -768,23 +938,24 @@ Folder *FolderMan::addFolder(AccountState *accountState, const FolderDefinition 
 
     QUuid accountId = accountState->account()->uuid();
 
-    if (Folder *f = folder(accountId, folderDefinition.spaceId())) {
-        qCWarning(lcFolderMan) << "Trying to add folder" << folderDefinition.localPath() << "but it already exists in folder list";
-        return f;
+    // ohne Spaces führt FolderMan jedes Ordnerpaar unter seiner eigenen ID, siehe FolderDefinition::mapKey()
+    if (_folders.contains(accountId) && _folders[accountId].contains(folderDefinition.mapKey())) {
+        qCWarning(lcFolderMan) << "Trying to add new folder for " << folderDefinition.localPath() << "but it already exists in folder list";
+        return _folders[accountId][folderDefinition.mapKey()];
     }
 
-    auto vfs = VfsPluginManager::instance().createVfsFromPlugin(folderDefinition.virtualFilesMode());
-    if (!vfs) {
-        qCWarning(lcFolderMan) << "Could not load plugin for mode" << folderDefinition.virtualFilesMode();
+    FolderBuilder builder(folderDefinition);
+    auto folder = builder.buildFolder(accountState, _ignoreHiddenFiles, _moveToTrash, this);
+
+    if (!folder) {
+        // folder ist hier null, daher die Angaben aus der Definition
+        qCWarning(lcFolderMan) << "Unable to create Folder for " << folderDefinition.localPath() << " with spaceId " << folderDefinition.spaceId();
         return nullptr;
     }
 
-    auto folder = new Folder(folderDefinition, accountState, std::move(vfs), _ignoreHiddenFiles, this);
-
     qCInfo(lcFolderMan) << "Adding folder to Folder Map " << folder << folder->path();
-    QString spaceId = folder->spaceId();
     // always add the folder even if it had a setup error - future add special handling for incomplete folders if possible
-    _folders[accountId].insert(spaceId, folder);
+    _folders[accountId].insert(folder->mapKey(), folder);
 
     if (folder->syncPaused()) {
         _disabledFolders.insert(folder);
@@ -812,10 +983,10 @@ void FolderMan::connectFolder(Folder *folder)
         // clang-format off
         connect(folder, SIGNAL(syncPausedChanged(Folder*,bool)), this, SLOT(saveFolder(Folder*)));
         connect(folder, SIGNAL(vfsModeChanged(Folder*,Vfs::Mode)), this, SLOT(saveFolder(Folder*)));
-        // clang-format on  
+        // clang-format on
+
         connect(
-            &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
-        connect(folder, &Folder::watchedFileChangedExternally, &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::slotPathTouched);
+            folder->syncEngine(), &SyncEngine::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
 
         registerFolderWithSocketApi(folder);
     }
@@ -836,10 +1007,10 @@ void FolderMan::disconnectFolder(Folder *folder)
 
         disconnect(folder, nullptr, _socketApi.get(), nullptr);
         disconnect(folder, nullptr, this, nullptr);
-        disconnect(&folder->syncEngine(), nullptr, folder, nullptr);
+        disconnect(folder->syncEngine(), nullptr, folder, nullptr);
         disconnect(
-            &folder->syncEngine().syncFileStatusTracker(), &SyncFileStatusTracker::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
-        disconnect(folder, nullptr, &folder->syncEngine().syncFileStatusTracker(), nullptr);
+            folder->syncEngine(), &SyncEngine::fileStatusChanged, _socketApi.get(), &SocketApi::broadcastStatusPushMessage);
+        disconnect(folder, nullptr, folder->syncEngine(), nullptr);
     }
 }
 
@@ -884,7 +1055,12 @@ Folder *FolderMan::folderForPath(const QString &path, QString *relativePath) con
 
 void FolderMan::removeFolderFromGui(Folder *f)
 {
-    Q_ASSERT(f->accountState() && f->accountState()->account());
+    // Die Rückfrage davor ist modal (exec): Inzwischen kann das Konto weg sein, etwa beim Beenden. Das frühere Q_ASSERT
+    // beendete dann mit FORCE_ASSERTS (Beta) das Programm.
+    if (!f || !f->accountState() || !f->accountState()->account()) {
+        qCWarning(lcFolderMan) << "Not removing a folder whose account is gone";
+        return;
+    }
 
     QUuid accountId = f->accountState()->account()->uuid();
     emit folderRemoved(accountId, f);
@@ -923,8 +1099,11 @@ void FolderMan::forceFolderSync(Folder *f)
     // caller deps on the scheduler
     _scheduler->enqueueFolder(f, SyncScheduler::Priority::High);
 
-    // Restart scheduler
-    _scheduler->start();
+    // Restart scheduler – außer während einer Nutzerpause aus dem Tray-Menü: dann läuft der Ordner als Erster,
+    // sobald die Pause endet
+    if (!_userSyncPaused) {
+        _scheduler->start();
+    }
 }
 
 void FolderMan::deleteFolderSync(Folder *f)
@@ -944,12 +1123,14 @@ void FolderMan::deleteFolderSync(Folder *f)
         f->slotTerminateSync(tr("Folder is about to be removed"));
     }
 
+    // this prevents any new sync from starting
     f->setSyncPaused(true);
 
     // this function includes the stuff to remove the database files.
     f->wipeForRemoval();
 
-    _folders[f->accountState()->account()->uuid()].remove(f->spaceId());
+    _folders[f->accountState()->account()->uuid()].remove(f->mapKey());
+    _scheduler->removeFolder(f);
 
     disconnectFolder(f);
 
@@ -1018,7 +1199,7 @@ static QString checkPathForSyncRootMarkingRecursive(const QString &path, FolderM
         return FolderMan::tr("The selected path is not a folder.");
     }
 
-    if (numberOfSyncJournals(selectedPathInfo.filePath()) != 0) {
+    if (FolderManagementUtils::numberOfSyncJournals(selectedPathInfo.filePath()) != 0) {
         return FolderMan::tr("The folder %1 is used in a folder sync connection.").arg(QDir::toNativeSeparators(selectedPathInfo.filePath()));
     }
 
@@ -1091,6 +1272,53 @@ QString FolderMan::checkPathValidity(const QString &path, NewFolderType folderTy
     return findExistingFolderAndCheckValidity(path, folderType, accountUuid);
 }
 
+namespace {
+    // „/Dokumente“, „Dokumente/“ und „//Dokumente//“ meinen denselben Serverordner; das Ergebnis beginnt und endet mit „/“.
+    // Groß-/Kleinschreibung bleibt: Serverpfade unterscheiden sie. Nicht QDir::cleanPath(): unter Windows bliebe ein
+    // führendes „//“ (UNC) stehen.
+    QString normalizedRemoteFolder(const QString &remotePath)
+    {
+        QStringList parts = remotePath.split(QLatin1Char('/'), Qt::SkipEmptyParts);
+        parts.removeAll(QStringLiteral("."));
+        if (parts.isEmpty()) {
+            return QStringLiteral("/");
+        }
+        return QLatin1Char('/') + parts.join(QLatin1Char('/')) + QLatin1Char('/');
+    }
+}
+
+QString FolderMan::checkRemotePathValidity(const QUuid &accountUuid, const QString &remotePath) const
+{
+    const QString wanted = normalizedRemoteFolder(remotePath);
+    for (const Folder *f : _folders.value(accountUuid)) {
+        // Spaces (oCIS) haben eigene Prüfungen über die Space-Auswahl
+        if (!f->spaceId().isEmpty()) {
+            continue;
+        }
+        const QString existing = normalizedRemoteFolder(f->remotePath());
+        const QString localFolder = QDir::toNativeSeparators(f->cleanPath());
+        if (wanted == existing) {
+            return tr("This server folder is already synced with the local folder %1. Each server folder can only be synced once.").arg(localFolder);
+        }
+        if (existing == QLatin1String("/")) {
+            return tr("The whole account is already synced with the local folder %1. Each server folder can only be synced once. To sync this "
+                      "server folder to a different local folder, remove the existing folder sync connection first.")
+                .arg(localFolder);
+        }
+        if (existing.startsWith(wanted)) {
+            return tr("This server folder contains the folder %1, which is already synced with the local folder %2. Each server folder can only be "
+                      "synced once. Choose a folder outside of it, or remove the existing folder sync connection first.")
+                .arg(existing.chopped(1), localFolder);
+        }
+        if (wanted.startsWith(existing)) {
+            return tr("This server folder is inside the folder %1, which is already synced with the local folder %2. Each server folder can only be "
+                      "synced once. To sync it to a different local folder, remove the existing folder sync connection first.")
+                .arg(existing.chopped(1), localFolder);
+        }
+    }
+    return {};
+}
+
 QString FolderMan::findExistingFolderAndCheckValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid)
 {
     if (path.isEmpty()) {
@@ -1101,9 +1329,9 @@ QString FolderMan::findExistingFolderAndCheckValidity(const QString &path, NewFo
     QNtfsPermissionCheckGuard ntfs_perm;
 #endif
 
-    auto pathLengthCheck = Folder::checkPathLength(path);
-    if (!pathLengthCheck) {
-        return pathLengthCheck.error();
+    auto pathLengthCheck = FolderManagementUtils::checkPathLength(path);
+    if (!pathLengthCheck.isEmpty()) {
+        return pathLengthCheck;
     }
 
     // If this is a new folder, recurse up to the first parent that exists, to see if we can use that to create a new folder
@@ -1176,32 +1404,44 @@ void FolderMan::setIgnoreHiddenFiles(bool ignore)
     // creating it. See the todo in the Folder constructor.
     for (Folder *folder : folders()) {
         if (folder->canSync()) {
-            folder->syncEngine().setIgnoreHiddenFiles(ignore);
+            folder->syncEngine()->setIgnoreHiddenFiles(ignore);
         }
     }
 
     setSyncEnabled(true);
 }
 
+bool FolderMan::moveToTrash() const
+{
+    return _moveToTrash;
+}
+
+void FolderMan::updateMoveToTrash(bool trashIt)
+{
+    if (_moveToTrash == trashIt)
+        return;
+
+    setSyncEnabled(false);
+    _moveToTrash = trashIt;
+    auto settings = ConfigFile::makeQSettings();
+    settings.setValue(MoveToTrashKey, _moveToTrash);
+    
+    for (auto *f : folders()) {
+        if (f) {
+            f->setMoveToTrash(_moveToTrash);
+        }
+    }
+    setSyncEnabled(true);
+}
 
 bool FolderMan::isSpaceSynced(GraphApi::Space *space) const
 {
     return (space && folder(space->accountId(), space->id()) != nullptr);
 }
 
-// this only seems to be triggered when changing the move to trash setting?
-void FolderMan::slotReloadSyncOptions()
-{
-    for (auto *f : folders()) {
-        if (f) {
-            f->reloadSyncOptions();
-        }
-    }
-}
-
 Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefinition &&folderDefinition, bool useVfs)
 {
-    if (!FolderMan::prepareFolder(folderDefinition.localPath())) {
+    if (!FolderManagementUtils::prepareFolder(folderDefinition.localPath())) {
         return nullptr;
     }
 
@@ -1233,9 +1473,9 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
         if (newFolder->vfs().mode() == Vfs::Off) {
             Utility::setupFavLink(folderDefinition.localPath());
         }
-        qCDebug(lcFolderMan) << "Local sync folder" << folderDefinition.localPath() << "successfully created!";
+        qCDebug(lcFolderMan) << "Local sync folder" << folderDefinition.localPath() << "successfully created";
     } else {
-        qCWarning(lcFolderMan) << "Failed to create local sync folder!";
+        qCWarning(lcFolderMan) << "Failed to create local sync folder: " << folderDefinition.localPath();
     }
 
     // we should not emit any folder list change from this function because it can be called in bulk as well as individual operations
@@ -1243,10 +1483,20 @@ Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefini
 }
 
 // todo: #1
-void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &description)
+QString FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &description)
 {
     if (!accountState || !accountState->account())
-        return;
+        return tr("The account no longer exists.");
+
+    // letzte Sicherung hinter dem Ordner-Assistenten: denselben Serverordner (oder einen Ober-/Unterordner) nie ein
+    // zweites Mal spiegeln
+    if (description.spaceId.isEmpty()) {
+        const QString remoteError = checkRemotePathValidity(accountState->account()->uuid(), description.remotePath);
+        if (!remoteError.isEmpty()) {
+            qCWarning(lcFolderMan) << "Refusing to add folder sync connection for" << description.remotePath << ":" << remoteError;
+            return remoteError;
+        }
+    }
 
     setSyncEnabled(false);
 
@@ -1274,6 +1524,39 @@ void FolderMan::addFolderFromGui(AccountState *accountState, const SyncConnectio
         _scheduler->enqueueFolder(f, SyncScheduler::Priority::High);
     }
     setSyncEnabled(true);
+    return f ? QString() : tr("The local folder %1 could not be set up for synchronization.").arg(QDir::toNativeSeparators(description.localPath));
+}
+
+Folder *FolderMan::adoptExistingFolder(AccountState *accountState, const FolderDefinition &definition)
+{
+    if (!accountState || !accountState->account()) {
+        return nullptr;
+    }
+    const QUuid accountId = accountState->account()->uuid();
+    if (definition.spaceId().isEmpty()) {
+        // ohne Spaces wie addFolderFromGui: jeden Serverordner (samt Ober- und Unterordnern) nur einmal spiegeln
+        const QString remoteError = checkRemotePathValidity(accountId, definition.targetPath());
+        if (!remoteError.isEmpty()) {
+            qCWarning(lcFolderMan) << "Cannot adopt" << definition.localPath() << ":" << remoteError;
+            return nullptr;
+        }
+    } else if (folder(accountId, definition.spaceId())) {
+        // addFolder gäbe sonst den vorhandenen Ordner zurück
+        qCWarning(lcFolderMan) << "Cannot adopt" << definition.localPath() << "- the account already has a folder for space" << definition.spaceId();
+        return nullptr;
+    }
+
+    setSyncEnabled(false);
+    Folder *f = addFolder(accountState, definition);
+    if (f) {
+        // die Auswahl-Sync-Listen kommen mit dem übernommenen Journal und bleiben, wie sie sind
+        saveFolder(f);
+        emit folderAdded(accountId, f);
+        _scheduler->enqueueFolder(f, SyncScheduler::Priority::High);
+        qCInfo(lcFolderMan) << "Adopted existing sync folder" << definition.localPath() << "with journal" << definition.journalPath();
+    }
+    setSyncEnabled(true);
+    return f;
 }
 
 QString FolderMan::suggestSyncFolder(NewFolderType folderType, const QUuid &accountUuid)
@@ -1281,19 +1564,7 @@ QString FolderMan::suggestSyncFolder(NewFolderType folderType, const QUuid &acco
     return FolderMan::instance()->findGoodPathForNewSyncFolder(QDir::homePath(), Theme::instance()->appName(), folderType, accountUuid);
 }
 
-bool FolderMan::prepareFolder(const QString &folder)
-{
-    if (!QFileInfo::exists(folder)) {
-        if (!OC_ENSURE(QDir().mkpath(folder))) {
-            return false;
-        }
-        // mac only
-        FileSystem::setFolderMinimumPermissions(folder);
-        // this is for windows - it sets up a desktop.ini file to handle the icon and deals with persmissions.
-        Folder::prepareFolder(folder);
-    }
-    return true;
-}
+
 
 std::unique_ptr<FolderMan> FolderMan::createInstance()
 {

@@ -198,6 +198,13 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
      */
     OCSYNC_EXPORT QString concatUrlPathItems(QStringList && items, const QLatin1Char delimiter = QLatin1Char('/'));
 
+    /**
+     * owncloud.online: fasst „//“ im Pfad von @p url zu „/“ zusammen; der Pfad wird kodiert bearbeitet, ein Prozentzeichen
+     * bleibt, was es war. Für Adressen, die ein Server nennt (WebFinger, OpenID-Konfiguration), bevor sie an concatUrlPath()
+     * gehen: Das verlangt Pfade ohne „//“ (Q_ASSERT, in Beta-Builds ein Absturz).
+     */
+    OCSYNC_EXPORT QUrl withoutDoubledSlashes(const QUrl &url);
+
     /** Appends concatPath and queryItems to the url */
     OCSYNC_EXPORT QUrl concatUrlPath(
         const QUrl &url, const QString &concatPath,
@@ -241,19 +248,25 @@ OCSYNC_EXPORT Q_DECLARE_LOGGING_CATEGORY(lcUtility)
      */
     OCSYNC_EXPORT QByteArray conflictFileBaseNameFromPattern(const QByteArray &conflictName);
 
+    /**
+     * Die Schlüssel kommen aus Konfigurationsdateien und Serverantworten: Ein unbekannter Schlüssel ergibt -1 (als E), *ok
+     * sagt, ob er bekannt war. Kein Assert, das beendete mit FORCE_ASSERTS (Beta) das Programm wegen fremder Daten.
+     */
     template <class E>
-    E stringToEnum(const char *key)
+    E stringToEnum(const char *key, bool *ok = nullptr)
     {
-        bool ok;
-        auto out = static_cast<E>(QMetaEnum::fromType<E>().keyToValue(key, &ok));
-        Q_ASSERT(ok);
+        bool found = false;
+        auto out = static_cast<E>(QMetaEnum::fromType<E>().keyToValue(key, &found));
+        if (ok) {
+            *ok = found;
+        }
         return out;
     }
 
     template <class E>
-    E stringToEnum(const QString &key)
+    E stringToEnum(const QString &key, bool *ok = nullptr)
     {
-        return stringToEnum<E>(key.toUtf8().constData());
+        return stringToEnum<E>(key.toUtf8().constData(), ok);
     }
 
     template <class E>

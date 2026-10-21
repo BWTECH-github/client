@@ -16,11 +16,11 @@
 #include "gui/clientproxy.h"
 #include "gui/fetchserversettings.h"
 #include "gui/networkinformation.h"
+#include "gui/servermove.h"
 #include "libsync/account.h"
 #include "libsync/creds/abstractcredentials.h"
 #include "libsync/networkjobs.h"
 #include "libsync/networkjobs/checkserverjobfactory.h"
-#include "libsync/theme.h"
 
 #include <QJsonObject>
 #include <QLoggingCategory>
@@ -167,6 +167,22 @@ void ConnectionValidator::checkServerJobFinished()
             break;
         }
 
+        // Serverumzug: status.php antwortet mit einer dauerhaften Weiterleitung. Nicht folgen (das Ziel kann ein fremder Host
+        // sein), aber die neue Adresse nennen; übernehmen lässt sie sich über „Serveradresse ändern…“ im Kontomenü.
+        const int httpStatus = _checkServerJob->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        if (httpStatus == 301 || httpStatus == 308) {
+            const QUrl location = _checkServerJob->reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
+            const QUrl movedTo = ServerMove::serverUrlFromStatusUrl(_checkServerJob->reply()->url().resolved(location));
+            if (movedTo.isValid()) {
+                qCWarning(lcConnectionValidator) << "status.php moved permanently to" << movedTo;
+                _errors.append(tr("The server reports a new address: %1. If your server has moved, choose “Change server address…” in the account menu.")
+                                   .arg(movedTo.toDisplayString()));
+                Q_EMIT serverMoved(movedTo);
+                reportResult(StatusNotFound);
+                return;
+            }
+        }
+
         if (!_account->credentials()->stillValid(_checkServerJob->reply())) {
             // Note: Why would this happen on a status.php request?
             _errors.append(tr("Authentication error: Either username or password are wrong."));
@@ -285,38 +301,38 @@ void ConnectionValidator::slotAuthSuccess()
     }
 
     _errors.clear();
-    if (_mode != ConnectionValidator::ValidationMode::ValidateAuth) {
-        auto *fetchSetting = new FetchServerSettingsJob(_account, this);
-        const auto unsupportedServerError = [this] {
-            _errors.append({tr("The configured server for this client is too old."), tr("Please update to the latest server and restart the client.")});
-        };
-        connect(fetchSetting, &FetchServerSettingsJob::finishedSignal, this, [unsupportedServerError, this](FetchServerSettingsJob::Result result) {
-            switch (result) {
-            case FetchServerSettingsJob::Result::UnsupportedServer:
-                unsupportedServerError();
-                reportResult(ServerVersionMismatch);
-                break;
-            case FetchServerSettingsJob::Result::InvalidCredentials:
-                reportResult(CredentialsWrong);
-                break;
-            case FetchServerSettingsJob::Result::TimeOut:
-                reportResult(Timeout);
-                break;
-            case FetchServerSettingsJob::Result::Success:
-                if (_account->serverSupportLevel() == Account::ServerSupportLevel::Unknown) {
-                    unsupportedServerError();
-                }
-                reportResult(Connected);
-                break;
-            case FetchServerSettingsJob::Result::Undefined:
-                reportResult(Undefined);
-                break;
-            }
-        });
+    /* if (_mode != ConnectionValidator::ValidationMode::ValidateAuth) {
+         auto *fetchSetting = new FetchServerSettingsJob(_account, this);
+         const auto unsupportedServerError = [this] {
+             _errors.append({tr("The configured server for this client is too old."), tr("Please update to the latest server and restart the client.")});
+         };
+         connect(fetchSetting, &FetchServerSettingsJob::finishedSignal, this, [unsupportedServerError, this](FetchServerSettingsJob::Result result) {
+             switch (result) {
+             case FetchServerSettingsJob::Result::UnsupportedServer:
+                 unsupportedServerError();
+                 reportResult(ServerVersionMismatch);
+                 break;
+             case FetchServerSettingsJob::Result::InvalidCredentials:
+                 reportResult(CredentialsWrong);
+                 break;
+             case FetchServerSettingsJob::Result::TimeOut:
+                 reportResult(Timeout);
+                 break;
+             case FetchServerSettingsJob::Result::Success:
+                 if (_account->serverSupportLevel() == Account::ServerSupportLevel::Unknown) {
+                     unsupportedServerError();
+                 }
+                 reportResult(Connected);
+                 break;
+             case FetchServerSettingsJob::Result::Undefined:
+                 reportResult(Undefined);
+                 break;
+             }
+         });
 
-        fetchSetting->start();
-        return;
-    }
+         fetchSetting->start();
+         return;
+     }*/
     reportResult(Connected);
 }
 

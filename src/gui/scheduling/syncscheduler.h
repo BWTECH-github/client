@@ -50,6 +50,9 @@ public:
 
     void enqueueFolder(Folder *folder, Priority priority = Priority::Low);
 
+    /// nimmt einen Ordner aus der Warteschlange, bevor er gelöscht wird
+    void removeFolder(Folder *folder);
+
     void start();
 
     void stop();

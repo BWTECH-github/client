@@ -29,6 +29,9 @@ public:
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
+    /// Auswahlfarbe der Ordnerliste: Theme::selectionColor(), ohne Theme-Farbe die Hervorhebung des Systems
+    static QColor selectionColor();
+
 private:
     const int _cellBorder = 10;
     const int _horizontalSpacing = 10;

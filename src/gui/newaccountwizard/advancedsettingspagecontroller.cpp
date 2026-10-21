@@ -15,13 +15,18 @@
 #include "common/vfs.h"
 #include "folderman.h"
 
+#include "mainwindow/colormanager.h"
 #include "theme.h"
+#include "wizardpagelayout.h"
 
 #include <QButtonGroup>
 #include <QFileDialog>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMouseEvent>
+#include <QPointer>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QVBoxLayout>
@@ -29,6 +34,51 @@
 
 namespace OCC {
 
+namespace {
+    /**
+     * owncloud.online: QRadioButton bricht seinen Text nicht um. In der festen Breite des Assistenten war die erste Wahl schon
+     * deutsch ab „(spart …“ abgeschnitten, in längeren Übersetzungen noch früher. Der Knopf behält den Text als Namen für
+     * Bedienungshilfen; sichtbar steht er umbrochen daneben, ein Klick darauf wählt den Knopf.
+     */
+    class ChoiceLabel : public QLabel
+    {
+    public:
+        ChoiceLabel(QRadioButton *button, const QString &text, QWidget *parent)
+            : QLabel(text, parent)
+            , _button(button)
+        {
+            setTextFormat(Qt::PlainText);
+            setWordWrap(true);
+            setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+            setBuddy(button);
+        }
+
+    protected:
+        void mouseReleaseEvent(QMouseEvent *event) override
+        {
+            QLabel::mouseReleaseEvent(event);
+            if (event->button() == Qt::LeftButton && _button && _button->isEnabled() && rect().contains(event->position().toPoint())) {
+                _button->setFocus(Qt::MouseFocusReason);
+                _button->click();
+            }
+        }
+
+    private:
+        QPointer<QRadioButton> _button;
+    };
+
+    /** Zeile aus Knopf und umbrechendem Text; ein- und ausgeblendet wird die Zeile, nicht der Knopf */
+    QWidget *choiceRow(QRadioButton *button, const QString &text, QWidget *parent)
+    {
+        auto *row = new QWidget(parent);
+        auto *rowLayout = new QHBoxLayout(row);
+        rowLayout->setContentsMargins(0, 0, 0, 0);
+        button->setAccessibleName(text);
+        rowLayout->addWidget(button, 0, Qt::AlignTop);
+        rowLayout->addWidget(new ChoiceLabel(button, text, row), 1);
+        return row;
+    }
+}
 
 AdvancedSettingsPageController::AdvancedSettingsPageController(QWizardPage *page, QObject *parent)
     : QObject{parent}
@@ -71,52 +121,34 @@ void AdvancedSettingsPageController::buildPage()
     layout->addSpacing(8);
     layout->addWidget(syncOptionsLabel);
 
-    QRadioButton *vfsButton = new QRadioButton(tr("Use virtual files (download on demand)"), _page);
-    vfsButton->setFocusPolicy(Qt::StrongFocus);
-    _buttonGroup->addButton(vfsButton, NewAccount::SyncType::USE_VFS);
-    layout->addWidget(vfsButton);
+    _vfsButton = new QRadioButton(_page);
+    _vfsButton->setFocusPolicy(Qt::StrongFocus);
+    _buttonGroup->addButton(_vfsButton, NewAccount::SyncType::USE_VFS);
+    QWidget *vfsRow = choiceRow(_vfsButton, tr("Sync and download files as you use them (saves hard drive space)"), _page);
+    layout->addWidget(vfsRow);
 
-    QRadioButton *syncAllButton = new QRadioButton(tr("Download and sync all files"), _page);
-    syncAllButton->setObjectName("SyncAllRadioButton");
-    syncAllButton->setFocusPolicy(Qt::StrongFocus);
-    _buttonGroup->addButton(syncAllButton, NewAccount::SyncType::SYNC_ALL);
-    layout->addWidget(syncAllButton);
+    _syncAllButton = new QRadioButton(_page);
+    _syncAllButton->setObjectName("SyncAllRadioButton");
+    _syncAllButton->setFocusPolicy(Qt::StrongFocus);
+    _buttonGroup->addButton(_syncAllButton, NewAccount::SyncType::SYNC_ALL);
+    QWidget *syncAllRow = choiceRow(_syncAllButton, tr("Automatically sync and download folders and files"), _page);
+    layout->addWidget(syncAllRow);
 
-    QRadioButton *selectiveSyncButton = new QRadioButton(tr("Choose folders to sync manually"), _page);
-    selectiveSyncButton->setObjectName("SelectiveSyncRadioButton");
-    selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
-    _buttonGroup->addButton(selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
-    layout->addWidget(selectiveSyncButton);
+    _selectiveSyncButton = new QRadioButton(_page);
+    _selectiveSyncButton->setObjectName("SelectiveSyncRadioButton");
+    _selectiveSyncButton->setFocusPolicy(Qt::StrongFocus);
+    _buttonGroup->addButton(_selectiveSyncButton, NewAccount::SyncType::SELECTIVE_SYNC);
+    QWidget *selectiveSyncRow = choiceRow(_selectiveSyncButton, tr("Sync and download folders manually"), _page);
+    layout->addWidget(selectiveSyncRow);
 
     connect(_buttonGroup, &QButtonGroup::idClicked, this, &AdvancedSettingsPageController::syncTypeChanged);
 
-    // if the branding does not specify a background color for the wizard we should just let the normal system colors
-    // rule. If not:
-    QPalette radioPalette = vfsButton->palette();
-    QColor textColor = _page->palette().color(QPalette::Text);
-    if (Theme::instance()->wizardHeaderBackgroundColor().isValid()) {
-        QColor disabledColor(textColor);
-        // eh - I don't know if this will really work in all possible cases but I think it is the simplest way for now
-        disabledColor.setAlpha(128);
-        // unexpected, but these are the only ones that work to change the text color and the circle colors of the radio button
-        // on windows - need to test other platforms for sure
-        radioPalette.setColor(QPalette::WindowText, textColor);
-        radioPalette.setColor(QPalette::Window, textColor);
-        radioPalette.setColor(QPalette::Disabled, QPalette::Window, disabledColor);
-    }
-    // for this use case we want the text to remain "normal" regardless of branding. the only time we disable a button is when there
-    // is only one choice
-    radioPalette.setColor(QPalette::Disabled, QPalette::WindowText, textColor);
-    vfsButton->setPalette(radioPalette);
-    syncAllButton->setPalette(radioPalette);
-    selectiveSyncButton->setPalette(radioPalette);
-
     if (!_vfsIsAvailable) {
-        vfsButton->setVisible(false);
+        vfsRow->setVisible(false);
     } else if (_forceVfs) {
-        vfsButton->setEnabled(false);
-        selectiveSyncButton->setVisible(false);
-        syncAllButton->setVisible(false);
+        _vfsButton->setEnabled(false);
+        selectiveSyncRow->setVisible(false);
+        syncAllRow->setVisible(false);
     }
 
     Q_ASSERT(_buttonGroup->button(_defaultSyncType));
@@ -124,10 +156,6 @@ void AdvancedSettingsPageController::buildPage()
 
     _rootDirEdit = new QLineEdit(_page);
     _rootDirEdit->setText(_defaultSyncRoot);
-    QPalette dirPalette = _rootDirEdit->palette();
-    dirPalette.setColor(QPalette::Base, dirPalette.color(QPalette::Button));
-    dirPalette.setColor(QPalette::Text, dirPalette.color(QPalette::ButtonText));
-    _rootDirEdit->setPalette(dirPalette);
     _rootDirEdit->setFocusPolicy(Qt::StrongFocus);
     _rootDirEdit->setAccessibleName(tr("Download location on the local machine"));
     // just clear the error if the user starts typing in the text edit
@@ -137,7 +165,7 @@ void AdvancedSettingsPageController::buildPage()
     });
     connect(_rootDirEdit, &QLineEdit::editingFinished, this, &AdvancedSettingsPageController::onRootDirFieldEdited);
 
-    _folderButton = new QPushButton(tr("Browse..."), _page);
+    _folderButton = new QPushButton(tr("Browse…"), _page);
     _folderButton->setObjectName("BrowseButton");
     _folderButton->setFocusPolicy(Qt::StrongFocus);
     _folderButton->setAccessibleDescription(tr("Browse for a download location"));
@@ -152,9 +180,8 @@ void AdvancedSettingsPageController::buildPage()
     layout->addLayout(folderPickerLayout);
 
     _errorField = new QLabel(QString(), _page);
-    QPalette errorPalette = _errorField->palette();
-    errorPalette.setColor(QPalette::Text, Qt::red);
-    _errorField->setPalette(errorPalette);
+    // Fehlerrot aus dem Theme (WCAG 4,5:1); Qt::red erreichte auf Weiß nur 4:1 und wirkte auf QLabel gar nicht
+    ColorManager::applyErrorColor(_errorField);
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);
@@ -162,7 +189,40 @@ void AdvancedSettingsPageController::buildPage()
     layout->addWidget(_errorField);
 
     layout->addStretch(1);
-    _page->setLayout(layout);
+    setScrollableWizardPageLayout(_page, layout);
+
+    updateColors();
+}
+
+void AdvancedSettingsPageController::updateColors()
+{
+    QPalette appPalette = qGuiApp->palette();
+
+    QPalette dirPalette = _rootDirEdit->palette();
+    dirPalette.setColor(QPalette::Base, appPalette.color(QPalette::Button));
+    dirPalette.setColor(QPalette::Text, appPalette.color(QPalette::ButtonText));
+    _rootDirEdit->setPalette(dirPalette);
+
+    // if the branding does not specify a background color for the wizard we should just let the normal system colors
+    // rule. If not:
+    QPalette radioPalette = _vfsButton->palette();
+    QColor textColor = appPalette.color(QPalette::Text);
+    if (Theme::instance()->wizardHeaderBackgroundColor().isValid()) {
+        QColor disabledColor(textColor);
+        // eh - I don't know if this will really work in all possible cases but I think it is the simplest way for now
+        disabledColor.setAlpha(128);
+        // unexpected, but these are the only ones that work to change the text color and the circle colors of the radio button
+        // on windows - need to test other platforms for sure
+        radioPalette.setColor(QPalette::WindowText, textColor);
+        radioPalette.setColor(QPalette::Window, textColor);
+        radioPalette.setColor(QPalette::Disabled, QPalette::Window, disabledColor);
+    }
+    // for this use case we want the text to remain "normal" regardless of branding. the only time we disable a button is when there
+    // is only one choice
+    radioPalette.setColor(QPalette::Disabled, QPalette::WindowText, textColor);
+    _vfsButton->setPalette(radioPalette);
+    _syncAllButton->setPalette(radioPalette);
+    _selectiveSyncButton->setPalette(radioPalette);
 }
 
 void AdvancedSettingsPageController::gatherSyncInfo()

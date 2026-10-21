@@ -52,9 +52,12 @@ AbstractNetworkJob::AbstractNetworkJob(Account *account, const QUrl &baseUrl, co
     , _baseUrl(baseUrl)
     , _path(path)
 {
-    // Since we hold a QSharedPointer to the account, this makes no sense. (issue #6893)
     Q_ASSERT(account != parent);
-    Q_ASSERT(baseUrl.isValid());
+    // Die Adresse stammt aus der Konfiguration oder vom Server (Spaces): Eine ungültige lässt die Anfrage mit einem Fehler
+    // enden. Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm, bei einer kaputten Konfiguration bei jedem Start.
+    if (!baseUrl.isValid()) {
+        qCWarning(lcNetworkJob) << "Network job for" << path << "with the invalid base URL" << baseUrl;
+    }
 }
 
 QUrl AbstractNetworkJob::url() const
@@ -155,8 +158,14 @@ void AbstractNetworkJob::sendRequest(const QByteArray &verb,
     _request.setPriority(_priority);
     _request.setTransferTimeout(duration_cast<milliseconds>(_timeout).count());
 
-    if (!_isAuthenticationJob && _account->jobQueue()->enqueue(this)) {
-        return;
+    if (!_isAuthenticationJob) {
+        // ein nach der Uhr abgelaufenes Token (Ruhezustand) zuerst erneuern: das hält die Warteschlange an
+        if (auto *credentials = _account->credentials()) {
+            credentials->refreshIfExpired();
+        }
+        if (_account->jobQueue()->enqueue(this)) {
+            return;
+        }
     }
 
     auto reply = _account->sendRawRequest(verb, _request.url(), _request, requestBody);

@@ -18,9 +18,19 @@
 #include "translations.h"
 
 #include <QApplication>
+#include <QDir>
 #include <QDirIterator>
 #include <QLoggingCategory>
 #include <QStandardPaths>
+#include <QTranslator>
+
+namespace {
+// Qt liest die Schreibrichtung aus der Übersetzung von „QT_LAYOUT_DIRECTION“ im Kontext QGuiApplication und spiegelt die
+// Oberfläche bei „RTL“. Nicht jede Sprache hat einen Qt-Katalog (Uigurisch fehlt), deshalb steht der Eintrag in jedem
+// eigenen Katalog; die Markierung sorgt dafür, dass lupdate ihn dort anlegt.
+//: Translate this string to "RTL" in right-to-left languages (such as Arabic or Uyghur), otherwise to "LTR".
+[[maybe_unused]] constexpr const char *layoutDirectionText = QT_TRANSLATE_NOOP("QGuiApplication", "QT_LAYOUT_DIRECTION");
+}
 
 namespace OCC {
 
@@ -63,6 +73,58 @@ namespace Translations {
         }
 
         return availableTranslations;
+    }
+
+    QStringList qtTranslationsSearchPaths(const QString &qtTranslationsPath, const QString &applicationDirPath)
+    {
+        QStringList candidates = {qtTranslationsPath};
+        if (!applicationDirPath.isEmpty()) {
+            candidates += {
+                // windeployqt: neben der exe
+                applicationDirPath + QStringLiteral("/translations"),
+                // Windows-Installer (<Programmordner>/bin/..) und AppImage (usr/bin/..)
+                applicationDirPath + QStringLiteral("/../translations"),
+                // macOS-Bundle: Contents/MacOS/../Resources
+                applicationDirPath + QStringLiteral("/../Resources/translations"),
+                // Linux-Pakete nach FHS
+                applicationDirPath + QStringLiteral("/../share/qt6/translations"),
+            };
+        }
+
+        QStringList paths;
+        for (const auto &candidate : std::as_const(candidates)) {
+            if (candidate.isEmpty()) {
+                continue;
+            }
+            const QString path = QDir::cleanPath(candidate);
+            if (!paths.contains(path)) {
+                paths.append(path);
+            }
+        }
+        return paths;
+    }
+
+    bool loadQtTranslation(QTranslator *translator, const QStringList &catalogPrefixes, const QString &language, const QStringList &searchPaths)
+    {
+        // Qt liefert Chinesisch nur als zh_CN (Kurzzeichen) und zh_TW (Langzeichen); "de-informal" -> "de";
+        // Gebietsangaben wie in "de_DE" kürzt QTranslator::load() selbst
+        QString qtLanguage;
+        if (language == QLatin1String("zh-Hans")) {
+            qtLanguage = QStringLiteral("zh_CN");
+        } else if (language == QLatin1String("zh_HK")) {
+            qtLanguage = QStringLiteral("zh_TW");
+        } else {
+            qtLanguage = language.section(QLatin1Char('-'), 0, 0);
+        }
+        for (const auto &dir : searchPaths) {
+            for (const auto &prefix : catalogPrefixes) {
+                if (translator->load(prefix + qtLanguage, dir)) {
+                    qCInfo(lcTranslations) << "Loaded Qt translation" << prefix + qtLanguage << "from" << dir;
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 } // namespace Translations

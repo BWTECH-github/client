@@ -19,7 +19,7 @@
 #include "application.h"
 #include "common/utility.h"
 #include "networkjobs.h"
-#include "owncloudgui.h"
+#include "traymenucontroller.h"
 
 #include <QLoggingCategory>
 
@@ -103,8 +103,8 @@ void QuotaInfo::maybeWarnNearlyFull()
     _warnedNearlyFull = true;
     qCWarning(lcQuotaInfo) << "Account storage nearly full:" << _lastQuotaUsedBytes << "of" << _lastQuotaTotalBytes;
     Application *app = ocAppOrNull(); // tests run account states without an Application
-    if (ownCloudGui *gui = app ? app->gui() : nullptr) {
-        gui->slotShowTrayMessage(tr("Storage space almost full"),
+    if (TrayMenuController *tray = app ? app->tray() : nullptr) {
+        tray->slotShowTrayMessage(tr("Storage space almost full"),
             tr("The cloud storage of %1 is almost full: %2 of %3 are used.")
                 .arg(_accountState->account()->displayNameWithHost(),
                     Utility::octetsToString(_lastQuotaUsedBytes),

@@ -490,6 +490,17 @@ public:
     QByteArray _body;
 };
 
+// Eine Weiterleitung, wie sie unter QNetworkRequest::ManualRedirectPolicy ankommt: ohne Fehler, mit Status 3xx und Ziel.
+// Gefolgt wird ihr nicht.
+class FakeRedirectReply : public FakeReply
+{
+    Q_OBJECT
+public:
+    FakeRedirectReply(QNetworkAccessManager::Operation op, const QNetworkRequest &request, QObject *parent, int httpStatus, const QUrl &location);
+
+    qint64 readData(char *, qint64) override { return 0; }
+};
+
 // A reply that never responds
 class FakeHangingReply : public FakeReply
 {
@@ -591,23 +602,24 @@ private:
 class FakeFolder : public QObject
 {
     Q_OBJECT
-    FakeAM *_fakeAm;
+    // oof, this has a default ctr but I don't see it ever instantiated?
+    FakeAM *_fakeAm = nullptr;
     const QTemporaryDir _tempDir = OCC::TestUtils::createTempDir();
     DiskFileModifier _localModifier;
     OCC::TestUtils::TestUtilsPrivate::AccountStateRaii _accountState =
         OCC::TestUtils::TestUtilsPrivate::AccountStateRaii{nullptr, &OCC::TestUtils::TestUtilsPrivate::accountStateDeleter};
-    std::unique_ptr<OCC::SyncJournalDb> _journalDb;
-    std::unique_ptr<OCC::SyncEngine> _syncEngine;
+    OCC::SyncJournalDb *_journalDb = nullptr;
+    OCC::SyncEngine *_syncEngine = nullptr;
 
 public:
     FakeFolder(const FileInfo &fileTemplate, OCC::Vfs::Mode vfsMode = OCC::Vfs::Off, bool filesAreDehydrated = false);
     ~FakeFolder();
 
-    void switchToVfs(QSharedPointer<OCC::Vfs> vfs);
+    void switchToVfs(OCC::Vfs *vfs);
 
     OCC::Account *account() const { return _accountState->account(); }
-    OCC::SyncEngine &syncEngine() const { return *_syncEngine; }
-    OCC::SyncJournalDb &syncJournal() const { return *_journalDb; }
+    OCC::SyncEngine *syncEngine() const { return _syncEngine; }
+    OCC::SyncJournalDb *syncJournal() const { return _journalDb; }
 
     FileModifier &localModifier() { return _localModifier; }
     FileInfo &remoteModifier() { return _fakeAm->currentRemoteState(); }
@@ -655,7 +667,7 @@ public:
     }
 
     bool isDehydratedPlaceholder(const QString &filePath);
-    QSharedPointer<OCC::Vfs> vfs() const;
+    OCC::Vfs *vfs() const;
 
 private:
     static void toDisk(QDir &dir, const FileInfo &templateFi);
@@ -683,7 +695,7 @@ inline const FileInfo *findConflict(FileInfo &dir, const QString &filename)
 struct ItemCompletedSpy : QSignalSpy
 {
     explicit ItemCompletedSpy(FakeFolder &folder)
-        : QSignalSpy(&folder.syncEngine(), &OCC::SyncEngine::itemCompleted)
+        : QSignalSpy(folder.syncEngine(), &OCC::SyncEngine::itemCompleted)
     {
     }
 

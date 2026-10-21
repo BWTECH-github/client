@@ -14,6 +14,7 @@
 
 #include "accountmanager.h"
 #include "accountstate.h"
+#include "application.h"
 #include "commonstrings.h"
 #include "folder.h"
 #include "folderman.h"
@@ -21,11 +22,13 @@
 #include "openfilemanager.h"
 #include "localactivitywidget.h"
 #include "syncfileitem.h"
+#include "traymenucontroller.h"
 
 #include "models/expandingheaderview.h"
 
 #include <QActionGroup>
 #include <QClipboard>
+#include <QMenu>
 
 #include "ui_localactivitywidget.h"
 
@@ -80,14 +83,14 @@ LocalActivityWidget::~LocalActivityWidget()
 void LocalActivityWidget::onFolderListChanged(const QUuid &accountId, const QList<Folder *> folders)
 {
     _model->remove_if([accountId, folders](const ProtocolItem &item) {
-        return (item.folder()->accountState()->account()->uuid() == accountId && !folders.contains(item.folder()));
+        return (item.folder() == nullptr || (item.folder()->accountState()->account()->uuid() == accountId && !folders.contains(item.folder())));
     });
 }
 
 void LocalActivityWidget::onFolderRemoved(const QUuid &accountId, Folder *f)
 {
     Q_UNUSED(accountId);
-    _model->remove_if([f](const ProtocolItem &item) { return item.folder() == f; });
+    _model->remove_if([f](const ProtocolItem &item) { return item.folder() == nullptr || item.folder() == f; });
 }
 /**
  * @brief Show a filter menu for the given model.
@@ -127,6 +130,9 @@ void LocalActivityWidget::showContextMenu(QWidget *parent, QTableView *table, Mo
     if (items.size() == 1) {
         const auto &data = itemModel->protocolItem(items.first());
 
+        if (!data.folder())
+            return;
+
         // Show in file browser action
         const QString localPath = data.folder()->path() + data.path();
         // keep in sync with ActivityWidget::slotItemContextMenu
@@ -151,6 +157,18 @@ void LocalActivityWidget::showContextMenu(QWidget *parent, QTableView *table, Mo
                     showInWebBrowserAction->setEnabled(true);
                 }
             });
+
+        // owncloud.online: Teilen auch aus dem Client, nicht nur über das Explorer-Kontextmenü
+        if (data.folder()->accountState()->account()->capabilities().shareAPI()) {
+            SyncJournalFileRecord record;
+            const bool isOnTheServer = data.folder()->journalDb()->getFileRecord(data.path(), &record) && record.isValid();
+            auto *shareAction = menu->addAction(tr("Share…"), parent,
+                [remotePath = QString(data.folder()->remotePathTrailingSlash() + data.path()), localPath] {
+                    if (auto *app = ocAppOrNull())
+                        app->tray()->slotShowShareDialog(remotePath, localPath);
+                });
+            shareAction->setEnabled(isOnTheServer && data.folder()->isConnected());
+        }
 
         menu->addSeparator();
 

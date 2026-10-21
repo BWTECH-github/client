@@ -154,6 +154,22 @@ public:
 
     bool shareAPI() const;
     bool sharePublicLink() const;
+    /// darf dieser Benutzer neue öffentliche Links anlegen? (oC10: Allowlist für Link-Ersteller, can_create_public_link)
+    bool sharePublicLinkCanCreate() const;
+
+    // Teilen-Richtlinien des Servers (files_sharing, oC10-Format) für den Teilen-Dialog
+    bool sharePublicLinkAllowUpload() const;
+    bool sharePublicLinkSupportsUploadOnly() const;
+    bool sharePublicLinkEnforcePasswordForReadOnly() const;
+    bool sharePublicLinkEnforcePasswordForReadWrite() const;
+    bool sharePublicLinkEnforcePasswordForReadWriteDelete() const;
+    bool sharePublicLinkEnforcePasswordForUploadOnly() const;
+    bool sharePublicLinkDefaultExpire() const;
+    int sharePublicLinkDefaultExpireDateDays() const;
+    bool sharePublicLinkEnforceExpireDate() const;
+    bool sharePublicLinkMultiple() const;
+    bool shareResharing() const;
+    int shareSearchMinLength() const;
 
     /** Remote Poll interval.
      *

@@ -19,6 +19,7 @@
 #include "gui/owncloudguilib.h"
 
 #include "connectionvalidator.h"
+#include "fetchserversettings.h"
 #include "jobqueue.h"
 
 #include "account.h"
@@ -38,7 +39,6 @@ namespace OCC {
 
 class QuotaInfo;
 class TlsErrorDialog;
-class FetchServerSettingsJob;
 
 /**
  * @brief Extra info about an ownCloud server account.
@@ -161,19 +161,41 @@ public:
     /// blockJobs determines if we block the job queue while the connection is checked
     void checkConnectivity(bool blockJobs = false);
 
-private:
+    /**
+     * Die neue Adresse, die der Server zuletzt per dauerhafter Weiterleitung von status.php nannte (Serverumzug), sonst leer.
+     * Nur ein Vorschlag für „Serveradresse ändern…“, übernommen wird nichts automatisch.
+     */
+    QUrl movedServerUrl() const { return _movedServerUrl; }
+    void fetchServerSettings();
 
+    /**
+     * Hinweis für die Anzeige, wenn sich die Anmeldung dauerhaft nicht im Schlüsselbund speichern lässt (nach einem Neustart
+     * droht eine neue Anmeldung), sonst leer.
+     */
+    QString keychainWarning() const { return _keychainWarning; }
+
+    /**
+     * NetworkError bzw. MaintenanceMode stammt von einer vorübergehend gescheiterten Erneuerung der Anmeldung
+     * (slotAuthenticationDelayed), nicht von der Verbindungsprüfung: Die Credentials versuchen es selbst wieder. Gilt bis zum
+     * nächsten Ergebnis der Verbindungsprüfung.
+     */
+    bool isAuthenticationDelayed() const { return _authenticationDelayed; }
+
+private:
     void setState(State state);
 
 Q_SIGNALS:
     void stateChanged(State state);
     void isConnectedChanged();
     void isSettingUpChanged(bool settingUp);
+    void keychainWarningChanged();
 
 protected Q_SLOTS:
     void slotConnectionValidatorResult(ConnectionValidator::Status status, const QStringList &errors);
+    void slotFetchServerSettingsResult(OCC::FetchServerSettingsRunner::Result result);
     void slotInvalidCredentials();
     void slotCredentialsFetched();
+    void slotAuthenticationDelayed(bool maintenance, const QString &errorString);
 
 private:
     Account *accountForQml() const;
@@ -182,9 +204,12 @@ private:
     State _state;
     ConnectionStatus _connectionStatus;
     QStringList _connectionErrors;
+    QUrl _movedServerUrl;
+    QString _keychainWarning;
     bool _waitingForNewCredentials;
     QDateTime _timeOfLastETagCheck;
     bool _settingUp = false;
+    bool _authenticationDelayed = false;
 
     ConnectionValidator *_connectionValidator;
     void resetConnectionValidator();
@@ -195,6 +220,8 @@ private:
     void onNetworkReachabilityChanged(NetworkInformation::Reachability reachability);
     void onNetworkMeteredChanged(bool isMetered);
     void onBehindCaptivePortalChanged(bool isCaptive);
+    // Hinweis zur Anzeige und einmal je Auftreten als Benachrichtigung
+    void onKeychainErrorChanged(const QString &error);
 
     // this doesn't completely thrill me because it has dependencies on the rest of the gui but for now, it's
     // ok and making it private is pretty sweet, too.
@@ -220,7 +247,18 @@ private:
 
     QuotaInfo *_quotaInfo = nullptr;
 
-    QPointer<FetchServerSettingsJob> _fetchCapabilitiesJob;
+    QPointer<FetchServerSettingsRunner> _fetchServerSettingsRunner;
+
+    // this flag is used to trigger fetchServerSettings after the next successful reconnect
+    // reasons the flag is set to true:
+    //      we just started the app
+    //      account was just created
+    //      user re-authenticated (by choice or by server demand)
+    //      last attempt to fetch the settings was somehow interrupted - since the attempt was underway, re-run it next opportunity
+    bool _needsServerSettingsRefresh = false;
+
+    // interval to run fetchServerSettings on a timer: default to 60 minutes
+    int _fetchServerSettingsInterval = 3600000;
 };
 }
 

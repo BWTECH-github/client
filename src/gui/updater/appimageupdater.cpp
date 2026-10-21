@@ -21,8 +21,7 @@
 #include "appimageupdater.h"
 #include "common/version.h"
 #include "libsync/configfile.h"
-#include "settingsdialog.h"
-#include "theme.h"
+#include "mainwindow/modalwrapperwidget.h"
 #include "updater_private.h"
 
 #include "appimageupdateavailablewidget.h"
@@ -125,17 +124,16 @@ AppImageUpdater::AppImageUpdater(const QUrl &url)
 
 void AppImageUpdater::versionInfoArrived(const UpdateInfo &info)
 {
-    const auto &currentVersion = Version::versionWithBuildNumber();
-    const auto newVersion = QVersionNumber::fromString(info.version());
+    const QString newVersion = info.version();
 
-    if (info.version().isEmpty() || currentVersion >= newVersion) {
+    if (!isNewerVersion(newVersion, installedVersion(), {})) {
         qCInfo(lcUpdater) << "Client is on latest version!";
         setDownloadState(UpToDate);
         return;
     }
 
-    const auto previouslySkippedVersion = this->previouslySkippedVersion();
-    if (previouslySkippedVersion >= newVersion) {
+    const QString previouslySkippedVersion = this->previouslySkippedVersion();
+    if (!isNewerVersion(newVersion, installedVersion(), previouslySkippedVersion)) {
         qCInfo(lcUpdater) << "Update" << previouslySkippedVersion << "was skipped previously by user";
         setDownloadState(UpToDate);
         return;
@@ -154,15 +152,12 @@ void AppImageUpdater::versionInfoArrived(const UpdateInfo &info)
         return;
     }
 
-    auto widget = new AppImageUpdateAvailableWidget(currentVersion, newVersion, ocApp()->gui()->settingsDialog());
+    auto widget = new AppImageUpdateAvailableWidget(Version::displayString(), newVersion, ocApp()->mainWindow());
 
-    connect(widget, &AppImageUpdateAvailableWidget::skipUpdateButtonClicked, this, [newVersion, widget]() {
+    connect(widget, &AppImageUpdateAvailableWidget::skipUpdateButtonClicked, this, [newVersion]() {
         qCInfo(lcUpdater) << "Update" << newVersion << "skipped by user";
         setPreviouslySkippedVersion(newVersion);
-        widget->deleteLater();
     });
-
-    connect(widget, &AppImageUpdateAvailableWidget::rejected, this, &QObject::deleteLater);
 
     connect(widget, &AppImageUpdateAvailableWidget::accepted, this, [this, widget, appImageUpdaterShim]() {
         // binding AppImageUpdaterShim shared pointer to finished callback makes sure the updater is cleaned up when it's done
@@ -178,11 +173,10 @@ void AppImageUpdater::versionInfoArrived(const UpdateInfo &info)
 
         setDownloadState(Downloading);
         appImageUpdaterShim->startUpdateInBackground();
-        widget->deleteLater();
     });
 
-    ownCloudGui::raise();
-    ocApp()->gui()->settingsDialog()->addModalWidget(widget);
+    ModalWrapperWidget *wrapper = new ModalWrapperWidget(widget, ocApp()->mainWindow());
+    ocApp()->showModalWidget(wrapper);
 }
 
 void AppImageUpdater::backgroundCheckForUpdate()

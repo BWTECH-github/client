@@ -3,13 +3,18 @@
 
 #include "appconfig.h"
 
-#include "../theme.h"
+#include "common/asserts.h"
 #include "common/utility.h"
 #include "openidconfig.h"
+#include "theme.h"
 
 #include <QFile>
 #include <QOperatingSystemVersion>
 #include <QSettings>
+
+#ifdef Q_OS_WIN
+#include <qt_windows.h>
+#endif
 
 namespace OCC {
 
@@ -17,11 +22,33 @@ Q_LOGGING_CATEGORY(lcSystemConfig, "sync.systemconfig", QtInfoMsg)
 
 namespace chrono = std::chrono;
 
+namespace {
+#ifdef Q_OS_WIN
+// QSettings öffnet einen Registry-Schlüssel schon zum Lesen mit Schreibrecht und legt ihn dabei an, wenn der Prozess
+// das darf (Client mit Administratorrechten, etwa direkt aus dem Setup gestartet, oder ohne Benutzerkontensteuerung).
+// Ohne Richtlinien bliebe so ein leerer Schlüssel unter HKLM\Software\Policies zurück, den keine Deinstallation
+// entfernt: vorher nur lesend nachsehen.
+bool localMachineKeyExists(const QString &path)
+{
+    const QString prefix = QStringLiteral("HKEY_LOCAL_MACHINE\\");
+    if (!path.startsWith(prefix, Qt::CaseInsensitive)) {
+        return true;
+    }
+    HKEY key = nullptr;
+    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t *>(path.mid(prefix.size()).utf16()), 0, KEY_READ, &key) != ERROR_SUCCESS) {
+        return false;
+    }
+    RegCloseKey(key);
+    return true;
+}
+#endif
+}
+
 AppConfig::AppConfig()
 {
-    _serverUrl = Theme::instance()->overrideServerUrlV2();
+    _serverUrl = Theme::instance()->overrideServerUrl();
     // If a theme provides a hardcoded URL, do not allow for URL change.
-    _allowServerURLChange = Theme::instance()->overrideServerUrlV2().isEmpty();
+    _allowServerURLChange = Theme::instance()->overrideServerUrl().isEmpty();
     _skipUpdateCheck = false;
     _openIdConfig = loadOpenIdConfigFromTheme();
 
@@ -30,8 +57,14 @@ AppConfig::AppConfig()
 
     // Load all overrides
 
+    const QString path = configPath(QOperatingSystemVersion::currentType(), *Theme::instance());
+#ifdef Q_OS_WIN
+    if (!localMachineKeyExists(path)) {
+        return;
+    }
+#endif
     auto format = Utility::isWindows() ? QSettings::NativeFormat : QSettings::IniFormat;
-    const QSettings system(configPath(QOperatingSystemVersion::currentType(), *Theme::instance()), format);
+    const QSettings system(path, format);
 
     _serverUrl = system.value(SetupServerUrlKey, QString()).toString();
     if (system.contains(SetupAllowServerUrlChangeKey)) {

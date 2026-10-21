@@ -190,7 +190,7 @@ private Q_SLOTS:
             QCOMPARE(item->_status, SyncFileItem::Success);
 
             SyncJournalFileRecord record;
-            QVERIFY(fakeFolder.syncJournal().getFileRecord(it.key(), &record));
+            QVERIFY(fakeFolder.syncJournal()->getFileRecord(it.key(), &record));
             QVERIFY2(record.isValid(), qPrintable(it.key()));
             QVERIFY2(!record._remotePerm.isNull(), qPrintable(it.key()));
             QCOMPARE(record._remotePerm.toString(), RemotePermissions::fromServerString(it.value()).toString());
@@ -214,9 +214,9 @@ private Q_SLOTS:
     {
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12());
         fakeFolder.account()->setCapabilities({fakeFolder.account()->url(), bulkUploadCapabilities()});
-        auto options = fakeFolder.syncEngine().syncOptions();
+        auto options = fakeFolder.syncEngine()->syncOptions();
         options._parallelNetworkJobs = 4; // maximumActiveTransferJob() == 3
-        fakeFolder.syncEngine().setSyncOptions(options);
+        fakeFolder.syncEngine()->setSyncOptions(options);
 
         FakeBulkEndpoint bulk(fakeFolder);
         const int fileCount = 20;
@@ -233,7 +233,7 @@ private Q_SLOTS:
         for (int i = 0; i < fileCount; ++i) {
             const QString path = QStringLiteral("A/new%1").arg(i);
             SyncJournalFileRecord record;
-            QVERIFY(fakeFolder.syncJournal().getFileRecord(path, &record));
+            QVERIFY(fakeFolder.syncJournal()->getFileRecord(path, &record));
             QVERIFY2(record.isValid(), qPrintable(path));
             QVERIFY2(!record._remotePerm.isNull(), qPrintable(path));
         }
@@ -270,7 +270,7 @@ private Q_SLOTS:
             QVERIFY2(!item.isNull(), qPrintable(path));
             QCOMPARE(item->_status, SyncFileItem::SoftError);
             SyncJournalFileRecord record;
-            QVERIFY(fakeFolder.syncJournal().getFileRecord(path, &record));
+            QVERIFY(fakeFolder.syncJournal()->getFileRecord(path, &record));
             QVERIFY2(!record.isValid(), qPrintable(path));
         }
 
@@ -287,7 +287,7 @@ private Q_SLOTS:
         QCOMPARE(localState, fakeFolder.currentRemoteState());
         for (const auto &path : {QStringLiteral("A/a3"), QStringLiteral("B/b3")}) {
             SyncJournalFileRecord record;
-            QVERIFY(fakeFolder.syncJournal().getFileRecord(path, &record));
+            QVERIFY(fakeFolder.syncJournal()->getFileRecord(path, &record));
             QVERIFY2(record.isValid(), qPrintable(path));
             QVERIFY2(!record._remotePerm.isNull(), qPrintable(path));
         }

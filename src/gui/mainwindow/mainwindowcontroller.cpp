@@ -1,0 +1,236 @@
+/*
+ * Copyright (C) Lisa Reese <lisa.reese@kiteworks.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ */
+
+#include "mainwindowcontroller.h"
+
+#include "aboutview.h"
+#include "application.h"
+#include "colormanager.h"
+#include "folderman.h"
+#include "guiutility.h"
+#include "iconresources.h"
+#include "legacyclient/legacyclientconfig.h"
+#include "localactivitywidget.h"
+#include "mainwindow.h"
+#include "modalwrapperwidget.h"
+#include "settingsview.h"
+#include "syncerrorwidget.h"
+#include "theme.h"
+
+#include <QAction>
+#include <QDesktopServices>
+#include <QMenu>
+#include <QMessageBox>
+
+namespace OCC {
+
+MainWindowController::MainWindowController(MainWindow *window, ColorManager *colorManager, QObject *parent)
+    : QObject{parent}
+    , _window(window)
+    , _colorManager(colorManager)
+{
+    setup();
+}
+
+void MainWindowController::setup()
+{
+    createSyncErrorsAction();
+    createActivityAction();
+    createMoreAction();
+}
+
+QList<QAction *> MainWindowController::buildUrlActions()
+{
+    QList<QAction *> actions;
+    if (!Theme::instance()->urlActions().isEmpty()) {
+        QVector<std::tuple<QString, QString, QUrl>> themeDefs = Theme::instance()->urlActions();
+        int num = themeDefs.count();
+        for (int i = 0; i < num; i++) {
+            QAction *urlAction = new QAction(this);
+            auto def = themeDefs[i];
+            QString iconName = std::get<0>(def);
+            if (!iconName.isEmpty()) {
+                QIcon ic = IconResources::getBrandingIcon(iconName);
+                Q_ASSERT(!ic.isNull());
+                urlAction->setIcon(ic);
+                urlAction->setIconVisibleInMenu(true);
+            }
+            urlAction->setText(std::get<1>(def));
+            QUrl url = std::get<2>(def);
+            connect(urlAction, &QAction::triggered, this, [url]() { Utility::openBrowser(url, nullptr); });
+            actions.push_back(urlAction);
+        }
+        QAction *urlsSeparator = new QAction(this);
+        urlsSeparator->setObjectName("urlsSeparatorAction");
+        urlsSeparator->setSeparator(true);
+        actions.push_back(urlsSeparator);
+    }
+    return actions;
+}
+
+QList<QAction *> MainWindowController::buildMenuActions()
+{
+    QList<QAction *> menuActions;
+
+    menuActions.append(buildUrlActions());
+
+    QAction *addAccountAction = new QAction(tr("Add account..."), this);
+    addAccountAction->setObjectName("addAcountAction");
+    connect(addAccountAction, &QAction::triggered, this, &MainWindowController::requestAccountWizard);
+    menuActions.push_back(addAccountAction);
+
+    // owncloud.online: Umstieg vom offiziellen ownCloud-Client
+    if (LegacyClient::findConfig()) {
+        QAction *legacyImportAction = new QAction(tr("Import from official client..."), this);
+        legacyImportAction->setObjectName("legacyImportAction");
+        connect(legacyImportAction, &QAction::triggered, this, &MainWindowController::requestLegacyImport);
+        menuActions.push_back(legacyImportAction);
+    }
+
+    QAction *settingsAction = new QAction(tr("Settings..."), this);
+    settingsAction->setObjectName("settingsAction");
+    connect(settingsAction, &QAction::triggered, this, &MainWindowController::onSettings);
+    menuActions.push_back(settingsAction);
+
+    QAction *aboutAction = new QAction(tr("About..."), this);
+    aboutAction->setObjectName("aboutAction");
+    connect(aboutAction, &QAction::triggered, this, &MainWindowController::onAbout);
+    menuActions.push_back(aboutAction);
+
+    QUrl helpUrl(Theme::instance()->helpUrl());
+    if (helpUrl.isValid()) {
+        QAction *helpAction = new QAction(tr("Help"));
+        helpAction->setObjectName("helpAction");
+        connect(helpAction, &QAction::triggered, this, [helpUrl]() { Utility::openBrowser(helpUrl, nullptr); });
+        menuActions.push_back(helpAction);
+    }
+
+    QAction *separator = new QAction(this);
+    separator->setObjectName("separatorAction");
+    separator->setSeparator(true);
+    menuActions.push_back(separator);
+
+    QAction *quitAction = new QAction(tr("Quit"), this);
+    quitAction->setObjectName("quitAction");
+    connect(quitAction, &QAction::triggered, this, &MainWindowController::onQuit);
+    menuActions.push_back(quitAction);
+
+    return menuActions;
+}
+
+void MainWindowController::addActionToIconUpdates(QAction *action, const QString &iconName)
+{
+    connect(_colorManager, &ColorManager::appColorsChanged, action, [action, iconName]() { action->setIcon(IconResources::getCoreIcon(iconName)); });
+}
+
+void MainWindowController::createMoreAction()
+{
+    QAction *moreAction = new QAction(tr("More"), this);
+    moreAction->setObjectName("moreAction");
+    moreAction->setIcon(IconResources::getCoreIcon("more"));
+    addActionToIconUpdates(moreAction, "more");
+
+    _window->addMoreAction(moreAction);
+    // yes I considered adding the menu to the more action here, but we can't reliably parent it since there is no
+    // button yet.
+    QList<QAction *> moreActions = buildMenuActions();
+    _window->setMoreMenuActions(moreActions);
+}
+
+void MainWindowController::createSyncErrorsAction()
+{
+    QAction *syncErrorsAction = new QAction(tr("Errors: %1").arg(0), this);
+    syncErrorsAction->setIcon(IconResources::getCoreIcon("states/error"));
+    addActionToIconUpdates(syncErrorsAction, "states/error");
+
+    syncErrorsAction->setObjectName("syncErrorsAction");
+    syncErrorsAction->setCheckable(true);
+    auto syncErrorWidget = new SyncErrorWidget(_window);
+    connect(
+        syncErrorWidget, &SyncErrorWidget::issueCountUpdated, this, [syncErrorsAction](int count) { syncErrorsAction->setText(tr("Errors: %1").arg(count)); });
+
+    syncErrorsAction->setData(QVariant::fromValue(syncErrorWidget));
+    _window->addViewAction(syncErrorsAction);
+}
+
+void MainWindowController::createActivityAction()
+{
+    QAction *activityAction = new QAction(tr("Activity"), this);
+    activityAction->setIcon(IconResources::getCoreIcon("states/sync"));
+    addActionToIconUpdates(activityAction, "states/sync");
+
+    activityAction->setObjectName("activityAction");
+    activityAction->setCheckable(true);
+    auto localActivityWidget = new LocalActivityWidget(_window);
+    activityAction->setData(QVariant::fromValue(localActivityWidget));
+    _window->addViewAction(activityAction);
+    _activityAction = activityAction;
+}
+
+void MainWindowController::onSettings()
+{
+    SettingsView *settings = new SettingsView(_colorManager, _window);
+    // owncloud.online: upstream sendet moveToTrashChanged ohne Empfänger, der Schalter blieb wirkungslos;
+    // FolderMan speichert den Wert und gibt ihn an alle Ordner weiter
+    connect(settings, &SettingsView::moveToTrashChanged, FolderMan::instance(), &FolderMan::updateMoveToTrash);
+    ModalWrapperWidget *wrapper = new ModalWrapperWidget(settings, _window);
+    _window->showModalWidget(wrapper);
+}
+
+void MainWindowController::showSettings()
+{
+    _window->ensureVisible();
+    // liegt schon ein modales Fenster oben (auch die Einstellungen selbst), nicht ein zweites darüberlegen
+    if (!_window->isModalActive()) {
+        onSettings();
+    }
+}
+
+void MainWindowController::showActivity()
+{
+    _window->ensureVisible();
+    // die Ansicht folgt dem Umschalten der Aktion (toggled); solange ein modales Fenster offen ist, würde das
+    // Umschalten es verdecken und die gesperrte Werkzeugleiste ließe sich nicht mehr freigeben
+    if (_activityAction && !_window->isModalActive()) {
+        _activityAction->setChecked(true);
+    }
+}
+
+void MainWindowController::onAbout()
+{
+    _window->ensureVisible();
+    AboutView *aboutPanel = new AboutView(_window);
+    ModalWrapperWidget *wrapper = new ModalWrapperWidget(aboutPanel, _window);
+    _window->showModalWidget(wrapper);
+}
+
+void MainWindowController::onHelp()
+{
+    QDesktopServices::openUrl(QUrl(Theme::instance()->helpUrl()));
+}
+
+void MainWindowController::onQuit()
+{
+    // this is just copied/pasted from the original - most likely will change this to a simple dialog exec, then we
+    // don't need any delayed handling of the actual call to app quit
+    auto box = new QMessageBox(QMessageBox::Question, tr("Quit %1").arg(Theme::instance()->appNameGUI()),
+        tr("Are you sure you want to quit %1?").arg(Theme::instance()->appNameGUI()), QMessageBox::Yes | QMessageBox::No, _window);
+    box->setAttribute(Qt::WA_DeleteOnClose);
+    connect(box, &QMessageBox::accepted, this, [] {
+        // delay quit to prevent a Qt 6.6 crash in the destructor of the dialog
+        QTimer::singleShot(0, qApp, &QCoreApplication::quit);
+    });
+    box->open();
+}
+}

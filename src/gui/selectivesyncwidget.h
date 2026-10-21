@@ -20,6 +20,7 @@
 
 #include "common/pinstate.h"
 #include "csync_exclude.h"
+#include "gui/owncloudguilib.h"
 
 class QTreeWidgetItem;
 class QTreeWidget;
@@ -33,8 +34,10 @@ class Account;
 /**
  * @brief The SelectiveSyncWidget contains a folder tree with labels
  * @ingroup gui
+ *
+ * Exportiert, weil die statische Bibliothek des Ordner-Assistenten sie nutzt und die Tests sie mit hineinziehen.
  */
-class SelectiveSyncWidget : public QWidget
+class OWNCLOUDGUI_EXPORT SelectiveSyncWidget : public QWidget
 {
     Q_OBJECT
 public:

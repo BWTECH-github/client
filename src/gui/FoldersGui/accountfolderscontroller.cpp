@@ -15,15 +15,14 @@
 #include "accountfolderscontroller.h"
 
 #include "accountfoldersview.h"
-#include "accountmodalwidget.h"
+#include "accountsgui/accountmodalwidget.h"
 #include "application.h"
 #include "commonstrings.h"
 #include "configfile.h"
 #include "folderbrowsercontroller.h"
 #include "foldermodelcontroller.h"
-#include "folderwizard.h"
+#include "mainwindow/colormanager.h"
 #include "selectivesyncwidget.h"
-#include "settingsdialog.h"
 
 #include "guiutility.h"
 #include "networkjobs.h"
@@ -101,32 +100,7 @@ void AccountFoldersController::onFolderChanged(OCC::Folder *folder)
 
 void AccountFoldersController::onAddFolder()
 {
-    if (!_accountState || !_accountState->account()) {
-        return;
-    }
-
-    FolderWizard *folderWizard = new FolderWizard(_accountState->account(), nullptr);
-    folderWizard->setAttribute(Qt::WA_DeleteOnClose);
-
-    connect(folderWizard, &FolderWizard::folderWizardAccepted, this, &AccountFoldersController::onFolderWizardAccepted);
-
-    emit requestShowModalWidget(folderWizard);
-}
-
-void AccountFoldersController::onFolderWizardAccepted(OCC::FolderMan::SyncConnectionDescription result)
-{
-    if (!_accountState) {
-        return;
-    }
-
-    // The gui should not allow users to selectively choose any sync lists if vfs is enabled, but this kind of check was
-    // originally in play here so...keep it just in case.
-    if (result.useVirtualFiles && !result.selectiveSyncBlackList.empty()) {
-        result.selectiveSyncBlackList.clear();
-    }
-
-    // Refactoring todo: turn this into a signal/requestAddFolder
-    FolderMan::instance()->addFolderFromGui(_accountState, result);
+    emit requestAddFolder(_accountId);
 }
 
 void AccountFoldersController::buildMenuActions()
@@ -225,15 +199,17 @@ void AccountFoldersController::onEnableVfs()
                "will become available again."
                "\n\n"
                "This action will abort any currently running synchronization."),
-            QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
+            QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
         msgBox.setObjectName("confirmDisableVfsDialog");
         msgBox.button(QMessageBox::Yes)->setText(tr("Disable support"));
         msgBox.button(QMessageBox::Yes)->setObjectName("disableVfsButton");
         msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
         msgBox.button(QMessageBox::No)->setObjectName("cancelDisableVfsButton");
 
-        int result = msgBox.exec();
-        if (result == QDialog::Rejected)
+        // exec() liefert den Standardknopf (Abbrechen ist QMessageBox::No, nie QDialog::Rejected) und beim Beenden des Programms 0:
+        // nur „Unterstützung deaktivieren“ zählt. Der Ordner kann inzwischen entfernt sein.
+        const int result = msgBox.exec();
+        if (result != QMessageBox::Yes || !_currentFolder)
             return;
 
         qCInfo(lcAccountFoldersController) << "Disabling vfs support for folder" << _currentFolder->path();
@@ -271,8 +247,9 @@ void AccountFoldersController::updateActions()
         _enableVfs->setText(_currentFolder && _currentFolder->virtualFilesEnabled() ? tr("Deactivate virtual files") : tr("Activate virtual files"));
         // we can't block existence of the action when the folder path doesn't support vfs, so disable it here just in case
         // todo: DC-219 hopefully this check can go away
-        QString pathError = Vfs::pathSupportDetail(_currentFolder->path(), Vfs::WindowsCfApi);
-        _enableVfs->setEnabled(pathError.isEmpty() && _currentFolder->canSync());
+        // Das Menü öffnet auch ohne gewählten Ordner (Rechtsklick in eine leere Liste): dann ohne Pfadprüfung, sonst Absturz
+        const QString pathError = _currentFolder ? Vfs::pathSupportDetail(_currentFolder->path(), Vfs::WindowsCfApi) : QString();
+        _enableVfs->setEnabled(_currentFolder && pathError.isEmpty() && _currentFolder->canSync());
     }
 
     if (_chooseSync)
@@ -310,12 +287,13 @@ void AccountFoldersController::onForceSync()
         QMessageBox messageBox(QMessageBox::Question, tr("Internet connection is metered"),
             tr("Synchronization is paused because the Internet connection is a metered connection"
                "<p>Do you really want to force a Synchronization now?"),
-            QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
+            QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
         messageBox.setObjectName("confirmForceSyncWhenMeteredDialog");
         messageBox.button(QMessageBox::No)->setObjectName("cancelForceSyncWhenMeteredButton");
         messageBox.button(QMessageBox::Yes)->setObjectName("forceSyncWhenMeteredButton");
-        int result = messageBox.exec();
-        if (result == QMessageBox::No)
+        // beim Beenden des Programms liefert exec() 0, und der Ordner kann inzwischen entfernt sein
+        const int result = messageBox.exec();
+        if (result != QMessageBox::Yes || !_currentFolder)
             return;
     }
 
@@ -332,13 +310,14 @@ void AccountFoldersController::onTogglePauseSync()
     if (!currentlyPaused) {
         if (_currentFolder->isSyncRunning()) {
             QMessageBox msgbox(QMessageBox::Question, tr("Sync Running"), tr("The sync operation is running.<br/>Do you want to stop it?"),
-                QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
+                QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
             msgbox.setDefaultButton(QMessageBox::No);
             msgbox.setObjectName("confirmPauseRunningSyncDialog");
             msgbox.button(QMessageBox::Yes)->setObjectName("pauseRunningSyncButton");
             msgbox.button(QMessageBox::No)->setObjectName("cancelPausRunningSyncButton");
-            int result = msgbox.exec();
-            if (result == QMessageBox::No)
+            // beim Beenden des Programms liefert exec() 0, und der Ordner kann inzwischen entfernt sein
+            const int result = msgbox.exec();
+            if (result != QMessageBox::Yes || !_currentFolder)
                 return;
             _currentFolder->slotTerminateSync(tr("Sync paused by user"));
         }
@@ -362,15 +341,17 @@ void AccountFoldersController::onRemoveSync()
         tr("<p>Do you really want to stop syncing the folder <i>%1</i>?</p>"
            "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
             .arg(shortGuiLocalPath),
-        QMessageBox::Yes | QMessageBox::No, ocApp()->gui()->settingsDialog());
+        QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
     msgBox.button(QMessageBox::Yes)->setText(tr("Remove Folder Sync Connection"));
     msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
     msgBox.setObjectName("confirmRemoveFolderSyncDialog");
     msgBox.button(QMessageBox::Yes)->setObjectName("removeFolderSyncButton");
     msgBox.button(QMessageBox::No)->setObjectName("cancelRemoveFolderSyncButton");
 
-    int result = msgBox.exec();
-    if (result == QMessageBox::No)
+    // Beim Beenden des Programms liefert exec() 0, nicht No: Dann darf das Ordnerpaar nicht entfernt werden. Der Ordner kann
+    // inzwischen auch schon weg sein.
+    const int result = msgBox.exec();
+    if (result != QMessageBox::Yes || !_currentFolder)
         return;
     // todo: make it a signal
     FolderMan::instance()->removeFolderFromGui(_currentFolder);
@@ -399,7 +380,7 @@ void AccountFoldersController::onChooseSync()
     connect(modalWidget, &AccountModalWidget::accepted, this, [selectiveSync, this] {
         if (!_currentFolder)
             return;
-        _currentFolder->journalDb()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, selectiveSync->createBlackList());
+        _currentFolder->updateSelectiveSync(selectiveSync->createBlackList());
         FolderMan::instance()->forceFolderSync(_currentFolder);
     });
 

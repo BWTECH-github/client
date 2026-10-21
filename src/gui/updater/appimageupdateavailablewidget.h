@@ -16,7 +16,7 @@
 
 #include <QDialog>
 #include <QScopedPointer>
-#include <QVersionNumber>
+#include <QString>
 
 namespace Ui {
 class AppImageUpdateAvailableWidgetUi;
@@ -28,11 +28,11 @@ namespace OCC {
  * @brief Dialog shown when updates for the running AppImage are available
  * @ingroup gui
  */
-class AppImageUpdateAvailableWidget : public QWidget
+class AppImageUpdateAvailableWidget : public QDialog
 {
     Q_OBJECT
 public:
-    explicit AppImageUpdateAvailableWidget(const QVersionNumber &currentVersion, const QVersionNumber &newVersion, QWidget *parent = nullptr);
+    explicit AppImageUpdateAvailableWidget(const QString &currentVersion, const QString &newVersion, QWidget *parent = nullptr);
 
     ~AppImageUpdateAvailableWidget() override;
 
@@ -42,11 +42,9 @@ Q_SIGNALS:
      */
     void skipUpdateButtonClicked();
 
-    /// Emitted when the cancel button is clicked.
-    void rejected();
+private slots:
 
-    /// Emitted when the ok button is clicked.
-    void accepted();
+    void slotSkipUpdate();
 
 private:
     ::Ui::AppImageUpdateAvailableWidgetUi *_ui;

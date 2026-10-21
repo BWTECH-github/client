@@ -62,18 +62,9 @@ namespace OCC {
         |
         +-> slotAuthSuccess --+--> X (depending if coming from checkServerAndAuth or not)
                               |
-  +---------------------------+
-  |
-  +-> checkServerCapabilities
-        JsonApiJob (cloud/capabilities) -> slotCapabilitiesRecieved -+
-                                                                     |
-  +------------------------------------------------------------------+
-  |
-  +-> fetchUser -+
-                 |
-                 +-> AvatarJob
-                            |
-                            +-> slotAvatarImage --> reportResult()
+
+retrieving server capabilities, user settings, avatar and app providers (if enabled) has moved to account state as those
+checks should happen much less frequently!
 
     \endcode
  */
@@ -99,7 +90,7 @@ public:
         Undefined,
         Connected,
         NotConfigured,
-        ServerVersionMismatch, // The server version is too old
+        //  ServerVersionMismatch, // The server version is too old
         CredentialsNotReady, // Credentials aren't ready
         CredentialsWrong, // AuthenticationRequiredError
         SslError, // SSL handshake error, certificate rejected by user?
@@ -128,6 +119,12 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void connectionResult(ConnectionValidator::Status status, const QStringList &errors);
+
+    /**
+     * status.php antwortete mit einer dauerhaften Weiterleitung (301/308): Der Server ist wohl umgezogen. Gefolgt wird ihr
+     * nicht (das Ziel kann ein fremder Host sein); die Adresse wird nur zur Übernahme angeboten. Kommt vor connectionResult().
+     */
+    void serverMoved(const QUrl &newServerUrl);
 
     void sslErrors(const QList<QSslError> &errors);
 

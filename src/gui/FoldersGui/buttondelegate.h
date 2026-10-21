@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include <QCoreApplication>
 #include <QItemDelegate>
 
 class QPushButton;
@@ -23,23 +24,29 @@ namespace OCC {
 
 class ButtonDelegate : public QItemDelegate
 {
+    // ohne Q_OBJECT übersetzte tr() im Kontext „QItemDelegate“, die Kataloge führen die Texte unter „OCC::ButtonDelegate“:
+    // Name und Beschreibung des Optionsknopfs für Screenreader blieben in jeder Sprache englisch
+    Q_DECLARE_TR_FUNCTIONS(OCC::ButtonDelegate)
+
 public:
-    ButtonDelegate(const QString &text, QAbstractItemView *parent);
+    ButtonDelegate(QAbstractItemView *parent);
 
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
-    // void closeEditor()
+
     void destroyEditor(QWidget *editor, const QModelIndex &index) const override;
     void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
     void setMenu(QMenu *menu);
 
+    void refreshIcon();
+
 private:
     QPushButton *_button = nullptr;
-    QString _buttonText;
     bool _clickThrough = false;
+    inline static const int _targetIconSize = 18;
 };
 }

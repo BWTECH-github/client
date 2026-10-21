@@ -30,10 +30,15 @@ Q_LOGGING_CATEGORY(lcFetchCapabilitesAdapter, "gui.networkadapters.fetchcapabilt
 
 
 FetchCapabilitiesAdapter::FetchCapabilitiesAdapter(QNetworkAccessManager *nam, const QString &authToken, const QUrl &url, QObject *parent)
+    : FetchCapabilitiesAdapter(nam, QByteArrayLiteral("Bearer ") + authToken.toUtf8(), url, parent)
+{
+}
+
+FetchCapabilitiesAdapter::FetchCapabilitiesAdapter(QNetworkAccessManager *nam, const QByteArray &authorizationHeader, const QUrl &url, QObject *parent)
     : QObject{parent}
     , _nam(nam)
     , _url(url)
-    , _authorizationHeader(QStringLiteral("Bearer %1").arg(authToken))
+    , _authorizationHeader(authorizationHeader)
 {
 }
 
@@ -50,7 +55,12 @@ FetchCapabilitiesResult FetchCapabilitiesAdapter::getResult()
 
     // next 4 stolen from webfingerlookupadapter
     // we are not connected yet, so we need to handle the authentication manually
-    req.setRawHeader("Authorization", _authorizationHeader.toUtf8());
+    req.setRawHeader("Authorization", _authorizationHeader);
+    if (_authorizationHeader.startsWith(QByteArrayLiteral("Basic "))) {
+        // wie der 6.0.3-Client (JsonApiJob): Mit Benutzername und Kennwort legt der Server eine Sitzung an, deren Cookie
+        // bei OCS nur zusammen mit diesem Kopf gilt
+        req.setRawHeader(QByteArrayLiteral("OCS-APIREQUEST"), QByteArrayLiteral("true"));
+    }
     req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
 
     // we just added the Authorization header, don't let the credentials AccessManager tamper with it

@@ -19,14 +19,18 @@
 
 #include "account.h"
 #include "accountmanager.h"
+#include "accountsgui/accountsguicontroller.h"
 #include "accountstate.h"
 #include "common/vfs.h"
 #include "configfile.h"
 #include "folder.h"
 #include "folderman.h"
-#include "settingsdialog.h"
+#include "mainwindow/colormanager.h"
+#include "mainwindow/mainwindow.h"
+#include "mainwindow/mainwindowcontroller.h"
 #include "socketapi/socketapi.h"
 #include "theme.h"
+#include "traymenucontroller.h"
 
 #ifdef WITH_AUTO_UPDATER
 #include "updater/ocupdater.h"
@@ -37,7 +41,6 @@
 #endif
 
 #include <QApplication>
-#include <QPalette>
 #include <QDesktopServices>
 #include <QFileOpenEvent>
 #include <QTimer>
@@ -51,9 +54,9 @@ QString Application::displayLanguage() const
     return _displayLanguage;
 }
 
-ownCloudGui *Application::gui() const
+TrayMenuController *Application::tray() const
 {
-    return _gui;
+    return _trayController;
 }
 
 Application *Application::_instance = nullptr;
@@ -64,26 +67,11 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
 {
     platform->migrate();
 
-    // owncloud.online branding: force the UI accent to the brand mint (#00E4BD) with a
-    // navy (#041e42) foreground, instead of inheriting the OS accent colour (which shows
-    // up e.g. as orange on this system). Only the accent roles are overridden, so the
-    // dark base of the theme stays intact.
-    {
-        const QColor brandMint(0x00, 0xE4, 0xBD);
-        const QColor brandNavy(0x04, 0x1E, 0x42);
-        QPalette pal = QApplication::palette();
-        pal.setColor(QPalette::Highlight, brandMint);
-        pal.setColor(QPalette::HighlightedText, brandNavy);
-        pal.setColor(QPalette::Accent, brandMint);
-        pal.setColor(QPalette::Link, brandMint);
-        QApplication::setPalette(pal);
-    }
-
     qCInfo(lcApplication) << "Plugin search paths:" << qApp->libraryPaths();
 
     // Check vfs plugins
-    if (Theme::instance()->showVirtualFilesOption() && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::Off) {
-        qCWarning(lcApplication) << "Theme wants to show vfs mode, but no vfs plugins are available";
+    if (VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::Off) {
+        qCWarning(lcApplication) << "No vfs plugins are available";
     }
     if (VfsPluginManager::instance().isVfsPluginAvailable(Vfs::WindowsCfApi))
         qCInfo(lcApplication) << "VFS windows plugin is available";
@@ -100,27 +88,6 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
 
     qApp->setQuitOnLastWindowClosed(false);
 
-    Theme::instance()->setSystrayUseMonoIcons(cfg.monoIcons());
-    connect(Theme::instance(), &Theme::systrayUseMonoIconsChanged, this, &Application::slotUseMonoIconsChanged);
-
-    // Setting up the gui class will allow tray notifications for the
-    // setup that follows, like folder setup
-    _gui = new ownCloudGui(this);
-
-    connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
-    connect(AccountManager::instance(), &AccountManager::lastAccountRemoved, this, &Application::lastAccountStateRemoved);
-    for (const auto &ai : AccountManager::instance()->accounts()) {
-        slotAccountStateAdded(ai);
-    }
-
-    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _gui.data(), &ownCloudGui::slotShowShareDialog);
-
-    // Refactoring example: this is oversimplified and really belongs in a dedicated app builder impl but the idea is illustrated:
-    // don't handling everything "locally" -> request that the best entity for the job do it. Then make the proper connections between
-    // requestor and responsible handler in a clearly defined, central location (e.g. an app builder, but for now, this will do)
-    connect(_gui, &ownCloudGui::requestSetUpSyncFoldersForAccount, FolderMan::instance(), &FolderMan::setUpInitialSyncFolders);
-    connect(_gui, &ownCloudGui::requestLoadSpacesOnly, FolderMan::instance(), &FolderMan::setUpInitialSpaces);
-
 #ifdef WITH_AUTO_UPDATER
     // Update checks
     UpdaterScheduler *updaterScheduler = new UpdaterScheduler(this, this);
@@ -131,43 +98,42 @@ Application::Application(Platform *platform, const QString &displayLanguage, boo
     // Cleanup at Quit.
     connect(qApp, &QCoreApplication::aboutToQuit, this, &Application::slotCleanup);
     qApp->installEventFilter(this);
-
-    // owncloud.online: optionally bring up the main window on startup instead of
-    // starting silently into the system tray (toggle in General settings).
-    if (ConfigFile().showMainDialogOnStartup()) {
-        QTimer::singleShot(0, this, [this] {
-            if (_gui) {
-                gui()->slotOpenSettingsDialog();
-            }
-        });
-    }
 }
 
 Application::~Application()
 {
-    // Make sure all folders are gone, otherwise removing the
-    // accounts will remove the associated folders from the settings.
-    FolderMan::instance()->unloadAndDeleteAllFolders();
 }
 
-void Application::lastAccountStateRemoved() const
+QMainWindow *Application::mainWindow() const
 {
-    // auto run the wizard if there are no existing accounts
-    if (_gui && AccountManager::instance()->accounts().isEmpty()) {
-        gui()->runAccountWizard();
-    }
+    return _mainWin;
 }
+
+void Application::ensureVisible() const
+{
+    if (_mainWin)
+        _mainWin->ensureVisible();
+}
+
+void Application::showModalWidget(ModalWrapperWidget *wrapper) const
+{
+    if (_mainWin)
+        _mainWin->showModalWidget(wrapper);
+}
+
 
 void Application::slotAccountStateAdded(AccountState *accountState) const
 {
     if (!accountState || !accountState->account())
         return;
-    // Hook up the GUI slots to the account state's Q_SIGNALS:
+
     Account *account = accountState->account();
 
-    connect(accountState, &AccountState::stateChanged, _gui.data(), &ownCloudGui::slotComputeOverallSyncStatus);
-    connect(account, &Account::serverVersionChanged, _gui.data(), [account, this] { _gui->slotTrayMessageIfServerUnsupported(account); });
+    connect(accountState, &AccountState::stateChanged, _trayController, &TrayMenuController::slotComputeOverallSyncStatus);
+    connect(account, &Account::serverVersionChanged, _trayController, &TrayMenuController::slotTrayMessageIfServerUnsupported);
 
+    // todo: this does not belong here! This can be done in the folder man when it's given a "new" account
+    // (eg in load from config or load from new account). note that FolderMan does not receive accountAdded signals, but maybe it should?
     // Hook up the folder manager slots to the account state's Q_SIGNALS:
     connect(accountState, &AccountState::isConnectedChanged, FolderMan::instance(), &FolderMan::slotIsConnectedChanged);
     connect(account, &Account::serverVersionChanged, FolderMan::instance(), [account] { FolderMan::instance()->slotServerVersionChanged(account); });
@@ -175,15 +141,11 @@ void Application::slotAccountStateAdded(AccountState *accountState) const
 
 void Application::slotCleanup()
 {
-    // unload the ui to make sure we no longer react to signals
-    _gui->slotShutdown();
-    delete _gui;
-
     // by now the credentials are supposed to be persisted
     // don't start async credentials jobs during shutdown
     AccountManager::instance()->save();
 
-    FolderMan::instance()->unloadAndDeleteAllFolders();
+    FolderMan::instance()->shutdown();
 
     // Remove the account from the account manager so it can be deleted.
     AccountManager::instance()->shutdown();
@@ -206,20 +168,72 @@ void Application::updateAutoRun(bool firstRun)
     }
 }
 
-void Application::slotUseMonoIconsChanged(bool)
-{
-    _gui->slotComputeOverallSyncStatus();
-}
-
 bool Application::debugMode()
 {
     return _debugMode;
+}
+
+void Application::buildAppGuis()
+{
+    Q_ASSERT(!_mainWin && !_trayController);
+    _colorManager = new ColorManager(this);
+
+    _mainWin = new MainWindow();
+    // owncloud.online: Markenakzent aus dem Theme nur für unser Fenster, keine globale Palette
+    _colorManager->keepAccent(_mainWin);
+    _mainController = new MainWindowController(_mainWin, _colorManager, this);
+
+    // hmmm...should the main controller really parent the accounts gui controller or should it be this?
+    // I'm torn. will leave it this way for now - honestly they all go "down" together so I don't think it matters much
+    // either way but always prefer to parent things to "the creator".
+    _accountsGuiController = new AccountsGuiController(AccountManager::instance(), _mainWin, _colorManager, _mainController);
+    connect(_mainController, &MainWindowController::requestAccountWizard, _accountsGuiController, &AccountsGuiController::runAccountWizard);
+    connect(_mainController, &MainWindowController::requestLegacyImport, _accountsGuiController, [this] {
+        // der Assistent läuft womöglich schon (erster Start): keinen zweiten darüberlegen
+        if (_mainWin && !_mainWin->isModalActive()) {
+            _accountsGuiController->runLegacyImport();
+        }
+    });
+
+    // Setting up the gui class will allow tray notifications for the
+    // setup that follows, like folder setup
+    _trayController = new TrayMenuController(this);
+    connect(_colorManager, &ColorManager::appColorsChanged, _trayController, &TrayMenuController::updateTrayIcon);
+    connect(_trayController, &TrayMenuController::requestShowAbout, _mainController, &MainWindowController::onAbout);
+    connect(_trayController, &TrayMenuController::requestShowHelp, _mainController, &MainWindowController::onHelp);
+    connect(_trayController, &TrayMenuController::requestShowSettings, _mainController, &MainWindowController::showSettings);
+    connect(_trayController, &TrayMenuController::requestShowActivity, _mainController, &MainWindowController::showActivity);
+    connect(_trayController, &TrayMenuController::requestAddAccount, _accountsGuiController, [this] {
+        ensureVisible();
+        // der Assistent läuft womöglich schon (erster Start): keinen zweiten darüberlegen
+        if (_mainWin && !_mainWin->isModalActive()) {
+            _accountsGuiController->runAccountWizard();
+        }
+    });
+
+    // owncloud.online: nativer Teilen-Dialog bzw. Teilen-Ansicht im Browser für oC10-Server
+    connect(FolderMan::instance()->socketApi(), &SocketApi::shareCommandReceived, _trayController, &TrayMenuController::slotShowShareDialog);
+
+    // owncloud.online: auf Wunsch (Einstellungen) das Hauptfenster beim Start zeigen statt nur das Tray-Symbol
+    if (ConfigFile().showMainDialogOnStartup()) {
+        QTimer::singleShot(0, this, &Application::ensureVisible);
+    }
+}
+
+void Application::setupManagers()
+{
+    connect(AccountManager::instance(), &AccountManager::accountAdded, this, &Application::slotAccountStateAdded);
+    for (const auto &ai : AccountManager::instance()->accounts()) {
+        slotAccountStateAdded(ai);
+    }
 }
 
 std::unique_ptr<Application> Application::createInstance(Platform *platform, const QString &displayLanguage, bool debugMode)
 {
     Q_ASSERT(!_instance);
     _instance = new Application(platform, displayLanguage, debugMode);
+    _instance->buildAppGuis();
+    _instance->setupManagers();
     return std::unique_ptr<Application>(_instance);
 }
 

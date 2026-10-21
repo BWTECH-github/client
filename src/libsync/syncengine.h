@@ -50,42 +50,71 @@ class ProcessDirectoryJob;
 class OWNCLOUDSYNC_EXPORT SyncEngine : public QObject
 {
     Q_OBJECT
+
 public:
-    SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, SyncJournalDb *journal);
+    SyncEngine(Account *account, const QUrl &baseUrl, const QString &localPath, const QString &remotePath, SyncJournalDb *journal, QObject *parent);
     ~SyncEngine() override;
 
     Q_INVOKABLE void startSync();
 
-    /* Abort the sync. Called from the main thread */
+    /* Abort the sync. Called from the main thread via the folder list pause sync action, but could also come from folder delete or shutdown */
     void abort(const QString &reason);
 
     bool isSyncRunning() const { return _syncRunning; }
 
-    const SyncOptions &syncOptions() const
-    {
-        Q_ASSERT(_syncOptions);
-        return *_syncOptions;
-    }
+    const SyncOptions &syncOptions() const { return _syncOptions; }
     void setSyncOptions(const SyncOptions &options)
     {
+        Q_ASSERT(options.isValid());
         _syncOptions = options;
     }
     bool ignoreHiddenFiles() const { return _ignore_hidden_files; }
     void setIgnoreHiddenFiles(bool ignore) { _ignore_hidden_files = ignore; }
 
+    void setMoveToTrash(bool trashIt) { _moveToTrash = trashIt; }
+    bool moveToTrash() const { return _moveToTrash; }
+
+    /**
+     * owncloud.online: Löschschutz wie im 2.x-Client. Ist er an, endet ein Lauf ohne jede Änderung, wenn er alle
+     * bzw. sehr viele Dateien löschen würde, und meldet das über aboutToRemoveAllFiles(). Standard: aus, die
+     * Anwendung (Ordner, owncloudcmd) schaltet ihn ein.
+     */
+    void setPromptRemoveAllFiles(bool prompt) { _promptRemoveAllFiles = prompt; }
+    bool promptRemoveAllFiles() const { return _promptRemoveAllFiles; }
+
+    /**
+     * Antwort „Löschen“: die zuletzt gemeldeten Löschungen (beide Richtungen) sind bestätigt, der nächste Lauf führt sie
+     * ohne erneute Rückfrage aus. Nur diese: was bis dahin dazukommt, prüft der Schutz wieder. Die Bestätigung gilt, bis
+     * ein Lauf die Propagation beginnt.
+     */
+    void allowRemoveAllFilesOnce();
+
+    /**
+     * Antwort „Behalten“: die zuletzt gemeldeten Löschungen (beide Richtungen) werden verworfen. Die Einträge der
+     * betroffenen Dateien verschwinden aus dem Journal, der nächste Lauf stellt sie deshalb von der anderen Seite wieder
+     * her (Hochladen bzw. Herunterladen). Lokal muss der nächste Lauf vollständig suchen, das veranlasst der Aufrufer.
+     */
+    void keepFilesOfRemoveAllPrompt();
+
+    /** „Sehr viele“: mindestens so viele Dateien und mindestens die Hälfte der bekannten Dateien. */
+    static constexpr int removeManyFilesMinimum = 200;
+
+    // file path must be absolute!
     bool isExcluded(QStringView filePath) const;
     void addManualExclude(const QString &filePath);
+    /** Zusätzliche Ausschlussliste aus einer Datei (owncloudcmd --exclude); greift nach reloadExcludes(). */
     void addExcludeList(const QString &filePath);
     bool loadDefaultExcludes();
     bool reloadExcludes();
     void clearManualExcludes();
 
-    SyncFileStatusTracker &syncFileStatusTracker() { return *_syncFileStatusTracker; }
+    SyncFileStatus fileStatus(const QString &relativePath);
+    void pathTouched(const QString &fileName);
+
 
     /* Returns whether another sync is needed to complete the sync */
     bool isAnotherSyncNeeded() { return _anotherSyncNeeded; }
 
-    SyncJournalDb *journal() const { return _journal; }
     QString localPath() const { return _localPath; }
 
     /** Duration in ms that uploads should be delayed after a file change
@@ -125,12 +154,13 @@ public:
     /** Access the last sync run's local discovery style */
     LocalDiscoveryStyle lastLocalDiscoveryStyle() const { return _lastLocalDiscoveryStyle; }
 
-    auto getPropagator() { return _propagator; } // for the test
-
 
 Q_SIGNALS:
+
+    void fileStatusChanged(const QString &systemFileName, SyncFileStatus fileStatus);
+
     // During update, before reconcile
-    void rootEtag(const QString &, const QDateTime &);
+    void rootEtagDiscovered(const QString &, const QDateTime &);
 
     // after the above signals. with the items that actually need propagating
     void aboutToPropagate(const SyncFileItemSet &items);
@@ -150,6 +180,14 @@ Q_SIGNALS:
 
     void finished(bool success);
     void started();
+
+    /**
+     * owncloud.online: der Lauf würde alle (allFiles) bzw. sehr viele Dateien löschen und endet deshalb ohne Änderung
+     * (siehe setPromptRemoveAllFiles()). Kommt vor finished(false).
+     * direction: Down = auf dem Server gelöscht, der Lauf löschte lokal; Up = lokal gelöscht, der Lauf löschte auf
+     * dem Server. removedFiles: betroffene Dateien dieser Richtung, knownFiles: Dateien laut Journal.
+     */
+    void aboutToRemoveAllFiles(SyncFileItem::Direction direction, bool allFiles, int removedFiles, int knownFiles);
 
     /** Emitted when propagation has problems with a locked file.
      *
@@ -187,6 +225,9 @@ private Q_SLOTS:
 private:
     bool checkErrorBlacklisting(SyncFileItem &item);
 
+    /** Löschschutz: true, wenn der Lauf alle bzw. sehr viele Dateien löschen würde; meldet das dann. */
+    bool checkRemoveAllFiles();
+
     // Cleans up unnecessary downloadinfo entries in the journal as well
     // as their temporary files.
     void deleteStaleDownloadInfos(const SyncFileItemSet &syncItems);
@@ -200,30 +241,46 @@ private:
     // Removes stale and adds missing conflict records after sync
     void conflictRecordMaintenance();
 
+    // do a preflight check to be sure we can really sync
+    bool preSyncChecks();
+    // start discovery
+    void startDiscovery();
+    // start propagation
+    void startPropagation();
+
     // cleanup and Q_EMIT the finished signal
     void finalize(bool success);
 
     // Must only be acessed during update and reconcile
     SyncFileItemSet _syncItems;
 
+    // the ever present account pointer primarily used for running jobs
     QPointer<Account> _account;
+
     const QUrl _baseUrl;
+
     bool _needsUpdate;
     bool _syncRunning;
     QString _localPath;
     QString _remotePath;
     QString _remoteRootEtag;
-    SyncJournalDb *_journal;
-    std::unique_ptr<DiscoveryPhase> _discoveryPhase;
-    QSharedPointer<OwncloudPropagator> _propagator;
+
+    // this is owned by the folder
+    QPointer<SyncJournalDb> _journal;
+
+    // both of these are parented/owned by the engine but are "rebuilt" on every sync
+    // todo: investigate to determine whether we can improve this pointer handling but simply clearing/resetting the
+    // states between runs (similar to ProgressInfo::reset, which contrary to the naming, is not related to smartpointers)
+    QPointer<DiscoveryPhase> _discoveryPhase;
+    QPointer<OwncloudPropagator> _propagator;
+
+    // these pointers are all parented/owned by the engine
+    ProgressInfo *_progressInfo = nullptr;
+    ExcludedFiles *_excludedFiles = nullptr;
+    SyncFileStatusTracker *_syncFileStatusTracker = nullptr;
 
     // List of all files with conflicts
     QSet<QString> _seenConflictFiles;
-
-    QScopedPointer<ProgressInfo> _progressInfo;
-
-    std::unique_ptr<class ExcludedFiles> _excludedFiles;
-    QScopedPointer<SyncFileStatusTracker> _syncFileStatusTracker;
     Utility::ChronoElapsedTimer _duration;
 
     /**
@@ -233,8 +290,10 @@ private:
 
     // If ignored files should be ignored
     bool _ignore_hidden_files = false;
+    // should deleted files be moved to trash
+    bool _moveToTrash = false;
 
-    std::optional<SyncOptions> _syncOptions;
+    SyncOptions _syncOptions;
 
     bool _anotherSyncNeeded = false;
 
@@ -252,5 +311,30 @@ private:
 
     // destructor called
     bool _goingDown = false;
+
+    // Löschschutz (siehe setPromptRemoveAllFiles)
+    bool _promptRemoveAllFiles = false;
+    // wie 2.x: mindestens ein Eintrag bleibt erhalten (unverändert, nur Metadaten, umbenannt, unverändert auf dem Server)
+    bool _hasNoneFiles = false;
+
+    /** eine Löschung, die der Schutz meldet: oberster gelöschter Pfad und Richtung */
+    struct RemoveAllFilesEntry
+    {
+        QString path;
+        SyncFileItem::Direction direction;
+    };
+    /** liegt path (oder ein Ordner darüber) mit dieser Richtung unter den bestätigten Löschungen? */
+    bool isApprovedRemoval(const QString &path, SyncFileItem::Direction direction) const;
+    // die zuletzt gemeldeten Löschungen beider Richtungen, für „Behalten“ und „Löschen“
+    QList<RemoveAllFilesEntry> _removeAllFilesPromptEntries;
+    // mit „Löschen“ bestätigt, bis ein Lauf die Propagation beginnt
+    QList<RemoveAllFilesEntry> _approvedRemovals;
 };
 }
+
+static const int syncFileItemTypeId = qRegisterMetaType<OCC::SyncFileItem>("SyncFileItem");
+static const int syncFileItemPtrTypeId = qRegisterMetaType<OCC::SyncFileItemPtr>("SyncFileItemPtr");
+static const int syncFileItemStatusTypeId = qRegisterMetaType<OCC::SyncFileItem::Status>("SyncFileItem::Status");
+static const int syncFileStatusTypeId = qRegisterMetaType<OCC::SyncFileStatus>("SyncFileStatus");
+static const int syncFileItemSetTypeId = qRegisterMetaType<OCC::SyncFileItemSet>("SyncFileItemSet");
+static const int syncFileItemDirectionTypeId = qRegisterMetaType<OCC::SyncFileItem::Direction>("SyncFileItem::Direction");

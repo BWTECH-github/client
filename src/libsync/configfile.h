@@ -58,6 +58,14 @@ public:
     static QString excludeFileFromSystem(); // doesn't access config dir
 
     /**
+     * owncloud.online: systemweite Ausschlussliste der Installation wie in 6.0.3 – Windows: sync-exclude.lst neben dem
+     * Programm; Linux: /etc/<app>/, neben dem Programm, ../etc/<app>/; macOS: /Library/Application Support/<app>/,
+     * Resources des Programmpakets. Leer, wenn es keine gibt. Ergänzt die eingebaute Liste, die Benutzerliste bleibt.
+     * applicationDir ersetzt den Programmordner (Tests).
+     */
+    static QString excludeFileFromInstallation(const QString &applicationDir = {});
+
+    /**
      * Creates a backup of the file
      *
      * Returns the path of the new backup.
@@ -124,10 +132,6 @@ public:
     bool pauseSyncWhenMetered() const;
     void setPauseSyncWhenMetered(bool isChecked);
 
-    /** If we should move the files deleted on the server in the trash  */
-    bool moveToTrash() const;
-    void setMoveToTrash(bool);
-
     /** Show the main window on startup instead of starting to the system tray only */
     bool showMainDialogOnStartup() const;
     void setShowMainDialogOnStartup(bool);
@@ -184,6 +188,10 @@ public:
     // how often the check about new versions runs
     std::chrono::milliseconds updateCheckInterval(const QString &connection = QString()) const;
 
+    /// vom Nutzer gewählter Update-Kanal (Über-Fenster), leer ohne Wahl; Updater::channel() prüft den Wert
+    QString updateChannel() const;
+    void setUpdateChannel(const QString &channel);
+
     QString uiLanguage() const;
     void setUiLanguage(const QString &uiLanguage);
 
@@ -199,7 +207,8 @@ public:
     static std::unique_ptr<QSettings> settingsWithGroup(const QString &group);
 
     /// Add the system and user exclude file path to the ExcludedFiles instance.
-    static void setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles);
+    /// owncloud.online: dazu die Liste der Installation (excludeFileFromInstallation, applicationDir für Tests).
+    static void setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles, const QString &applicationDir = {});
 
 protected:
     void storeData(const QString &group, const QString &key, const QVariant &value);

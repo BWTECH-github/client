@@ -61,7 +61,8 @@ if(NOT WITH_CRASHREPORTER)
     message(STATUS "Build of crashreporter disabled.")
 else()
     # obviously, a crash reported without the URL set is pretty pointless and won't work
-    if(NOT DEFINED CRASHREPORTER_SUBMIT_URL)
+    # (OWNCLOUD.cmake legt die Variable leer an, daher auf Inhalt prüfen, nicht auf DEFINED)
+    if(NOT CRASHREPORTER_SUBMIT_URL)
         message(FATAL_ERROR "No crash reporter submit URL provided")
     endif()
 endif()
@@ -92,7 +93,7 @@ option(NO_MSG_HANDLER "Don't redirect QDebug outputs to the log window/file" OFF
 option(BUILD_SHELL_INTEGRATION "BUILD_SHELL_INTEGRATION" ON)
 
 # build the auto updater component
-option(WITH_AUTO_UPDATER "WITH_AUTO_UPDATER" OFF)
+option(WITH_AUTO_UPDATER "WITH_AUTO_UPDATER" ON)
 
 # build with -DQT_FORCE_ASSERTS
 option(FORCE_ASSERTS "FORCE_ASSERTS" OFF)

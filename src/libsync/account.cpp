@@ -20,6 +20,7 @@
 #include "creds/abstractcredentials.h"
 #include "creds/credentialmanager.h"
 #include "graphapi/spacesmanager.h"
+#include "iconresources.h"
 #include "networkjobs.h"
 #include "networkjobs/resources.h"
 
@@ -128,20 +129,43 @@ QString Account::davUser() const
     return _davUser;
 }
 
-QIcon Account::avatar() const
+QIcon Account::avatar()
 {
+    if (_avatarImg.isNull()) {
+        // note this caches the built avatar, so once it exists it just returns a cached version
+        // obvs once a real avatar has been set, any default is no longer in play
+        return IconResources::buildAvatar(initials(), uuid());
+    }
     return _avatarImg;
 }
 
 void Account::setAvatar(const QIcon &img)
 {
+    if (img.isNull() && _avatarImg.isNull())
+        return;
     _avatarImg = img;
     Q_EMIT avatarChanged();
 }
 
-bool Account::hasAvatar() const
+QString Account::accountAlias() const
 {
-    return !_avatarImg.isNull();
+    return _alias;
+}
+
+void Account::setAccountAlias(const QString &newAlias)
+{
+    if (_alias != newAlias) {
+        _alias = newAlias;
+        emit accountAliasChanged(_alias);
+        // eh, may as well save it to settings right away
+        emit wantsAccountSaved(this);
+    }
+}
+
+QString Account::calculateAlias() const
+{
+    QString first = davDisplayName().section(QRegularExpression("\\s"), 0, 0, QString::SectionSkipEmpty);
+    return first;
 }
 
 QString Account::displayNameWithHost() const
@@ -164,11 +188,6 @@ QString Account::initials() const
     return out;
 }
 
-QGradient::Preset Account::avatarGradient() const
-{
-    return static_cast<QGradient::Preset>(qHash(displayNameWithHost()) % QGradient::NumPresets + 1);
-}
-
 QString Account::davDisplayName() const
 {
     if (_displayName.isEmpty()) {
@@ -183,6 +202,12 @@ void Account::setDavDisplayName(const QString &newDisplayName)
         _displayName = newDisplayName;
         Q_EMIT displayNameChanged();
     }
+}
+
+void Account::setGroupIndex(const QString &index)
+{
+    if (index != _groupIndex)
+        _groupIndex = index;
 }
 
 QString Account::groupIndex() const
@@ -293,6 +318,19 @@ QUrl Account::url() const
     return _url;
 }
 
+void Account::setUrl(const QUrl &url)
+{
+    if (_url == url) {
+        return;
+    }
+    _url = url;
+    // die Capabilities lösen App-Provider-Adressen gegen die Serveradresse auf
+    if (_capabilities.isValid()) {
+        _capabilities = Capabilities(url, _capabilities.raw());
+    }
+    Q_EMIT urlChanged();
+}
+
 QString Account::hostName() const
 {
     return _url.host();
@@ -327,8 +365,9 @@ void Account::setCapabilities(const Capabilities &caps)
         caps.status().legacyVersion != _capabilities.status().legacyVersion || caps.status().productversion != _capabilities.status().productversion;
     _capabilities = caps;
     if (versionChanged) {
-        Q_EMIT serverVersionChanged();
+        Q_EMIT serverVersionChanged(this);
     }
+    Q_EMIT capabilitiesChanged();
 }
 
 Account::ServerSupportLevel Account::supportLevelForCapabilities(const Capabilities &caps)

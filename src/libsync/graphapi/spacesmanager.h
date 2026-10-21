@@ -66,6 +66,8 @@ namespace GraphApi {
         QTimer *_refreshTimer;
         QHash<QString, Space *> _spaces;
         bool _ready = false;
+        // refresh() kam vor den Capabilities: nachholen, sobald sie da sind
+        bool _refreshWhenCapabilitiesKnown = false;
     };
 
 }

@@ -14,7 +14,6 @@
 
 #include "guiutility.h"
 #include "gui/application.h"
-#include "gui/settingsdialog.h"
 #include "libsync/filesystem.h"
 #include "libsync/theme.h"
 
@@ -61,13 +60,16 @@ bool Utility::openBrowser(const QUrl &url, QWidget *errorWidgetParent)
     return true;
 }
 
+QUrl Utility::emailComposerUrl(const QString &subject, const QString &body)
+{
+    // selbst kodieren: QUrlQuery erwartet bereits kodierte Werte, ein „#“ oder „&“ im Dateinamen zerlegte sonst die Adresse
+    const auto encode = [](const QString &value) { return QString::fromLatin1(QUrl::toPercentEncoding(value)); };
+    return QUrl(QStringLiteral("mailto:?subject=%1&body=%2").arg(encode(subject), encode(body)), QUrl::StrictMode);
+}
+
 bool Utility::openEmailComposer(const QString &subject, const QString &body, QWidget *errorWidgetParent)
 {
-    QUrl url(QStringLiteral("mailto:"));
-    QUrlQuery query;
-    query.setQueryItems({ { QLatin1String("subject"), subject },
-        { QLatin1String("body"), body } });
-    url.setQuery(query);
+    const QUrl url = emailComposerUrl(subject, body);
 
     if (!QDesktopServices::openUrl(url)) {
         if (errorWidgetParent) {
@@ -97,8 +99,17 @@ QString Utility::vfsFreeSpaceActionText()
 
 void Utility::markDirectoryAsSyncRoot(const QString &path, const QUuid &accountUuid)
 {
-    Q_ASSERT(getDirectorySyncRootMarkings(path).first.isEmpty());
-    Q_ASSERT(getDirectorySyncRootMarkings(path).second.isNull());
+    // Der Assistent prüft den Ordner (FolderMan::checkPathValidity), aber zwischen Prüfung und „Abschließen“ kann ihn noch etwas
+    // anderes gekennzeichnet haben. Eine fremde Kennzeichnung bleibt stehen, statt (wie mit dem früheren Q_ASSERT unter
+    // FORCE_ASSERTS) das Programm zu beenden.
+    const auto existing = getDirectorySyncRootMarkings(path);
+    if (!existing.first.isEmpty() || !existing.second.isNull()) {
+        if (existing.first != Theme::instance()->orgDomainName() || existing.second != accountUuid) {
+            qCWarning(lcGuiUtility) << "Not marking" << path << "as sync root of" << accountUuid << "- it is already marked by" << existing.first
+                                    << existing.second;
+        }
+        return;
+    }
 
     auto result1 = FileSystem::Tags::set(path, dirTag(), Theme::instance()->orgDomainName().toUtf8());
     if (!result1) {

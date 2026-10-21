@@ -13,8 +13,8 @@
  */
 #include "spaceimageprovider.h"
 #include "libsync/graphapi/spacesmanager.h"
+#include "resources/iconresources.h"
 #include "resources/qmlresources.h"
-#include "resources/resources.h"
 
 using namespace OCC;
 using namespace Spaces;
@@ -32,7 +32,7 @@ QPixmap SpaceImageProvider::requestPixmap(const QString &id, QSize *size, const 
 
     QIcon icon;
     if (id == QLatin1String("placeholder")) {
-        icon = Resources::getCoreIcon(QStringLiteral("defaultSpaceImage"));
+        icon = IconResources::getCoreIcon(QStringLiteral("defaultSpaceImage"));
     } else {
         const auto ids = id.split(QLatin1Char('/'));
         const auto *space = _spacesManager->space(ids.last());
@@ -40,6 +40,13 @@ QPixmap SpaceImageProvider::requestPixmap(const QString &id, QSize *size, const 
             icon = space->image()->image();
         }
     }
-    Q_ASSERT(!icon.isNull());
+    // Der Space kann inzwischen auf dem Server entfernt sein, sein Bild fehlen: dann das Platzhalterbild. Das frühere Q_ASSERT
+    // beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (icon.isNull()) {
+        icon = IconResources::getCoreIcon(QStringLiteral("defaultSpaceImage"));
+    }
+    if (icon.isNull()) {
+        return {};
+    }
     return Resources::pixmap(requestedSize, icon, QIcon::Normal, size);
 }

@@ -51,8 +51,8 @@ void seedUploadSession(FakeFolder &fakeFolder, const QString &file, uint transfe
     info._transferid = transferId;
     info._size = QFileInfo(localPath).size();
     info._modtime = FileSystem::getModTime(localPath);
-    fakeFolder.syncJournal().setUploadInfo(file, info);
-    fakeFolder.syncJournal().commit(QStringLiteral("test"));
+    fakeFolder.syncJournal()->setUploadInfo(file, info);
+    fakeFolder.syncJournal()->commit(QStringLiteral("test"));
 
     const QString uploadDir = QString::number(transferId);
     fakeFolder.uploadState().createDir(uploadDir);
@@ -73,7 +73,7 @@ private Q_SLOTS:
     void testChunkedUpload()
     {
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12());
-        setChunkSize(fakeFolder.syncEngine(), 1_MiB);
+        setChunkSize(*fakeFolder.syncEngine(), 1_MiB);
         const auto size = 3_MiB;
         OperationCounter counter(fakeFolder);
 
@@ -93,7 +93,7 @@ private Q_SLOTS:
     void testResumeDeleteErrorStartsOver()
     {
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12());
-        setChunkSize(fakeFolder.syncEngine(), 1_MiB);
+        setChunkSize(*fakeFolder.syncEngine(), 1_MiB);
         const auto size = 3_MiB;
 
         fakeFolder.localModifier().insert(QStringLiteral("A/big"), size);
@@ -124,7 +124,7 @@ private Q_SLOTS:
         QCOMPARE(fakeFolder.uploadState().children.count(), 2);
         QVERIFY(fakeFolder.uploadState().children.contains(QString::number(transferId)));
         // and the journal no longer points at any session
-        QVERIFY(!fakeFolder.syncJournal().getUploadInfo(QStringLiteral("A/big"))._valid);
+        QVERIFY(!fakeFolder.syncJournal()->getUploadInfo(QStringLiteral("A/big"))._valid);
     }
 
     // The server answers the MKCOL of the upload directory with a 2xx other than
@@ -134,7 +134,7 @@ private Q_SLOTS:
     void testMkColUnexpectedStatus()
     {
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12());
-        setChunkSize(fakeFolder.syncEngine(), 1_MiB);
+        setChunkSize(*fakeFolder.syncEngine(), 1_MiB);
         const auto size = 3_MiB;
 
         int nMKCOL = 0;
@@ -160,7 +160,7 @@ private Q_SLOTS:
 
         // next run against a regular server: the upload goes through
         fakeFolder.setServerOverride(nullptr);
-        fakeFolder.syncJournal().wipeErrorBlacklist();
+        fakeFolder.syncJournal()->wipeErrorBlacklist();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         QCOMPARE(fakeFolder.currentRemoteState().find(QStringLiteral("A/big"))->contentSize, size);
@@ -172,7 +172,7 @@ private Q_SLOTS:
     void testResumePropfindUnexpectedStatus()
     {
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12());
-        setChunkSize(fakeFolder.syncEngine(), 1_MiB);
+        setChunkSize(*fakeFolder.syncEngine(), 1_MiB);
         const auto size = 3_MiB;
 
         fakeFolder.localModifier().insert(QStringLiteral("A/big"), size);
@@ -199,13 +199,13 @@ private Q_SLOTS:
         QCOMPARE(item->_status, SyncFileItem::NormalError);
         QVERIFY2(item->_errorString.contains(QStringLiteral("(200)")), qPrintable(item->_errorString));
         // the session is kept for the next run
-        const auto info = fakeFolder.syncJournal().getUploadInfo(QStringLiteral("A/big"));
+        const auto info = fakeFolder.syncJournal()->getUploadInfo(QStringLiteral("A/big"));
         QVERIFY(info._valid);
         QCOMPARE(info._transferid, transferId);
 
         // next run: the resume works and the existing chunk is reused
         fakeFolder.setServerOverride(nullptr);
-        fakeFolder.syncJournal().wipeErrorBlacklist();
+        fakeFolder.syncJournal()->wipeErrorBlacklist();
         OperationCounter counter(fakeFolder);
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(counter.nPUT, 2); // only the two missing chunks

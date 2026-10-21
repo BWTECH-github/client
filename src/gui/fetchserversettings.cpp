@@ -14,9 +14,6 @@
 
 #include "fetchserversettings.h"
 
-#include "gui/accountstate.h"
-#include "gui/connectionvalidator.h"
-
 #include "libsync/networkjobs/jsonjob.h"
 
 using namespace std::chrono_literals;
@@ -34,14 +31,14 @@ auto fetchSettingsTimeout()
 }
 
 // TODO: move to libsync?
-FetchServerSettingsJob::FetchServerSettingsJob(OCC::Account *account, QObject *parent)
+FetchServerSettingsRunner::FetchServerSettingsRunner(OCC::Account *account, QObject *parent)
     : QObject(parent)
     , _account(account)
 {
 }
 
 
-void FetchServerSettingsJob::start()
+void FetchServerSettingsRunner::start()
 {
     if (!_account) {
         Q_EMIT finishedSignal(Result::Undefined);
@@ -50,7 +47,7 @@ void FetchServerSettingsJob::start()
 
     // The main flow now needs the capabilities
     auto *job = new JsonApiJob(_account, QStringLiteral("ocs/v2.php/cloud/capabilities"), {}, {}, this);
-    job->setAuthenticationJob(isAuthJob());
+    job->setAuthenticationJob(false);
     job->setTimeout(fetchSettingsTimeout());
 
     connect(job, &JsonApiJob::finishedSignal, this, [job, this] {
@@ -77,7 +74,7 @@ void FetchServerSettingsJob::start()
                 return;
             }
             auto *userJob = new JsonApiJob(_account.get(), QStringLiteral("ocs/v2.php/cloud/user"), SimpleNetworkJob::UrlQuery{}, QNetworkRequest{}, this);
-            userJob->setAuthenticationJob(isAuthJob());
+            userJob->setAuthenticationJob(false);
             userJob->setTimeout(fetchSettingsTimeout());
             connect(userJob, &JsonApiJob::finishedSignal, this, [userJob, this] {
                 if (userJob->timedOut()) {
@@ -87,8 +84,9 @@ void FetchServerSettingsJob::start()
                 } else if (userJob->ocsSuccess()) {
                     const auto userData = userJob->data().value(QStringLiteral("ocs")).toObject().value(QStringLiteral("data")).toObject();
                     const QString user = userData.value(QStringLiteral("id")).toString();
-                    Q_ASSERT(!_account->davUser().isEmpty());
                     // davUser should never change.
+                    // Ein leerer davUser (Konto aus einer Serverantwort ohne Benutzer-ID) wird unten übergangen; das frühere Q_ASSERT
+                    // beendete mit FORCE_ASSERTS (Beta) das Programm.
                     if (!user.isEmpty() && !_account->davUser().isEmpty() && user != _account->davUser()) {
                         Q_EMIT finishedSignal(Result::InvalidCredentials);
                         return;
@@ -97,7 +95,6 @@ void FetchServerSettingsJob::start()
                     if (!displayName.isEmpty()) {
                         _account->setDavDisplayName(displayName);
                     }
-                    runAsyncUpdates();
                     Q_EMIT finishedSignal(Result::Success);
                 } else {
                     Q_EMIT finishedSignal(Result::Undefined);
@@ -115,36 +112,4 @@ void FetchServerSettingsJob::start()
         }
     });
     job->start();
-}
-
-void FetchServerSettingsJob::runAsyncUpdates()
-{
-    if (!_account)
-        return;
-
-    // those jobs are:
-    // - never auth jobs
-    // - might get queued
-    // - have the default timeout
-    // - must not be parented by this object
-
-    // ideally we would parent them to the account, but as things are messed up by the shared pointer stuff we can't at the moment
-    // so we just set them free
-    if (_account->capabilities().avatarsAvailable()) {
-        // the avatar job uses the legacy WebDAV URL and ocis will require a new approach
-        auto *avatarJob = new AvatarJob(_account, _account->davUser(), 128, nullptr);
-        connect(avatarJob, &AvatarJob::avatarPixmap, this, [this](const QPixmap &img) { _account->setAvatar(AvatarJob::makeCircularAvatar(img)); });
-        avatarJob->start();
-    };
-
-    if (_account->capabilities().appProviders().enabled) {
-        auto *jsonJob = new JsonJob(_account, _account->capabilities().appProviders().appsUrl, {}, "GET");
-        connect(jsonJob, &JsonJob::finishedSignal, this, [jsonJob, this] { _account->setAppProvider(AppProvider{jsonJob->data()}); });
-        jsonJob->start();
-    }
-}
-
-bool FetchServerSettingsJob::isAuthJob() const
-{
-    return qobject_cast<ConnectionValidator *>(parent());
 }

@@ -14,6 +14,8 @@
 #include "testutils/syncenginetestutils.h"
 #include <syncengine.h>
 
+#include <QCryptographicHash>
+#include <QDir>
 #include <QtTest>
 
 #include <chrono>
@@ -41,20 +43,20 @@ bool itemInstruction(const QSignalSpy &spy, const QString &path, const SyncInstr
 SyncJournalFileRecord dbRecord(FakeFolder &folder, const QString &path)
 {
     SyncJournalFileRecord record;
-    folder.syncJournal().getFileRecord(path, &record);
+    folder.syncJournal()->getFileRecord(path, &record);
     return record;
 }
 
 void markForDownload(FakeFolder &folder, const QByteArray &path)
 {
-    auto &journal = folder.syncJournal();
+    auto journal = folder.syncJournal();
     SyncJournalFileRecord record;
-    journal.getFileRecord(path, &record);
+    journal->getFileRecord(path, &record);
     if (!record.isValid())
         return;
     record._type = ItemTypeVirtualFileDownload;
-    journal.setFileRecord(record);
-    journal.schedulePathForRemoteDiscovery(record._path);
+    journal->setFileRecord(record);
+    journal->schedulePathForRemoteDiscovery(record._path);
 }
 
 bool isPlaceholder(const QString &path)
@@ -111,6 +113,35 @@ bool setPinState(FakeFolder &folder, const QString &path, CF_PIN_STATE state, CF
     return ok == 0;
 }
 
+// owncloud.online: CLSID des Explorer-Eintrags, den Windows zum Sync-Root eines FakeFolder angelegt hat
+// (NamespaceCLSID im SyncRootManager); leer, solange der Sync-Root nicht angemeldet ist. Die Kennung
+// entsteht wie in VfsWinPrivate::registerFolder, mit dem Anbieter "OC-TEST" aus FakeFolder::switchToVfs.
+QString syncRootNavPaneClsid(const QString &folder)
+{
+    const QString syncRoot = QDir::toNativeSeparators(Utility::stripTrailingSlash(folder));
+    const QString hash = QString::fromUtf8(QCryptographicHash::hash(syncRoot.toUtf8(), QCryptographicHash::Sha1).toBase64());
+    const QString sid = CfAPIUtil::getSidAsString();
+    const QString id = sid.isEmpty() ? QStringLiteral("OC-TEST_%1").arg(hash) : QStringLiteral("OC-TEST!%1!%2").arg(sid, hash);
+    const QString key = QStringLiteral("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\SyncRootManager\\") + id;
+    wchar_t clsid[64] {};
+    DWORD size = sizeof(clsid);
+    if (RegGetValueW(HKEY_LOCAL_MACHINE, reinterpret_cast<const wchar_t *>(key.utf16()), L"NamespaceCLSID", RRF_RT_REG_SZ, nullptr, clsid, &size)
+        != ERROR_SUCCESS) {
+        return {};
+    }
+    return QString::fromWCharArray(clsid);
+}
+
+bool currentUserKeyExists(const QString &path)
+{
+    HKEY key {};
+    if (RegOpenKeyExW(HKEY_CURRENT_USER, reinterpret_cast<const wchar_t *>(path.utf16()), 0, KEY_READ, &key) != ERROR_SUCCESS) {
+        return false;
+    }
+    RegCloseKey(key);
+    return true;
+}
+
 
 class TestWinVfs : public QObject
 {
@@ -123,7 +154,7 @@ private Q_SLOTS:
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
         fakeFolder.account()->setCapabilities({fakeFolder.account()->url(), TestUtils::testCapabilities(CheckSums::Algorithm::SHA1)});
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -175,7 +206,7 @@ private Q_SLOTS:
         QCOMPARE(QFileInfo(localA1).size(), 5_MiB);
         QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/a1"))._type, ItemTypeFile);
         QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/a1"))._checksumHeader, "SHA1:8886930866e6faf7558cda88305d92d13ee26cc9");
-        QCOMPARE(*fakeFolder.vfs()->pinState(QStringLiteral("A/a1")), PinState::Unspecified); // since it was an implicit hydration
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("A/a1")).get(), PinState::Unspecified); // since it was an implicit hydration
 
         //
         // Is the remote etag propagated if it changed?
@@ -274,7 +305,7 @@ private Q_SLOTS:
     {
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -306,7 +337,7 @@ private Q_SLOTS:
 
 
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
-        QCOMPARE(*fakeFolder.vfs()->pinState(QStringLiteral("A/a2")), PinState::AlwaysLocal);
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("A/a2")).get(), PinState::AlwaysLocal);
 
         QCOMPARE(isPlaceholderWithOnDiskSize(localA1), 5_MiB);
         QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/a1"))._type, ItemTypeFile);
@@ -315,8 +346,8 @@ private Q_SLOTS:
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         QVERIFY(itemInstruction(completeSpy, QStringLiteral("A/a1"), CSYNC_INSTRUCTION_SYNC));
         QVERIFY(itemInstruction(completeSpy, QStringLiteral("A/a2"), CSYNC_INSTRUCTION_SYNC));
-        QCOMPARE(*fakeFolder.vfs()->pinState(QStringLiteral("A/a1")), PinState::Unspecified); // since no attribute got propagated
-        QCOMPARE(*fakeFolder.vfs()->pinState(QStringLiteral("A/a2")), PinState::AlwaysLocal);
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("A/a1")).get(), PinState::Unspecified); // since no attribute got propagated
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("A/a2")).get(), PinState::AlwaysLocal);
         cleanup();
 
         //
@@ -326,8 +357,8 @@ private Q_SLOTS:
         fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a1"));
         fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a2"));
         QVERIFY(fakeFolder.syncOnce());
-        QCOMPARE(*fakeFolder.vfs()->pinState(QStringLiteral("A/a1")), PinState::Unspecified); // since no attribute got propagated
-        QCOMPARE(*fakeFolder.vfs()->pinState(QStringLiteral("A/a2")), PinState::AlwaysLocal);
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("A/a1")).get(), PinState::Unspecified); // since no attribute got propagated
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("A/a2")).get(), PinState::AlwaysLocal);
         cleanup();
     }
 
@@ -336,7 +367,7 @@ private Q_SLOTS:
     {
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -393,7 +424,7 @@ private Q_SLOTS:
     {
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -438,7 +469,7 @@ private Q_SLOTS:
     {
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -499,7 +530,7 @@ private Q_SLOTS:
         FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
         auto l = [&](const QString &p) { return QString(fakeFolder.localPath() + p); };
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -546,7 +577,7 @@ private Q_SLOTS:
         QVERIFY(fakeFolder.currentRemoteState().find(QStringLiteral("case3-rename")));
         QVERIFY(itemInstruction(completeSpy, QStringLiteral("case3-rename"), CSYNC_INSTRUCTION_RENAME));
         QCOMPARE(dbRecord(fakeFolder, QStringLiteral("case3-rename"))._type, ItemTypeVirtualFile);
-        QCOMPARE(*fakeFolder.vfs()->pinState(QStringLiteral("case3-rename")), PinState::AlwaysLocal);
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("case3-rename")).get(), PinState::AlwaysLocal);
 
         // Case 4: the rename went though, pin state change still on file
         QVERIFY(!fakeFolder.currentLocalState().find(QStringLiteral("case4")));
@@ -556,7 +587,7 @@ private Q_SLOTS:
         QVERIFY(fakeFolder.currentRemoteState().find(QStringLiteral("case4-rename")));
         QVERIFY(itemInstruction(completeSpy, QStringLiteral("case4-rename"), CSYNC_INSTRUCTION_RENAME));
         QCOMPARE(dbRecord(fakeFolder, QStringLiteral("case4-rename"))._type, ItemTypeFile);
-        QCOMPARE(*fakeFolder.vfs()->pinState(QStringLiteral("case4-rename")), PinState::OnlineOnly);
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("case4-rename")).get(), PinState::OnlineOnly);
 
         // at this point it'd be nice if the client had anotherSyncNeeded set, to
         // make sure the pin state change gets applied!
@@ -579,7 +610,7 @@ private Q_SLOTS:
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
         auto cleanup = [&]() {
             completeSpy.clear();
         };
@@ -681,6 +712,7 @@ private Q_SLOTS:
         fakeFolder.localModifier().insert(QStringLiteral("A/a3"), 100_B);
         QVERIFY(fakeFolder.applyLocalModificationsWithoutSync());
 
+        // todo: review this. AFAIK it's already covered in FakeFolder::swtichToVfs or *should* be
         fakeFolder.vfs()->wipeDehydratedVirtualFiles();
         fakeFolder.vfs()->stop();
         fakeFolder.vfs()->unregisterFolder();
@@ -691,11 +723,11 @@ private Q_SLOTS:
         QVERIFY(!QFile::exists(l(QStringLiteral("A/B/b1"))));
 
         // Check that syncing with vfs disabled is fine
-        auto vfsOff = QSharedPointer<Vfs>(VfsPluginManager::instance().createVfsFromPlugin(Vfs::Off).release());
+        auto vfsOff = VfsPluginManager::instance().createVfsFromPlugin(Vfs::Off, &fakeFolder);
         QVERIFY(vfsOff);
         fakeFolder.switchToVfs(vfsOff);
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
-        auto conflicts = fakeFolder.syncJournal().conflictRecordPaths();
+        auto conflicts = fakeFolder.syncJournal()->conflictRecordPaths();
         QCOMPARE(conflicts.size(), 1);
         QFile::remove(l(QString::fromUtf8(conflicts[0])));
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
@@ -708,45 +740,45 @@ private Q_SLOTS:
         fakeFolder.remoteModifier().insert(QStringLiteral("A/a1"));
         fakeFolder.remoteModifier().insert(QStringLiteral("A/a2"));
         fakeFolder.syncOnce();
-        QCOMPARE(*fakeFolder.vfs()->availability(QString()), VfsItemAvailability::AllDehydrated);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A")), VfsItemAvailability::AllDehydrated);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A/a1")), VfsItemAvailability::AllDehydrated);
+        QCOMPARE(fakeFolder.vfs()->availability(QString()).get(), VfsItemAvailability::AllDehydrated);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A")).get(), VfsItemAvailability::AllDehydrated);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A/a1")).get(), VfsItemAvailability::AllDehydrated);
 
         // The Vfs property is only accessible when it's not "sync pending"
         auto updateSyncState = [&] {
-            fakeFolder.vfs()->fileStatusChanged(fakeFolder.localPath() + QStringLiteral("A/a1"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-            fakeFolder.vfs()->fileStatusChanged(fakeFolder.localPath() + QStringLiteral("A/a2"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
-            fakeFolder.vfs()->fileStatusChanged(fakeFolder.localPath() + QStringLiteral("A"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+            fakeFolder.vfs()->onFileStatusChanged(fakeFolder.localPath() + QStringLiteral("A/a1"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+            fakeFolder.vfs()->onFileStatusChanged(fakeFolder.localPath() + QStringLiteral("A/a2"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
+            fakeFolder.vfs()->onFileStatusChanged(fakeFolder.localPath() + QStringLiteral("A"), SyncFileStatus(SyncFileStatus::StatusUpToDate));
         };
 
         QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A"), PinState::AlwaysLocal));
         fakeFolder.syncOnce();
         updateSyncState();
-        QCOMPARE(*fakeFolder.vfs()->availability(QString()), VfsItemAvailability::AllHydrated);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A")), VfsItemAvailability::AlwaysLocal);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A/a1")), VfsItemAvailability::AlwaysLocal);
+        QCOMPARE(fakeFolder.vfs()->availability(QString()).get(), VfsItemAvailability::AllHydrated);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A")).get(), VfsItemAvailability::AlwaysLocal);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A/a1")).get(), VfsItemAvailability::AlwaysLocal);
 
         QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A/a1"), PinState::Unspecified));
         fakeFolder.syncOnce();
         updateSyncState();
-        QCOMPARE(*fakeFolder.vfs()->availability(QString()), VfsItemAvailability::AllHydrated);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A")), VfsItemAvailability::AllHydrated);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A/a1")), VfsItemAvailability::AllHydrated);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A/a2")), VfsItemAvailability::AlwaysLocal);
+        QCOMPARE(fakeFolder.vfs()->availability(QString()).get(), VfsItemAvailability::AllHydrated);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A")).get(), VfsItemAvailability::AllHydrated);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A/a1")).get(), VfsItemAvailability::AllHydrated);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A/a2")).get(), VfsItemAvailability::AlwaysLocal);
 
         QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A"), PinState::OnlineOnly));
         fakeFolder.syncOnce();
         updateSyncState();
-        QCOMPARE(*fakeFolder.vfs()->availability(QString()), VfsItemAvailability::AllDehydrated);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A")), VfsItemAvailability::AllDehydrated);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A/a1")), VfsItemAvailability::AllDehydrated);
+        QCOMPARE(fakeFolder.vfs()->availability(QString()).get(), VfsItemAvailability::AllDehydrated);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A")).get(), VfsItemAvailability::AllDehydrated);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A/a1")).get(), VfsItemAvailability::AllDehydrated);
 
         QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A/a1"), PinState::AlwaysLocal));
         fakeFolder.syncOnce();
         updateSyncState();
-        QCOMPARE(*fakeFolder.vfs()->availability(QString()), VfsItemAvailability::Mixed);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A")), VfsItemAvailability::Mixed);
-        QCOMPARE(*fakeFolder.vfs()->availability(QStringLiteral("A/a1")), VfsItemAvailability::AlwaysLocal);
+        QCOMPARE(fakeFolder.vfs()->availability(QString()).get(), VfsItemAvailability::Mixed);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A")).get(), VfsItemAvailability::Mixed);
+        QCOMPARE(fakeFolder.vfs()->availability(QStringLiteral("A/a1")).get(), VfsItemAvailability::AlwaysLocal);
     }
 
     // Check that previously hydrated files become placeholders on sync
@@ -757,8 +789,8 @@ private Q_SLOTS:
         fakeFolder.remoteModifier().insert(QStringLiteral("A/a1"), 64_B);
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
 
-        fakeFolder.switchToVfs(QSharedPointer<Vfs>(new VfsWin));
-        QSignalSpy completeSpy(&fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
+        fakeFolder.switchToVfs(new VfsWin(&fakeFolder));
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), SIGNAL(itemCompleted(const SyncFileItemPtr &)));
 
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QVERIFY(itemInstruction(completeSpy, QStringLiteral("A/a1"), CSYNC_INSTRUCTION_UPDATE_METADATA));
@@ -790,6 +822,56 @@ private Q_SLOTS:
 
         QVERIFY(!fakeFolder.vfs()->isDehydratedPlaceholder(fakeFolder.localPath() + QStringLiteral("A/Hydrated")));
         QVERIFY(fakeFolder.vfs()->isDehydratedPlaceholder(fakeFolder.localPath() + QStringLiteral("A/DeHydrated")));
+    }
+
+    // owncloud.online: CfExecute läuft erst nach dem Rückruf (Daten nach dem Download, Prüfung, Neustart der Hydratation).
+    // CfOpdata darf dann nicht mehr in die Rückrufinformation zeigen, deren Speicher nur während des Rückrufs gilt.
+    void testOpdataOutlivesCallbackInfo()
+    {
+        CORRELATION_VECTOR vector = {};
+        vector.Version = 2;
+        qstrncpy(vector.Vector, "Ab1Cd2Ef3Gh4.1", sizeof(vector.Vector));
+        CF_CALLBACK_INFO info = {};
+        info.StructSize = sizeof(info);
+        info.TransferKey.QuadPart = 4711;
+        info.CorrelationVector = &vector;
+
+        const CfAPIUtil::CfOpdata opdata(&info);
+        // der Rückruf ist vorbei, sein Speicher wird anders genutzt
+        memset(&vector, 0x5a, sizeof(vector));
+        info.CorrelationVector = nullptr;
+
+        const auto opInfo = opdata.toOpinfo();
+        QCOMPARE(opInfo.TransferKey.QuadPart, qint64{4711});
+        QVERIFY(opInfo.CorrelationVector);
+        QVERIFY(opInfo.CorrelationVector != &vector);
+        QCOMPARE(opInfo.CorrelationVector->Version, char{2});
+        QCOMPARE(QByteArray(opInfo.CorrelationVector->Vector), QByteArrayLiteral("Ab1Cd2Ef3Gh4.1"));
+
+        // ohne CorrelationVector im Rückruf auch keiner im Auftrag
+        CF_CALLBACK_INFO plain = {};
+        plain.StructSize = sizeof(plain);
+        QVERIFY(!CfAPIUtil::CfOpdata(&plain).toOpinfo().CorrelationVector);
+    }
+
+    // owncloud.online: Windows legt den Explorer-Eintrag eines Sync-Roots in beiden Registry-Sichten an und lässt beim
+    // Abmelden die Kopie in der 32-Bit-Sicht (WOW6432Node) stehen. Nach dem Entfernen des Ordners darf keine bleiben.
+    void testUnregisterRemovesNavPaneEntry()
+    {
+        FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
+        const QString clsid = syncRootNavPaneClsid(fakeFolder.localPath());
+        QVERIFY2(!clsid.isEmpty(), "keine NamespaceCLSID im SyncRootManager");
+        const QString entry = QStringLiteral("Software\\Classes\\CLSID\\") + clsid;
+        const QString wow64Entry = QStringLiteral("Software\\Classes\\WOW6432Node\\CLSID\\") + clsid;
+        QVERIFY2(currentUserKeyExists(entry), qPrintable(entry));
+        QVERIFY2(currentUserKeyExists(wow64Entry), qPrintable(wow64Entry));
+
+        fakeFolder.vfs()->stop();
+        fakeFolder.vfs()->unregisterFolder();
+
+        QVERIFY(syncRootNavPaneClsid(fakeFolder.localPath()).isEmpty());
+        QVERIFY2(!currentUserKeyExists(entry), qPrintable(entry));
+        QVERIFY2(!currentUserKeyExists(wow64Entry), qPrintable(wow64Entry));
     }
 };
 

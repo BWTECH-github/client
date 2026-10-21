@@ -52,6 +52,89 @@ bool Capabilities::sharePublicLink() const
     return shareAPI() && _fileSharingPublicCapabilities.value(QStringLiteral("enabled"), true).toBool();
 }
 
+bool Capabilities::sharePublicLinkCanCreate() const
+{
+    // fehlt der Schlüssel (ältere Server), gilt keine Einschränkung
+    return sharePublicLink() && _fileSharingPublicCapabilities.value(QStringLiteral("can_create_public_link"), true).toBool();
+}
+
+bool Capabilities::sharePublicLinkAllowUpload() const
+{
+    return _fileSharingPublicCapabilities.value(QStringLiteral("upload")).toBool();
+}
+
+bool Capabilities::sharePublicLinkSupportsUploadOnly() const
+{
+    return _fileSharingPublicCapabilities.value(QStringLiteral("supports_upload_only")).toBool();
+}
+
+namespace {
+    // password.enforced_for.<rolle> gewinnt; fehlt der Schlüssel (ältere Server), gilt password.enforced
+    bool enforcePasswordFor(const QVariantMap &publicCapabilities, const QString &role, const QString &fallbackRole = {})
+    {
+        const auto password = publicCapabilities.value(QStringLiteral("password")).toMap();
+        const auto enforcedFor = password.value(QStringLiteral("enforced_for")).toMap();
+        if (enforcedFor.contains(role))
+            return enforcedFor.value(role).toBool();
+        if (!fallbackRole.isEmpty() && enforcedFor.contains(fallbackRole))
+            return enforcedFor.value(fallbackRole).toBool();
+        return password.value(QStringLiteral("enforced")).toBool();
+    }
+}
+
+bool Capabilities::sharePublicLinkEnforcePasswordForReadOnly() const
+{
+    return enforcePasswordFor(_fileSharingPublicCapabilities, QStringLiteral("read_only"));
+}
+
+bool Capabilities::sharePublicLinkEnforcePasswordForReadWrite() const
+{
+    return enforcePasswordFor(_fileSharingPublicCapabilities, QStringLiteral("read_write"));
+}
+
+bool Capabilities::sharePublicLinkEnforcePasswordForReadWriteDelete() const
+{
+    // read_write_delete gibt es erst ab oC 10.1; davor regelte read_write auch "Bearbeiten"
+    return enforcePasswordFor(_fileSharingPublicCapabilities, QStringLiteral("read_write_delete"), QStringLiteral("read_write"));
+}
+
+bool Capabilities::sharePublicLinkEnforcePasswordForUploadOnly() const
+{
+    return enforcePasswordFor(_fileSharingPublicCapabilities, QStringLiteral("upload_only"));
+}
+
+bool Capabilities::sharePublicLinkDefaultExpire() const
+{
+    return _fileSharingPublicCapabilities.value(QStringLiteral("expire_date")).toMap().value(QStringLiteral("enabled")).toBool();
+}
+
+int Capabilities::sharePublicLinkDefaultExpireDateDays() const
+{
+    // oC10 liefert "days" als Zeichenkette ("7"); toInt() verträgt beides
+    return _fileSharingPublicCapabilities.value(QStringLiteral("expire_date")).toMap().value(QStringLiteral("days")).toInt();
+}
+
+bool Capabilities::sharePublicLinkEnforceExpireDate() const
+{
+    return _fileSharingPublicCapabilities.value(QStringLiteral("expire_date")).toMap().value(QStringLiteral("enforced")).toBool();
+}
+
+bool Capabilities::sharePublicLinkMultiple() const
+{
+    // fehlt der Schlüssel, nicht künstlich auf einen Link beschränken - der Server lehnt notfalls ab
+    return _fileSharingPublicCapabilities.value(QStringLiteral("multiple"), true).toBool();
+}
+
+bool Capabilities::shareResharing() const
+{
+    return _fileSharingCapabilities.value(QStringLiteral("resharing"), true).toBool();
+}
+
+int Capabilities::shareSearchMinLength() const
+{
+    return qMax(1, _fileSharingCapabilities.value(QStringLiteral("search_min_length"), 2).toInt());
+}
+
 int Capabilities::defaultPermissions() const
 {
     return _fileSharingCapabilities.value(QStringLiteral("default_permissions"), 1).toInt();

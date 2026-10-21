@@ -14,6 +14,7 @@
 
 #include <QUrl>
 #include <QUrlQuery>
+#include <QSysInfo>
 #include <QProcess>
 
 #include "updater/updater.h"
@@ -38,16 +39,34 @@ QString updateChannel()
 {
     // Kanalnamen sind branding-spezifisch. Der Upstream-Hardcode 'ocis'/'ocis-beta'
     // passt nicht zum owncloud.online-oc10-Fork; hier werden generische Kanaele
-    // 'stable'/'beta' verwendet (der frueher bei jedem Aufruf ungefragt gesetzte
-    // deprecated Config-Key entfaellt). Vorabversionen -> Beta-Kanal, sonst stable.
-    const QString suffix = OCC::Version::suffix();
-    const bool preRelease = suffix.startsWith(QLatin1String("daily"))
-        || suffix.startsWith(QLatin1String("nightly"))
-        || suffix.startsWith(QLatin1String("alpha"))
-        || suffix.startsWith(QLatin1String("rc"))
-        || suffix.startsWith(QLatin1String("beta"));
+    // 'stable'/'beta' verwendet. Ohne Wahl im Über-Fenster entscheidet das Versionssuffix.
+    return Updater::channel(ConfigFile().updateChannel(), OCC::Version::suffix());
+}
+
+QString Updater::defaultChannel(const QString &versionSuffix)
+{
+    const bool preRelease = versionSuffix.startsWith(QLatin1String("daily"))
+        || versionSuffix.startsWith(QLatin1String("nightly"))
+        || versionSuffix.startsWith(QLatin1String("alpha"))
+        || versionSuffix.startsWith(QLatin1String("rc"))
+        || versionSuffix.startsWith(QLatin1String("beta"));
 
     return preRelease ? QStringLiteral("beta") : QStringLiteral("stable");
+}
+
+QString Updater::channel(const QString &storedChoice, const QString &versionSuffix)
+{
+    if (storedChoice == QLatin1String("stable") || storedChoice == QLatin1String("beta")) {
+        return storedChoice;
+    }
+    return defaultChannel(versionSuffix);
+}
+
+bool Updater::setChannelChoice(const QString &channel)
+{
+    const QString before = updateChannel();
+    ConfigFile().setUpdateChannel(channel);
+    return updateChannel() != before;
 }
 
 Updater *Updater::_instance = nullptr;
@@ -62,10 +81,12 @@ Updater *Updater::instance()
 
 QUrl Updater::updateUrl()
 {
+    // OCC_UPDATE_URL bleibt Testschalter (volle Adresse oder Basis mit '/')
     QUrl updateBaseUrl(QString::fromLocal8Bit(qgetenv("OCC_UPDATE_URL")));
     if (updateBaseUrl.isEmpty()) {
         updateBaseUrl = Theme::instance()->updateCheckUrl();
     }
+    updateBaseUrl = feedUrl(updateBaseUrl, feedPlatform(), updateChannel());
     if (!updateBaseUrl.isValid() || updateBaseUrl.host() == QLatin1String(".")) {
         return QUrl();
     }
@@ -76,13 +97,35 @@ QUrl Updater::updateUrl()
     urlQuery.addQueryItem(QLatin1String("sparkle"), QLatin1String("true"));
 #endif
 
-#if defined(Q_OS_WIN)
-    urlQuery.addQueryItem(QLatin1String("msi"), QLatin1String("true"));
-#endif
-
     updateBaseUrl.setQuery(urlQuery);
 
     return updateBaseUrl;
+}
+
+QString Updater::feedPlatform()
+{
+    const QString arch = QSysInfo::buildCpuArchitecture();
+    if (Utility::isWindows()) {
+        return arch == QLatin1String("x86_64") ? QStringLiteral("win-x64") : QStringLiteral("win-%1").arg(arch);
+    } else if (Utility::isMac()) {
+        return QStringLiteral("macos-%1").arg(arch);
+    }
+    return QStringLiteral("linux-%1").arg(arch);
+}
+
+QString Updater::feedFileName(const QString &platform, const QString &channel)
+{
+    return QStringLiteral("owncloud.online-update-%1-%2.xml").arg(platform, channel);
+}
+
+QUrl Updater::feedUrl(const QUrl &base, const QString &platform, const QString &channel)
+{
+    if (!base.isValid() || base.isEmpty() || !base.path().endsWith(QLatin1Char('/'))) {
+        return base;
+    }
+    QUrl url(base);
+    url.setPath(base.path() + feedFileName(platform, channel));
+    return url;
 }
 
 void Updater::validateUpdate() { }

@@ -161,7 +161,7 @@ private Q_SLOTS:
 
         auto getDbChecksum = [&](const QString &path) {
             SyncJournalFileRecord record;
-            fakeFolder.syncJournal().getFileRecord(path, &record);
+            fakeFolder.syncJournal()->getFileRecord(path, &record);
             return record._checksumHeader;
         };
 
@@ -217,11 +217,11 @@ private Q_SLOTS:
         auto expectedServerState = fakeFolder.currentRemoteState();
 
         // Remove subFolderA with selectiveSync:
-        fakeFolder.syncEngine().journal()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {QStringLiteral("parentFolder/subFolderA/")});
-        fakeFolder.syncEngine().journal()->schedulePathForRemoteDiscovery(QByteArrayLiteral("parentFolder/subFolderA/"));
+        fakeFolder.syncJournal()->setSelectiveSyncList(SyncJournalDb::SelectiveSyncBlackList, {QStringLiteral("parentFolder/subFolderA/")});
+        fakeFolder.syncJournal()->schedulePathForRemoteDiscovery(QByteArrayLiteral("parentFolder/subFolderA/"));
         auto getEtag = [&](const QByteArray &file) {
             SyncJournalFileRecord rec;
-            fakeFolder.syncJournal().getFileRecord(file, &rec);
+            fakeFolder.syncJournal()->getFileRecord(file, &rec);
             return rec._etag;
         };
         QVERIFY(getEtag("parentFolder") == "_invalid_");
@@ -264,7 +264,7 @@ private Q_SLOTS:
         QFETCH_GLOBAL(bool, filesAreDehydrated);
 
         FakeFolder fakeFolder(FileInfo {}, vfsMode, filesAreDehydrated);
-        QSignalSpy finishedSpy(&fakeFolder.syncEngine(), &SyncEngine::finished);
+        QSignalSpy finishedSpy(fakeFolder.syncEngine(), &SyncEngine::finished);
         fakeFolder.serverErrorPaths().append(QStringLiteral("NewFolder"));
         fakeFolder.localModifier().mkdir(QStringLiteral("NewFolder"));
         // This should be aborted and would otherwise fail in FileInfo::create.
@@ -285,7 +285,7 @@ private Q_SLOTS:
         QFETCH_GLOBAL(bool, filesAreDehydrated);
 
         FakeFolder fakeFolder(FileInfo {}, vfsMode, filesAreDehydrated);
-        QSignalSpy finishedSpy(&fakeFolder.syncEngine(), &SyncEngine::finished);
+        QSignalSpy finishedSpy(fakeFolder.syncEngine(), &SyncEngine::finished);
         fakeFolder.serverErrorPaths().append(QStringLiteral("NewFolder/foo"));
         fakeFolder.remoteModifier().mkdir(QStringLiteral("NewFolder"));
         fakeFolder.remoteModifier().insert(QStringLiteral("NewFolder/foo"));
@@ -297,7 +297,7 @@ private Q_SLOTS:
         }
 
         SyncJournalFileRecord rec;
-        fakeFolder.syncJournal().getFileRecord(QByteArrayLiteral("NewFolder"), &rec);
+        fakeFolder.syncJournal()->getFileRecord(QByteArrayLiteral("NewFolder"), &rec);
         QVERIFY(rec.isValid());
         if (filesAreDehydrated) {
             // No error, failure occurs only with a GET, so etag should be valid (i.e. NOT invalid):
@@ -439,7 +439,7 @@ private Q_SLOTS:
         // check that mtime in journal and filesystem agree
         QString a1path = fakeFolder.localPath() + QStringLiteral("A/a1");
         SyncJournalFileRecord a1record;
-        fakeFolder.syncJournal().getFileRecord(QByteArray("A/a1"), &a1record);
+        fakeFolder.syncJournal()->getFileRecord(QByteArray("A/a1"), &a1record);
         QCOMPARE(a1record._modtime, (qint64)FileSystem::getModTime(a1path));
 
         // Extra sync reads from db, no difference
@@ -490,7 +490,7 @@ private Q_SLOTS:
         fakeFolder.remoteModifier().appendByte(QStringLiteral("C/c1"));
         fakeFolder.remoteModifier().setModTime(QStringLiteral("C/c1"), changedMtime2);
 
-        connect(&fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, [&](const SyncFileItemSet &items) {
+        connect(fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, [&](const SyncFileItemSet &items) {
             SyncFileItemPtr a1, b1, c1;
             for (auto &item : items) {
                 if (item->_file == QLatin1String("A/a1"))
@@ -544,9 +544,9 @@ private Q_SLOTS:
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
 
         // Disable parallel uploads
-        SyncOptions syncOptions = fakeFolder.syncEngine().syncOptions();
+        SyncOptions syncOptions = fakeFolder.syncEngine()->syncOptions();
         syncOptions._parallelNetworkJobs = 0;
-        fakeFolder.syncEngine().setSyncOptions(syncOptions);
+        fakeFolder.syncEngine()->setSyncOptions(syncOptions);
 
         // Produce an error based on upload size
         int remoteQuota = 1000;
@@ -582,6 +582,76 @@ private Q_SLOTS:
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(nPUT, 6);
         QCOMPARE(n507, 3);
+    }
+
+    /**
+     * owncloud.online: Ändert sich die lokale Datei, während sie hochgeladen wird, passt der Inhalt nicht mehr zur
+     * mitgeschickten Prüfsumme, und der Server lehnt mit 400 ab. Das ist eine Änderung während des Syncs: ohne Sperrfrist,
+     * der nächste Lauf lädt den neuen Stand hoch. Ohne lokale Änderung bleibt die Ablehnung ein Fehler mit Sperrfrist.
+     */
+    void testUploadRejectedAfterLocalChange()
+    {
+        QFETCH_GLOBAL(Vfs::Mode, vfsMode);
+        QFETCH_GLOBAL(bool, filesAreDehydrated);
+
+        const QByteArray checksumMismatch = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+                                            "<d:error xmlns:d=\"DAV:\" xmlns:s=\"http://sabredav.org/ns\">"
+                                            "<s:exception>Sabre\\DAV\\Exception\\BadRequest</s:exception>"
+                                            "<s:message>The computed checksum does not match the one received from the client.</s:message>"
+                                            "</d:error>";
+        const QString changing = QStringLiteral("A/changing");
+        const QString stable = QStringLiteral("A/stable");
+
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
+        ItemCompletedSpy completeSpy(fakeFolder);
+        bool reject = true;
+        bool grown = false;
+        QObject parent;
+        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            if (op != QNetworkAccessManager::PutOperation || !reject) {
+                return nullptr;
+            }
+            if (request.url().path().endsWith(changing)) {
+                // die Datei wächst, während der PUT unterwegs ist
+                QFile file(fakeFolder.localPath() + changing);
+                grown = file.open(QIODevice::Append) && file.write("x") == 1;
+                return new FakeErrorReply(op, request, &parent, 400, checksumMismatch);
+            }
+            if (request.url().path().endsWith(stable)) {
+                return new FakeErrorReply(op, request, &parent, 400, checksumMismatch);
+            }
+            return nullptr;
+        });
+
+        fakeFolder.localModifier().insert(changing, 100_B);
+        fakeFolder.localModifier().insert(stable, 100_B);
+        QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
+        QVERIFY(grown);
+        {
+            // geänderte Datei: Hinweis statt Fehler, keine Sperrfrist, ein weiterer Lauf ist angefordert
+            const auto item = completeSpy.findItem(changing);
+            QVERIFY(item);
+            QCOMPARE(item->_status, SyncFileItem::Message);
+            QVERIFY(!fakeFolder.syncJournal()->errorBlacklistEntry(changing).isValid());
+            QVERIFY(fakeFolder.syncEngine()->isAnotherSyncNeeded());
+        }
+        {
+            // unveränderte Datei: die Ablehnung bleibt ein Fehler mit Sperrfrist
+            const auto item = completeSpy.findItem(stable);
+            QVERIFY(item);
+            QCOMPARE(item->_status, SyncFileItem::NormalError);
+            QVERIFY(fakeFolder.syncJournal()->errorBlacklistEntry(stable).isValid());
+        }
+
+        // der nächste Lauf lädt den neuen Stand hoch; die gesperrte Datei bleibt bis zum Ablauf der Sperrfrist liegen
+        reject = false;
+        completeSpy.clear();
+        QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
+        QVERIFY(itemDidCompleteSuccessfully(completeSpy, changing));
+        const auto remote = fakeFolder.currentRemoteState().find(changing);
+        QVERIFY(remote);
+        QCOMPARE(remote->contentSize, quint64{101});
+        QCOMPARE(completeSpy.findItem(stable)->_status, SyncFileItem::BlacklistedError);
     }
 
     // Checks whether downloads with bad checksums are accepted
@@ -627,7 +697,7 @@ private Q_SLOTS:
 
         // Good OC-Checksum
         checksumValue = "SHA1:19b1928d58a2030d08023f3d7054516dbc186f20"; // printf 'A%.0s' {1..16} | sha1sum -
-        fakeFolder.syncJournal().wipeErrorBlacklist();
+        fakeFolder.syncJournal()->wipeErrorBlacklist();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
         checksumValue = QByteArray();
@@ -646,7 +716,7 @@ private Q_SLOTS:
 
         // Good Content-MD5
         contentMd5Value = "d8a73157ce10cd94a91c2079fc9a92c8"; // printf 'A%.0s' {1..16} | md5sum -
-        fakeFolder.syncJournal().wipeErrorBlacklist();
+        fakeFolder.syncJournal()->wipeErrorBlacklist();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
@@ -666,7 +736,7 @@ private Q_SLOTS:
             QVERIFY(!syncSucceeded);
         }
         contentMd5Value.clear();
-        fakeFolder.syncJournal().wipeErrorBlacklist();
+        fakeFolder.syncJournal()->wipeErrorBlacklist();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
 
@@ -682,7 +752,7 @@ private Q_SLOTS:
             QVERIFY(!syncSucceeded);
         }
         checksumValue =  "Unsupported:XXXX SHA1:19b1928d58a2030d08023f3d7054516dbc186f20 Invalid:XxX";
-        fakeFolder.syncJournal().wipeErrorBlacklist();
+        fakeFolder.syncJournal()->wipeErrorBlacklist();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync()); // The supported SHA1 checksum is valid now, so the file are downloaded
         QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }
@@ -734,15 +804,15 @@ private Q_SLOTS:
             return QFileInfo::exists(fakeFolder.localPath() + name);
         };
 
-        fakeFolder.syncEngine().setIgnoreHiddenFiles(true);
+        fakeFolder.syncEngine()->setIgnoreHiddenFiles(true);
         fakeFolder.remoteModifier().insert(QStringLiteral("A/.hidden"));
         fakeFolder.localModifier().insert(QStringLiteral("B/.hidden"));
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QVERIFY(!localFileExists(QStringLiteral("A/.hidden")));
         QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("B/.hidden")));
 
-        fakeFolder.syncEngine().setIgnoreHiddenFiles(false);
-        fakeFolder.syncJournal().forceRemoteDiscoveryNextSync();
+        fakeFolder.syncEngine()->setIgnoreHiddenFiles(false);
+        fakeFolder.syncJournal()->forceRemoteDiscoveryNextSync();
         QVERIFY(fakeFolder.applyLocalModificationsAndSync());
         QVERIFY(localFileExists(QStringLiteral("A/.hidden")));
         QVERIFY(fakeFolder.currentRemoteState().find(QStringLiteral("B/.hidden")));
@@ -755,13 +825,15 @@ private Q_SLOTS:
         QFETCH_GLOBAL(bool, filesAreDehydrated);
 
         FakeFolder fakeFolder(FileInfo {}, vfsMode, filesAreDehydrated);
-        SyncOptions options = fakeFolder.syncEngine().syncOptions();
-        fakeFolder.syncEngine().setSyncOptions(options);
+        // I'm pretty sure the next two lines are COMPLETELY USELESS
+        // SyncOptions options = fakeFolder.syncEngine()->syncOptions();
+        // fakeFolder.syncEngine()->setSyncOptions(options);
         auto cap = TestUtils::testCapabilities();
         // unset chunking v1
         cap.remove(QStringLiteral("dav"));
         fakeFolder.account()->setCapabilities({fakeFolder.account()->url(), cap});
 
+        // possible memory problems on linux start here
         auto counter = std::make_unique<OperationCounter>();
         fakeFolder.setServerOverride([counter = counter.get(), fakeFolder = &fakeFolder](
                                          QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *device) -> QNetworkReply * {
@@ -777,10 +849,11 @@ private Q_SLOTS:
         fakeFolder.localModifier().insert(QStringLiteral("file3"), 1_MiB, 'W');
         // wait until the sync engine is ready
         // wait a second and abort
-        connect(&fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, &fakeFolder.syncEngine(),
-            [&]() { QTimer::singleShot(1s, &fakeFolder.syncEngine(), [&]() { fakeFolder.syncEngine().abort({}); }); });
+        connect(fakeFolder.syncEngine(), &SyncEngine::aboutToPropagate, fakeFolder.syncEngine(),
+            [&]() { QTimer::singleShot(1s, fakeFolder.syncEngine(), [&]() { fakeFolder.syncEngine()->abort({}); }); });
         QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
-
+        // for debugging memory problem on linux: I get output to here, including one nameless abort (above) then the abort associated with
+        //  syncengine dtr
         QCOMPARE(counter->nPUT, 3);
     }
 
@@ -791,19 +864,19 @@ private Q_SLOTS:
         QFETCH_GLOBAL(bool, filesAreDehydrated);
 
         FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12(), vfsMode, filesAreDehydrated);
-        auto perm = QFileDevice::Permission(0x7704); // user/owner: rwx, group: r, other: -
+        auto perm = QFileDevice::Permission(0x7740); // user/owner: rwx, group: r, other: -
         QFile::setPermissions(fakeFolder.localPath() + QStringLiteral("A/a1"), perm);
         QFile::setPermissions(fakeFolder.localPath() + QStringLiteral("A/a2"), perm);
-        fakeFolder.applyLocalModificationsAndSync(); // get the metadata-only change out of the way
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync()); // get the metadata-only change out of the way
         fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a1"));
         fakeFolder.remoteModifier().appendByte(QStringLiteral("A/a2"));
         fakeFolder.localModifier().appendByte(QStringLiteral("A/a2"));
         fakeFolder.localModifier().appendByte(QStringLiteral("A/a2"));
-        fakeFolder.applyLocalModificationsAndSync(); // perms should be preserved
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync()); // perms should be preserved
         QCOMPARE(QFileInfo(fakeFolder.localPath() + QStringLiteral("A/a1")).permissions(), perm);
         QCOMPARE(QFileInfo(fakeFolder.localPath() + QStringLiteral("A/a2")).permissions(), perm);
 
-        const QString conflictName = QString::fromUtf8(fakeFolder.syncJournal().conflictRecord(fakeFolder.syncJournal().conflictRecordPaths().first()).path);
+        const QString conflictName = QString::fromUtf8(fakeFolder.syncJournal()->conflictRecord(fakeFolder.syncJournal()->conflictRecordPaths().first()).path);
         QVERIFY(conflictName.contains(QStringLiteral("A/a2")));
         QCOMPARE(QFileInfo(fakeFolder.localPath() + conflictName).permissions(), perm);
     }

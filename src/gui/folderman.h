@@ -23,6 +23,8 @@
 #include <QList>
 #include <QObject>
 
+#include <functional>
+
 namespace OCC {
 
 class FolderMan;
@@ -52,6 +54,7 @@ public:
 private:
     SyncResult _overallStatus;
 };
+
 
 /**
  * @brief The FolderMan class
@@ -147,6 +150,19 @@ public:
      */
     QString checkPathValidity(const QString &path, NewFolderType folderType, const QUuid &accountUuid) const;
 
+    /**
+     * @brief Prüft einen Serverordner für ein neues Ordnerpaar eines Kontos ohne Spaces (ownCloud 10/owncloud.online).
+     *
+     * Jeder Serverordner wird je Konto höchstens einmal gespiegelt: weder derselbe Ordner noch ein Ober- oder Unterordner
+     * (die Kontowurzel eingeschlossen) eines schon synchronisierten Serverordners. Sonst läge jede Datei doppelt auf der
+     * Platte, und Löschungen wirkten über beide Kopien. Ordner von Spaces (mit Space-ID) bleiben außen vor.
+     *
+     * @param accountUuid das Konto
+     * @param remotePath der Serverordner relativ zur WebDAV-Wurzel des Kontos, etwa "/" oder "/Dokumente"
+     * @return eine Fehlermeldung, oder einen leeren String, wenn der Serverordner frei ist
+     */
+    QString checkRemotePathValidity(const QUuid &accountUuid, const QString &remotePath) const;
+
     static std::unique_ptr<FolderMan> createInstance();
 
     ~FolderMan() override;
@@ -169,13 +185,16 @@ public:
     std::optional<qsizetype> setupFoldersFromConfig();
 
     /**
+     *
+     *  Extremely important refactoring todo: addFolder should not be public!
+     *  It is currently "required" for some tests which is not really cool, as it does not represent a complete/standalone impl.
+     *
      *  core step in any add folder routine. it validates the definition, instantiates vfs, instantiates the folder and validates whether
      *  it had setup errors.
      *
-     *  it is up to the caller to connect the folder, save it to settings, etc.
+     *  it is up to the caller to create the local sync folder (corresponding to the local path in the def) using the new FolderManagementUtils::prepareFolder,
+     *  connect the folder, save it to settings, etc.
      *
-     *  Refactoring todo: this should not be public! it is currently "required" for some tests which is not really cool, as it does not represent
-     *  a complete/standalone impl.
      */
     Folder *addFolder(AccountState *accountState, const FolderDefinition &folderDefinition);
 
@@ -249,18 +268,42 @@ public:
     bool ignoreHiddenFiles() const;
     void setIgnoreHiddenFiles(bool ignore);
 
-    /** Simple save and remove all folders on shut down
+    bool moveToTrash() const;
+    /// This slot will tell all sync engines to reload the sync options.
+    void updateMoveToTrash(bool trashIt);
+
+    /** Shut down routine
      *
-     *  emits folderListChanged
+     *  first disable syncs
+     *
+     *  emits folderListChanged to empty set
+     *
+     *  Then save and remove all folders.
+     *
+     *  Includes routine to abort any running sync and waits for the abort to finish, for safety.
      *
      */
-    void unloadAndDeleteAllFolders();
+    void shutdown();
 
     /**
      * If enabled is set to false, no new folders will start to sync.
      * The current one will finish.
      */
     void setSyncEnabled(bool);
+
+    /**
+     * owncloud.online: vom Nutzer über das Tray-Menü angehaltene Synchronisation. Bricht laufende
+     * Synchronisationen ab und hält den Scheduler an, bis die Pause aufgehoben wird; interne Freigaben über
+     * setSyncEnabled(true) (Ordner hinzufügen, Einstellungen ändern) beenden sie nicht.
+     */
+    void setUserSyncPaused(bool paused);
+    bool isUserSyncPaused() const { return _userSyncPaused; }
+
+    /**
+     * Alle Ordner eines Kontos anhalten oder fortsetzen (Tray-Menü je Konto). Wie die Pause eines Ordners im
+     * Hauptfenster wird sie gespeichert und gilt bis zum Fortsetzen; laufende Synchronisationen des Kontos brechen ab.
+     */
+    void setAccountSyncPaused(const QUuid &accountId, bool paused);
 
     SyncScheduler *scheduler() { return _scheduler; }
 
@@ -278,10 +321,33 @@ public:
      */
     // todo: #1
     // todo: #2
-    void addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &config);
+    // owncloud.online: liefert den Grund, wenn das Paar nicht angelegt wird (sonst leer), damit der Aufrufer ihn zeigen kann
+    QString addFolderFromGui(AccountState *accountState, const SyncConnectionDescription &config);
+
+    /**
+     * owncloud.online: übernimmt einen bestehenden Sync-Ordner mit vorbereitetem Journal (Umstieg vom offiziellen Client).
+     * Anders als addFolderFromGui legt es nichts an und löscht kein Journal; speichert den Ordner und plant ihn ein.
+     * nullptr, wenn das Konto für diesen Space schon einen Ordner hat, ohne Spaces der Serverordner schon gespiegelt wird
+     * (siehe checkRemotePathValidity), oder der Ordner nicht entsteht.
+     *
+     * emits folderAdded(newFolder)
+     */
+    Folder *adoptExistingFolder(AccountState *accountState, const FolderDefinition &definition);
 
     // todo: #3
     void removeFolderSettings(Folder *folder);
+
+    /// läuft gerade eine Synchronisation eines Ordners dieses Kontos?
+    bool isAnySyncRunning(const QUuid &accountId) const;
+
+    /**
+     * Baut alle Ordnerpaare eines Kontos neu auf, etwa nach einem Serverumzug: Die Ordner werden entladen (Journale, lokale
+     * Ordner und virtuelle Dateien bleiben), @p adjust passt jede Definition an, dann werden sie gespeichert und neu
+     * geladen. Die alten Ordner sind gelöscht, bevor die neuen entstehen: Journal und Cloud-Files-Verbindung lassen sich
+     * nicht doppelt öffnen. Läuft noch eine Synchronisation des Kontos, ändert es nichts und liefert false; der Aufrufer
+     * muss sie vorher beenden (ein laufender Ordner darf nicht gelöscht werden).
+     */
+    bool rebuildFoldersForAccount(AccountState *accountState, const std::function<void(FolderDefinition &)> &adjust);
 
     /**
      * @brief folder retrieves the folder given the spaceId, or null if no folder exists for the account and space combo
@@ -332,12 +398,14 @@ public Q_SLOTS:
      */
     void slotSyncOnceFileUnlocks(const QString &path, FileSystem::LockMode mode);
 
-    /// This slot will tell all sync engines to reload the sync options.
-    void slotReloadSyncOptions();
-
     // emits folderRemoved
     void removeFolderFromGui(Folder *f);
     void forceFolderSync(Folder *f);
+
+    // this was private which then required Application be a friend of FolderMan...
+    // I am not sure why the Application seems to be the "master" minder of account manager signals
+    // but I think this will soon change
+    void slotServerVersionChanged(Account *account);
 
 private Q_SLOTS:
 
@@ -348,8 +416,6 @@ private Q_SLOTS:
 
     void slotRemoveFoldersForAccount(AccountState *accountState);
 
-    void slotServerVersionChanged(Account *account);
-
     // saves folder using an internally created QSettings instance. This is used for "one off" persistence operations
     // that should be synced immediately - eg when the user adds a new folder sync from the gui or as slot to eg persist a property
     // change
@@ -359,13 +425,6 @@ private Q_SLOTS:
 
 private:
     explicit FolderMan();
-
-    /**
-     * @brief prepareFolder sets up the folder with mac and windows specific operations
-     * @param folder path
-     * @return true if the folder path exists or can be successfully created
-     */
-    [[nodiscard]] static bool prepareFolder(const QString &folder);
 
     /**
      * Adds a folder "from scratch" as oppossd to from config, which requires less setup than when you create the folder
@@ -448,8 +507,8 @@ private:
     void saveFolder(Folder *folder, QSettings &settings);
 
     // used to reduce file operation overhead when removing multiple folders
-    // impl detail: we also disconnect the folder from autosave here!
-    void removeFolderSettings(Folder *folder, QSettings &settings);
+    // note: the settings need to be set to the group = accounts/accountIdAlias (alias provided by Account::groupIndex())
+    void removeFolderSettings(const QByteArray &folderId, QSettings &settings);
 
     /**
      *  Removes a folder sync permanently and deletes the folder
@@ -469,6 +528,8 @@ private:
     // pair this with _socketApi->slotUnregisterPath(folder);
     void registerFolderWithSocketApi(Folder *folder);
 
+    void scheduleFoldersForAccount(const QUuid &accountId);
+
     // Helper for `checkPathValidity`. It first checks if the folder `path` exists, and if not recusively checks its parent. When a folder
     // is found, it checks for sync root markers. See the documentation of `checkPathValidity` for when a path is valid. If the path
     // is valid, a null-string is returned. When a path is invalid, an error string is returned.
@@ -481,6 +542,8 @@ private:
 
     QString _folderConfigPath;
     bool _ignoreHiddenFiles = true;
+    bool _userSyncPaused = false;
+    bool _moveToTrash = false;
 
     /// Folder aliases from the settings that weren't read
     QSet<QString> _additionalBlockedFolderAliases;
@@ -516,11 +579,9 @@ private:
     // set when they are paused/resumed but aside from that we don't really do anything with it.
     QSet<Folder *> _disabledFolders;
 
-    friend class OCC::Application;
-
     // the literal is needed to get the tests to build
     inline static const QString IgnoreHiddenFilesKey = QStringLiteral("ignoreHiddenFiles");
-    void scheduleFoldersForAccount(const QUuid &accountId);
+    inline static const QString MoveToTrashKey = QStringLiteral("moveToTrash");
 };
 
 } // namespace OCC

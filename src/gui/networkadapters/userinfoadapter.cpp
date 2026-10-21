@@ -30,10 +30,15 @@ namespace OCC {
 Q_LOGGING_CATEGORY(lcUserInfoAdapter, "gui.networkadapters.userinfoadapter")
 
 UserInfoAdapter::UserInfoAdapter(QNetworkAccessManager *nam, const QString &authToken, const QUrl &url, QObject *parent)
+    : UserInfoAdapter(nam, QByteArrayLiteral("Bearer ") + authToken.toUtf8(), url, parent)
+{
+}
+
+UserInfoAdapter::UserInfoAdapter(QNetworkAccessManager *nam, const QByteArray &authorizationHeader, const QUrl &url, QObject *parent)
     : QObject(parent)
     , _nam(nam)
     , _url(url)
-    , _authorizationHeader(QStringLiteral("Bearer %1").arg(authToken))
+    , _authorizationHeader(authorizationHeader)
 {
 }
 
@@ -48,7 +53,12 @@ UserInfoResult UserInfoAdapter::getResult()
 
     auto req = AbstractCoreJobFactory::makeRequest(Utility::concatUrlPath(_url, QStringLiteral("ocs/v2.php/cloud/user"), urlQuery));
 
-    req.setRawHeader("Authorization", _authorizationHeader.toUtf8());
+    req.setRawHeader("Authorization", _authorizationHeader);
+    if (_authorizationHeader.startsWith(QByteArrayLiteral("Basic "))) {
+        // wie der 6.0.3-Client (JsonApiJob): Mit Benutzername und Kennwort legt der Server eine Sitzung an, deren Cookie
+        // bei OCS nur zusammen mit diesem Kopf gilt
+        req.setRawHeader(QByteArrayLiteral("OCS-APIREQUEST"), QByteArrayLiteral("true"));
+    }
     req.setAttribute(DontAddCredentialsAttribute, true);
     req.setAttribute(QNetworkRequest::AuthenticationReuseAttribute, QNetworkRequest::Manual);
 
@@ -60,6 +70,9 @@ UserInfoResult UserInfoAdapter::getResult()
     const auto data = reply->readAll();
     const auto statusCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
+    // je nach Antwort ein Netzwerkfehler (AuthenticationRequiredError) oder nur der Status: beides heißt abgelehnt. Die
+    // Meldungen bleiben wie bisher, die Kennwortseite nennt den Grund selbst.
+    result.invalidCredentials = statusCode == 401;
     if (reply->error() != QNetworkReply::NoError) {
         result.error = tr("Network request to collect user info failed");
         qCritical(lcUserInfoAdapter)

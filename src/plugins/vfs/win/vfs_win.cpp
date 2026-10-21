@@ -16,6 +16,7 @@
 #include <QDir>
 #include <QScopeGuard>
 #include <QThread>
+#include <QUuid>
 
 #include <filesystem>
 
@@ -95,6 +96,43 @@ void normalizeNavPaneFolderValueFlags(const std::wstring &registrationId)
     }
 }
 
+// owncloud.online: Register() legt die CLSID des Explorer-Eintrags (NamespaceCLSID) in beiden
+// Registry-Sichten an, in HKCU\Software\Classes\CLSID und für 32-Bit-Programme in
+// HKCU\Software\Classes\WOW6432Node\CLSID. Unregister() entfernt den Eintrag samt Desktop\NameSpace,
+// lässt die Kopie in der 32-Bit-Sicht aber stehen (Windows Server 2022 und 2025 geprüft). Ohne
+// removeWow64NavPaneEntry() bliebe sie nach jedem entfernten Ordner und jedem Wechsel zur
+// klassischen Synchronisation zurück.
+std::wstring navPaneClsid(const std::wstring &registrationId)
+{
+    const std::wstring srmKey =
+        L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\SyncRootManager\\" + registrationId;
+    wchar_t clsid[64] {};
+    DWORD cb = sizeof(clsid);
+    if (RegGetValueW(HKEY_LOCAL_MACHINE, srmKey.c_str(), L"NamespaceCLSID", RRF_RT_REG_SZ, nullptr, clsid, &cb) != ERROR_SUCCESS) {
+        return {};
+    }
+    // der Wert wird Teil eines Schlüssels, der gelöscht wird: nur eine echte CLSID
+    const QUuid uuid = QUuid::fromString(QString::fromWCharArray(clsid));
+    if (uuid.isNull()) {
+        return {};
+    }
+    return uuid.toString(QUuid::WithBraces).toUpper().toStdWString();
+}
+
+void removeWow64NavPaneEntry(const std::wstring &clsid)
+{
+    if (clsid.empty()) {
+        return;
+    }
+    const std::wstring key = L"Software\\Classes\\WOW6432Node\\CLSID\\" + clsid;
+    const LSTATUS status = RegDeleteTreeW(HKEY_CURRENT_USER, key.c_str());
+    if (status == ERROR_SUCCESS) {
+        qCInfo(lcVfs) << "Removed the 32-bit navigation pane entry" << QString::fromStdWString(clsid);
+    } else if (status != ERROR_FILE_NOT_FOUND) {
+        qCWarning(lcVfs) << "Could not remove the 32-bit navigation pane entry" << QString::fromStdWString(clsid) << Utility::formatWinError(status);
+    }
+}
+
 // Tell windows that the hydration needs to be restarted, possibly with a new size
 void restartHydration(const CfOpdata &opdata, const QString &filePath = {}, const qint64 &updatedFilesize = -1)
 {
@@ -138,8 +176,13 @@ void propagatePinState(const QString &newFile, const QString &oldFile)
     if (state == CF_PIN_STATE_EXCLUDED || state == CF_PIN_STATE_UNPINNED)
         state = CF_PIN_STATE_UNSPECIFIED;
 
+    // Die Datei kann gesperrt, schon wieder weg oder ohne Rechte sein. Das frühere OC_ASSERT beendete mit FORCE_ASSERTS (Beta) das
+    // Programm, ohne Assert folgte der Zugriff auf ein ungültiges Ergebnis.
     const auto handle = getFileHandle(newFile, WRITE_DAC);
-    OC_ASSERT(handle);
+    if (!handle) {
+        qCWarning(lcVfs) << Q_FUNC_INFO << ": couldn't open" << newFile << Utility::formatWinError(handle.error());
+        return;
+    }
     const HRESULT ok = CfSetPinState(*handle, state, CF_SET_PIN_FLAG_NONE, nullptr);
     if (FAILED(ok)) {
         qCWarning(lcVfs) << Q_FUNC_INFO << ": couldn't write pin state to file" << Utility::formatWinError(ok);
@@ -246,7 +289,12 @@ void VfsWinPrivate::startFetchData(CfOpdata opdata, const QString &targetPath, q
     auto journal = params.journal;
     SyncJournalFileRecord record;
     journal->getFileRecordsByFileId(fileId, [&](const SyncJournalFileRecord &r) {
-        Q_ASSERT(!record.isValid());
+        // Mehrere Einträge mit derselben ID kommen vor (etwa ein veralteter nach einem Verschieben, ein übernommenes Journal); es
+        // gilt wie bisher ohne Assert der letzte. Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm, sobald die
+        // Datei geöffnet wurde.
+        if (record.isValid()) {
+            qCWarning(lcVfs) << "Several records for the file id" << fileId << ":" << record._path << r._path;
+        }
         record = r;
         // TODO: How about multiple results?
     });
@@ -329,7 +377,8 @@ void HydrationContext::downloadJobDone()
             transferDataError(STATUS_CLOUD_FILE_NOT_IN_SYNC);
             // TODO: schedule a sync
         } else if (job->contentLength() != -1 && job->contentLength() != job->expectedContentLength()) {
-            Q_ASSERT(job->resumeStart() == 0);
+            // Auch eine fortgesetzte Hydrierung (Windows verlangt ab einem Versatz) trifft auf eine inzwischen geänderte Datei; das
+            // frühere Q_ASSERT(resumeStart() == 0) beendete dann mit FORCE_ASSERTS (Beta) das Programm.
             const auto newFileSize = job->resumeStart() + job->contentLength();
             if (newFileSize == 0 && record._fileSize != 0) {
                 // the file might now be a folder
@@ -355,7 +404,7 @@ void HydrationContext::downloadJobDone()
 
     // Update etag and mtime, similar to PropagateDownload
     if (!job->etag().isEmpty()) {
-        Q_ASSERT(job->etag() == Utility::normalizeEtag(job->etag()));
+        // schon normalisiert; normalizeEtag() ist nicht idempotent (siehe PropagateDownloadFile), daher kein Q_ASSERT darauf
         record._etag = job->etag().toUtf8();
     }
     if (job->lastModified()) {
@@ -501,7 +550,7 @@ void HydrationContext::validateTransmissionChecksum(quint64 fileSize)
         if (journal)
             journal->setFileRecord(record);
 
-        pluginInstance()->fileStatusChanged(filesystemPath, SyncFileStatus::StatusUpToDate);
+        pluginInstance()->onFileStatusChanged(filesystemPath, SyncFileStatus::StatusUpToDate);
         delete this;
     });
     QObject::connect(validator, &ValidateChecksumHeader::validationFailed, this, [this, opInfo, opParams](const QString &msg) mutable {
@@ -874,12 +923,17 @@ void VfsWin::unregisterFolder()
 
     // Final step: unregister the path. We're now completely done with it.
     using SyncRootManager = winrt::Windows::Storage::Provider::StorageProviderSyncRootManager;
+    // vor Unregister() lesen: der Schlüssel mit der CLSID geht dabei weg
+    const std::wstring navPane = navPaneClsid(d->_registrationId);
     try {
         QMutexLocker registrationLock(&d->registrationMutex);
         SyncRootManager::Unregister(d->_registrationId);
     } catch (winrt::hresult_error const &ex) {
         qCWarning(lcVfs) << "Could not Unregister() sync root:" << hstringToQString(ex.message());
+        // noch angemeldet: der Eintrag gehört weiter zum Sync-Root
+        return;
     }
+    removeWow64NavPaneEntry(navPane);
 }
 
 OCC::Result<OCC::Vfs::ConvertToPlaceholderResult, QString> VfsWin::updateMetadata(const SyncFileItem &item, const QString &filePath, const QString &replacesFile)
@@ -1195,14 +1249,43 @@ static Result<CF_PLACEHOLDER_BASIC_INFO, HRESULT> getBasicPlaceholderInfo(const 
     return getInfo<CF_PLACEHOLDER_BASIC_INFO>(*handle);
 }
 
-void VfsWin::fileStatusChanged(const QString &systemFileName, SyncFileStatus status)
+static void markNonPlaceholderAsExcluded(const QString &systemFileName)
+{
+    // Wie convertToPlaceholder() nur mit exklusivem Zugriff umwandeln: Eine Datei, die gerade ein anderes Programm
+    // offen hat (Sperr- und Temp-Dateien von Office, die SQLite-Dateien des Sync-Journals), bleibt unangetastet.
+    // Beim nächsten Statuswechsel wird es erneut versucht.
+    const QString longPath = FileSystem::longWinPath(systemFileName);
+    Utility::Handle oplockHandle { INVALID_HANDLE_VALUE, &CfCloseHandle };
+    HRESULT res = CfOpenFileWithOplock(reinterpret_cast<const wchar_t *>(longPath.utf16()), CF_OPEN_FILE_FLAG_EXCLUSIVE, &oplockHandle.handle());
+    if (FAILED(res)) {
+        qCDebug(lcVfs) << "Not marking" << systemFileName << "as excluded, it is in use:" << Utility::formatWinError(res);
+        return;
+    }
+
+    res = CfConvertToPlaceholder(oplockHandle, nullptr, 0, CF_CONVERT_FLAG_MARK_IN_SYNC, nullptr, nullptr);
+    if (FAILED(res)) {
+        qCWarning(lcVfs) << "Error converting excluded file" << systemFileName << "to placeholder:" << Utility::formatWinError(res);
+        return;
+    }
+
+    res = CfSetPinState(oplockHandle, CF_PIN_STATE_EXCLUDED, CF_SET_PIN_FLAG_RECURSE, nullptr);
+    if (FAILED(res)) {
+        qCWarning(lcVfs) << "Error setting sync exclusion state for" << systemFileName << ":" << Utility::formatWinError(res);
+    }
+}
+
+void VfsWin::onFileStatusChanged(const QString &systemFileName, SyncFileStatus status)
 {
     auto placeholderInfo = getBasicPlaceholderInfo(systemFileName);
     if (!placeholderInfo) {
         // This slot will often be called for nonexistant files, that's not an error.
         if (placeholderInfo.error() == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || placeholderInfo.error() == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)) {
             return;
-        } else if (placeholderInfo.error() != HRESULT_FROM_WIN32(ERROR_NOT_A_CLOUD_FILE)) {
+        } else if (placeholderInfo.error() == HRESULT_FROM_WIN32(ERROR_NOT_A_CLOUD_FILE)) {
+            if (status.tag() == SyncFileStatus::StatusExcluded) {
+                markNonPlaceholderAsExcluded(systemFileName);
+            }
+        } else {
             qCWarning(lcVfs) << Q_FUNC_INFO << ": could not retrieve placeholder info for" << systemFileName
                              << Utility::formatWinError(placeholderInfo.error());
         }

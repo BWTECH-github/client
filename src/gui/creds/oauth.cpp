@@ -15,6 +15,7 @@
 #include "oauth.h"
 
 #include "accessmanager.h"
+#include "common/asserts.h"
 #include "creds/credentialssupport.h"
 #include "gui/networkadapters/userinfoadapter.h"
 #include "libsync/creds/credentialmanager.h"
@@ -22,6 +23,7 @@
 #include "oauthhtmlpage.h"
 #include "theme.h"
 
+#include <QCoreApplication>
 #include <QDesktopServices>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -43,6 +45,8 @@ namespace {
 const QString wellKnownPathC = QStringLiteral("/.well-known/openid-configuration");
 const QString ownCloudOAuthAuthorizePathC = QStringLiteral("/index.php/apps/oauth2/authorize");
 const QString ownCloudOAuthTokenPathC = QStringLiteral("/index.php/apps/oauth2/api/v1/token");
+// owncloud.online: Theme::oauthLocalhost() ist upstream entfallen (DC-308); die oC10-OAuth2-App erwartet localhost
+const QString ownCloudOAuthRedirectUrlC = QStringLiteral("http://localhost");
 
 OAuth::PromptValuesSupportedFlags defaultOauthPromptValue(const OpenIdConfig& config)
 {
@@ -50,8 +54,16 @@ OAuth::PromptValuesSupportedFlags defaultOauthPromptValue(const OpenIdConfig& co
         auto prompt = config.prompt();
         OAuth::PromptValuesSupportedFlags out = OAuth::PromptValuesSupported::none;
         // convert the legacy openIdConnectPrompt() to QFlags
-        for (const auto &x : prompt.split(QLatin1Char(' '))) {
-            out |= Utility::stringToEnum<OAuth::PromptValuesSupported>(x);
+        // Der Wert kann aus der Systemkonfiguration des Administrators kommen: Unbekanntes und doppelte Leerzeichen überspringen,
+        // statt (wie mit dem Q_ASSERT in stringToEnum unter FORCE_ASSERTS) bei der ersten Anmeldung abzustürzen
+        for (const auto &x : prompt.split(QLatin1Char(' '), Qt::SkipEmptyParts)) {
+            bool ok = false;
+            const auto value = Utility::stringToEnum<OAuth::PromptValuesSupported>(x, &ok);
+            if (ok) {
+                out |= value;
+            } else {
+                qCWarning(lcOauth) << "Ignoring the unknown prompt value" << x << "from the configuration";
+            }
         }
         return out;
     }();
@@ -67,6 +79,34 @@ seconds defaultTimeout()
 int defaultTimeoutMs()
 {
     return static_cast<int>(duration_cast<milliseconds>(defaultTimeout()).count());
+}
+
+// Anfragen an den Token-Endpunkt nicht nach 30 s abbrechen: Der Server tauscht die Tokens womöglich trotzdem aus (eine
+// Bremse gegen Anmeldeversuche wartet bis zu 30 s, eine gesperrte Datenbank länger), die Antwort ginge verloren und
+// mit ihr das neue Refresh-Token. Länger als 120 s aber auch nicht: Die oauth2-App ab 0.10.0 nimmt das vorige
+// Refresh-Token noch 180 s an, die Wiederholung nach einer Zeitüberschreitung (30 s Pause) muss da hineinpassen.
+int tokenRequestTimeoutMs()
+{
+    return static_cast<int>(duration_cast<milliseconds>(120s).count());
+}
+
+// Anfragen an .well-known und den Token-Endpunkt ohne Cookies des Kontos: Mit noch angemeldeter Sitzung wertet der
+// Kern Client-Kennung und -Geheimnis als Anmeldeversuch eines Benutzers („Login failed“) und bremst weitere aus
+void withoutCookies(QNetworkRequest &request)
+{
+    request.setAttribute(QNetworkRequest::CookieLoadControlAttribute, QNetworkRequest::Manual);
+    request.setAttribute(QNetworkRequest::CookieSaveControlAttribute, QNetworkRequest::Manual);
+}
+
+// expires_in kommt je nach Server als Zahl oder als Zeichenkette
+qint64 secondsValue(const QJsonValue &value)
+{
+    if (value.isDouble()) {
+        return value.toInteger();
+    }
+    bool ok = false;
+    const qint64 result = value.toString().toLongLong(&ok);
+    return ok ? result : 0;
 }
 
 QVariant getRequiredField(const QVariantMap &json, const QString &s, QString *error)
@@ -98,21 +138,14 @@ void OAuth::startAuthentication()
     qCDebug(lcOauth) << "starting authentication";
 
     // Listen on the socket to get a port which will be used in the redirect_uri
-    QList<quint16> ports = _openIdConfig.ports();
-    for (const auto port : std::as_const(ports)) {
-        if (_server.listen(QHostAddress::LocalHost, port)) {
-            break;
-        }
-        qCDebug(lcOauth) << "Creating local server Port:" << port << "failed. Error:" << _server.errorString();
-    }
-    if (!_server.isListening()) {
+    if (!listen()) {
         qCDebug(lcOauth) << "server is not listening";
         Q_EMIT result(Error, {});
         return;
     }
 
     _pkceCodeVerifier = generateRandomString(24);
-    OC_ASSERT(_pkceCodeVerifier.size() == 128)
+    OC_ASSERT(_pkceCodeVerifier.size() == 128);
     _state = generateRandomString(8);
 
     connect(this, &OAuth::fetchWellKnownFinished, this, &OAuth::authorisationLinkChanged);
@@ -120,6 +153,52 @@ void OAuth::startAuthentication()
     fetchWellKnown();
 
     QObject::connect(&_server, &QTcpServer::newConnection, this, &OAuth::handleTcpConnection);
+    QObject::connect(&_serverV6, &QTcpServer::newConnection, this, &OAuth::handleTcpConnection);
+}
+
+bool OAuth::listen()
+{
+    // Browser lösen localhost je nach System zuerst als ::1 oder als 127.0.0.1 auf und fallen nicht immer auf die
+    // andere Adresse zurück: deshalb auf beiden mit demselben Port lauschen
+    const QList<quint16> ports = _openIdConfig.ports();
+    for (const quint16 port : ports) {
+        // Port 0 wählt das System; ist der gewählte Port unter ::1 schon vergeben, mit einem anderen erneut versuchen
+        const int attempts = port == 0 ? 10 : 1;
+        for (int attempt = 1; attempt <= attempts; ++attempt) {
+            if (!_server.listen(QHostAddress::LocalHost, port)) {
+                qCDebug(lcOauth) << "Creating local server on 127.0.0.1, port" << port << "failed. Error:" << _server.errorString();
+                break;
+            }
+            if (_serverV6.listen(QHostAddress::LocalHostIPv6, _server.serverPort())) {
+                qCInfo(lcOauth) << "Waiting for the browser on 127.0.0.1 and [::1], port" << _server.serverPort();
+                return true;
+            }
+            // Nur ohne IPv6-Loopback (Protokoll fehlt oder ::1 ist nicht vergeben) reicht IPv4 wie bisher: Dann löst auch
+            // kein Browser localhost als ::1 auf. Jeder andere Fehler (Port belegt, unter Windows exklusiv gebunden oder
+            // reserviert, Ressourcen knapp) betrifft nur diesen Port; ein Browser, der localhost als ::1 auflöst, landete
+            // sonst bei einem anderen Programm oder im Leeren: anderen Port nehmen.
+            const auto v6Error = _serverV6.serverError();
+            if (v6Error == QAbstractSocket::UnsupportedSocketOperationError || v6Error == QAbstractSocket::SocketAddressNotAvailableError) {
+                qCInfo(lcOauth) << "Waiting for the browser on 127.0.0.1, port" << _server.serverPort() << "- no IPv6 loopback:" << _serverV6.errorString();
+                return true;
+            }
+            qCInfo(lcOauth) << "Cannot listen on [::1], port" << _server.serverPort() << "-" << _serverV6.errorString();
+            _server.close();
+        }
+    }
+    // Kein Port ließ sich auf beiden Adressen öffnen: als letzter Ausweg nur IPv4, wie vor dem Lauschen auf ::1
+    for (const quint16 port : ports) {
+        if (_server.listen(QHostAddress::LocalHost, port)) {
+            qCWarning(lcOauth) << "Waiting for the browser on 127.0.0.1 only, port" << _server.serverPort() << "- [::1] failed for every port";
+            return true;
+        }
+    }
+    return false;
+}
+
+bool OAuth::isListening() const
+{
+    return _server.isListening();
 }
 
 void OAuth::httpReplyAndClose(QPointer<QTcpSocket> socket, bool success, const QString &code, const QString &title, const QString &body, const QStringList &additionalHeader)
@@ -163,21 +242,23 @@ void OAuth::finalize(const QString &accessToken, const QString &refreshToken, co
     } else {
         httpReplyAndClose(_socket, true, QStringLiteral("200 OK"), loginSuccessfulTitle, loginSuccessfulHtml);
     }
-    Q_EMIT result(LoggedIn, accessToken, refreshToken);
+    Q_EMIT result(LoggedIn, accessToken, refreshToken, _expiresIn);
 }
 
 // the tcp server handling has to be done async while we wait for a suitable socket with which to communiciate with the
 // authentication web page. The async handling for tcp includes this function + the handleSocketReadyRead
 void OAuth::handleTcpConnection()
 {
-    while (_server.hasPendingConnections()) {
-        auto socket = _server.nextPendingConnection();
+    for (QTcpServer *server : {&_server, &_serverV6}) {
+        while (server->hasPendingConnections()) {
+            auto socket = server->nextPendingConnection();
 
-        qCDebug(lcOauth) << "accepted client connection from" << socket->peerAddress();
+            qCDebug(lcOauth) << "accepted client connection from" << socket->peerAddress();
 
-        QObject::connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
+            QObject::connect(socket, &QTcpSocket::disconnected, socket, &QTcpSocket::deleteLater);
 
-        QObject::connect(socket, &QIODevice::readyRead, this, &OAuth::handleSocketReadyRead);
+            QObject::connect(socket, &QIODevice::readyRead, this, &OAuth::handleSocketReadyRead);
+        }
     }
 }
 
@@ -195,7 +276,12 @@ void OAuth::handleSocketReadyRead()
     }
     QPointer<QTcpSocket> candidateSocket(connected);
 
-    Q_ASSERT(connected->state() == QAbstractSocket::ConnectedState);
+    // Daten können noch ankommen, wenn die Gegenseite schon getrennt hat (Browser geschlossen, ein anderes Programm prüft den
+    // Port): Darauf lässt sich nicht mehr antworten. Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (connected->state() != QAbstractSocket::ConnectedState) {
+        qCDebug(lcOauth) << "Ignoring data from a connection that is no longer connected:" << connected->state();
+        return;
+    }
 
     const QByteArray peek = candidateSocket->peek(qMin(connected->bytesAvailable(), 4000LL)); // The code should always be within the first 4K
 
@@ -228,6 +314,8 @@ void OAuth::handleSocketReadyRead()
     // therefore we have to store it beforehand
     _serverPort = _server.serverPort();
     _server.close();
+    _serverV6.close();
+    qCInfo(lcOauth) << "Browser callback received, stopped listening on port" << _serverPort;
 
     getTokens();
 }
@@ -250,10 +338,13 @@ void OAuth::getTokens()
     connect(postTokenReply, &QNetworkReply::finished, this, [postTokenReply, this] {
         const auto jsonData = postTokenReply->readAll();
         QJsonParseError jsonParseError;
-        const auto data = QJsonDocument::fromJson(jsonData, &jsonParseError).object().toVariantMap();
+        const QJsonObject json = QJsonDocument::fromJson(jsonData, &jsonParseError).object();
+        const auto data = json.toVariantMap();
         QString fieldsError;
         _accessToken = getRequiredField(data, QStringLiteral("access_token"), &fieldsError).toString();
         _refreshToken = getRequiredField(data, QStringLiteral("refresh_token"), &fieldsError).toString();
+        // optional (RFC 6749, Abschnitt 5.1); ohne Angabe erneuern die Credentials erst nach einer Ablehnung
+        _expiresIn = secondsValue(json.value(QStringLiteral("expires_in")));
         const QString tokenType = getRequiredField(data, QStringLiteral("token_type"), &fieldsError).toString().toLower();
         _messageUrl = QUrl::fromEncoded(data[QStringLiteral("message_url")].toByteArray());
 
@@ -324,7 +415,10 @@ QNetworkReply *OAuth::postTokenRequest(QUrlQuery &&queryItems)
 {
     const QUrl requestTokenUrl = _tokenEndpoint;
     QNetworkRequest req;
-    req.setTransferTimeout(defaultTimeoutMs());
+    req.setTransferTimeout(tokenRequestTimeoutMs());
+    withoutCookies(req);
+    // eine Weiterleitung (etwa auf die Anmeldeseite, wenn die oauth2-App fehlt) ist keine Antwort des Token-Endpunkts
+    req.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::ManualRedirectPolicy);
     switch (_endpointAuthMethod) {
     case TokenEndpointAuthMethods::client_secret_basic:
         req.setRawHeader("Authorization", "Basic " + QStringLiteral("%1:%2").arg(_openIdConfig.clientId(), _openIdConfig.clientSecret()).toUtf8().toBase64());
@@ -375,7 +469,15 @@ QUrl OAuth::authorisationLink() const
         // todo: #20 oc10 as fallback!
         query.addQueryItem(QStringLiteral("user"), davUser);
     }
-    return Utility::concatUrlPath(_authEndpoint, {}, query);
+    // owncloud.online: den Endpunkt so lassen, wie ihn die OpenID-Konfiguration nennt, auch mit „//“ im Pfad oder eigenen
+    // Parametern des Anbieters (etwa „p=…“ bei Azure AD B2C); Utility::concatUrlPath() bräche bei beidem mit Q_ASSERT ab
+    QUrl link = _authEndpoint;
+    if (_authEndpoint.hasQuery()) {
+        link.setQuery(_authEndpoint.query(QUrl::FullyEncoded) + QLatin1Char('&') + query.query(QUrl::FullyEncoded));
+    } else {
+        link.setQuery(query);
+    }
+    return link;
 }
 
 void OAuth::fetchWellKnown()
@@ -385,14 +487,16 @@ void OAuth::fetchWellKnown()
     auto useOwnCloudOAuthFallback = [this]() {
         _authEndpoint = Utility::concatUrlPath(_serverUrl, ownCloudOAuthAuthorizePathC);
         _tokenEndpoint = Utility::concatUrlPath(_serverUrl, ownCloudOAuthTokenPathC);
-        _redirectUrl = Theme::instance()->oauthLocalhost();
+        _redirectUrl = ownCloudOAuthRedirectUrlC;
         _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
+        _usesOpenIdConnect = false;
     };
 
     QNetworkRequest req;
     req.setAttribute(DontAddCredentialsAttribute, true);
     req.setUrl(Utility::concatUrlPath(_serverUrl, wellKnownPathC));
     req.setTransferTimeout(defaultTimeoutMs());
+    withoutCookies(req);
 
     auto reply = _networkAccessManager->get(req);
 
@@ -412,7 +516,9 @@ void OAuth::fetchWellKnown()
         if (err.error == QJsonParseError::NoError) {
             _authEndpoint = QUrl::fromEncoded(data[QStringLiteral("authorization_endpoint")].toString().toUtf8());
             _tokenEndpoint = QUrl::fromEncoded(data[QStringLiteral("token_endpoint")].toString().toUtf8());
-            _redirectUrl = Theme::instance()->oauthLocalhost();
+            _redirectUrl = ownCloudOAuthRedirectUrlC;
+            // ohne brauchbare Endpunkte setzt der Rückfall unten das zurück
+            _usesOpenIdConnect = true;
 
             const auto authMethods = data.value(QStringLiteral("token_endpoint_auth_methods_supported")).toArray();
             if (authMethods.contains(QStringLiteral("client_secret_basic"))) {
@@ -420,15 +526,25 @@ void OAuth::fetchWellKnown()
             } else if (authMethods.contains(QStringLiteral("client_secret_post"))) {
                 _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_post;
             } else {
-                OC_ASSERT_X(false, qPrintable(QStringLiteral("Unsupported token_endpoint_auth_methods_supported: %1").arg(QDebug::toString(authMethods))));
+                // Die Angabe ist optional, ohne sie gilt client_secret_basic (OpenID Connect Discovery 1.0, Abschnitt 3). Auch bei
+                // unbekannten Verfahren damit versuchen, statt abzubrechen: das OC_ASSERT_X hier beendete mit FORCE_ASSERTS (Beta)
+                // das Programm schon wegen dieser Serverantwort
+                if (!authMethods.isEmpty()) {
+                    qCWarning(lcOauth) << "Unsupported token_endpoint_auth_methods_supported" << authMethods << "- trying client_secret_basic";
+                }
+                _endpointAuthMethod = TokenEndpointAuthMethods::client_secret_basic;
             }
             const auto promptValuesSupported = data.value(QStringLiteral("prompt_values_supported")).toArray();
             if (!promptValuesSupported.isEmpty()) {
                 _supportedPromptValues = PromptValuesSupported::none;
                 for (const auto &x : promptValuesSupported) {
-                    const auto flag = Utility::stringToEnum<PromptValuesSupported>(x.toString());
+                    // Werte, die der Client nicht kennt (eigene des Anbieters, neuere Spezifikationen), überspringen: Das frühere
+                    // Q_ASSERT in stringToEnum beendete mit FORCE_ASSERTS (Beta) das Programm schon wegen dieser Serverantwort, ohne
+                    // Assert setzte der ungültige Wert (-1) alle Bits
+                    bool ok = false;
+                    const auto flag = Utility::stringToEnum<PromptValuesSupported>(x.toString(), &ok);
                     // only use flags present in _openIdConfig->openIdConnectPrompt()
-                    if (flag & defaultOauthPromptValue(_openIdConfig))
+                    if (ok && (flag & defaultOauthPromptValue(_openIdConfig)))
                         _supportedPromptValues |= flag;
                 }
             }
@@ -472,6 +588,14 @@ bool isUrlSchemeValid(const QUrl &url)
 
 void OAuth::openBrowser()
 {
+    // Einen gültigen Link gibt es erst nach der Abfrage der Endpunkte und nur, solange der Listener wartet. Ein Klick auf
+    // „Anmelden“, während die Anmeldung nach einem Fehler neu beginnt oder der Browser schon zurückgekehrt ist, öffnet
+    // deshalb nichts: authorisationLink() setzt beides voraus, mit FORCE_ASSERTS (Beta) brach das Programm sonst ab
+    if (!_wellKnownFinished || !_server.isListening()) {
+        qCInfo(lcOauth) << "Not opening the browser: the sign-in link is not ready yet or the browser has already returned";
+        return;
+    }
+
     auto authorisationURL = authorisationLink();
     if (authorisationURL.isEmpty()) {
         qCWarning(lcOauth) << "Authorization URL is unknown - well-known/openid-configuration endpoint did not return usable information";
@@ -520,12 +644,21 @@ void AccountBasedOAuth::fetchWellKnown()
 
     connect(checkServerJob, &CoreJob::finished, this, [checkServerJob, this]() {
         if (checkServerJob->success()) {
+            // Während der Wartung antwortet der Token-Endpunkt nur mit 503: abwarten, das Refresh-Token gilt weiter
+            if (_isRefreshingToken
+                && checkServerJob->result().value<CheckServerJobResult>().statusObject().value(QStringLiteral("maintenance")).toVariant().toBool()) {
+                qCInfo(lcOauth) << "The server is in maintenance mode, not refreshing the token now";
+                Q_EMIT refreshFailed(QString(), true, QString());
+                return;
+            }
             qCDebug(lcOauth) << "CheckServerJob succeeded, fetching" << wellKnownPathC;
             OAuth::fetchWellKnown();
         } else {
             qCDebug(lcOauth) << "CheckServerJob failed, error:" << checkServerJob->errorMessage();
             if (_isRefreshingToken) {
-                Q_EMIT refreshError(checkServerJob->reply()->error(), checkServerJob->errorMessage());
+                const QNetworkReply *reply = checkServerJob->reply();
+                Q_EMIT refreshFailed(reply && reply->error() != QNetworkReply::NoError ? networkReplyErrorString(*reply) : checkServerJob->errorMessage(), false,
+                    QString());
             } else {
                 Q_EMIT result(Error);
             }
@@ -540,51 +673,71 @@ void AccountBasedOAuth::refreshAuthentication(const QString &refreshToken)
         return;
     }
 
-    // I don't see where this ever gets set to false - seems to rely on a one shot run before creating a new instance where the value
-    // is initialized to false. hm.
+    // Jede Erneuerung bekommt ein eigenes Objekt (Credentials::startRefresh()): das bleibt gesetzt
     _isRefreshingToken = true;
 
-
-    // make this a real function -
     auto refresh = [this, refreshToken] {
         auto reply = postTokenRequest({{QStringLiteral("grant_type"), QStringLiteral("refresh_token")}, {QStringLiteral("refresh_token"), refreshToken}});
-        connect(reply, &QNetworkReply::finished, this, [reply, refreshToken, this]() {
-            const auto jsonData = reply->readAll();
+        connect(reply, &QNetworkReply::finished, this, [reply, this]() {
+            reply->deleteLater();
+            const int httpStatus = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
             QJsonParseError jsonParseError;
-            const auto data = QJsonDocument::fromJson(jsonData, &jsonParseError).object().toVariantMap();
-            QString accessToken;
-            QString newRefreshToken = refreshToken;
+            const QJsonObject data = QJsonDocument::fromJson(reply->readAll(), &jsonParseError).object();
             // https://developer.okta.com/docs/reference/api/oidc/#response-properties-2
-            const QString errorString = data.value(QStringLiteral("error")).toString();
-            if (!errorString.isEmpty()) {
-                if (errorString == QLatin1String("invalid_grant") || errorString == QLatin1String("invalid_request")) {
-                    newRefreshToken.clear();
-                } else {
-                    qCWarning(lcOauth) << "Error while refreshing the token:" << errorString << data.value(QStringLiteral("error_description")).toString();
-                }
-            } else if (reply->error() != QNetworkReply::NoError) {
-                qCWarning(lcOauth) << "Error while refreshing the token:" << reply->error() << ":" << reply->errorString()
-                                   << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-                Q_EMIT refreshError(reply->error(), reply->errorString());
+            const QString error = data.value(QStringLiteral("error")).toString();
+            const QString description = data.value(QStringLiteral("error_description")).toString();
+            if (error == QLatin1String("invalid_grant")) {
+                // nur das heißt: dieses Refresh-Token gilt nicht mehr (abgelaufen, widerrufen oder schon verbraucht)
+                qCWarning(lcOauth) << "The server rejected the refresh token:" << error << description;
+                Q_EMIT refreshRejected(description.isEmpty() ? error : QStringLiteral("%1: %2").arg(error, description));
                 return;
-            } else {
-                if (jsonParseError.error != QJsonParseError::NoError || data.isEmpty()) {
-                    // Invalid or empty JSON: Network error maybe?
-                    qCWarning(lcOauth) << "Error while refreshing the token:" << jsonParseError.errorString();
-                } else {
-                    QString error;
-                    accessToken = getRequiredField(data, QStringLiteral("access_token"), &error).toString();
-                    if (!error.isEmpty()) {
-                        qCWarning(lcOauth) << "The reply from the server did not contain all expected fields:" << error;
-                    }
-
-                    const auto refresh_token = data.find(QStringLiteral("refresh_token"));
-                    if (refresh_token != data.constEnd()) {
-                        newRefreshToken = refresh_token.value().toString();
-                    }
-                }
             }
-            Q_EMIT refreshFinished(accessToken, newRefreshToken);
+
+            const QString accessToken = data.value(QStringLiteral("access_token")).toString();
+            const QString newRefreshToken = data.value(QStringLiteral("refresh_token")).toString();
+            const QString tokenType = data.value(QStringLiteral("token_type")).toString();
+            if (reply->error() == QNetworkReply::NoError && httpStatus >= 200 && httpStatus < 300 && error.isEmpty() && !accessToken.isEmpty()
+                && (tokenType.isEmpty() || tokenType.compare(QLatin1String("bearer"), Qt::CaseInsensitive) == 0)) {
+                // RFC 6749, Abschnitt 6: ohne neues Refresh-Token gilt das bisherige weiter
+                Q_EMIT refreshFinished(accessToken, newRefreshToken, secondsValue(data.value(QStringLiteral("expires_in"))));
+                return;
+            }
+
+            // Alles andere ist kein Urteil über das Refresh-Token: Netz, Zeitüberschreitung, 5xx, eine Weiterleitung oder
+            // HTML statt JSON (oauth2-App aus), ein deaktiviertes Konto (unauthorized_client) oder ein Fehler in der
+            // Einrichtung (invalid_client, invalid_request). Die Meldung nennt die Ursache für den Kontostatus, die
+            // technische Angabe steht in Klammern. Der Kontext steht ausdrücklich da: tr() in diesen verschachtelten
+            // Lambdas ordnet das lupdate aus Qt 6.8 ohne Namensraum zu, zur Laufzeit gilt aber OCC::AccountBasedOAuth.
+            const QString oauthError = description.isEmpty() ? error : QStringLiteral("%1: %2").arg(error, description);
+            const QString httpDetail = jsonParseError.error != QJsonParseError::NoError
+                ? QStringLiteral("HTTP %1: %2").arg(QString::number(httpStatus), jsonParseError.errorString())
+                : QStringLiteral("HTTP %1").arg(QString::number(httpStatus));
+            QString reason;
+            if (error == QLatin1String("unauthorized_client") && !_usesOpenIdConnect) {
+                // die oauth2-App: Konto deaktiviert oder gelöscht („user not enabled“)
+                reason = QCoreApplication::translate("OCC::AccountBasedOAuth", "Your account on the server is disabled (%1). Please contact your system administrator.")
+                             .arg(oauthError);
+            } else if (error == QLatin1String("invalid_client") || error == QLatin1String("unauthorized_client")) {
+                // bei einem OpenID-Connect-Anbieter heißt unauthorized_client: Diese Anwendung bekommt so kein Token (RFC 6749,
+                // Abschnitt 5.2), über das Konto sagt das nichts
+                reason = QCoreApplication::translate(
+                    "OCC::AccountBasedOAuth", "The sign-in service of the server does not accept this application (%1). Please contact your system administrator.")
+                             .arg(oauthError);
+            } else if (error == QLatin1String("server_error") || error == QLatin1String("temporarily_unavailable") || (error.isEmpty() && httpStatus >= 500)) {
+                // vorübergehende Störung: 5xx oder die Fehlercodes dafür aus RFC 6749
+                reason = QCoreApplication::translate("OCC::AccountBasedOAuth", "The sign-in service of the server is temporarily unavailable (%1).")
+                             .arg(error.isEmpty() ? QStringLiteral("HTTP %1").arg(QString::number(httpStatus)) : oauthError);
+            } else if (!error.isEmpty()) {
+                reason = QCoreApplication::translate("OCC::AccountBasedOAuth", "The sign-in service of the server rejected the request (%1).").arg(oauthError);
+            } else if (httpStatus != 0) {
+                // Weiterleitung auf die Anmeldeseite, HTML statt JSON, 404: die oauth2-App fehlt oder ist abgeschaltet
+                reason = QCoreApplication::translate("OCC::AccountBasedOAuth", "The sign-in service of the server is not available (%1). Please contact your system administrator.")
+                             .arg(httpDetail);
+            } else {
+                reason = networkReplyErrorString(*reply);
+            }
+            qCWarning(lcOauth) << "Error while refreshing the token:" << reply->error() << httpStatus << (oauthError.isEmpty() ? httpDetail : oauthError);
+            Q_EMIT refreshFailed(reason, false, newRefreshToken);
         });
     };
 

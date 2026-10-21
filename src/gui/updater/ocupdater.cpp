@@ -18,11 +18,13 @@
 #include "common/version.h"
 #include "config/appconfig.h"
 #include "configfile.h"
+#include "mainwindow/modalwrapperwidget.h"
 #include "theme.h"
 
-#include "settingsdialog.h"
+
 #include "updatedownloadedwidget.h"
 #include "updater/newversionavailablewidget.h"
+#include "updater/codesignature.h"
 #include "updater/ocupdater.h"
 #include "updater/updater_private.h"
 
@@ -48,16 +50,16 @@ UpdaterScheduler::UpdaterScheduler(Application *app, QObject *parent)
     // Note: the sparkle-updater is not an OCUpdater
     if (auto *updater = qobject_cast<OCUpdater *>(Updater::instance())) {
         connect(updater, &OCUpdater::updateAvailableThroughSystem, app,
-            [app, updater]() { app->gui()->slotShowTrayMessage(tr("Update available"), updater->statusString()); });
+            [app, updater]() { app->tray()->slotShowTrayMessage(tr("Update available"), updater->statusString()); });
 
         connect(updater, &OCUpdater::updateDownloaded, this, [app, updater, this]() {
             // prevent dialog from being displayed twice (rather unlikely, but it won't hurt)
             if (_updateDownloadedWidget == nullptr) {
-                _updateDownloadedWidget = new UpdateDownloadedWidget(app->gui()->settingsDialog(), updater->statusString());
-                ocApp()->gui()->settingsDialog()->addModalWidget(_updateDownloadedWidget);
+                _updateDownloadedWidget = new UpdateDownloadedWidget(app->mainWindow(), updater->statusString());
+                ModalWrapperWidget *wrapper = new ModalWrapperWidget(_updateDownloadedWidget, app->mainWindow());
+                ocApp()->showModalWidget(wrapper);
 
                 connect(_updateDownloadedWidget, &UpdateDownloadedWidget::accepted, this, []() { Updater::instance()->applyUpdateAndRestart(); });
-                connect(_updateDownloadedWidget, &UpdateDownloadedWidget::finished, this, [this]() { delete _updateDownloadedWidget.data(); });
             }
         });
 
@@ -132,6 +134,103 @@ void OCUpdater::backgroundCheckForUpdate()
     }
 }
 
+namespace {
+struct ParsedVersion
+{
+    QVersionNumber number;
+    QString suffix; // "beta1", "rc2", leer beim Release
+};
+
+ParsedVersion parseVersion(const QString &text)
+{
+    const QString trimmed = text.trimmed();
+    qsizetype suffixIndex = 0;
+    ParsedVersion parsed{QVersionNumber::fromString(trimmed, &suffixIndex), trimmed.mid(suffixIndex)};
+    if (parsed.suffix.startsWith(QLatin1Char('-'))) {
+        parsed.suffix.remove(0, 1);
+    }
+    return parsed;
+}
+
+// Ziffernfolgen ohne führende Nullen: erst die Länge, dann der Text, so läuft nichts über
+int compareDigits(QStringView a, QStringView b)
+{
+    while (a.size() > 1 && a.front() == u'0') {
+        a = a.mid(1);
+    }
+    while (b.size() > 1 && b.front() == u'0') {
+        b = b.mid(1);
+    }
+    if (a.size() != b.size()) {
+        return a.size() < b.size() ? -1 : 1;
+    }
+    return a.compare(b);
+}
+
+// "beta2" < "beta10" < "rc1": Ziffernfolgen zählen als Zahl, der Rest alphabetisch
+int compareSuffixes(const QString &a, const QString &b)
+{
+    static const QRegularExpression tokenPattern(QStringLiteral("\\d+|\\D+"));
+    auto tokensA = tokenPattern.globalMatch(a);
+    auto tokensB = tokenPattern.globalMatch(b);
+    while (tokensA.hasNext() && tokensB.hasNext()) {
+        const QString tokenA = tokensA.next().captured();
+        const QString tokenB = tokensB.next().captured();
+        const int result = tokenA.front().isDigit() && tokenB.front().isDigit() ? compareDigits(tokenA, tokenB)
+                                                                                : tokenA.compare(tokenB, Qt::CaseInsensitive);
+        if (result != 0) {
+            return result;
+        }
+    }
+    return tokensA.hasNext() ? 1 : (tokensB.hasNext() ? -1 : 0);
+}
+}
+
+QString OCUpdater::installedVersion()
+{
+    const QString number = Version::versionWithBuildNumber().toString();
+    const QString suffix = Version::suffix();
+    return suffix.isEmpty() ? number : QStringLiteral("%1-%2").arg(number, suffix);
+}
+
+int OCUpdater::compareVersions(const QString &a, const QString &b)
+{
+    const ParsedVersion versionA = parseVersion(a);
+    const ParsedVersion versionB = parseVersion(b);
+    for (int i = 0; i < 3; ++i) {
+        if (const int diff = versionA.number.segmentAt(i) - versionB.number.segmentAt(i)) {
+            return diff;
+        }
+    }
+    // Die Baunummer ist bei unseren Bauten immer 0: ohne diese Regel bekäme eine Beta-Installation
+    // (11.0.0.0-beta1) das finale 11.0.0 nie angeboten.
+    if (versionA.suffix.isEmpty() != versionB.suffix.isEmpty()) {
+        return versionA.suffix.isEmpty() ? 1 : -1;
+    }
+    if (const int diff = compareSuffixes(versionA.suffix, versionB.suffix)) {
+        return diff;
+    }
+    return QVersionNumber::compare(versionA.number, versionB.number);
+}
+
+bool OCUpdater::isNewerVersion(const QString &available, const QString &installed, const QString &skipped)
+{
+    if (parseVersion(available).number.isNull() || compareVersions(available, installed) <= 0) {
+        return false;
+    }
+    // leere oder unlesbare Angabe: nichts übersprungen
+    return parseVersion(skipped).number.isNull() || compareVersions(available, skipped) > 0;
+}
+
+bool OCUpdater::isTrustedDownloadUrl(const QUrl &url)
+{
+    // Weiterleitungen (objects.githubusercontent.com) folgt Qt nur https -> https
+    return url.isValid() && url.scheme() == QLatin1String("https") && url.host() == QLatin1String("github.com")
+        && url.userInfo().isEmpty() && url.port(443) == 443
+        && url.path().startsWith(QLatin1String("/BWTECH-github/client/releases/download/"))
+        && !url.path().contains(QLatin1String("/../")) && url.fileName().endsWith(QLatin1String("-Setup.exe"));
+}
+
 QString OCUpdater::statusString() const
 {
     QString updateVersion = _updateInfo.versionString();
@@ -146,7 +245,7 @@ QString OCUpdater::statusString() const
             return tr("%1 available. Restart application to start the update.").arg(updateVersion);
         }
     case DownloadFailed:
-        return tr("Could not download update. Please click <a href='%1'>here</a> to download the update manually.").arg(_updateInfo.web());
+        return tr("Could not download update. Please click <a href='%1'>here</a> to download the update manually.").arg(_updateInfo.web().toHtmlEscaped());
     case DownloadTimedOut:
         return tr("Could not check for new updates.");
     case UpdateOnlyAvailableThroughSystem:
@@ -154,7 +253,7 @@ QString OCUpdater::statusString() const
         // https://docs.appimage.org/packaging-guide/environment-variables.html
         // TODO: update once AppImageUpdate has been implemented
         if (qEnvironmentVariableIsSet("APPIMAGE")) {
-            return tr("New %1 available. Please click <a href='%2'>here</a> to download the new AppImage manually.").arg(updateVersion, _updateInfo.web());
+            return tr("New %1 available. Please click <a href='%2'>here</a> to download the new AppImage manually.").arg(updateVersion, _updateInfo.web().toHtmlEscaped());
         }
 #endif
         return tr("New %1 available. Please use the system's update tool to install it.").arg(updateVersion);
@@ -196,34 +295,126 @@ QString OCUpdater::availableVersionString() const
     return _updateInfo.versionString();
 }
 
+void OCUpdater::setUpdateUrl(const QUrl &url)
+{
+    qCInfo(lcUpdater) << "Update url changed to" << url.toDisplayString();
+    _updateUrl = url;
+}
+
+bool OCUpdater::canCheckNow() const
+{
+    switch (downloadState()) {
+    case CheckingServer:
+    case Downloading:
+    case DownloadComplete:
+        return false;
+    case Unknown:
+    case UpToDate:
+    case DownloadFailed:
+    case DownloadTimedOut:
+    case UpdateOnlyAvailableThroughSystem:
+        break;
+    }
+    return true;
+}
+
+void OCUpdater::switchChannel(const QUrl &url)
+{
+    setUpdateUrl(url);
+    // die Antwort des alten Kanals zählt nicht mehr
+    if (abortVersionCheck()) {
+        setDownloadState(Unknown);
+    }
+    discardDownloadedUpdate();
+    checkNow();
+}
+
+void OCUpdater::checkNow()
+{
+    if (canCheckNow()) {
+        qCInfo(lcUpdater) << "Checking for available update on request";
+        checkForUpdate();
+        // auf Wunsch zählt auch eine früher übersprungene Version, sonst hieße es fälschlich „keine Updates verfügbar“
+        _checkRequestedByUser = true;
+    }
+}
+
+bool OCUpdater::isSafeWebUrl(const QUrl &url)
+{
+    // der Feed ist fremder Inhalt: kein file:, kein Programmaufruf über ein anderes Schema
+    return url.isValid() && url.scheme() == QLatin1String("https") && !url.host().isEmpty() && url.userInfo().isEmpty();
+}
+
 void OCUpdater::checkForUpdate()
 {
-    QNetworkReply *reply = _accessManager->get(QNetworkRequest(_updateUrl));
-    connect(_timeoutWatchdog, &QTimer::timeout, this, &OCUpdater::slotTimedOut);
+    // eine frühere Prüfung (etwa nach einer Zeitüberschreitung) zählt nie mehr
+    abortVersionCheck();
+    _checkRequestedByUser = false;
+
+    QNetworkRequest request(_updateUrl);
+    // GitHub leitet Release-Downloads per 302 auf release-assets.githubusercontent.com um. Ohne diese Angabe setzt der
+    // AccessManager ManualRedirectPolicy: Die Antwort wäre die leere Weiterleitung, der Feed nie lesbar.
+    request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
+    _versionCheckReply = _accessManager->get(request);
+    // einmal verbinden: sonst meldete jede frühere Prüfung die Zeitüberschreitung noch einmal
+    connect(_timeoutWatchdog, &QTimer::timeout, this, &OCUpdater::slotTimedOut, Qt::UniqueConnection);
     _timeoutWatchdog->start(30s);
-    connect(reply, &QNetworkReply::finished, this, &OCUpdater::slotVersionInfoArrived);
+    connect(_versionCheckReply, &QNetworkReply::finished, this, &OCUpdater::slotVersionInfoArrived);
 
     setDownloadState(CheckingServer);
 }
 
+bool OCUpdater::abortVersionCheck()
+{
+    _timeoutWatchdog->stop();
+    if (!_versionCheckReply) {
+        return false;
+    }
+    QNetworkReply *reply = std::exchange(_versionCheckReply, nullptr);
+    // vor abort() trennen: abort() meldet finished() sofort
+    reply->disconnect(this);
+    reply->abort();
+    reply->deleteLater();
+    return true;
+}
+
+void OCUpdater::discardDownloadedUpdate()
+{
+}
+
+QString OCUpdater::skippedVersionForThisCheck() const
+{
+    return _checkRequestedByUser ? QString() : previouslySkippedVersion();
+}
+
 void OCUpdater::slotOpenUpdateUrl()
 {
-    QDesktopServices::openUrl(QUrl(_updateInfo.web()));
+    const QUrl url(_updateInfo.web());
+    if (!isSafeWebUrl(url)) {
+        qCWarning(lcUpdater) << "Not opening the update page from the feed, it is not an https address:" << url.toDisplayString();
+        return;
+    }
+    QDesktopServices::openUrl(url);
 }
 
 bool OCUpdater::updateSucceeded() const
 {
     auto settings = ConfigFile::makeQSettings();
 
-    const auto targetVersionInt = QVersionNumber::fromString(settings.value(updateTargetVersionC).toString());
-    return Version::versionWithBuildNumber() >= targetVersionInt;
+    // geklappt, wenn das Ziel nicht mehr neuer ist als das, was jetzt läuft (auch Beta -> Release)
+    return !isNewerVersion(settings.value(updateTargetVersionC).toString(), installedVersion(), {});
 }
 
 void OCUpdater::slotVersionInfoArrived()
 {
-    _timeoutWatchdog->stop();
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     reply->deleteLater();
+    if (reply != _versionCheckReply) {
+        // eine aufgegebene Prüfung (Zeitüberschreitung, Kanalwechsel)
+        return;
+    }
+    _versionCheckReply = nullptr;
+    _timeoutWatchdog->stop();
     if (reply->error() != QNetworkReply::NoError) {
         qCWarning(lcUpdater) << "Failed to reach version check url: " << reply->errorString();
         setDownloadState(OCUpdater::Unknown);
@@ -238,7 +429,9 @@ void OCUpdater::slotVersionInfoArrived()
     if (ok) {
         versionInfoArrived(_updateInfo);
     } else {
-        qCWarning(lcUpdater) << "Could not parse update information.";
+        // eine nicht befolgte Weiterleitung (etwa von https auf http) kommt ohne Fehler, aber mit leerem Inhalt an
+        qCWarning(lcUpdater) << "Could not parse update information. HTTP status:" << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+                             << "redirect target:" << reply->attribute(QNetworkRequest::RedirectionTargetAttribute).toUrl();
         setDownloadState(OCUpdater::Unknown);
         Q_EMIT retryUpdateCheckLater();
     }
@@ -246,24 +439,22 @@ void OCUpdater::slotVersionInfoArrived()
 
 void OCUpdater::slotTimedOut()
 {
+    qCWarning(lcUpdater) << "The update check timed out";
+    // die hängende Anfrage aufgeben: sonst beendete ihre späte Antwort eine neue Prüfung und würde doppelt ausgewertet
+    abortVersionCheck();
     setDownloadState(DownloadTimedOut);
 }
 
-QVersionNumber OCUpdater::previouslySkippedVersion()
+QString OCUpdater::previouslySkippedVersion()
 {
     auto settings = ConfigFile::makeQSettings();
-    return QVersionNumber::fromString(settings.value(previouslySkippedVersionC).toString());
+    return settings.value(previouslySkippedVersionC).toString();
 }
 
-void OCUpdater::setPreviouslySkippedVersion(const QVersionNumber &previouslySkippedVersion)
-{
-    setPreviouslySkippedVersion(previouslySkippedVersion.toString());
-}
-
-void OCUpdater::setPreviouslySkippedVersion(const QString &previouslySkippedVersionString)
+void OCUpdater::setPreviouslySkippedVersion(const QString &previouslySkippedVersion)
 {
     auto settings = ConfigFile::makeQSettings();
-    settings.setValue(previouslySkippedVersionC, previouslySkippedVersionString);
+    settings.setValue(previouslySkippedVersionC, previouslySkippedVersion);
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -293,9 +484,26 @@ void WindowsUpdater::wipeUpdateData()
     settings.remove(autoUpdateAttemptedC);
 }
 
+void WindowsUpdater::discardDownloadedUpdate()
+{
+    if (_downloadReply) {
+        QNetworkReply *reply = std::exchange(_downloadReply, nullptr);
+        reply->disconnect(this);
+        reply->abort();
+        reply->deleteLater();
+        _file.reset();
+    }
+    if (downloadState() == Downloading || downloadState() == DownloadComplete) {
+        qCInfo(lcUpdater) << "Discarding the update of the previous channel";
+        wipeUpdateData();
+        setDownloadState(Unknown);
+    }
+}
+
 void WindowsUpdater::slotDownloadFinished()
 {
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    _downloadReply = nullptr;
     const QUrl url(reply->url());
     reply->deleteLater();
     _file->close();
@@ -318,7 +526,11 @@ void WindowsUpdater::slotDownloadFinished()
         oldTargetFile.remove();
     }
 
-    QFile::copy(_file->fileName(), _targetFile);
+    QFile::remove(_targetFile);
+    if (!QFile::copy(_file->fileName(), _targetFile) || !verifyDownloadedSetup(_targetFile)) {
+        setDownloadState(DownloadFailed);
+        return;
+    }
     setDownloadState(DownloadComplete);
     qCInfo(lcUpdater) << "Downloaded" << url.toString() << "to" << _targetFile;
     settings.setValue(updateTargetVersionC, updateInfo().version());
@@ -326,15 +538,27 @@ void WindowsUpdater::slotDownloadFinished()
     settings.setValue(updateAvailableC, _targetFile);
 }
 
+bool WindowsUpdater::verifyDownloadedSetup(const QString &fileName)
+{
+    QString error;
+    if (CodeSignature::verifyUpdatePackage(fileName, &error)) {
+        return true;
+    }
+    // nie ein Setup starten, das nicht von uns signiert ist
+    qCWarning(lcUpdater) << "Rejecting update package" << fileName << ":" << error;
+    QFile::remove(fileName);
+    return false;
+}
+
 void WindowsUpdater::versionInfoArrived(const UpdateInfo &info)
 {
     auto settings = ConfigFile::makeQSettings();
-    const auto infoVersion = QVersionNumber::fromString(info.version());
-    const auto previouslySkippedVersion = this->previouslySkippedVersion();
+    const QString installed = installedVersion();
+    const QString previouslySkippedVersion = skippedVersionForThisCheck();
     qCInfo(lcUpdater) << "Version info arrived:"
-                      << "Your version:" << Version::versionWithBuildNumber()
+                      << "Your version:" << installed
                       << "Skipped version:" << previouslySkippedVersion
-                      << "Available version:" << infoVersion << info.version()
+                      << "Available version:" << info.version()
                       << "Available version string:" << info.versionString()
                       << "Web url:" << info.web()
                       << "Download url:" << info.downloadUrl();
@@ -342,22 +566,26 @@ void WindowsUpdater::versionInfoArrived(const UpdateInfo &info)
     {
         qCInfo(lcUpdater) << "No version information available at the moment";
         setDownloadState(UpToDate);
-    } else if (infoVersion <= Version::versionWithBuildNumber()
-        || infoVersion <= previouslySkippedVersion) {
+    } else if (!isNewerVersion(info.version(), installed, previouslySkippedVersion)) {
         qCInfo(lcUpdater) << "Client is on latest version!";
         setDownloadState(UpToDate);
     } else {
         const QString url = info.downloadUrl();
-        if (url.isEmpty()) {
+        if (url.isEmpty() || !isTrustedDownloadUrl(QUrl(url))) {
+            if (!url.isEmpty()) {
+                qCWarning(lcUpdater) << "Untrusted download url, offering manual download only:" << url;
+            }
             showNewVersionAvailableWidget(info);
         } else {
-            _targetFile = ConfigFile::configPath() + url.mid(url.lastIndexOf(QLatin1Char('/')) + 1);
-            if (QFile::exists(_targetFile)) {
+            _targetFile = ConfigFile::configPath() + QUrl(url).fileName();
+            // eine bereits vorhandene Datei wird erneut geprüft, nicht blind übernommen
+            if (QFile::exists(_targetFile) && verifyDownloadedSetup(_targetFile)) {
                 setDownloadState(DownloadComplete);
             } else {
                 auto request = QNetworkRequest(QUrl(url));
                 request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
                 QNetworkReply *reply = qnam()->get(request);
+                _downloadReply = reply;
                 connect(reply, &QIODevice::readyRead, this, &WindowsUpdater::slotWriteFile);
                 connect(reply, &QNetworkReply::finished, this, &WindowsUpdater::slotDownloadFinished);
                 setDownloadState(Downloading);
@@ -375,14 +603,14 @@ void WindowsUpdater::showNewVersionAvailableWidget(const UpdateInfo &info)
     QString txt = tr("<p>A new version of the %1 Client is available.</p>"
                      "<p><b>%2</b> is available for download. The installed version is %3.</p>")
                       .arg(Utility::escape(Theme::instance()->appNameGUI()),
-                          Utility::escape(info.versionString()), Utility::escape(Version::versionWithBuildNumber().toString()));
-    auto *widget = new NewVersionAvailableWidget(ocApp()->gui()->settingsDialog(), txt);
+                          Utility::escape(info.versionString()), Utility::escape(Version::displayString()));
+    auto *widget = new NewVersionAvailableWidget(ocApp()->mainWindow(), txt);
 
     connect(widget, &NewVersionAvailableWidget::versionSkipped, this, &WindowsUpdater::slotSetPreviouslySkippedVersion);
-    connect(widget, &NewVersionAvailableWidget::updateNow, this, &WindowsUpdater::slotOpenUpdateUrl);
-    connect(widget, &NewVersionAvailableWidget::finished, this, [widget]() { delete widget; });
+    connect(widget, &NewVersionAvailableWidget::accepted, this, &WindowsUpdater::slotOpenUpdateUrl);
 
-    ocApp()->gui()->settingsDialog()->addModalWidget(widget);
+    ModalWrapperWidget *wrapper = new ModalWrapperWidget(widget, ocApp()->mainWindow());
+    ocApp()->showModalWidget(wrapper);
 }
 
 void WindowsUpdater::showUpdateErrorDialog(const QString &targetVersion)
@@ -408,7 +636,7 @@ void WindowsUpdater::showUpdateErrorDialog(const QString &targetVersion)
     QString txt = tr("<p>A new version of the %1 Client is available but the updating process failed.</p>"
                      "<p><b>%2</b> has been downloaded. The installed version is %3.</p>")
                       .arg(Utility::escape(Theme::instance()->appNameGUI()),
-                          Utility::escape(targetVersion), Utility::escape(Version::versionWithBuildNumber().toString()));
+                          Utility::escape(targetVersion), Utility::escape(Version::displayString()));
 
     lbl->setText(txt);
     lbl->setTextFormat(Qt::RichText);
@@ -458,7 +686,7 @@ void WindowsUpdater::validateUpdate()
             if (updateSucceeded()) {
                 // success: clean up
                 qCInfo(lcUpdater) << "The requested update attempt has succeeded"
-                                  << Version::versionWithBuildNumber();
+                                  << installedVersion();
                 wipeUpdateData();
             } else {
                 // auto update failed. Ask user what to do
@@ -477,32 +705,40 @@ void WindowsUpdater::slotSetPreviouslySkippedVersion()
 
 void WindowsUpdater::applyUpdateAndRestart()
 {
-    Q_ASSERT(downloadState() == DownloadState::DownloadComplete);
+    // „Erneut versuchen“ nach einem gescheiterten Update (etwa abgelehnte Windows-Abfrage) kommt beim nächsten Start, bevor ein
+    // Download gelaufen ist, und während der Dialog offen ist, kann eine neue Prüfung beginnen. Maßgeblich ist die geprüfte
+    // Datei unten; das frühere Q_ASSERT auf DownloadComplete beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (downloadState() != DownloadState::DownloadComplete) {
+        qCInfo(lcUpdater) << "Applying the downloaded update in state" << downloadState();
+    }
 
     auto settings = ConfigFile::makeQSettings();
     QString updateFile = settings.value(updateAvailableC).toString();
+    // unmittelbar vor dem Start erneut prüfen (Datei liegt im Profil und könnte getauscht sein)
+    if (!verifyDownloadedSetup(updateFile)) {
+        wipeUpdateData();
+        setDownloadState(DownloadFailed);
+        return;
+    }
     settings.setValue(autoUpdateAttemptedC, true);
     settings.sync();
     qCInfo(lcUpdater) << "Running updater" << updateFile;
 
-    Q_ASSERT(updateFile.endsWith(QLatin1String(".msi")));
-    // When MSIs are installed without gui they cannot launch applications
-    // as they lack the user context. That is why we need to run the client
-    // manually here. We wrap the msiexec and client invocation in a powershell
-    // script because owncloud.exe will be shut down for installation.
-    // | Out-Null forces powershell to wait for msiexec to finish.
+    // Das NSIS-Setup (admin/win/restart-wrapper.nsi) braucht Adminrechte, beendet
+    // den Client selbst und startet ihn im Silent-Modus nicht neu. Darum startet
+    // PowerShell das Setup mit /S (UAC-Abfrage), wartet und startet danach den Client.
     auto preparePathForPowershell = [](QString path) {
         path.replace(QLatin1String("'"), QLatin1String("''"));
 
         return QDir::toNativeSeparators(path);
     };
 
-    QString msiLogFile = ConfigFile::configPath() + QStringLiteral("msi.log");
     const QString command =
-        QStringLiteral("&{msiexec /norestart /passive /i '%1' /L*V '%2'| Out-Null ; &'%3'}")
-            .arg(preparePathForPowershell(updateFile), preparePathForPowershell(msiLogFile), preparePathForPowershell(QCoreApplication::applicationFilePath()));
+        QStringLiteral("&{ try { Start-Process -FilePath '%1' -ArgumentList '/S' -Verb RunAs -Wait } catch {} ; Start-Process -FilePath '%2' }")
+            .arg(preparePathForPowershell(updateFile), preparePathForPowershell(QCoreApplication::applicationFilePath()));
 
-    QProcess::startDetached(QStringLiteral("powershell.exe"), QStringList{QStringLiteral("-Command"), command});
+    QProcess::startDetached(QStringLiteral("powershell.exe"),
+        QStringList{QStringLiteral("-NoProfile"), QStringLiteral("-WindowStyle"), QStringLiteral("Hidden"), QStringLiteral("-Command"), command});
     QTimer::singleShot(0, QApplication::instance(), &QApplication::quit);
 }
 
@@ -541,8 +777,7 @@ void PassiveUpdateNotifier::backgroundCheckForUpdate()
 
 void PassiveUpdateNotifier::versionInfoArrived(const UpdateInfo &info)
 {
-    const auto remoteVer = QVersionNumber::fromString(info.version());
-    if (info.version().isEmpty() || Version::versionWithBuildNumber() >= remoteVer) {
+    if (!isNewerVersion(info.version(), installedVersion(), {})) {
         qCInfo(lcUpdater) << "Client is on latest version!";
         setDownloadState(UpToDate);
     } else {

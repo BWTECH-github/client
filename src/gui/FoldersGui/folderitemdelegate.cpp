@@ -15,10 +15,13 @@
 #include "folderitemdelegate.h"
 
 #include "folderitem.h"
+#include "theme.h"
+
 #include <QApplication>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QStyleOptionButton>
 
 #include <QTreeView>
 
@@ -28,6 +31,15 @@ FolderItemDelegate::FolderItemDelegate(int treeIndentation, QObject *parent)
     : QItemDelegate{parent}
     , _treeIndentation(treeIndentation)
 {
+}
+
+QColor FolderItemDelegate::selectionColor()
+{
+    const QColor themed = Theme::instance()->selectionColor();
+    if (themed.isValid())
+        return themed;
+    QStyleOptionButton buttonStyle;
+    return buttonStyle.palette.color(QPalette::Highlight);
 }
 
 void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -59,9 +71,8 @@ void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
      opt.rect.setX(opt.rect.X() - treeIndent);
 */
 
-    // owncloud.online brand: a translucent turquoise selection reads well on
-    // both the light and the dark palette (the row text keeps its normal color)
-    opt.palette.setColor(QPalette::Highlight, QColor(0x00, 0xe2, 0xbb, 64));
+    // owncloud.online: halbtransparente Markenauswahl aus dem Theme; die Zeilenschrift behält ihre normale Farbe
+    opt.palette.setColor(QPalette::Highlight, selectionColor());
     drawBackground(painter, opt, index);
 
     // calculate the line heights using current font - yes again, as we can't "store" the sizes calculated in sizeHint :/
@@ -130,8 +141,8 @@ void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 void FolderItemDelegate::paintError(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QStyleOptionViewItem rowOpt(option);
-    // same translucent brand-turquoise selection as the other rows
-    rowOpt.palette.setColor(QPalette::Highlight, QColor(0x00, 0xe2, 0xbb, 64));
+    // dieselbe Auswahlfarbe wie die übrigen Zeilen
+    rowOpt.palette.setColor(QPalette::Highlight, selectionColor());
 
 
     // this allows painting over the indent area which may be incorrect color after switching dark/light mode
@@ -244,8 +255,8 @@ QRect FolderItemDelegate::browserCheckRect(const QStyleOptionViewItem &option) c
 void FolderItemDelegate::paintBrowserRow(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QStyleOptionViewItem opt(option);
-    // same translucent brand-turquoise selection as the top-level rows
-    opt.palette.setColor(QPalette::Highlight, QColor(0x00, 0xe2, 0xbb, 64));
+    // dieselbe Auswahlfarbe wie die Ordnerzeilen
+    opt.palette.setColor(QPalette::Highlight, selectionColor());
     // note: unlike the error rows we must not paint over the indent area here because the
     // browser rows have expanders of their own, which live in that area
     drawBackground(painter, opt, index);

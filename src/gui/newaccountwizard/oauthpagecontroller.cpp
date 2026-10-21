@@ -18,25 +18,36 @@
 #include "account.h"
 #include "accountmanager.h"
 #include "config/appconfig.h"
+#include "iconresources.h"
+#include "mainwindow/colormanager.h"
 #include "networkadapters/fetchcapabilitiesadapter.h"
 #include "networkadapters/userinfoadapter.h"
 #include "networkadapters/webfingerlookupadapter.h"
 #include "template.h"
 #include "theme.h"
+#include "wizardpagelayout.h"
 
 #include <QBuffer>
 #include <QClipboard>
+#include <QDateTime>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QImageReader>
 #include <QLabel>
 #include <QLineEdit>
+#include <QLoggingCategory>
 #include <QPushButton>
+#include <QScopeGuard>
 #include <QSignalBlocker>
+#include <QTimer>
 #include <QToolTip>
 #include <QVBoxLayout>
+#include <QWizard>
 #include <QWizardPage>
 
 namespace OCC {
+
+Q_LOGGING_CATEGORY(lcOAuthPage, "gui.newaccountwizard.oauthpage", QtInfoMsg)
 
 OAuthPageController::OAuthPageController(QWizardPage *page, AccessManager *accessManager, QObject *parent)
     : QObject{parent}
@@ -55,11 +66,10 @@ void OAuthPageController::buildPage()
 
     QString appName = Theme::instance()->appNameGUI();
 
-    QLabel *logoLabel = new QLabel({}, _page);
-    logoLabel->setPixmap(Theme::instance()->wizardHeaderLogo().pixmap(200, 100));
-    logoLabel->setAlignment(Qt::AlignCenter);
-    logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
+    _logoLabel = new QLabel(_page);
+    _logoLabel->setAlignment(Qt::AlignCenter);
+    _logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
 
     QLabel *instructionLabel =
         new QLabel(tr("Leave this screen open. A sign in prompt will appear in your web browser to connect you to the following address."), _page);
@@ -77,7 +87,7 @@ void OAuthPageController::buildPage()
     _urlField->setAccessibleName(tr("Sign in URL")); // Prevent screen readers from reading the full URL!!!
     _urlField->setAccessibleDescription(tr("To copy the sign in URL to the clipboard, use the copy button"));
 
-    _copyButton = new QPushButton(copyIcon(), QString(), _page);
+    _copyButton = new QPushButton(_page);
     _copyButton->setObjectName("CopyUrlToClipboardButton");
     _copyButton->setFlat(true);
     _copyButton->setContentsMargins(0, 0, 0, 0);
@@ -87,19 +97,23 @@ void OAuthPageController::buildPage()
     _copyButton->installEventFilter(this);
     connect(_copyButton, &QPushButton::clicked, this, &OAuthPageController::copyUrlClicked);
 
+    _statusField = new QLabel(QString(), _page);
+    _statusField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _statusField->setWordWrap(true);
+    _statusField->setAlignment(Qt::AlignCenter);
+
     _errorField = new QLabel(QString(), _page);
-    QPalette errorPalette = _errorField->palette();
-    errorPalette.setColor(QPalette::Text, Qt::red);
-    _errorField->setPalette(errorPalette);
+    // Fehlerrot aus dem Theme (WCAG 4,5:1); Qt::red erreichte auf Weiß nur 4:1 und wirkte auf QLabel gar nicht
+    ColorManager::applyErrorColor(_errorField);
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);
     _errorField->setTextInteractionFlags(Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
 
     QLabel *footerLogoLabel = nullptr;
-    if (!Theme::instance()->wizardFooterLogo().isNull()) {
+    if (!Theme::instance()->wizardFooterLogoName().isEmpty()) {
         footerLogoLabel = new QLabel({}, _page);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
+        footerLogoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardFooterLogoName()).pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -110,7 +124,7 @@ void OAuthPageController::buildPage()
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel);
+    layout->addWidget(_logoLabel);
     layout->addSpacing(16);
     layout->addWidget(instructionLabel);
 
@@ -121,19 +135,28 @@ void OAuthPageController::buildPage()
     urlAreaLayout->addWidget(_copyButton);
     layout->addLayout(urlAreaLayout);
 
+    layout->addWidget(_statusField);
     layout->addWidget(_errorField);
 
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel);
     layout->addStretch(1);
-    _page->setLayout(layout);
+    setScrollableWizardPageLayout(_page, layout);
 
+    updateIcons();
     // seed the copy button tooltip for the first go
     clipboardChanged();
 }
 
+void OAuthPageController::updateIcons()
+{
+    _logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
+    _copyButton->setIcon(copyIcon());
+}
+
 void OAuthPageController::handleError(const QString &error)
 {
+    _statusField->clear();
     _errorField->setText(error);
     _results.error = error;
     Q_EMIT failure(_results);
@@ -145,7 +168,7 @@ QIcon OAuthPageController::copyIcon()
     // color that "fits" based on the current
     // normally we would want to cache this but for this very special one off case I don't think it makes sense
     const QString iconPath = QStringLiteral(":/client/resources/core/copy.svg");
-    QPalette pagePalette = _page->palette();
+    QPalette pagePalette = qGuiApp->palette();
     const QString color = pagePalette.color(QPalette::Text).name();
     QByteArray data = Resources::Template::renderTemplateFromFile(iconPath, {{QStringLiteral("color"), color}}).toUtf8();
     QBuffer buffer(&data);
@@ -166,6 +189,54 @@ void OAuthPageController::setServerUrl(const QUrl &url)
 void OAuthPageController::setAuthenticationUrl(const QUrl &url)
 {
     _authUrl = url;
+    // Nach „Zurück“ und einer anderen Adresse die noch wartende Anmeldung beenden: Ihr Listener nähme sonst weiter den
+    // Rückruf des vorigen Servers an. Wird ihr Ergebnis gerade geprüft, verwirft handleOauthResult() es am Ende selbst.
+    if (_oauth && _oauthUrl != url && !_checkingResult) {
+        qCInfo(lcOAuthPage) << "The address changed, ending the sign-in that is still waiting for the browser";
+        endSignIn(_oauth);
+    }
+}
+
+void OAuthPageController::endSignIn(OAuth *oauth)
+{
+    if (!oauth) {
+        return;
+    }
+    // getrennt meldet sie nichts mehr; erst später löschen, weil das auch aus einem Signal von ihr heraus läuft
+    oauth->disconnect(this);
+    oauth->deleteLater();
+    if (oauth == _oauth) {
+        _oauth = nullptr;
+    }
+}
+
+bool OAuthPageController::pageIsCurrent() const
+{
+    // QWizardPage::wizard() ist geschützt; die Seite hängt über einen inneren Rahmen im Assistenten
+    const QWizard *wizard = nullptr;
+    for (const QObject *object = _page; object && !wizard; object = object->parent()) {
+        wizard = qobject_cast<const QWizard *>(object);
+    }
+    return wizard && wizard->currentPage() == _page;
+}
+
+bool OAuthPageController::resultStillWanted() const
+{
+    return pageIsCurrent() && _oauthUrl == _authUrl;
+}
+
+void OAuthPageController::discardResult()
+{
+    _results = {};
+    // Steht die Anmeldeseite inzwischen für eine andere Adresse, hat validate() deren Anmeldung wegen der laufenden Prüfung
+    // abgelehnt: nachholen, sobald diese abgeschlossen ist, sonst bliebe die Seite ohne Anmeldung stehen
+    if (pageIsCurrent()) {
+        QTimer::singleShot(0, this, [this] {
+            if (pageIsCurrent() && !_oauth) {
+                validate();
+            }
+        });
+    }
 }
 
 void OAuthPageController::copyUrlClicked()
@@ -187,11 +258,6 @@ void OAuthPageController::clipboardChanged()
 
 bool OAuthPageController::validate()
 {
-    // this should have already been cleaned up after the auth routine but who knows. Never hurts to be sure.
-    if (_oauth) {
-        delete _oauth;
-        _oauth = nullptr;
-    }
     // this is a little bit tricky. Because we "auto advance" the wizard to the next page when the oauth step has succeeded, validate
     // will be called *twice*
     // first when the page change triggers the authentication step in the browser, then a second time when we auto-advance after the main controller has
@@ -206,13 +272,37 @@ bool OAuthPageController::validate()
         return true;
     }
 
+    // Der Browser ist zurückgekehrt, das Konto wird gerade geprüft (verschachtelte Event-Loops): kein zweiter Anmeldevorgang,
+    // und handleOauthResult() darf am Ende nicht eine neue Anmeldung statt der eigenen löschen
+    if (_checkingResult) {
+        return false;
+    }
+
+    // Wartet die Anmeldung für dieselbe Adresse noch auf den Browser („Browser erneut öffnen“, Enter, zurück und erneut
+    // anmelden), nur den Browser wieder öffnen: Port und state bleiben, damit ein schon geöffneter oder kopierter Link
+    // gültig bleibt, bis die Anmeldung abgeschlossen oder der Assistent geschlossen ist. Ohne Link (die Endpunkte werden
+    // noch abgefragt) kann niemand den Link haben: dann neu beginnen. Die Abfrage selbst bliebe sonst womöglich hängen,
+    // weil die Adressprüfung nach „Zurück“ den AccessManager zurücksetzt.
+    if (_oauth && _oauth->isListening() && _oauthUrl == _authUrl && !_authEndpoint.isEmpty()) {
+        openBrowser();
+        return false;
+    }
+
+    // this should have already been cleaned up after the auth routine but who knows. Never hurts to be sure.
+    if (_oauth) {
+        delete _oauth;
+        _oauth = nullptr;
+    }
+
     _results = {};
+    _statusField->clear();
     _errorField->clear();
     _authEndpoint.clear();
     _urlField->clear();
 
     AppConfig systemConfig;
     _oauth = new OAuth(_authUrl, {}, systemConfig.openIdConfig(), _accessManager.get(), this);
+    _oauthUrl = _authUrl;
     // if we ever need to split out the auth link calculation, it's coming from fetchWellKnown which is a subset of
     // the "full" authentication routine in the oauth impl
     connect(_oauth, &OAuth::authorisationLinkChanged, this, &OAuthPageController::authUrlReady);
@@ -224,7 +314,15 @@ bool OAuthPageController::validate()
 void OAuthPageController::authUrlReady()
 {
     _authEndpoint = _oauth->authorisationLink().toString(QUrl::FullyEncoded);
-    Q_ASSERT(!_authEndpoint.isEmpty());
+
+    // I hit this when demo was down - browser showed "We're having trouble connecting to the login service.
+    // If the problem continues, please contact support."
+    if (_authEndpoint.isEmpty()) {
+        // ohne Link kann niemand den Listener erreichen; verwerfen, damit „Browser erneut öffnen“ neu beginnt
+        endSignIn(_oauth);
+        handleError(tr("Unable to connect to the login service. If the problem continues, please contact support."));
+        return;
+    }
 
     QFontMetrics metrics(_urlField->font());
     QString elidedText = metrics.elidedText(_authEndpoint, Qt::ElideRight, _urlField->width());
@@ -233,16 +331,48 @@ void OAuthPageController::authUrlReady()
     // for a moment
     // note in my experience mac does not always honor repaint()s
     _page->repaint();
+    openBrowser();
+}
+
+void OAuthPageController::openBrowser()
+{
+    _errorField->clear();
+    // ohne Knopfnamen: „Autorisieren“ zeigt nur die App „OAuth2“, und auch sie nicht für vertrauenswürdige Clients
+    _statusField->setText(tr("Please sign in using the browser window that has opened and allow access if you are asked to."));
+    // schlägt das Öffnen fehl, ersetzt handleOauthResult() den Hinweis
     _oauth->openBrowser();
 }
 
-void OAuthPageController::handleOauthResult(OAuth::Result result, const QString &token, const QString &refreshToken)
+void OAuthPageController::handleOauthResult(OAuth::Result result, const QString &token, const QString &refreshToken, qint64 expiresIn)
 {
+    _statusField->clear();
     QString extraHelp = tr("Please copy the authentication URL using the button above, and provide this information to support.");
     switch (result) {
     case OAuth::Result::LoggedIn: {
+        // Nur übernehmen, solange die Anmeldeseite angezeigt wird und derselben Adresse gilt. Kam der Rückruf nach „Zurück“,
+        // prüfte setCurrentId() sonst die Adressseite mit der inzwischen eingetragenen Adresse, und das Konto dafür bekäme
+        // Token, Refresh-Token und Benutzer dieses Servers.
+        if (!resultStillWanted()) {
+            qCInfo(lcOAuthPage) << "Discarding the sign-in result: the sign-in page is no longer shown or the address changed";
+            discardResult();
+            break;
+        }
+        _checkingResult = true;
+        const auto checkingDone = qScopeGuard([this] { _checkingResult = false; });
+        // Die Prüfungen drehen eigene Event-Loops, „Zurück“ und eine andere Adresse sind währenddessen möglich: einen Fehler
+        // nur melden, solange das Ergebnis noch gilt
+        const auto checkFailed = [this](const QString &error) {
+            if (resultStillWanted()) {
+                handleError(error);
+            } else {
+                qCInfo(lcOAuthPage) << "Discarding the failed check: the sign-in page was left while the account was checked";
+                discardResult();
+            }
+        };
         _results.token = token;
         _results.refreshToken = refreshToken;
+        // ab jetzt gezählt: Bis das Konto entsteht, vergehen noch die Prüfungen und die restlichen Seiten des Assistenten
+        _results.accessTokenExpiresAt = expiresIn > 0 ? QDateTime::currentSecsSinceEpoch() + expiresIn : 0;
         // special note: if the original server url does not support webfinger, the _authUrl will equal the _serverUrl
         // HOWEVER, we can't use this fact to determine whether webfinger is in play as some webfinger impls return the original
         // _serverUrl (eg demo) as the authentication url and some don't (eg infinite).
@@ -252,8 +382,8 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
             WebFingerLookupAdapter lookup(_accessManager, token, _serverUrl);
             const WebFingerLookupResult webfingerResult = lookup.getResult();
             if (!webfingerResult.success()) {
-                handleError(tr("Failed to look up WebFinger instances: %1").arg(webfingerResult.error));
-                return;
+                checkFailed(tr("Failed to look up WebFinger instances: %1").arg(webfingerResult.error));
+                break;
             } else {
                 if (!webfingerResult.urls.isEmpty())
                     _results.webfingerUserUrl = webfingerResult.urls[0];
@@ -269,15 +399,15 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
 
         if (infoResult.success()) {
             if (AccountManager::instance()->accountForLoginExists(userInfoUrl, infoResult.userId)) {
-                handleError(tr("You are already connected to an account with these credentials."));
-                return;
+                checkFailed(tr("You are already connected to an account with these credentials."));
+                break;
             } else {
                 _results.displayName = infoResult.displayName;
                 _results.userId = infoResult.userId;
             }
         } else {
-            handleError(infoResult.error);
-            return;
+            checkFailed(infoResult.error);
+            break;
         }
 
         // Finally, get the capabilities so unsupported legacy servers can still be blocked.
@@ -286,15 +416,20 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
         if (!capabilitiesResult.success()) {
             // I don't think we want to display the core error message as it's stuff like json errors and not
             // useful to the user but we can change this after we have the discussion about error messages
-            handleError(tr("Unable to retrieve capabilities from server."));
+            checkFailed(tr("Unable to retrieve capabilities from server."));
             break;
         }
         if (Account::supportLevelForCapabilities(capabilitiesResult.capabilities) != Account::ServerSupportLevel::Supported) {
-            handleError(tr("The server is not supported by this client."));
+            checkFailed(tr("The server is not supported by this client."));
             break;
         } else
             _results.capabilities = capabilitiesResult.capabilities;
 
+        if (!resultStillWanted()) {
+            qCInfo(lcOAuthPage) << "Discarding the sign-in result: the sign-in page was left while the account was checked";
+            discardResult();
+            break;
+        }
         _oauthCompleted = true;
         Q_EMIT success(_results);
         break;
@@ -303,12 +438,10 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
         handleError(tr("Error while trying to log in to OAuth2-enabled server. %1").arg(extraHelp));
         break;
     }
-        // todo: this is returned when the oauth routine can't open the browser with that url - this error is misleading as there are multiple
-        // reasons this can fail! Needs further investigation
     case OAuth::Result::NotSupported: {
-        // should never happen
-        handleError(tr("Unable to open browser with provided URL. %1").arg(extraHelp));
-        break;
+        // Der Browser ließ sich nicht öffnen. Die Anmeldung wartet weiter, damit der kopierte Link zum Client zurückführt.
+        handleError(tr("The browser could not be opened. Copy the link with the button above and open it in your browser."));
+        return;
     }
     case OAuth::Result::ErrorInsecureUrl: {
         handleError(tr("OAuth2 authentication requires a secured connection. %1").arg(extraHelp));
@@ -319,7 +452,7 @@ void OAuthPageController::handleOauthResult(OAuth::Result result, const QString 
         break;
     }
     };
-    delete _oauth;
-    _oauth = nullptr;
+    // Nur die Anmeldung beenden, die dieses Ergebnis geliefert hat, nicht eine inzwischen neu begonnene
+    endSignIn(qobject_cast<OAuth *>(sender()));
 }
 }

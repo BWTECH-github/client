@@ -85,6 +85,9 @@ void FolderModelController::onFolderListChanged(const QUuid &accountId, const QL
 
     // if the accountId is null it should mean that ALL folders in the system, regardless of account id, were removed, eg on shutdown
     // so we still need to clear the model even if the accountId is null. In this case the whole model needs to be cleared
+    // die Zeilen verschwinden gleich mit ihren Items, _items darf keine verwaisten Zeiger behalten
+    _items.clear();
+
     if (accountId.isNull()) {
         Q_ASSERT(folders.isEmpty());
         _model->clear();
@@ -120,7 +123,8 @@ void FolderModelController::onFolderAdded(const QUuid &accountId, Folder *folder
 
     // we need a dummy item for the second column to host the button delegate for the row
     _model->appendRow({item, buttonItem});
-    _items.insert(folder->spaceId(), item);
+    // nach Ordner-ID: ohne Spaces (ownCloud 10) ist die Space-ID bei allen Ordnerpaaren eines Kontos leer
+    _items.insert(QString::fromUtf8(folder->id()), item);
 
     if (!_multiLoad) {
         _model->sort(0, Qt::DescendingOrder);
@@ -133,12 +137,12 @@ void FolderModelController::onFolderRemoved(const QUuid &accountId, Folder *fold
     if (!folder || accountId != _accountId)
         return;
 
-    QString id = folder->spaceId();
+    const QString id = QString::fromUtf8(folder->id());
     if (id.isEmpty())
         return;
 
     if (_items.contains(id)) {
-        QStandardItem *it = _items.value(folder->spaceId());
+        QStandardItem *it = _items.value(id);
         QModelIndex index = it->index();
         QModelIndex previousIndex = _model->sibling(index.row() - 1, 0, index);
         if (index.isValid())

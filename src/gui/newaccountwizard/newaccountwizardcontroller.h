@@ -15,6 +15,7 @@
 #pragma once
 
 #include "advancedsettingspagecontroller.h"
+#include "basiccredentialspagecontroller.h"
 #include "oauthpagecontroller.h"
 #include "urlpagecontroller.h"
 
@@ -28,6 +29,7 @@ namespace OCC {
 class NewAccountModel;
 class NewAccountWizard;
 class AccessManager;
+class ColorManager;
 
 
 /**
@@ -46,7 +48,12 @@ public:
      * @param parent normally this will be a pointer to whatever instantiated the controller, eg a manager or another controller, but since the
      * triad is short lived, we may also manage the controller by instantiating it on the stack with no parent.
      */
-    explicit NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, QObject *parent);
+    explicit NewAccountWizardController(NewAccountModel *model, NewAccountWizard *view, ColorManager *colorManager, QObject *parent);
+
+    /** owncloud.online: Serveradresse vorbelegen (Umstieg vom offiziellen Client) */
+    void presetServerUrl(const QUrl &url);
+    /** owncloud.online: Anmeldename für die Kennwortseite vorbelegen (Umstieg vom offiziellen Client) */
+    void presetLoginUser(const QString &loginUser);
 
 
 protected Q_SLOTS:
@@ -60,6 +67,8 @@ protected Q_SLOTS:
     void onOAuthValidationCompleted(const OCC::OAuthPageResults &results);
     // we need to raise the gui when oauth validation fails
     void onOauthValidationFailed(const OCC::OAuthPageResults &results);
+
+    void onBasicValidationCompleted(const OCC::BasicCredentialsPageResults &results);
 
     void onAdvancedSettingsCompleted(const OCC::AdvancedSettingsResult &result);
 
@@ -89,6 +98,8 @@ private:
     /** this controller owns the access manager that will be used by the page controllers to run various network requests */
     AccessManager *_accessManager = nullptr;
 
+    ColorManager *_colorManager = nullptr;
+
     // using QPointer for the injected dependencies. For an impl like this it's more of a "best practice" formality as the whole
     // bundle of stuff has a shared lifetime.
     QPointer<NewAccountModel> _model = nullptr;
@@ -96,12 +107,17 @@ private:
 
     // this is the only controller we need to explicitly keep our eye on as we need to give it values to start the oauth step
     OAuthPageController *_oauthController = nullptr;
+    // Benutzername und Kennwort für Server ohne die App „OAuth2“
+    BasicCredentialsPageController *_basicController = nullptr;
+    // für presetServerUrl
+    UrlPageController *_urlController = nullptr;
     bool _autoValidateOAuthPage = false;
 
     QHash<int, QList<QWizard::WizardButton>> _buttonLayouts;
 
     int _urlPageIndex = -1;
     int _oauthPageIndex = -1;
+    int _basicPageIndex = -1;
     int _authSuccessPageIndex = -1;
     int _advancedSettingsPageIndex = -1;
 };

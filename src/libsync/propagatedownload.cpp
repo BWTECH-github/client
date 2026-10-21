@@ -27,15 +27,12 @@
 #include "common/utility.h"
 #include "common/vfs.h"
 
-#include "libsync/theme.h"
-
 #include <QDir>
 #include <QFileInfo>
 #include <QLoggingCategory>
 #include <QRandomGenerator>
 #include <QTimer>
 
-#include <cmath>
 
 #ifdef Q_OS_UNIX
 #include <unistd.h>
@@ -93,71 +90,6 @@ namespace {
     }
 }
 
-
-namespace CernRecallFeature {
-    void handleRecallFile(const QString &filePath, const QString &folderPath, SyncJournalDb &journal)
-    {
-        OC_ENFORCE(Theme::instance()->enableCernBranding());
-
-        auto makeRecallFileName = [](const QString &fn) {
-            QString recallFileName(fn);
-            // Add _recall-XXXX  before the extension.
-            int dotLocation = recallFileName.lastIndexOf(QLatin1Char('.'));
-            // If no extension, add it at the end  (take care of cases like foo/.hidden or foo.bar/file)
-            if (dotLocation <= recallFileName.lastIndexOf(QLatin1Char('/')) + 1) {
-                dotLocation = recallFileName.size();
-            }
-
-            QString timeString = QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyyMMdd-hhmmss"));
-            recallFileName.insert(dotLocation, QStringLiteral("_.sys.admin#recall#-") + timeString);
-
-            return recallFileName;
-        };
-
-        qCDebug(lcPropagateDownload) << "handleRecallFile: " << filePath;
-
-        FileSystem::setFileHidden(filePath, true);
-
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadOnly)) {
-            qCWarning(lcPropagateDownload) << "Could not open recall file" << file.errorString();
-            return;
-        }
-        QFileInfo existingFile(filePath);
-        QDir baseDir = existingFile.dir();
-
-        while (!file.atEnd()) {
-            QByteArray line = file.readLine();
-            line.chop(1); // remove trailing \n
-
-            QString recalledFile = QDir::cleanPath(baseDir.filePath(QString::fromUtf8(line)));
-            if (!recalledFile.startsWith(folderPath) || !recalledFile.startsWith(baseDir.path())) {
-                qCWarning(lcPropagateDownload) << "Ignoring recall of " << recalledFile;
-                continue;
-            }
-
-            // Path of the recalled file in the local folder
-            QString localRecalledFile = recalledFile.mid(folderPath.size());
-
-            SyncJournalFileRecord record;
-            if (!journal.getFileRecord(localRecalledFile, &record) || !record.isValid()) {
-                qCWarning(lcPropagateDownload) << "No db entry for recall of" << localRecalledFile;
-                continue;
-            }
-
-            qCInfo(lcPropagateDownload) << "Recalling" << localRecalledFile << "Checksum:" << record._checksumHeader;
-
-            QString targetPath = makeRecallFileName(recalledFile);
-
-            qCDebug(lcPropagateDownload) << "Copy recall file: " << recalledFile << " -> " << targetPath;
-            // Remove the target first, QFile::copy will not overwrite it.
-            FileSystem::remove(targetPath);
-            QFile::copy(recalledFile, targetPath);
-        }
-    }
-
-
-}
 
 namespace {
     void preserveGroupOwnership(const QString &fileName, const QFileInfo &fi)
@@ -461,13 +393,12 @@ QString GETFileJob::errorString() const
 
 void PropagateDownloadFile::start()
 {
-    if (propagator()->_abortRequested)
+    if (propagator()->_abortRequested || !propagator()->syncOptions().isValid())
         return;
 
     _stopwatch.start();
 
-    auto &syncOptions = propagator()->syncOptions();
-    auto &vfs = syncOptions._vfs;
+    Vfs *vfs = propagator()->syncOptions().vfs();
 
 
     const QString fsPath = propagator()->fullLocalPath(_item->_file);
@@ -868,7 +799,8 @@ void PropagateDownloadFile::slotGetFinished()
     if (!job->etag().isEmpty()) {
         // The etag will be empty if we used a direct download URL.
         // (If it was really empty by the server, the GETFileJob will have errored
-        Q_ASSERT(job->etag() == Utility::normalizeEtag(job->etag()));
+        // Das ETag ist schon normalisiert (getEtagFromReply). normalizeEtag() ist aber nicht idempotent („W/"W/x"“, „x-gzip-gzip“
+        // vom Server oder Proxy): Das frühere Q_ASSERT darauf beendete mit FORCE_ASSERTS (Beta) das Programm.
         _item->_etag = job->etag();
     }
     if (job->lastModified()) {
@@ -1121,15 +1053,6 @@ void PropagateDownloadFile::updateMetadata(bool isConflict)
     propagator()->_journal->commit(QStringLiteral("download file start2"));
 
     done(isConflict ? SyncFileItem::Conflict : SyncFileItem::Success);
-
-    // handle the special recall file
-    if (Q_UNLIKELY(Theme::instance()->enableCernBranding())) {
-        if (!_item->_remotePerm.hasPermission(RemotePermissions::IsShared)
-            && (_item->_file == QLatin1String(".sys.admin#recall#") || _item->_file.endsWith(QLatin1String("/.sys.admin#recall#")))) {
-            const QString fn = propagator()->fullLocalPath(_item->destination());
-            CernRecallFeature::handleRecallFile(fn, propagator()->localPath(), *propagator()->_journal);
-        }
-    }
 
     const auto duration = std::chrono::milliseconds(_stopwatch.elapsed());
     if (isLikelyFinishedQuickly() && duration > 5s) {

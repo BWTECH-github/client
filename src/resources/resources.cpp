@@ -14,18 +14,20 @@
  */
 
 #include "resources/resources.h"
+#include "resources/iconresources.h"
 #include "resources/qmlresources.h"
 #include "resources/template.h"
 #include "resources/themewatcher.h"
 
-#include "common/asserts.h"
-
 #include <QDebug>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QImageReader>
 #include <QJsonDocument>
 #include <QLoggingCategory>
+#include <QPainter>
 #include <QPalette>
+#include <QStyleHints>
 
 using namespace OCC;
 using namespace Resources;
@@ -37,8 +39,17 @@ struct IconCache
 {
     IconCache()
     {
-        auto *watcher = new ThemeWatcher(qApp);
-        QObject::connect(watcher, &ThemeWatcher::themeChanged, [this]() { _cache.clear(); });
+        // auto *watcher = new ThemeWatcher(qApp);
+        // QObject::connect(watcher, &ThemeWatcher::themeChanged, [this]() { _cache.clear(); });
+
+        // as of qt 6.5 this is the "correct" way to listen for system color changes
+        // this generally works to clear the old icons, but places where the icon is already set, eg
+        // the toolbar actions and connection status, need to be reset to what is in the new cache.
+        // this will not work here, as we need to be sure the cache has been cleared *before* anyone
+        // asks for the icon again.
+        // I think at some point we should have a colorManager that orchestrates these updates relative
+        // to system color changes. The responsibility does not belong in resources!
+        QObject::connect(qGuiApp->styleHints(), &QStyleHints::colorSchemeChanged, [this]() { _cache.clear(); });
     }
     QMap<QString, QIcon> _cache;
 };
@@ -65,10 +76,6 @@ QString coloredTheme()
     return QStringLiteral("colored");
 }
 
-QString whiteTheme()
-{
-    return QStringLiteral("white");
-}
 
 bool hasTheme(IconType type, const QString &theme)
 {
@@ -92,106 +99,7 @@ bool OCC::Resources::hasDarkTheme()
     return _hasBrandedColored == _hasBrandedDark;
 }
 
-bool Resources::hasMonoTheme()
-{
-    // mono icons are only supported in vanilla and if a customer provides them
-    // no fallback to vanilla
-    return hasTheme(Resources::IconType::BrandedIcon, whiteTheme());
-}
-
-bool Resources::isVanillaTheme()
-{
-    return std::string_view(APPLICATION_SHORTNAME) == "ownCloud";
-}
-
-bool OCC::Resources::isUsingDarkTheme()
-{
-    // TODO: replace by a command line switch
-    static bool forceDark = qEnvironmentVariableIntValue("OWNCLOUD_FORCE_DARK_MODE") != 0;
-    return forceDark || QPalette().base().color().lightnessF() <= 0.5;
-}
-
-QIcon OCC::Resources::getCoreIcon(const QString &iconName)
-{
-    if (iconName.isEmpty()) {
-        return {};
-    }
-    QIcon &cached = iconCache->_cache[iconName]; // Take reference, this will also "set" the cache entry
-    if (cached.isNull()) {
-        const QString iconPath = QStringLiteral(":/client/resources/core/%1.svg").arg(iconName);
-        Q_ASSERT(QFileInfo::exists(iconPath));
-        const QString color = isUsingDarkTheme() ? QStringLiteral("#ADACAB") : QStringLiteral("#435671");
-        QByteArray data = Template::renderTemplateFromFile(iconPath, {{QStringLiteral("color"), color}}).toUtf8();
-        QBuffer buffer(&data);
-        QImageReader iconReader(&buffer, "svg");
-        return cached = QPixmap::fromImageReader(&iconReader);
-    }
-    return cached;
-    // "<svg width="60" height="60" viewBox="0 0 60 60" fill="#ADACAB" xmlns="http://www.w3.org/2000/svg">
-    //<path d="M15 15H45V45H15V15Z" fill="#ADACAB"
-    //    </svg>
-    //   "
-}
-
-/*
- * helper to load a icon from either the icon theme the desktop provides or from
- * the apps Qt resources.
- */
-QIcon OCC::Resources::loadIcon(const QString &flavor, const QString &name, IconType iconType)
-{
-    // prevent recusion
-    const bool useCoreIcon = (iconType == IconType::VanillaIcon) || isVanillaTheme();
-    const QString path = QStringLiteral("%1/%2/%3").arg(useCoreIcon ? vanillaThemePath() : brandThemePath(), flavor, name);
-    QIcon &cached = iconCache->_cache[path]; // Take reference, this will also "set" the cache entry
-    if (cached.isNull()) {
-        if (isVanillaTheme() && QIcon::hasThemeIcon(name)) {
-            // use from theme
-            return cached = QIcon::fromTheme(name);
-        }
-        const QString svg = QStringLiteral("%1.svg").arg(path);
-        if (QFile::exists(svg)) {
-            return cached = QIcon(svg);
-        }
-
-        const QString png = QStringLiteral("%1.png").arg(path);
-        if (QFile::exists(png)) {
-            return cached = QIcon(png);
-        }
-
-        const QList<int> sizes{16, 22, 32, 48, 64, 128, 256, 512, 1024};
-        QString previousIcon;
-        for (int size : sizes) {
-            QString pixmapName = QStringLiteral("%1-%2.png").arg(path, QString::number(size));
-            if (QFile::exists(pixmapName)) {
-                previousIcon = pixmapName;
-                cached.addFile(pixmapName, {size, size});
-            } else if (size >= 128) {
-                if (!previousIcon.isEmpty()) {
-                    qCWarning(lcResources) << "Upscaling:" << previousIcon << "to" << size;
-                    cached.addPixmap(QPixmap(previousIcon).scaled({size, size}, Qt::KeepAspectRatio, Qt::SmoothTransformation));
-                }
-            }
-        }
-    }
-    if (cached.isNull()) {
-        if (!useCoreIcon && iconType == IconType::BrandedIconWithFallbackToVanillaIcon) {
-            return loadIcon(flavor, name, IconType::VanillaIcon);
-        }
-        qCWarning(lcResources) << "Failed to locate the icon" << path;
-    }
-    return cached;
-}
-
-QIcon OCC::Resources::themeIcon(const QString &name, IconType iconType)
-{
-    return loadIcon((Resources::isUsingDarkTheme() && hasDarkTheme()) ? darkTheme() : coloredTheme(), name, iconType);
-}
-
-QIcon OCC::Resources::themeUniversalIcon(const QString &name, IconType iconType)
-{
-    return loadIcon(QStringLiteral("universal"), name, iconType);
-}
-
+// todo: all of this will die soon :)
 CoreImageProvider::CoreImageProvider()
     : QQuickImageProvider(QQuickImageProvider::Pixmap)
 {
@@ -202,11 +110,12 @@ QPixmap CoreImageProvider::requestPixmap(const QString &id, QSize *size, const Q
 
     QIcon icon;
     if (qmlIcon.theme == QLatin1String("core")) {
-        icon = getCoreIcon(qmlIcon.iconName);
+        icon = IconResources::getCoreIcon(qmlIcon.iconName);
     } else if (qmlIcon.theme == QLatin1String("universal")) {
-        icon = themeUniversalIcon(qmlIcon.iconName);
+        icon = IconResources::getBrandingIcon(qmlIcon.iconName);
     } else {
-        icon = themeIcon(qmlIcon.iconName);
+        QString themeName = IconResources::isUsingDarkTheme() && hasDarkTheme() ? darkTheme() : coloredTheme();
+        icon = IconResources::getThemedIcon(themeName, qmlIcon.iconName);
     }
     return Resources::pixmap(requestedSize, icon, qmlIcon.enabled ? QIcon::Normal : QIcon::Disabled, size);
 }

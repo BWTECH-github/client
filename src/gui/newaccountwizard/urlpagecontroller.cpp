@@ -14,19 +14,36 @@
 #include "urlpagecontroller.h"
 
 #include "accessmanager.h"
+#include "common/utility.h"
 #include "config/appconfig.h"
+#include "iconresources.h"
+#include "mainwindow/colormanager.h"
 #include "networkadapters/determineauthtypeadapter.h"
 #include "networkadapters/discoverwebfingerserviceadapter.h"
 #include "networkadapters/resolveurladapter.h"
+#include "networkadapters/serverdiagnostics.h"
 #include "theme.h"
+#include "wizardpagelayout.h"
 
+#include <QGuiApplication>
 #include <QLabel>
 #include <QLineEdit>
+#include <QRegularExpression>
 #include <QSignalBlocker>
 #include <QVBoxLayout>
 #include <QWizardPage>
 
 namespace OCC {
+
+namespace {
+    // „//“ im Pfad zu „/“ zusammenfassen: Utility::concatUrlPath() verlangt Pfade ohne „//“ (Q_ASSERT, in Beta-Builds ein
+    // Absturz), und eine eingefügte Adresse bringt sie leicht mit („https://server//“, an eine Adresse angehängt)
+    QString withoutDoubledSlashes(QString path)
+    {
+        static const QRegularExpression doubledSlashes(QStringLiteral("/{2,}"));
+        return path.replace(doubledSlashes, QStringLiteral("/"));
+    }
+}
 
 UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessManager, QObject *parent)
     : QObject(parent)
@@ -51,7 +68,7 @@ UrlPageController::UrlPageController(QWizardPage *page, AccessManager *accessMan
     bool allowServerUrlChange = systemConfig.allowServerUrlChange();
     if (!allowServerUrlChange) {
         _urlField->setEnabled(false);
-        _instructionLabel->setText(tr("Your web browser will be opened to complete sign in."));
+        _instructionLabel->setText(tr("Sign in to get started."));
     }
 }
 
@@ -62,11 +79,11 @@ void UrlPageController::buildPage()
 
     QString appName = Theme::instance()->appNameGUI();
 
-    QLabel *logoLabel = new QLabel({}, _page);
-    logoLabel->setPixmap(Theme::instance()->wizardHeaderLogo().pixmap(200, 100));
-    logoLabel->setAlignment(Qt::AlignCenter);
-    logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
+    _logoLabel = new QLabel({}, _page);
+    // logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
+    _logoLabel->setAlignment(Qt::AlignCenter);
+    _logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _logoLabel->setAccessibleName(tr("%1 logo").arg(appName));
 
     QLabel *welcomeLabel = new QLabel(tr("Welcome to %1").arg(appName), _page);
     QFont welcomeFont = welcomeLabel->font();
@@ -75,8 +92,11 @@ void UrlPageController::buildPage()
     welcomeLabel->setFont(welcomeFont);
     welcomeLabel->setAlignment(Qt::AlignCenter);
     welcomeLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    // eine längere Übersetzung oder große Schrift bricht um, statt am Rand abgeschnitten zu werden
+    welcomeLabel->setWordWrap(true);
 
-    _instructionLabel = new QLabel(tr("Enter your server address to get started. Your web browser will be opened to complete sign in."), _page);
+    // wie die Anmeldung weitergeht (Browser oder Kennwort), weiß erst die Adressprüfung
+    _instructionLabel = new QLabel(tr("Enter your server address to get started."), _page);
     QFont font = _instructionLabel->font();
     font.setPixelSize(14);
     _instructionLabel->setFont(font);
@@ -85,10 +105,6 @@ void UrlPageController::buildPage()
     _instructionLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
     _urlField = new QLineEdit(_page);
-    QPalette urlFieldPalette = _urlField->palette();
-    urlFieldPalette.setColor(QPalette::Base, urlFieldPalette.color(QPalette::Button));
-    urlFieldPalette.setColor(QPalette::Text, urlFieldPalette.color(QPalette::ButtonText));
-    _urlField->setPalette(urlFieldPalette);
     _urlField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _urlField->setPlaceholderText(Theme::instance()->wizardUrlPlaceholder());
     _urlField->setFocusPolicy(Qt::StrongFocus);
@@ -97,9 +113,8 @@ void UrlPageController::buildPage()
     _urlField->setObjectName("ServerAddressLineEdit");
 
     _errorField = new QLabel(QString(), _page);
-    QPalette errorPalette = _errorField->palette();
-    errorPalette.setColor(QPalette::Text, Qt::red);
-    _errorField->setPalette(errorPalette);
+    // Fehlerrot aus dem Theme (WCAG 4,5:1); Qt::red erreichte auf Weiß nur 4:1 und wirkte auf QLabel gar nicht
+    ColorManager::applyErrorColor(_errorField);
     QFont errorFont = _errorField->font();
     errorFont.setPixelSize(14);
     _errorField->setFont(errorFont);
@@ -109,9 +124,9 @@ void UrlPageController::buildPage()
     _errorField->setTextInteractionFlags(Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
 
     QLabel *footerLogoLabel = nullptr;
-    if (!Theme::instance()->wizardFooterLogo().isNull()) {
+    if (!Theme::instance()->wizardFooterLogoName().isEmpty()) {
         footerLogoLabel = new QLabel({}, _page);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
+        footerLogoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardFooterLogoName()).pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         footerLogoLabel->setAccessibleName(tr("Additional logo defined by the organization"));
@@ -121,7 +136,7 @@ void UrlPageController::buildPage()
     layout->setContentsMargins(50, 0, 50, 0);
     layout->setSpacing(12);
     layout->addStretch(1);
-    layout->addWidget(logoLabel);
+    layout->addWidget(_logoLabel);
     layout->addSpacing(16);
     layout->addWidget(welcomeLabel);
     layout->addWidget(_instructionLabel);
@@ -130,9 +145,29 @@ void UrlPageController::buildPage()
     if (footerLogoLabel)
         layout->addWidget(footerLogoLabel);
     layout->addStretch(1);
-    _page->setLayout(layout);
+    setScrollableWizardPageLayout(_page, layout);
+
+    updateColorsAndIcons();
 
     _urlField->setFocus(Qt::OtherFocusReason);
+}
+
+void UrlPageController::updateColorsAndIcons()
+{
+    QPalette appPalette = qGuiApp->palette();
+    QPalette urlFieldPalette = _urlField->palette();
+    urlFieldPalette.setColor(QPalette::Base, appPalette.color(QPalette::Button));
+    urlFieldPalette.setColor(QPalette::Text, appPalette.color(QPalette::ButtonText));
+    _urlField->setPalette(urlFieldPalette);
+
+    _logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
+}
+
+void UrlPageController::presetUrl(const QString &urlText)
+{
+    if (_urlField && _urlField->isEnabled()) {
+        setUrl(urlText);
+    }
 }
 
 void UrlPageController::setUrl(const QString &urlText)
@@ -143,6 +178,8 @@ void UrlPageController::setUrl(const QString &urlText)
 
 void UrlPageController::handleError(const QString &error)
 {
+    // Platz für die Meldung, die mehrere Zeilen braucht: Das Logo hat seinen Zweck auf dieser Seite dann erfüllt
+    _logoLabel->setVisible(false);
     _errorField->setText(error);
     _results.error = error;
     Q_EMIT failure(_results);
@@ -153,7 +190,10 @@ QUrl UrlPageController::checkUrl()
     if (!_accessManager)
         return QUrl();
 
-    QString userUrl = _urlField->text();
+    QString userUrl = _urlField->text().trimmed();
+    // eingefügt in ein Feld, in dem „https://“ schon stand: „https://https://server“ hätte den Host „https“
+    static const QRegularExpression doubledScheme(QStringLiteral("^(?:https?://)+(?=https?://)"), QRegularExpression::CaseInsensitiveOption);
+    userUrl.remove(doubledScheme);
 
     // we need to check the scheme to be sure it's not there, but using the old "string matching" technique was not great
     // because it added https:// to urls that had valid schemes but which did not match http or https. That was more complicating
@@ -182,6 +222,8 @@ QUrl UrlPageController::checkUrl()
 
     if (finalUrl.isValid()) {
         finalUrl = finalUrl.adjusted(QUrl::RemoveUserInfo | QUrl::RemoveQuery);
+        // kodiert bearbeiten: Ein Prozentzeichen im Pfad bleibt, was es war
+        finalUrl.setPath(withoutDoubledSlashes(finalUrl.path(QUrl::FullyEncoded)), QUrl::TolerantMode);
         const QString serverPathOverride = Theme::instance()->overrideServerPath();
         if (!serverPathOverride.isEmpty()) {
             finalUrl.setPath(serverPathOverride);
@@ -194,6 +236,8 @@ bool UrlPageController::validate()
 {
     _results = {};
     _errorField->clear();
+    // handleError() blendet das Logo für die Meldung aus; ohne Meldung gehört es wieder hin (auch nach „Zurück“)
+    _logoLabel->setVisible(true);
 
     if (!_accessManager) {
         handleError(QStringLiteral("No valid access manager is available"));
@@ -206,8 +250,9 @@ bool UrlPageController::validate()
     QUrl givenUrl = checkUrl();
     if (!givenUrl.isValid()) {
         QString fullError = givenUrl.errorString();
-        QStringList parts = fullError.split(QStringLiteral(";"), Qt::SkipEmptyParts);
-        handleError(tr("Invalid server URL: %1").arg(parts[0] + parts[1]));
+        // die ersten beiden Teile der Qt-Meldung; sie hat nicht immer zwei, und parts[1] bräche dann ab
+        const QStringList parts = fullError.split(QStringLiteral(";"), Qt::SkipEmptyParts);
+        handleError(tr("Invalid server URL: %1").arg(parts.mid(0, 2).join(QString())));
         return false;
     } else if (givenUrl.scheme().isEmpty() || givenUrl.scheme() != QStringLiteral("https")) // scheme should not be empty but who knows
     {
@@ -223,7 +268,12 @@ bool UrlPageController::validate()
     // in case any kind of error occurs, we assume the WebFinger service is not available
     if (webfingerServiceResult.success()) {
         _results.baseServerUrl = givenUrl;
-        _results.webfingerServiceUrl = QUrl(webfingerServiceResult.href);
+        // die Adresse nennt der Server: ein Issuer hat weder Anfrage noch Fragment (OpenID Connect Discovery), und mit „//“
+        // im Pfad bräche die Anmeldung in Utility::concatUrlPath ab
+        _results.webfingerServiceUrl =
+            Utility::withoutDoubledSlashes(QUrl(webfingerServiceResult.href).adjusted(QUrl::RemoveQuery | QUrl::RemoveFragment));
+        // WebFinger nennt einen OpenID-Connect-Anbieter: Anmeldung im Browser
+        _results.authType = AuthenticationType::OAuth;
     } else {
         // first, we must resolve the actual server URL
         // note we have to pass the wizard dialog to the adapter to parent the tlsErrorDialog
@@ -251,16 +301,26 @@ bool UrlPageController::validate()
             _results.certificates = resolveUrlResult.acceptedCertificates;
         }
 
-        // This is now a mere formality to be very very very sure that the base url uses oauth. In the unlikely event that it doesn't
-        // the job simply fails.
+        // Anmeldung im Browser (OAuth2, OpenID Connect) oder mit Benutzername und Kennwort (Server ohne die App „OAuth2“)?
         DetermineAuthTypeAdapter authTypeAdapter(_accessManager, finalUrl);
         const DetermineAuthTypeResult authResult = authTypeAdapter.getResult();
         if (!authResult.success()) {
-            handleError(authResult.error);
+            // Antwortete schon status.php nicht wie owncloud.online, zeigt die Adresse auf einen anderen Server; das ist dann
+            // die verständlichere Erklärung für einen sonst unklaren Fehler
+            if (authResult.issue == ServerDiagnostics::Issue::Other && !resolveUrlResult.owncloudStatus) {
+                handleError(ServerDiagnostics::message(ServerDiagnostics::Issue::NotOwncloudServer, finalUrl));
+            } else {
+                handleError(authResult.error);
+            }
             return false;
         }
 
-        Q_ASSERT(authResult.type == AuthenticationType::OAuth);
+        if (authResult.type == AuthenticationType::Unknown) {
+            // der Adapter meldet jede unklare Antwort als Fehler; ohne Anmeldeart ginge der Assistent in die Irre
+            handleError(ServerDiagnostics::message(ServerDiagnostics::Issue::NotOwncloudServer, finalUrl));
+            return false;
+        }
+        _results.authType = authResult.type;
         _results.baseServerUrl = finalUrl;
     }
     Q_EMIT success(_results);

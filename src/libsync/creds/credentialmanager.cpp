@@ -102,7 +102,12 @@ QKeychain::Job *CredentialManager::set(const QString &key, const QVariant &data)
 
 QKeychain::Job *CredentialManager::remove(const QString &key)
 {
-    OC_ASSERT(contains(key));
+    // Die Liste liegt in der Konfigurationsdatei, der Eintrag im Schlüsselbund des Systems: Beides kann sich außerhalb des
+    // Clients ändern (Datei bearbeitet, Eintrag in der Anmeldeinformationsverwaltung gelöscht). Löschen bleibt trotzdem
+    // richtig; die früheren OC_ASSERTs beendeten mit FORCE_ASSERTS (Beta) das Programm beim Abmelden oder Entfernen des Kontos.
+    if (!contains(key)) {
+        qCWarning(lcCredentialsManager) << "Removing" << key << "which is not in the list of stored credentials";
+    }
     // remove immediately to prevent double invocation by clear()
     credentialsList().remove(key);
     const QString scoped = scopedKey(key);
@@ -110,9 +115,10 @@ QKeychain::Job *CredentialManager::remove(const QString &key)
     auto keychainJob = new QKeychain::DeletePasswordJob(Theme::instance()->appName());
     keychainJob->setKey(scoped);
     connect(keychainJob, &QKeychain::DeletePasswordJob::finished, this, [keychainJob, scoped] {
-        OC_ASSERT(keychainJob->error() != QKeychain::EntryNotFound);
         if (keychainJob->error() == QKeychain::NoError) {
             qCInfo(lcCredentialsManager) << "removed" << scoped;
+        } else if (keychainJob->error() == QKeychain::EntryNotFound) {
+            qCInfo(lcCredentialsManager) << "already gone from the keychain:" << scoped;
         } else {
             qCWarning(lcCredentialsManager) << "Failed to remove:" << scoped << keychainJob->errorString();
         }
@@ -167,8 +173,12 @@ QStringList CredentialManager::knownKeys(const QString &group) const
 QSettings &CredentialManager::credentialsList() const
 {
     // delayed init as scope requires a fully inizialised acc
-    if (!_credentialsList) {
-        _credentialsList = ConfigFile::settingsWithGroup("Credentials/" + scope());
+    // nach Account::setUrl() mit neuem Host gehört die Liste zu einem anderen Bereich, sonst landeten neue Schlüssel unter
+    // dem alten und wären nach einem Neustart verloren
+    const QString currentScope = scope();
+    if (!_credentialsList || _credentialsListScope != currentScope) {
+        _credentialsList = ConfigFile::settingsWithGroup("Credentials/" + currentScope);
+        _credentialsListScope = currentScope;
     }
     return *_credentialsList;
 }
@@ -208,6 +218,8 @@ void CredentialJob::start()
             qCInfo(lcCredentialsManager) << "Backend unavailable (yet?) Retrying in a few seconds." << _job->errorString();
             QTimer::singleShot(10s, this, &CredentialJob::start);
             _retryOnKeyChainError = false;
+            // erst nach dem zweiten Versuch fertig: finished() löschte diesen Auftrag samt Zeitgeber (deleteLater)
+            return;
         }
 #endif
         if (_job->error() == QKeychain::NoError) {
@@ -216,10 +228,16 @@ void CredentialJob::start()
             if (error.error != QCborError::NoError) {
                 _error = QKeychain::OtherError;
                 _errorString = tr("Failed to parse credentials %1").arg(error.errorString());
+                // auch der Fehler ist ein Ergebnis: ohne finished() wartete der Aufrufer für immer
+                Q_EMIT finished();
                 return;
             }
             _data = obj.toVariant();
-            OC_ASSERT(_data.isValid());
+            // Ein Eintrag ohne verwertbaren Wert (etwa von einem anderen Programm geschrieben) zählt wie ein leerer: Die Aufrufer
+            // verlangen dann eine neue Anmeldung. Das frühere OC_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+            if (!_data.isValid()) {
+                qCWarning(lcCredentialsManager) << "The keychain entry" << _scopedKey << "holds no usable value";
+            }
         } else {
             qCWarning(lcCredentialsManager) << "Failed to get password" << _scopedKey << _job->errorString();
             _error = _job->error();

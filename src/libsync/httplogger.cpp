@@ -41,7 +41,8 @@ bool isTextBody(const QString &s)
 }
 
 // Der OAuth2-Token-Endpunkt bekommt Code, Code-Verifier und Refresh-Token im Formular und
-// antwortet mit Access- und Refresh-Token als JSON: deren Werte nie ins Protokoll schreiben
+// antwortet mit Access- und Refresh-Token als JSON: deren Werte nie ins Protokoll schreiben.
+// "password" deckt auch die Link-Passwörter des Teilen-Dialogs ab (Formularfeld der Anfrage).
 QString redactCredentials(QString body)
 {
     static const QRegularExpression formField(

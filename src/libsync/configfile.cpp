@@ -57,6 +57,7 @@ const QString optionalDesktopNotificationsC()
     return QStringLiteral("optionalDesktopNotifications");
 }
 const QString updateCheckIntervalC() { return QStringLiteral("updateCheckInterval"); }
+const QString updateChannelC() { return QStringLiteral("updateChannel"); }
 const QString uiLanguageC() { return QStringLiteral("uiLanguage"); }
 const QString geometryC() { return QStringLiteral("geometry"); }
 const QString timeoutC() { return QStringLiteral("timeout"); }
@@ -83,7 +84,6 @@ const QString pauseSyncWhenMeteredC()
 {
     return QStringLiteral("pauseWhenMetered");
 }
-const QString moveToTrashC() { return QStringLiteral("moveToTrash"); }
 const QString showMainDialogOnStartupC() { return QStringLiteral("showMainDialogOnStartup"); }
 // key names match the classic 2.x client so existing configs keep working
 const QString newBigFolderSizeLimitC() { return QStringLiteral("newBigFolderSizeLimit"); }
@@ -270,6 +270,30 @@ QString ConfigFile::excludeFileFromSystem()
     return ":/libsync/sync-exclude.lst";
 }
 
+QString ConfigFile::excludeFileFromInstallation(const QString &applicationDir)
+{
+    // owncloud.online: systemweite Liste für Administratoren an den Orten von 6.0.3; sie ergänzt die eingebaute Liste
+    const QDir appDir(applicationDir.isEmpty() ? QCoreApplication::applicationDirPath() : applicationDir);
+    QStringList candidates;
+#if defined(Q_OS_WIN)
+    candidates << appDir.filePath(excludeFileNameC());
+#elif defined(Q_OS_MAC)
+    // im signierten Programmpaket kann ein Administrator nichts ändern, deshalb zuerst die Systembibliothek
+    candidates << QStringLiteral("/Library/Application Support/%1/%2").arg(Theme::instance()->appName(), excludeFileNameC())
+               << appDir.filePath(QStringLiteral("../Resources/") + excludeFileNameC());
+#else
+    candidates << QStringLiteral("/etc/%1/%2").arg(Theme::instance()->appName(), excludeFileNameC()) << appDir.filePath(excludeFileNameC())
+               << appDir.filePath(QStringLiteral("../etc/%1/%2").arg(Theme::instance()->appName(), excludeFileNameC()));
+#endif
+    for (const auto &candidate : std::as_const(candidates)) {
+        const QFileInfo info(candidate);
+        if (info.isFile() && info.isReadable()) {
+            return QDir::cleanPath(info.absoluteFilePath());
+        }
+    }
+    return {};
+}
+
 QString ConfigFile::backup() const
 {
     QString baseFile = configFile();
@@ -426,6 +450,17 @@ chrono::milliseconds ConfigFile::updateCheckInterval(const QString &connection) 
     return interval;
 }
 
+QString ConfigFile::updateChannel() const
+{
+    // frühe Bauten dieses Forks schrieben hier ungefragt "ocis": ungültige Werte verwirft Updater::channel()
+    return getValue(updateChannelC()).toString();
+}
+
+void ConfigFile::setUpdateChannel(const QString &channel)
+{
+    setValue(updateChannelC(), channel);
+}
+
 QString ConfigFile::uiLanguage() const
 {
     auto settings = makeQSettings();
@@ -506,17 +541,6 @@ bool ConfigFile::pauseSyncWhenMetered() const
 void ConfigFile::setPauseSyncWhenMetered(bool isChecked)
 {
     setValue(pauseSyncWhenMeteredC(), isChecked);
-}
-
-bool ConfigFile::moveToTrash() const
-{
-    bool defaultValue = Theme::instance()->moveToTrashDefaultValue();
-    return getValue(moveToTrashC(), QString(), defaultValue).toBool();
-}
-
-void ConfigFile::setMoveToTrash(bool isChecked)
-{
-    setValue(moveToTrashC(), isChecked);
 }
 
 bool ConfigFile::showMainDialogOnStartup() const
@@ -746,12 +770,18 @@ std::unique_ptr<QSettings> ConfigFile::settingsWithGroup(const QString &group)
     return settings;
 }
 
-void ConfigFile::setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles)
+void ConfigFile::setupDefaultExcludeFilePaths(ExcludedFiles &excludedFiles, const QString &applicationDir)
 {
     ConfigFile cfg;
     QString systemList = cfg.excludeFile(ConfigFile::SystemScope);
     qCInfo(lcConfigFile) << "Adding system ignore list to csync:" << systemList;
     excludedFiles.addExcludeFilePath(systemList);
+
+    const QString installationList = excludeFileFromInstallation(applicationDir);
+    if (!installationList.isEmpty()) {
+        qCInfo(lcConfigFile) << "Adding system wide ignore list of the installation to csync:" << installationList;
+        excludedFiles.addExcludeFilePath(installationList);
+    }
 
     QString userList = cfg.excludeFile(ConfigFile::UserScope);
     if (QFile::exists(userList)) {

@@ -25,7 +25,9 @@ QString dehydrationReasonToName(CF_CALLBACK_DEHYDRATION_REASON reason)
         ENUM_CASE_NAME(CF_CALLBACK_DEHYDRATION_REASON_SYSTEM_INACTIVITY);
         ENUM_CASE_NAME(CF_CALLBACK_DEHYDRATION_REASON_SYSTEM_OS_UPGRADE);
     }
-    Q_UNREACHABLE();
+    // Den Grund nennt Windows; neuere Versionen können weitere kennen. Nur für das Protokoll: Das frühere Q_UNREACHABLE beendete
+    // mit FORCE_ASSERTS (Beta) das Programm (ohne Assert undefiniertes Verhalten).
+    return QStringLiteral("dehydration reason %1").arg(static_cast<int>(reason));
 }
 }
 
@@ -47,8 +49,10 @@ void CALLBACK callbackFetchData(const CF_CALLBACK_INFO *info, const CF_CALLBACK_
     if (params->FetchData.OptionalFileOffset.QuadPart == resumeEnd) {
         resumeEnd += params->FetchData.OptionalLength.QuadPart;
         qCInfo(lcVfs) << Q_FUNC_INFO << "Performing an optional extended hydration";
-    } else if (OC_ENSURE(params->FetchData.OptionalFileOffset.QuadPart == 0)) {
-        // noop
+    } else if (params->FetchData.OptionalFileOffset.QuadPart != 0) {
+        // Den optionalen Bereich wählt Windows (etwa beim Lesen mitten aus der Datei); geladen wird dann nur der verlangte. Das
+        // frühere OC_ENSURE beendete mit FORCE_ASSERTS (Beta) das Programm aus diesem Rückruf heraus.
+        qCInfo(lcVfs) << Q_FUNC_INFO << "Ignoring the optional range at" << params->FetchData.OptionalFileOffset.QuadPart;
     }
 
     const QString path = CfCallbackInfoHelper::getFullNormalizedPath(info);

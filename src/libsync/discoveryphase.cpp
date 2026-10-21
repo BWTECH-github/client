@@ -86,7 +86,7 @@ void DiscoveryPhase::checkSelectiveSyncNewFolder(const QString &path, RemotePerm
     if (findPathInList(_selectiveSyncWhiteList, path)) {
         return callback(false);
     }
-    if (_syncOptions._confirmExternalStorage && _syncOptions._vfs->mode() == Vfs::Off
+    if (_syncOptions._confirmExternalStorage && _syncOptions.vfs()->mode() == Vfs::Off
         && remotePerm.hasPermission(RemotePermissions::IsMounted)) {
         // external storage mount point: always ask, regardless of size
         Q_EMIT newBigFolder(path, true);
@@ -180,7 +180,11 @@ QPair<bool, QString> DiscoveryPhase::findAndCancelDeletedJob(const QString &orig
                 qCWarning(lcDiscovery) << "item->_type" << item->_type;
                 qCWarning(lcDiscovery) << "item->_isRestoration " << item->_isRestoration;
                 qCWarning(lcDiscovery) << "item->_remotePerm" << item->_remotePerm;
-                OC_ENFORCE(false);
+                // Eingetragen wurde der Eintrag als Löschung (siehe processFileFinalize); checkPermissions() kann die Anweisung
+                // danach noch ändern, je nach Rechten und Zustand auf Server und Datenträger. Wie in den erlaubten Fällen gilt die
+                // Löschung als durch die Umbenennung ersetzt. Das frühere OC_ENFORCE beendete das Programm (in jedem Build) bei
+                // jedem Sync wieder an derselben Stelle.
+                qCCritical(lcDiscovery) << "Cancelling the unexpected deleted item" << originalPath << "in favour of the rename";
             }
             item->setInstruction(CSYNC_INSTRUCTION_NONE);
             result = true;
@@ -388,9 +392,14 @@ static void propertyMapToRemoteInfo(const QMap<QString, QString> &map, RemoteInf
         result.isDirectory = it->value().contains(QStringLiteral("collection"));
     }
     if (auto it = Utility::optionalFind(map, QStringLiteral("getlastmodified"))) {
+        // Das Datum schreibt der Server (oder ein Proxy davor). Ein unlesbares bleibt 0 wie ein fehlendes; das frühere Q_ASSERT
+        // beendete mit FORCE_ASSERTS (Beta) das Programm bei jedem Sync.
         const auto date = Utility::parseRFC1123Date(**it);
-        Q_ASSERT(date.isValid());
-        result.modtime = date.toSecsSinceEpoch();
+        if (date.isValid()) {
+            result.modtime = date.toSecsSinceEpoch();
+        } else {
+            qCWarning(lcDiscovery) << "Unreadable getlastmodified" << **it;
+        }
     }
     if (auto it = Utility::optionalFind(map, QStringLiteral("getcontentlength"))) {
         // See #4573, sometimes negative size values are returned

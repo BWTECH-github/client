@@ -17,14 +17,14 @@
 
 #include "theme.h"
 
-#include "resources/resources.h"
+#include "resources/iconresources.h"
 
 #include <QStyle>
 
 namespace OCC {
 
-AppImageUpdateAvailableWidget::AppImageUpdateAvailableWidget(const QVersionNumber &currentVersion, const QVersionNumber &newVersion, QWidget *parent)
-    : QWidget(parent)
+AppImageUpdateAvailableWidget::AppImageUpdateAvailableWidget(const QString &currentVersion, const QString &newVersion, QWidget *parent)
+    : QDialog(parent)
     , _ui(new Ui::AppImageUpdateAvailableWidgetUi)
 {
     _ui->setupUi(this);
@@ -32,28 +32,32 @@ AppImageUpdateAvailableWidget::AppImageUpdateAvailableWidget(const QVersionNumbe
     const auto *theme = Theme::instance();
 
     // the strings in the .ui file are not marked for translation, they're just placeholders
-    _ui->installedVersionLabel->setText(tr("Installed version: %1").arg(currentVersion.toString()));
-    _ui->availableVersionLabel->setText(tr("Available update: %1").arg(newVersion.toString()));
+    _ui->installedVersionLabel->setText(tr("Installed version: %1").arg(currentVersion));
+    _ui->availableVersionLabel->setText(tr("Available update: %1").arg(newVersion));
     _ui->infoLabel->setText(tr("An update is available for this AppImage of %1. Do you want to install this update?\n\nThe update will be performed in the "
                                "background, and overwrite the current AppImage file. You need to restart the app to complete the update.")
                                 .arg(theme->appNameGUI()));
 
-    _ui->appIconLabel->setPixmap(theme->aboutIcon().pixmap(QSize(128, 128)));
+    _ui->appIconLabel->setPixmap(IconResources::getBrandingIcon(theme->aboutIconName()).pixmap(QSize(128, 128)));
 
     // we use custom icons to ensure a unified look on all platforms
-    _ui->buttonBox->button(QDialogButtonBox::Ok)->setIcon(Resources::getCoreIcon(QStringLiteral("check")));
-    _ui->buttonBox->button(QDialogButtonBox::Cancel)->setIcon(Resources::getCoreIcon(QStringLiteral("ban")));
-    _ui->skipButton->setIcon(Resources::getCoreIcon(QStringLiteral("step-forward")));
+    _ui->buttonBox->button(QDialogButtonBox::Ok)->setIcon(IconResources::getCoreIcon(QStringLiteral("check")));
+    _ui->buttonBox->button(QDialogButtonBox::Cancel)->setIcon(IconResources::getCoreIcon(QStringLiteral("ban")));
+    _ui->skipButton->setIcon(IconResources::getCoreIcon(QStringLiteral("step-forward")));
 
     // the minimum size of the info label (and a few other labels) depends on their contents
     // we can't persuade the dialog to resize automatically to the recommended size in Qt Designer, so we do it manually
-    resize(sizeHint());
+    // resize(sizeHint());
     // also, we want to prevent users from reducing the widget size too much, i.e., widgets would be hidden partially
-    setMinimumSize(sizeHint());
+    // setMinimumSize(sizeHint());
 
-    connect(_ui->buttonBox->button(QDialogButtonBox::Ok), &QPushButton::clicked, this, &AppImageUpdateAvailableWidget::accepted);
-    connect(_ui->buttonBox->button(QDialogButtonBox::Cancel), &QPushButton::clicked, this, &AppImageUpdateAvailableWidget::rejected);
-    connect(_ui->skipButton, &QPushButton::clicked, this, &AppImageUpdateAvailableWidget::skipUpdateButtonClicked);
+    connect(_ui->skipButton, &QPushButton::clicked, this, &AppImageUpdateAvailableWidget::slotSkipUpdate);
+}
+
+void AppImageUpdateAvailableWidget::slotSkipUpdate()
+{
+    emit skipUpdateButtonClicked();
+    emit finished(QDialog::Rejected);
 }
 
 AppImageUpdateAvailableWidget::~AppImageUpdateAvailableWidget()

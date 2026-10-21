@@ -19,7 +19,6 @@
 #include "libsync/account.h"
 #include "libsync/cookiejar.h"
 #include "libsync/creds/abstractcredentials.h"
-#include "libsync/theme.h"
 
 #include <QJsonParseError>
 
@@ -127,6 +126,9 @@ CoreJob *CheckServerJobFactory::startJob(const QUrl &url, QObject *parent)
         if (!Utility::urlEqual(url, targetUrl)) {
             qCWarning(lcCheckServerJob) << "We got a redirect from " << url << " to " << targetUrl << ", aborting";
             setJobError(job, QStringLiteral("Redirect from server"));
+            // fertig: ohne return setzte einer der Zweige unten ein zweites Ergebnis, und das OC_ENSURE in CoreJob beendete mit
+            // FORCE_ASSERTS (Beta) das Programm
+            return;
         }
 
         const int httpStatus = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();

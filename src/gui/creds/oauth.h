@@ -70,15 +70,26 @@ public:
     ~OAuth() override;
 
     virtual void startAuthentication();
+    /**
+     * Öffnet authorisationLink() im Browser. Vor authorisationLinkChanged() und nach dem Rückruf des Browsers gibt es
+     * keinen gültigen Link; dann geschieht nichts und es kommt auch kein result().
+     */
     void openBrowser();
     QUrl authorisationLink() const;
+
+    /**
+     * true, solange der Rückruf-Listener auf den Browser wartet: ab startAuthentication() bis der Rückruf mit
+     * passendem state eintrifft. Bis dahin bleibt jeder ausgegebene authorisationLink() gültig.
+     */
+    bool isListening() const;
 
 Q_SIGNALS:
     /**
      * The state has changed.
-     * when logged in, token has the value of the token.
+     * when logged in, token has the value of the token. expiresIn ist die Lebensdauer des Access-Tokens aus dem
+     * Code-Tausch in Sekunden, 0, wenn der Server sie nicht nennt.
      */
-    void result(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString());
+    void result(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString(), qint64 expiresIn = 0);
 
     /**
      * emitted when the call to the well-known endpoint is finished
@@ -95,6 +106,8 @@ protected:
     OpenIdConfig _openIdConfig;
     QNetworkAccessManager *_networkAccessManager;
     bool _isRefreshingToken = false;
+    // .well-known nannte die Endpunkte (OpenID Connect); sonst gelten die Wege der oauth2-App
+    bool _usesOpenIdConnect = false;
 
     virtual void fetchWellKnown();
 
@@ -104,6 +117,7 @@ protected Q_SLOTS:
     void handleSocketReadyRead();
 
 private:
+    bool listen();
     void handleTcpConnection();
     void getTokens();
     void checkUserInfo();
@@ -116,10 +130,14 @@ private:
     // The actual data we're collecting!
     QString _accessToken;
     QString _refreshToken;
+    // Lebensdauer des Access-Tokens aus dem Code-Tausch in Sekunden, 0: unbekannt
+    qint64 _expiresIn = 0;
     QUrl _messageUrl;
 
     // peripheral deps
+    // Rückruf-Listener auf 127.0.0.1 und ::1 mit demselben Port; redirect_uri nennt localhost
     QTcpServer _server;
+    QTcpServer _serverV6;
     QPointer<QTcpSocket> _socket;
     QUrlQuery _queryArgs;
     quint16 _serverPort;
@@ -150,13 +168,28 @@ public:
 
     void startAuthentication() override;
 
+    /**
+     * Erneuert das Access-Token mit dem Refresh-Token. Es folgt genau eines der Signale refreshFinished(),
+     * refreshRejected() oder refreshFailed().
+     */
     void refreshAuthentication(const QString &refreshToken);
 
 Q_SIGNALS:
-    // this can either come from refreshAuthentication or the fetchWellKnown's
-    // checkServerJob
-    void refreshError(QNetworkReply::NetworkError error, const QString &errorString);
-    void refreshFinished(const QString &accessToken, const QString &refreshToken);
+    /**
+     * Neue Tokens. refreshToken ist das bisherige, wenn der Server kein neues schickt (RFC 6749, Abschnitt 6);
+     * expiresIn ist die Lebensdauer des Access-Tokens in Sekunden, 0, wenn der Server sie nicht nennt.
+     */
+    void refreshFinished(const QString &accessToken, const QString &refreshToken, qint64 expiresIn);
+
+    /** Der Server nimmt das Refresh-Token nicht mehr an (invalid_grant): nur eine neue Anmeldung hilft. */
+    void refreshRejected(const QString &errorString);
+
+    /**
+     * Die Erneuerung ist vorübergehend gescheitert: Netz, Zeitüberschreitung, Serverfehler, Wartung (maintenance) oder eine
+     * unerwartete Antwort. Das Refresh-Token gilt weiter; newRefreshToken ist gesetzt, wenn der Server trotzdem schon ein
+     * neues geschickt hat.
+     */
+    void refreshFailed(const QString &errorString, bool maintenance, const QString &newRefreshToken);
 
 protected:
     void fetchWellKnown() override;

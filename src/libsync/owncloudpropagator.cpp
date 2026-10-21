@@ -447,9 +447,10 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
     // configured. The manager stays null (and transfers are unaffected) when no
     // limit is set. Limits are stored in kB/s and passed as bytes/s.
     {
+        // eine Vorgabe des Laufs (owncloudcmd --uplimit/--downlimit) geht den Einstellungen vor
         const ConfigFile cfg;
-        const qint64 uploadLimit = cfg.useUploadLimit() == 1 ? cfg.uploadLimit() * 1024LL : 0;
-        const qint64 downloadLimit = cfg.useDownloadLimit() == 1 ? cfg.downloadLimit() * 1024LL : 0;
+        const qint64 uploadLimit = _syncOptions._uploadLimit.value_or(cfg.useUploadLimit() == 1 ? cfg.uploadLimit() * 1024LL : 0);
+        const qint64 downloadLimit = _syncOptions._downloadLimit.value_or(cfg.useDownloadLimit() == 1 ? cfg.downloadLimit() * 1024LL : 0);
         if ((uploadLimit != 0 || downloadLimit != 0) && !_bandwidthManager) {
             _bandwidthManager = new BandwidthManager(this);
         }
@@ -515,8 +516,9 @@ void OwncloudPropagator::start(SyncFileItemSet &&items)
                 continue;
             } else if (item->instruction() != CSYNC_INSTRUCTION_RENAME) {
                 // all is good, the rename will be executed before the directory deletion
+                // Welche Einträge hier landen, hängt vom Zustand auf Server und Datenträger ab; der Eintrag läuft wie ohne Assert
+                // weiter. Das frühere Q_ASSERT(false) („for debug purposes“) beendete mit FORCE_ASSERTS (Beta) das Programm.
                 qCWarning(lcPropagator) << "WARNING:  Job within a removed directory?  This should not happen!" << item->_file << item->instruction();
-                Q_ASSERT(false); // we shouldn't land here, but assert for debug purposes
             }
         }
 
@@ -764,6 +766,7 @@ void OwncloudPropagator::abort()
 {
     if (_abortRequested)
         return;
+    _abortRequested = true;
     if (_rootJob) {
         // Connect to abortFinished  which signals that abort has been asynchronously finished
         connect(_rootJob.data(), &PropagateDirectory::abortFinished, this, &OwncloudPropagator::emitFinished);
@@ -863,18 +866,22 @@ QString OwncloudPropagator::adjustRenamedPath(const QString &original) const
 
 Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updatePlaceholder(const SyncFileItem &item, const QString &fileName, const QString &replacesFile)
 {
-    Q_ASSERT([&] {
-        if (item._type == ItemTypeVirtualFileDehydration) {
-            // when dehydrating the file must not be pinned
-            // don't use destination() with suffix placeholder
-            const auto pin = syncOptions()._vfs->pinState(item._file);
-            if (pin && pin.get() == PinState::AlwaysLocal) {
-                return false;
-            }
+    if (!_syncOptions.isValid()) {
+        QString error = tr("vfs instance is not available.");
+        return error;
+    }
+
+    if (item._type == ItemTypeVirtualFileDehydration) {
+        // when dehydrating the file must not be pinned
+        // don't use destination() with suffix placeholder
+        // Die Anheftung ändert der Nutzer im Explorer, auch während des Syncs („Immer auf diesem Gerät behalten“): dann holt der
+        // nächste Sync die Datei wieder. Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+        const auto pin = syncOptions().vfs()->pinState(item._file);
+        if (pin && pin.get() == PinState::AlwaysLocal) {
+            qCWarning(lcPropagator) << "Dehydrating" << item._file << "although it is pinned to stay on this device";
         }
-        return true;
-    }());
-    return syncOptions()._vfs->updateMetadata(item, fileName, replacesFile);
+    }
+    return syncOptions().vfs()->updateMetadata(item, fileName, replacesFile);
 }
 
 Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updateMetadata(const SyncFileItem &item)
@@ -900,6 +907,7 @@ Result<Vfs::ConvertToPlaceholderResult, QString> OwncloudPropagator::updateMetad
 
 PropagatorJob::PropagatorJob(OwncloudPropagator *propagator, const QString &path)
     : QObject(propagator)
+    , _propagator(propagator)
     , _path(path)
     , _jobState(NotYetStarted)
 {
@@ -912,7 +920,8 @@ void PropagatorJob::setState(JobState state)
 
 OwncloudPropagator *PropagatorJob::propagator() const
 {
-    return qobject_cast<OwncloudPropagator *>(parent());
+    // not a fan but...
+    return _propagator;
 }
 
 // ================================================================================
@@ -1190,7 +1199,9 @@ void PropagateDirectory::slotSubJobsFinished(const SyncFileItem::Status status)
             if (_item->instruction() == CSYNC_INSTRUCTION_NEW && _item->_direction == SyncFileItem::Down) {
                 // special case for local MKDIR, set local directory mtime
                 // (it's not synced later at all, but can be nice to have it set initially)
-                OC_ASSERT(FileSystem::setModTime(propagator()->fullLocalPath(_item->destination()), _item->_modtime));
+                // Scheitert das (Ordner von einem anderen Programm geöffnet), bleibt nur die Zeit falsch; setModTime() protokolliert
+                // den Fehler. Das frühere OC_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+                FileSystem::setModTime(propagator()->fullLocalPath(_item->destination()), _item->_modtime);
             }
             // For new directories we always want to update the etag once
             // the directory has been propagated. Otherwise, the directory

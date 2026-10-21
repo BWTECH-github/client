@@ -22,6 +22,7 @@
 
 #include "accountmanager.h"
 #include "accountstate.h"
+#include "application.h"
 #include "common/asserts.h"
 #include "common/syncjournalfilerecord.h"
 #include "common/version.h"
@@ -29,9 +30,11 @@
 #include "folder.h"
 #include "folderman.h"
 #include "guiutility.h"
+#include "iconresources.h"
 #include "syncengine.h"
 #include "syncfileitem.h"
 #include "theme.h"
+#include "traymenucontroller.h"
 
 #include <QApplication>
 #include <QDir>
@@ -197,7 +200,11 @@ void SocketApi::slotNewConnection()
     connect(socket, &SocketApiSocket::destroyed, this, [socket, this] {
         _listeners.remove(socket);
     });
-    OC_ASSERT(socket->readAll().isEmpty());
+    // Was vor dem Einrichten schon ankam, gehört zu keinem Befehl und wird verworfen (wie bisher). Das Gegenüber ist ein anderer
+    // Prozess: Das frühere OC_ASSERT beendete dann mit FORCE_ASSERTS (Beta) das Programm.
+    if (const QByteArray early = socket->readAll(); !early.isEmpty()) {
+        qCWarning(lcSocketApi) << "Discarding" << early.size() << "bytes received before the connection was set up";
+    }
 
     auto listener = QSharedPointer<SocketListener>::create(socket);
     _listeners.insert(socket, listener);
@@ -250,8 +257,13 @@ void SocketApi::slotReadSocket()
             } else {
                 functionWithArguments += command.toUtf8() + QByteArrayLiteral("(QString,SocketListener*)");
             }
-            Q_ASSERT(staticMetaObject.normalizedSignature(functionWithArguments.constData()) == functionWithArguments);
-            const auto out = staticMetaObject.indexOfMethod(functionWithArguments.constData());
+            // Die Zeile schickt ein anderer Prozess (Explorer-Erweiterung oder jedes Programm des Nutzers): Was sich nicht als
+            // Methodenname lesen lässt (Leerzeichen, Klammern, Komma), gibt es nicht. Das frühere Q_ASSERT beendete mit
+            // FORCE_ASSERTS (Beta) das Programm wegen einer solchen Zeile.
+            int out = -1;
+            if (staticMetaObject.normalizedSignature(functionWithArguments.constData()) == functionWithArguments) {
+                out = staticMetaObject.indexOfMethod(functionWithArguments.constData());
+            }
             if (out == -1) {
                 listener->sendError(QStringLiteral("Function %1 not found").arg(QString::fromUtf8(functionWithArguments)));
             }
@@ -353,7 +365,7 @@ void SocketApi::slotUpdateFolderView(Folder *f)
             Q_FALLTHROUGH();
         case SyncResult::Error: {
             const QString rootPath = Utility::stripTrailingSlash(f->path());
-            broadcastStatusPushMessage(rootPath, f->syncEngine().syncFileStatusTracker().fileStatus(QString()));
+            broadcastStatusPushMessage(rootPath, f->syncEngine()->fileStatus(QString()));
 
             broadcastMessage(buildMessage(QStringLiteral("UPDATE_VIEW"), rootPath));
             break;
@@ -422,6 +434,53 @@ void SocketApi::command_RETRIEVE_FILE_STATUS(const QString &argument, SocketList
 
 void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener)
 {
+    processShareRequest(localFile, listener, ShareDialogStartPage::UsersAndGroups);
+}
+
+void SocketApi::command_MANAGE_PUBLIC_LINKS(const QString &localFile, SocketListener *listener)
+{
+    processShareRequest(localFile, listener, ShareDialogStartPage::PublicLinks);
+}
+
+void SocketApi::command_COPY_PUBLIC_LINK(const QString &localFile, SocketListener *)
+{
+    const auto fileData = FileData::get(localFile);
+    // wie beim Menüeintrag: nur, was mit Verbindung schon auf dem Server liegt; die Wurzel lässt sich nicht teilen
+    if (!fileData.isValid() || fileData.isSyncFolder() || !fileData.folder->isConnected() || !fileData.journalRecord().isValid()) {
+        qCWarning(lcSocketApi) << "Cannot create a public link for" << localFile;
+        return;
+    }
+    Account *account = fileData.folder->accountState()->account();
+    const QString remotePath = fileData.serverRelativePath;
+    const QString localPath = fileData.localPath;
+    // Passwort oder Ablaufdatum vorgeschrieben: das Formular im Dialog kennt die Vorgaben schon; ohne Erlaubnis zum
+    // Anlegen (Allowlist des Servers) zeigt der Dialog die vorhandenen Links und den Grund
+    if (PublicLinkCreator::needsUserInput(account->capabilities()) || !account->capabilities().sharePublicLinkCanCreate()) {
+        Q_EMIT shareCommandReceived(remotePath, localPath, ShareDialogStartPage::PublicLinks, QString());
+        return;
+    }
+    auto *creator = new PublicLinkCreator(account, remotePath, this);
+    connect(creator, &PublicLinkCreator::linkReady, this, [creator, localPath](const QString &url) {
+        creator->deleteLater();
+        copyUrlToClipboard(QUrl(url));
+        // Rückmeldung auf eine ausdrückliche Aktion, zwischen Klick und Zwischenablage liegen zwei Serveranfragen:
+        // auch dann, wenn optionale Benachrichtigungen aus sind
+        if (auto *app = ocAppOrNull()) {
+            app->tray()->slotShowTrayMessage(tr("Public link copied"), tr("The public link to %1 is in the clipboard.").arg(QFileInfo(localPath).fileName()));
+        }
+    });
+    connect(creator, &PublicLinkCreator::failed, this, [this, creator, remotePath, localPath](const QString &serverMessage) {
+        creator->deleteLater();
+        // z.B. eine Passwort-Richtlinie, die der Server nicht in den Capabilities meldet: im Dialog lässt sich der Link vervollständigen
+        const QString message = tr("The public link could not be created automatically.");
+        Q_EMIT shareCommandReceived(remotePath, localPath, ShareDialogStartPage::PublicLinks,
+            serverMessage.isEmpty() ? message : message + QLatin1Char('\n') + tr("Server message: %1").arg(serverMessage));
+    });
+    creator->start();
+}
+
+void SocketApi::processShareRequest(const QString &localFile, SocketListener *listener, ShareDialogStartPage startPage)
+{
     auto fileData = FileData::get(localFile);
     Folder *shareFolder = fileData.folder;
     if (!shareFolder) {
@@ -432,8 +491,8 @@ void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener
         const QString message = QLatin1String("SHARE:NOTCONNECTED:") + QDir::toNativeSeparators(localFile);
         // if the folder isn't connected, don't open the share dialog
         listener->sendMessage(message);
-    } else if (!shareFolder->accountState()->account()->capabilities().shareAPI()
-        || !shareFolder->accountState()->account()->capabilities().sharePublicLink()) {
+    } else if (!shareFolder->accountState()->account()->capabilities().shareAPI()) {
+        // owncloud.online: auch ohne öffentliche Links lässt sich mit Nutzern und Gruppen teilen
         const QString message = QLatin1String("SHARE:NOP:") + QDir::toNativeSeparators(localFile);
         listener->sendMessage(message);
     } else {
@@ -456,7 +515,7 @@ void SocketApi::command_SHARE(const QString &localFile, SocketListener *listener
         const QString message = QLatin1String("SHARE:OK:") + QDir::toNativeSeparators(localFile);
         listener->sendMessage(message);
 
-        Q_EMIT shareCommandReceived(remotePath, fileData.localPath);
+        Q_EMIT shareCommandReceived(remotePath, fileData.localPath, startPage, QString());
     }
 }
 
@@ -660,33 +719,32 @@ void SocketApi::command_V2_GET_CLIENT_ICON(const QSharedPointer<SocketApiJobV2> 
     QByteArray data;
     const Theme *theme = Theme::instance();
     // return an empty answer if the end point was disabled
-    if (theme->enableSocketApiIconSupport()) {
-        const QIcon appIcon = theme->applicationIcon();
-        qCDebug(lcSocketApi) << Q_FUNC_INFO << " got icon from theme: " << appIcon;
+    const QIcon appIcon = IconResources::getBrandingIcon(theme->applicationIconName());
+    qCDebug(lcSocketApi) << Q_FUNC_INFO << " got icon from theme: " << appIcon;
 
-        // convert to pixmap (might be smaller if size is not available)
-        const QPixmap pixmap = appIcon.pixmap(QSize(size.toInt(), size.toInt()));
+    // convert to pixmap (might be smaller if size is not available)
+    const QPixmap pixmap = appIcon.pixmap(QSize(size.toInt(), size.toInt()));
 
-        // Convert pixmap to in-memory PNG
-        QByteArray png;
-        QBuffer pngBuffer(&png);
-        auto success = pngBuffer.open(QIODevice::WriteOnly);
-        if (!success) {
-            qCWarning(lcSocketApi) << "Error opening buffer for png in " << Q_FUNC_INFO;
-            job->failure(QStringLiteral("cannot get client icon"));
-            return;
-        }
-
-        success = pixmap.save(&pngBuffer, "PNG");
-        if (!success) {
-            qCWarning(lcSocketApi) << "Error saving client icon as png in " << Q_FUNC_INFO;
-            job->failure(QStringLiteral("cannot get client icon"));
-            return;
-        }
-
-        data = pngBuffer.data().toBase64();
+    // Convert pixmap to in-memory PNG
+    QByteArray png;
+    QBuffer pngBuffer(&png);
+    auto success = pngBuffer.open(QIODevice::WriteOnly);
+    if (!success) {
+        qCWarning(lcSocketApi) << "Error opening buffer for png in " << Q_FUNC_INFO;
+        job->failure(QStringLiteral("cannot get client icon"));
+        return;
     }
-    job->success({ { QStringLiteral("png"), QString::fromUtf8(data) } });
+
+    success = pixmap.save(&pngBuffer, "PNG");
+    if (!success) {
+        qCWarning(lcSocketApi) << "Error saving client icon as png in " << Q_FUNC_INFO;
+        job->failure(QStringLiteral("cannot get client icon"));
+        return;
+    }
+
+    data = pngBuffer.data().toBase64();
+
+    job->success({{QStringLiteral("png"), QString::fromUtf8(data)}});
 }
 
 void SocketApi::emailPrivateLink(const QUrl &link)
@@ -725,7 +783,8 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
     auto flagString = isOnTheServer ? QStringLiteral("::") : QStringLiteral(":d:");
 
     auto capabilities = fileData.folder->accountState()->account()->capabilities();
-    if (!capabilities.shareAPI() || !capabilities.sharePublicLink())
+    // owncloud.online: der Teilen-Dialog kann auch ohne öffentliche Links mit Nutzern und Gruppen teilen
+    if (!capabilities.shareAPI())
         return;
 
     // If sharing is globally disabled, do not show any sharing entries.
@@ -735,6 +794,17 @@ void SocketApi::sendSharingContextMenuOptions(const FileData &fileData, SocketLi
             + (record.isDirectory() ? tr("Resharing this folder is not allowed") : tr("Resharing this file is not allowed")));
     } else {
         listener->sendMessage(QStringLiteral("MENU_ITEM:SHARE") + flagString + tr("Share…"));
+
+        // öffentliche Links wie im Client 6.0.3; verlangt der Server Passwort oder Ablaufdatum, öffnet „Erstellen“ das Formular.
+        // Wer keine Links anlegen darf (Allowlist des Servers), sieht nur „verwalten“ für vorhandene Links.
+        if (capabilities.sharePublicLink()) {
+            if (capabilities.sharePublicLinkCanCreate()) {
+                const QString createText =
+                    PublicLinkCreator::needsUserInput(capabilities) ? tr("Create public link…") : tr("Create and copy public link to clipboard");
+                listener->sendMessage(QStringLiteral("MENU_ITEM:COPY_PUBLIC_LINK") + flagString + createText);
+            }
+            listener->sendMessage(QStringLiteral("MENU_ITEM:MANAGE_PUBLIC_LINKS") + flagString + tr("Manage public links…"));
+        }
     }
 
     if (capabilities.privateLinkPropertyAvailable()) {
@@ -768,7 +838,7 @@ SyncFileStatus SocketApi::FileData::syncFileStatus() const
     if (!folder || !folder->canSync()) {
         return SyncFileStatus::StatusNone;
     }
-    return folder->syncEngine().syncFileStatusTracker().fileStatus(folderRelativePath);
+    return folder->syncEngine()->fileStatus(folderRelativePath);
 }
 
 SyncJournalFileRecord SocketApi::FileData::journalRecord() const
@@ -975,7 +1045,11 @@ SocketApiJobV2::SocketApiJobV2(const QSharedPointer<SocketListener> &socketListe
     , _jobId(arguments[QStringLiteral("id")].toString())
     , _arguments(arguments[QStringLiteral("arguments")].toObject())
 {
-    OC_ASSERT(!_jobId.isEmpty());
+    // Die Nachricht stammt von einem anderen Prozess: Ohne "id" lässt sich die Antwort nicht zuordnen, mehr nicht. Das frühere
+    // OC_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
+    if (_jobId.isEmpty()) {
+        qCWarning(lcSocketApi) << "Received" << command << "without an id";
+    }
 }
 
 void SocketApiJobV2::success(const QJsonObject &response) const

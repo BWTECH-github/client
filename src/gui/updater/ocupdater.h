@@ -26,7 +26,6 @@
 #include <QTemporaryFile>
 #include <QTimer>
 #include <QUrl>
-#include <QVersionNumber>
 
 
 class QNetworkAccessManager;
@@ -120,7 +119,35 @@ public:
 
     void checkForUpdate() override;
 
+    // neue Feed-Adresse nach einem Kanalwechsel; gilt ab der nächsten Prüfung
+    void setUpdateUrl(const QUrl &url);
+
+    /**
+     * Kanalwechsel im Über-Fenster: neue Feed-Adresse und sofort prüfen. Eine laufende Prüfung und ein bereitliegendes
+     * oder gerade ladendes Update des alten Kanals werden verworfen, sonst installierte „Neu starten und aktualisieren“
+     * weiter den Bau des alten Kanals.
+     */
+    void switchChannel(const QUrl &url);
+
+    // Prüfen auf Wunsch (Über-Fenster): nicht während einer Prüfung oder eines Downloads und nicht, wenn ein Update bereitliegt
+    bool canCheckNow() const;
+    // prüft sofort, sofern canCheckNow(); eine früher übersprungene Version wird dabei wieder angeboten
+    void checkNow();
+
+    // Adresse aus dem Feed („web“), die im Browser geöffnet werden darf: nur https, ohne Zugangsdaten
+    static bool isSafeWebUrl(const QUrl &url);
+
     QString statusString() const;
+
+    // Installierte Version mit Baunummer und Vorab-Suffix, z. B. "11.0.0.0-beta1"
+    static QString installedVersion();
+    // Vergleicht Versionsangaben wie "11.0.0", "11.0.0.0" oder "11.0.0-beta1": <0, 0 oder >0.
+    // Bei gleichem Major.Minor.Patch ist eine Vorabversion älter als das Release ohne Suffix.
+    static int compareVersions(const QString &a, const QString &b);
+    // true, wenn available neuer ist als installed und als skipped (leer = nichts übersprungen)
+    static bool isNewerVersion(const QString &available, const QString &installed, const QString &skipped);
+    // Nur Release-Downloads aus unserem Repository werden automatisch geladen
+    static bool isTrustedDownloadUrl(const QUrl &url);
     DownloadState downloadState() const;
     void setDownloadState(DownloadState state);
 
@@ -148,21 +175,32 @@ private Q_SLOTS:
     void slotTimedOut();
 
 protected:
-    static QVersionNumber previouslySkippedVersion();
-    static void setPreviouslySkippedVersion(const QVersionNumber &previouslySkippedVersion);
-    static void setPreviouslySkippedVersion(const QString &previouslySkippedVersionString);
+    // so gespeichert, wie der Feed sie nannte (mit Vorab-Suffix)
+    static QString previouslySkippedVersion();
+    static void setPreviouslySkippedVersion(const QString &previouslySkippedVersion);
+    // die übersprungene Version für die laufende Prüfung: leer bei einer Prüfung auf Wunsch
+    QString skippedVersionForThisCheck() const;
 
     virtual void versionInfoArrived(const UpdateInfo &info) = 0;
+    // Kanalwechsel: ein Update des alten Kanals verwerfen (bereitliegend oder im Download)
+    virtual void discardDownloadedUpdate();
     bool updateSucceeded() const;
     QNetworkAccessManager *qnam() const { return _accessManager; }
     UpdateInfo updateInfo() const { return _updateInfo; }
 
 private:
+    // bricht eine laufende Prüfung ab, ihre Antwort wird nicht mehr ausgewertet; true, wenn eine lief
+    bool abortVersionCheck();
+
     QUrl _updateUrl;
     DownloadState _state;
     QNetworkAccessManager *_accessManager;
     QTimer *_timeoutWatchdog; /** Timer to guard the timeout of an individual network request */
     UpdateInfo _updateInfo;
+    // die laufende Prüfung; nur ihre Antwort zählt
+    QPointer<QNetworkReply> _versionCheckReply;
+    // die laufende Prüfung kam vom Nutzer („Jetzt nach Updates suchen“)
+    bool _checkRequestedByUser = false;
 };
 
 /**
@@ -185,11 +223,16 @@ private Q_SLOTS:
 
 private:
     void wipeUpdateData();
+    // Prüft die Signatur des Setups; bei Fehlschlag wird die Datei gelöscht
+    static bool verifyDownloadedSetup(const QString &fileName);
     void showNewVersionAvailableWidget(const UpdateInfo &info);
     void showUpdateErrorDialog(const QString &targetVersion);
     void versionInfoArrived(const UpdateInfo &info) override;
+    void discardDownloadedUpdate() override;
     QScopedPointer<QTemporaryFile> _file;
     QString _targetFile;
+    // der laufende Download des Setups
+    QPointer<QNetworkReply> _downloadReply;
 
     friend class TestUpdater;
 };

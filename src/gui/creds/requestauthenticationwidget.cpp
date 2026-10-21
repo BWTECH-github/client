@@ -13,17 +13,22 @@
  */
 #include "requestauthenticationwidget.h"
 
-// #include "resources.h"
+#include "iconresources.h"
 #include "template.h"
+#include "mainwindow/colormanager.h"
+#include "newaccountwizard/wizardpagelayout.h"
 #include "theme.h"
 
 #include <QBuffer>
 #include <QClipboard>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QImageReader>
 #include <QLabel>
 #include <QPalette>
 #include <QPushButton>
+#include <QResizeEvent>
+#include <QScrollArea>
 #include <QToolTip>
 #include <QVBoxLayout>
 
@@ -37,7 +42,7 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     QString appName = Theme::instance()->appNameGUI();
 
     QLabel *logoLabel = new QLabel({}, this);
-    logoLabel->setPixmap(Theme::instance()->wizardHeaderLogo().pixmap(200, 100));
+    logoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardHeaderLogoName()).pixmap(200, 100));
     logoLabel->setAlignment(Qt::AlignCenter);
     logoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     logoLabel->setAccessibleName(tr("Application Name Logo %1").arg(appName));
@@ -65,6 +70,7 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     _urlField->setAccessibleDescription(tr("To copy the sign in URL to the clipboard, use the copy button"));
 
     _copyButton = new QPushButton(_copyIcon, QString(), this);
+    _copyButton->setObjectName(QStringLiteral("CopyUrlToClipboardButton"));
     _copyButton->setFlat(true);
     _copyButton->setContentsMargins(0, 0, 0, 0);
     _copyButton->setFixedSize(_urlField->height(), _urlField->height());
@@ -74,19 +80,16 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     connect(_copyButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::onCopyUrl);
 
     _errorField = new QLabel(QString(), this);
-    QPalette errorPalette = _errorField->palette();
-    errorPalette.setColor(QPalette::Text, Qt::red);
-    errorPalette.setColor(QPalette::WindowText, Qt::red);
-    _errorField->setPalette(errorPalette);
+    ColorManager::applyErrorColor(_errorField);
     _errorField->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     _errorField->setWordWrap(true);
     _errorField->setAlignment(Qt::AlignLeft);
     _errorField->setTextInteractionFlags(Qt::TextSelectableByKeyboard | Qt::TextSelectableByMouse);
 
     QLabel *footerLogoLabel = nullptr;
-    if (!Theme::instance()->wizardFooterLogo().isNull()) {
+    if (!Theme::instance()->wizardFooterLogoName().isEmpty()) {
         footerLogoLabel = new QLabel({}, this);
-        footerLogoLabel->setPixmap(Theme::instance()->wizardFooterLogo().pixmap(100, 52));
+        footerLogoLabel->setPixmap(IconResources::getBrandingIcon(Theme::instance()->wizardFooterLogoName()).pixmap(100, 52));
         footerLogoLabel->setAlignment(Qt::AlignCenter);
         footerLogoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -94,40 +97,48 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     }
 
     _cancelButton = new QPushButton(tr("Stay logged out"), this);
+    _cancelButton->setObjectName(QStringLiteral("StayLoggedOutButton"));
     connect(_cancelButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::stayLoggedOutClicked);
     _signInButton = new QPushButton(tr("Sign in"), this);
+    _signInButton->setObjectName(QStringLiteral("SignInButton"));
     connect(_signInButton, &QPushButton::clicked, this, &RequestAuthenticationWidget::connectClicked);
 
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->setContentsMargins(50, 50, 50, 50);
-    layout->setSpacing(12);
-    layout->addStretch(1);
+    QVBoxLayout *contentLayout = new QVBoxLayout();
+    contentLayout->setContentsMargins(50, 24, 50, 0);
+    contentLayout->setSpacing(12);
+    contentLayout->addStretch(1);
     // NOTE: addWidget(w, Qt::AlignCenter) binds the alignment constant to
     // the int STRETCH parameter - the alignment is silently never applied.
     // Always use the three-argument overload for alignments; the labels'
     // own setAlignment() does the horizontal centering here.
-    layout->addWidget(logoLabel, 0, Qt::AlignCenter);
-    layout->addSpacing(16);
-    layout->addWidget(titleLabel);
-    layout->addWidget(instructionLabel);
+    contentLayout->addWidget(logoLabel, 0, Qt::AlignCenter);
+    contentLayout->addSpacing(16);
+    contentLayout->addWidget(titleLabel);
+    contentLayout->addWidget(instructionLabel);
 
     QHBoxLayout *urlAreaLayout = new QHBoxLayout();
     urlAreaLayout->setContentsMargins(0, 0, 0, 0);
     urlAreaLayout->setSpacing(0);
     urlAreaLayout->addWidget(_urlField);
     urlAreaLayout->addWidget(_copyButton);
-    layout->addLayout(urlAreaLayout);
-    layout->addWidget(_errorField);
+    contentLayout->addLayout(urlAreaLayout);
+    contentLayout->addWidget(_errorField);
 
     if (footerLogoLabel)
-        layout->addWidget(footerLogoLabel, 0, Qt::AlignCenter);
-    layout->addStretch(1);
+        contentLayout->addWidget(footerLogoLabel, 0, Qt::AlignCenter);
+    contentLayout->addStretch(1);
 
     QHBoxLayout *buttonLayout = new QHBoxLayout();
-    buttonLayout->setContentsMargins(0, 0, 0, 0);
+    buttonLayout->setContentsMargins(50, 0, 50, 24);
     buttonLayout->addStretch(1);
     buttonLayout->addWidget(_cancelButton);
     buttonLayout->addWidget(_signInButton);
+
+    // wie der Kennwort-Dialog: Reicht die Höhe der Kontoansicht nicht, rollt der Inhalt, statt das Logo zu stauchen
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(12);
+    layout->addWidget(createScrollableContent(this, contentLayout), 1);
     layout->addLayout(buttonLayout);
 
     setLayout(layout);
@@ -135,6 +146,7 @@ RequestAuthenticationWidget::RequestAuthenticationWidget(QWidget *parent)
     // disable buttons until the url has been set
     _cancelButton->setEnabled(false);
     _signInButton->setEnabled(false);
+    _copyButton->setEnabled(false);
 }
 
 bool RequestAuthenticationWidget::eventFilter(QObject *target, QEvent *event)
@@ -162,8 +174,10 @@ QString RequestAuthenticationWidget::elidedUrl(int targetWidth)
 
 void RequestAuthenticationWidget::setAuthUrl(const QString &url)
 {
-    // who knows.
-    Q_ASSERT(!url.isEmpty());
+    if (url.isEmpty()) {
+        _cancelButton->setEnabled(true);
+        return;
+    }
     if (_authUrl != url) {
         _authUrl = url;
         QString elidedText = elidedUrl(_urlField->width());
@@ -174,7 +188,19 @@ void RequestAuthenticationWidget::setAuthUrl(const QString &url)
         // and enable the buttons:
         _cancelButton->setEnabled(true);
         _signInButton->setEnabled(true);
+        _copyButton->setEnabled(true);
     }
+}
+
+void RequestAuthenticationWidget::clearAuthUrl()
+{
+    _authUrl.clear();
+    _urlField->clear();
+    onClipboardChanged();
+    _signInButton->setEnabled(false);
+    _copyButton->setEnabled(false);
+    // nach einem Fehlschlag muss man den Dialog verlassen können, auch wenn kein neuer Link kommt (Server nicht erreichbar)
+    _cancelButton->setEnabled(true);
 }
 
 void RequestAuthenticationWidget::onClipboardChanged()

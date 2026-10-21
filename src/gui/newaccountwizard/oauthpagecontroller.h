@@ -37,6 +37,9 @@ struct OAuthPageResults
 {
     QString token;
     QString refreshToken;
+    // Ablauf des Access-Tokens nach der Uhr des Rechners (Sekunden seit 1970, 0: unbekannt), aus expires_in des
+    // Code-Tauschs: Das Konto entsteht erst einige Seiten später
+    qint64 accessTokenExpiresAt = 0;
     QUrl webfingerUserUrl;
     QString displayName;
     QString userId;
@@ -83,6 +86,8 @@ public:
 
     void setLookupWebfingerUrls(bool lookup);
 
+    void updateIcons();
+
 Q_SIGNALS:
     /**
      * @brief success notifies interested parties that the validation routine succeeded
@@ -97,6 +102,7 @@ Q_SIGNALS:
      * progressed before it failed
      */
     void failure(const OCC::OAuthPageResults &results);
+
 
 protected Q_SLOTS:
     /**
@@ -116,22 +122,39 @@ private:
     // this is calculated by the oauth routine - this is also what the copy button should put in the clipboard!
     QString _authEndpoint;
     OAuth *_oauth;
+    // die Adresse, für die _oauth gestartet wurde
+    QUrl _oauthUrl;
     bool _lookupWebfingerUrls = false;
 
-    QLabel *_urlField;
-    QLabel *_errorField;
-    QPushButton *_copyButton;
+    QLabel *_logoLabel = nullptr;
+    QLabel *_urlField = nullptr;
+    // Hinweis, solange die Anmeldung im Browser läuft
+    QLabel *_statusField = nullptr;
+    QLabel *_errorField = nullptr;
+    QPushButton *_copyButton = nullptr;
 
     bool _oauthCompleted = false;
+    // der Browser ist zurückgekehrt, Benutzer und Server werden geprüft
+    bool _checkingResult = false;
     OAuthPageResults _results;
 
 
     void buildPage();
+    /** true, solange die Anmeldeseite im Assistenten angezeigt wird */
+    bool pageIsCurrent() const;
+    /** true, solange die Anmeldeseite angezeigt wird und _oauth noch für die eingestellte Adresse gilt */
+    bool resultStillWanted() const;
+    /** verwirft ein nicht mehr gewolltes Ergebnis; steht die Seite für eine andere Adresse, beginnt danach deren Anmeldung */
+    void discardResult();
+    /** trennt @p oauth (keine Meldungen mehr) und löscht es später, womit auch sein Listener schließt; nullptr ist erlaubt */
+    void endSignIn(OAuth *oauth);
     QIcon copyIcon();
     /** displays the error in the page, sets the error value in the results and emits failure(results) */
     void handleError(const QString &error);
-    void handleOauthResult(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString());
+    void handleOauthResult(OAuth::Result result, const QString &token = QString(), const QString &refreshToken = QString(), qint64 expiresIn = 0);
     void authUrlReady();
+    /** öffnet den Anmeldelink im Browser und zeigt den Hinweis, dort die Anmeldung abzuschließen */
+    void openBrowser();
 };
 }
 Q_DECLARE_METATYPE(OCC::OAuthPageResults)
