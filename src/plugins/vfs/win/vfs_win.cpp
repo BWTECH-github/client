@@ -1238,6 +1238,27 @@ static Result<CF_PLACEHOLDER_BASIC_INFO, HRESULT> getBasicPlaceholderInfo(const 
     return getInfo<CF_PLACEHOLDER_BASIC_INFO>(*handle);
 }
 
+static void markNonPlaceholderAsExcluded(const QString &systemFileName)
+{
+    auto handle = getFileHandle(systemFileName, WRITE_DAC);
+    if (!handle) {
+        qCWarning(lcVfs) << "Error marking" << systemFileName << "as excluded: could not make writable handle:"
+                         << Utility::formatWinError(handle.error());
+        return;
+    }
+
+    HRESULT res = CfConvertToPlaceholder(*handle, nullptr, 0, CF_CONVERT_FLAG_MARK_IN_SYNC, nullptr, nullptr);
+    if (FAILED(res)) {
+        qCWarning(lcVfs) << "Error converting excluded file" << systemFileName << "to placeholder:" << Utility::formatWinError(res);
+        return;
+    }
+
+    res = CfSetPinState(*handle, CF_PIN_STATE_EXCLUDED, CF_SET_PIN_FLAG_RECURSE, nullptr);
+    if (FAILED(res)) {
+        qCCritical(lcVfs) << "Error setting sync exclusion state for" << systemFileName << ":" << Utility::formatWinError(res);
+    }
+}
+
 void VfsWin::onFileStatusChanged(const QString &systemFileName, SyncFileStatus status)
 {
     auto placeholderInfo = getBasicPlaceholderInfo(systemFileName);
@@ -1245,7 +1266,11 @@ void VfsWin::onFileStatusChanged(const QString &systemFileName, SyncFileStatus s
         // This slot will often be called for nonexistant files, that's not an error.
         if (placeholderInfo.error() == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || placeholderInfo.error() == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND)) {
             return;
-        } else if (placeholderInfo.error() != HRESULT_FROM_WIN32(ERROR_NOT_A_CLOUD_FILE)) {
+        } else if (placeholderInfo.error() == HRESULT_FROM_WIN32(ERROR_NOT_A_CLOUD_FILE)) {
+            if (status.tag() == SyncFileStatus::StatusExcluded) {
+                markNonPlaceholderAsExcluded(systemFileName);
+            }
+        } else {
             qCWarning(lcVfs) << Q_FUNC_INFO << ": could not retrieve placeholder info for" << systemFileName
                              << Utility::formatWinError(placeholderInfo.error());
         }
