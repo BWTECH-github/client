@@ -1240,22 +1240,26 @@ static Result<CF_PLACEHOLDER_BASIC_INFO, HRESULT> getBasicPlaceholderInfo(const 
 
 static void markNonPlaceholderAsExcluded(const QString &systemFileName)
 {
-    auto handle = getFileHandle(systemFileName, WRITE_DAC);
-    if (!handle) {
-        qCWarning(lcVfs) << "Error marking" << systemFileName << "as excluded: could not make writable handle:"
-                         << Utility::formatWinError(handle.error());
+    // Wie convertToPlaceholder() nur mit exklusivem Zugriff umwandeln: Eine Datei, die gerade ein anderes Programm
+    // offen hat (Sperr- und Temp-Dateien von Office, die SQLite-Dateien des Sync-Journals), bleibt unangetastet.
+    // Beim nächsten Statuswechsel wird es erneut versucht.
+    const QString longPath = FileSystem::longWinPath(systemFileName);
+    Utility::Handle oplockHandle { INVALID_HANDLE_VALUE, &CfCloseHandle };
+    HRESULT res = CfOpenFileWithOplock(reinterpret_cast<const wchar_t *>(longPath.utf16()), CF_OPEN_FILE_FLAG_EXCLUSIVE, &oplockHandle.handle());
+    if (FAILED(res)) {
+        qCDebug(lcVfs) << "Not marking" << systemFileName << "as excluded, it is in use:" << Utility::formatWinError(res);
         return;
     }
 
-    HRESULT res = CfConvertToPlaceholder(*handle, nullptr, 0, CF_CONVERT_FLAG_MARK_IN_SYNC, nullptr, nullptr);
+    res = CfConvertToPlaceholder(oplockHandle, nullptr, 0, CF_CONVERT_FLAG_MARK_IN_SYNC, nullptr, nullptr);
     if (FAILED(res)) {
         qCWarning(lcVfs) << "Error converting excluded file" << systemFileName << "to placeholder:" << Utility::formatWinError(res);
         return;
     }
 
-    res = CfSetPinState(*handle, CF_PIN_STATE_EXCLUDED, CF_SET_PIN_FLAG_RECURSE, nullptr);
+    res = CfSetPinState(oplockHandle, CF_PIN_STATE_EXCLUDED, CF_SET_PIN_FLAG_RECURSE, nullptr);
     if (FAILED(res)) {
-        qCCritical(lcVfs) << "Error setting sync exclusion state for" << systemFileName << ":" << Utility::formatWinError(res);
+        qCWarning(lcVfs) << "Error setting sync exclusion state for" << systemFileName << ":" << Utility::formatWinError(res);
     }
 }
 
