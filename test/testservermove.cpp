@@ -743,6 +743,20 @@ private Q_SLOTS:
         QVERIFY(account->url() != target);
     }
 
+    // nach einem Umzug steht die Adresse ggf. ohne „/“ am Ende: Der Assistent erkennt das Konto trotzdem als eingerichtet
+    void testAccountForLoginExistsAfterMove()
+    {
+        auto state = createDummyAccount();
+        Account *account = state->account();
+        account->setUrl(QUrl(QStringLiteral("https://cloud.example.org")));
+        const QString user = account->davUser();
+        auto *manager = AccountManager::instance();
+        QVERIFY(manager->accountForLoginExists(QUrl(QStringLiteral("https://cloud.example.org/")), user));
+        QVERIFY(manager->accountForLoginExists(QUrl(QStringLiteral("https://CLOUD.example.org")), user.toUpper()));
+        QVERIFY(!manager->accountForLoginExists(QUrl(QStringLiteral("https://cloud.example.org/andere")), user));
+        QVERIFY(!manager->accountForLoginExists(QUrl(QStringLiteral("https://cloud.example.org/")), user + QStringLiteral("x")));
+    }
+
     // Antworten der neuen Adresse auf die Prüfung, die den Umzug stoppen
     void testVerifyRejectsServerAnswers_data()
     {
