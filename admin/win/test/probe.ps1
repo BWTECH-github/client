@@ -6525,7 +6525,8 @@ function Invoke-DauerlaufLang {
     $null = Invoke-DauerStep $dl 'L4' ('Betrieb bis {0} min: alle 5 min Prozess lebt, Hauptfenster antwortet, beide Konten „Verbunden“, keine Anmeldung verlangt' -f $fileMinute) {
         if (-not $dl.T0) { Stop-Step 'keine Ausgangslage (L3)' }
         $problems = Invoke-RunPhase $ctx $dl 5 $fileMinute
-        $count = @($dl.Samples).Count - 1
+        # nicht @($dl.Samples): Windows PowerShell 5.1 wirft dort „Die Argumenttypen stimmen nicht überein“
+        $count = $dl.Samples.Count - 1
         if ($problems.Count -gt 0) { Stop-Step ('{0} Stichproben; {1}' -f $count, ($problems -join '; ')) }
         return ('{0} Stichproben bis {1} min ohne Befund (Einzelheiten in der Liste „Stichproben“)' -f $count, $fileMinute)
     }
