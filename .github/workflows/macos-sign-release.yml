@@ -1,0 +1,101 @@
+name: macOS-Release nachträglich signieren
+
+# Lädt das dmg eines bestehenden Releases, signiert die App mit der Developer ID,
+# notarisiert das dmg, heftet das Ticket an und ersetzt dmg und SHA256SUMS.txt im
+# Release. Der Update-Feed verweist nur auf die Release-Seite, er bleibt gültig.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release-Tag, z. B. v7.11.1'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  sign:
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: dmg und Prüfsummen laden
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/rel"
+          gh release download "$TAG" -R "$GITHUB_REPOSITORY" -p '*.dmg' -p 'SHA256SUMS.txt' -D "$RUNNER_TEMP/rel"
+          ls -la "$RUNNER_TEMP/rel"
+
+      - name: Apple signing setup
+        env:
+          APPLE_CERT_P12: ${{ secrets.APPLE_CERT_P12 }}
+          APPLE_CERT_PASSWORD: ${{ secrets.APPLE_CERT_PASSWORD }}
+          APPLE_API_KEY_P8: ${{ secrets.APPLE_API_KEY_P8 }}
+        run: |
+          if [ -z "$APPLE_CERT_P12" ] || [ -z "$APPLE_API_KEY_P8" ]; then
+            echo "Apple-Secrets fehlen" >&2
+            exit 1
+          fi
+          KC="$RUNNER_TEMP/signing.keychain-db"
+          KCPW="$(openssl rand -base64 24)"
+          security create-keychain -p "$KCPW" "$KC"
+          security set-keychain-settings -lut 7200 "$KC"
+          security unlock-keychain -p "$KCPW" "$KC"
+          printf '%s' "$APPLE_CERT_P12" | base64 --decode > "$RUNNER_TEMP/developer-id.p12"
+          security import "$RUNNER_TEMP/developer-id.p12" -k "$KC" -P "$APPLE_CERT_PASSWORD" -T /usr/bin/codesign -T /usr/bin/security
+          rm -f "$RUNNER_TEMP/developer-id.p12"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KCPW" "$KC" > /dev/null
+          security list-keychains -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
+          printf '%s' "$APPLE_API_KEY_P8" > "$RUNNER_TEMP/AuthKey.p8"
+          chmod 600 "$RUNNER_TEMP/AuthKey.p8"
+          echo "SIGN_KEYCHAIN=$KC" >> "$GITHUB_ENV"
+          echo "APPLE_API_KEY_PATH=$RUNNER_TEMP/AuthKey.p8" >> "$GITHUB_ENV"
+
+      - name: Signieren und notarisieren
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: bash "$GITHUB_WORKSPACE/admin/osx/ci-sign-notarize.sh" "$RUNNER_TEMP/rel"
+
+      - name: Prüfsummen erneuern und hochladen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          cd "$RUNNER_TEMP/rel"
+          for f in *.dmg; do
+            h="$(shasum -a 256 "$f" | cut -d' ' -f1)"
+            python3 - "$f" "$h" <<'PY'
+          import sys
+          name, digest = sys.argv[1], sys.argv[2]
+          try:
+              lines = open('SHA256SUMS.txt', encoding='utf-8').read().splitlines()
+          except FileNotFoundError:
+              lines = []
+          out, done = [], False
+          for line in lines:
+              parts = line.split()
+              if len(parts) == 2 and parts[1].lstrip('*') == name:
+                  out.append(f'{digest}  {name}')
+                  done = True
+              else:
+                  out.append(line)
+          if not done:
+              out.append(f'{digest}  {name}')
+          open('SHA256SUMS.txt', 'w', encoding='utf-8').write('\n'.join(out) + '\n')
+          PY
+          done
+          cat SHA256SUMS.txt
+          gh release upload "$TAG" -R "$GITHUB_REPOSITORY" --clobber *.dmg SHA256SUMS.txt
+
+      - name: Apple signing cleanup
+        if: always()
+        run: |
+          [ -n "${SIGN_KEYCHAIN:-}" ] && security delete-keychain "$SIGN_KEYCHAIN" || true
+          rm -f "$RUNNER_TEMP/AuthKey.p8"

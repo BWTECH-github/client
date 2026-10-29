@@ -341,7 +341,7 @@ jobs:
     # macOS: Developer-ID-Signatur und Notarisierung (admin/osx/NOTARIZATION.md).
     # Ohne die Apple-Secrets bleibt das dmg wie bisher unsigniert.
     - name: Apple signing setup
-      if: runner.os == 'macOS'
+      if: runner.os == 'macOS' && github.event.inputs.sign == 'true'
       shell: bash
       env:
         APPLE_CERT_P12: ${{ secrets.APPLE_CERT_P12 }}
