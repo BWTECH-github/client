@@ -4,7 +4,7 @@
 # runtime, then notarize and staple it so it runs on other Macs (Gatekeeper).
 #
 # Prerequisites (one-time, see admin/osx/NOTARIZATION.md):
-#   1. A "Developer ID Application: … (4545KLA52K)" certificate in the keychain.
+#   1. A "Developer ID Application: … (A7VZ8HFNR4)" certificate in the keychain.
 #   2. A stored notarytool credential profile:  xcrun notarytool store-credentials
 #
 # Usage:  admin/osx/notarize.sh /path/to/owncloud.online.app [notary-profile]

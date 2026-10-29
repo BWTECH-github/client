@@ -10,13 +10,13 @@
 # for a fast local build.
 #
 # Env / defaults:
-#   TEAM_ID        4545KLA52K
+#   TEAM_ID        A7VZ8HFNR4
 #   CRAFT_ROOT     ~/craft/CraftMaster/macos-clang-arm64
 #   BASE_APP       $CRAFT_ROOT/Applications/KDE/owncloud.online.app  (craft install)
 #   OUT            /tmp/ocrelease
 set -euo pipefail
 
-TEAM_ID="${TEAM_ID:-4545KLA52K}"
+TEAM_ID="${TEAM_ID:-A7VZ8HFNR4}"
 CRAFT_ROOT="${CRAFT_ROOT:-$HOME/craft/CraftMaster/macos-clang-arm64}"
 BASE_APP="${BASE_APP:-$CRAFT_ROOT/Applications/KDE/owncloud.online.app}"
 OUT="${OUT:-/tmp/ocrelease}"
