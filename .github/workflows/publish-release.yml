@@ -91,10 +91,10 @@ jobs:
           - \`owncloud.online-client-${VER}-win-x64-Setup.exe\` — **Windows-Installer**: beendet einen laufenden owncloud.online-Client, installiert, richtet die Explorer-Integration ein und bietet den dafür nötigen Windows-Neustart an. Still (\`/S\`, z. B. baramundi/Intune): startet Windows **nicht** mehr selbst neu – Exit-Code 3010 bedeutet „installiert, Neustart ausstehend“, 0 „nichts ausstehend“; \`/S /forcerestart\` (neu, optional) startet sofort neu; \`/S /norestart\` wird weiterhin angenommen und verhält sich wie \`/S\`. Ein in \`C:\\Program Files\\ownCloud\` installierter offizieller ownCloud-Client wird nicht mehr angefasst.
           - \`owncloud.online-client-${VER}-win-x64.7z\` — Windows portabel
           - \`owncloud.online-client-${VER}-linux-x86_64.AppImage\` — Linux
-          - \`owncloud.online-client-${VER}-macos-arm64.dmg\` — macOS (Apple Silicon). Nicht mit einem Apple-Developer-Zertifikat signiert/notarisiert: beim ersten Start meldet macOS „Apple konnte nicht überprüfen …". Öffnen über Systemeinstellungen → Datenschutz & Sicherheit → „Dennoch öffnen" (macOS 15+; unter macOS 14 genügt Rechtsklick → Öffnen), alternativ \`xattr -dr com.apple.quarantine /Applications/owncloud.online.app\`.
+          - \`owncloud.online-client-${VER}-macos-arm64.dmg\` — macOS (Apple Silicon), mit der Developer ID der BW-Tech GmbH signiert und von Apple notarisiert
           - \`SHA256SUMS.txt\` — Prüfsummen aller Pakete
 
-          Änderungsdetails: siehe \`changelog/\` im Repository. macOS: FileProvider-VFS in Arbeit; der Client synchronisiert dort im klassischen Modus (Selective Sync verfügbar).
+          Änderungsdetails: siehe \`changelog/\` im Repository. Virtuelle Dateien gibt es derzeit unter Windows; unter macOS und Linux synchronisiert der Client im klassischen Modus mit Ordnerauswahl.
           ${BETA_FUSS}
           EOF
           gh release create "$TAG" -R "$GITHUB_REPOSITORY" \
@@ -108,6 +108,13 @@ jobs:
   # "release: published"-Lauf, daher den Update-Feed hier direkt erzeugen:
   # für stabile Releases UND Vorabversionen, am Release selbst und am festen
   # Ablageort (Release "update-feed").
+  sign-macos:
+    needs: publish
+    uses: ./.github/workflows/macos-sign-release.yml
+    with:
+      tag: ${{ inputs.tag }}
+    secrets: inherit
+
   update-feed:
     needs: publish
     permissions:
