@@ -88,7 +88,12 @@ for DMG in "$DIR"/*.dmg; do
   codesign --force --timestamp --keychain "$SIGN_KEYCHAIN" --sign "$IDENTITY" "$OUT"
 
   notarize "$OUT" "$WORK/notary.json"
-  xcrun stapler staple "$OUT"
+  # Das Ticket holt stapler über das Netz von Apple; kurze Aussetzer wiederholen
+  for try in 1 2 3 4 5 6; do
+    if xcrun stapler staple "$OUT"; then break; fi
+    [[ "$try" -eq 6 ]] && exit 1
+    sleep $(( try * 20 ))
+  done
   xcrun stapler validate "$OUT"
   spctl -a -vvv -t open --context context:primary-signature "$OUT"
 
