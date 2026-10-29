@@ -1,6 +1,6 @@
 [General]
 version = 2
-blueprintrepositories = https://github.com/KDE/craft-blueprints-kde.git|master|;https://github.com/BWTECH-github/craft-blueprints-owncloud.git|bwtech|
+blueprintrepositories = https://github.com/KDE/craft-blueprints-kde.git||945d9fa;https://github.com/BWTECH-github/craft-blueprints-owncloud.git|bwtech|
 
 [core/cacert]
 version = 2025-09-09
