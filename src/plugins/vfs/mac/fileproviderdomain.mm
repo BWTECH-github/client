@@ -405,6 +405,7 @@ namespace Mac {
                                       }
                                   }];
                 removeDomainSettings(identifier);
+                removeAuthorization(identifier);
             }
         }];
     }
