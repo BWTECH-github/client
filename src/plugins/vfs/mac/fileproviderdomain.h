@@ -84,13 +84,14 @@ namespace Mac {
     void queryDomain(const QString &identifier, std::function<void(DomainResult result, const QString &userVisiblePath)> callback);
 
     /** Remove the domain, e.g. when the folder sync or the account is removed.
-     *  Files with changes that never reached the server are preserved by macOS. */
+     *  Files with changes that never reached the server are preserved by macOS and
+     *  shown in the Finder. */
     void unregisterDomain(const QString &identifier, std::function<void()> callback = {});
 
     /** Remove domains of this app that no folder of the client owns any more: every folder writes
      *  its settings (writeDomainSettings()) before it registers its domain and removes them with
      *  it, so a domain without settings is left over (an older client version, a lost
-     *  configuration). Unsynced changes in it are preserved by macOS. */
+     *  configuration). Unsynced changes in it are preserved by macOS and shown in the Finder. */
     void removeStaleDomains();
 
     /** Disconnect the domain with @p reason, which the Finder shows (signed out,

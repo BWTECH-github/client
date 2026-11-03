@@ -25,9 +25,11 @@
 #include <QLoggingCategory>
 #include <QMap>
 #include <QOperatingSystemVersion>
+#include <QRegularExpression>
 #include <QSaveFile>
 #include <QSet>
 
+#import <AppKit/AppKit.h>
 #import <FileProvider/FileProvider.h>
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
@@ -48,6 +50,24 @@ QString fromNSString(NSString *string)
 void onMainThread(std::function<void()> fn)
 {
     QMetaObject::invokeMethod(qApp, [fn = std::move(fn)] { fn(); }, Qt::QueuedConnection);
+}
+
+/// After removeDomain(…PreserveDirtyUserData): macOS moved the files whose changes never
+/// reached the server to @p location. Show them in the Finder, the user would not find them
+/// otherwise (an empty or missing location means nothing had to be kept).
+void showPreservedData(NSURL *location, const QString &identifier)
+{
+    if (!location) {
+        return;
+    }
+    NSError *listError = nil;
+    NSArray<NSString *> *contents = [NSFileManager.defaultManager contentsOfDirectoryAtPath:location.path error:&listError];
+    if (contents && contents.count == 0) {
+        return;
+    }
+    const QString path = fromNSString(location.path);
+    qCWarning(lcFileProviderDomain) << "Unsynced files of the removed domain" << identifier << "are kept in" << path;
+    onMainThread([location] { [NSWorkspace.sharedWorkspace activateFileViewerSelectingURLs:@[location]]; });
 }
 
 NSString *extensionPath()
@@ -301,10 +321,15 @@ namespace Mac {
         void addDomain(QString identifier, QString displayName, bool mayReplaceOrphan,
             std::function<void(DomainResult, const QString &)> callback);
 
-        /// The display name belongs to a domain no folder of the running client owns (its folder or
-        /// account went away without the domain, e.g. a lost configuration). Remove that one, macOS
-        /// keeps its unsynced changes, and register ours again. Runs on the main thread.
-        void replaceOrphanedNamesake(QString identifier, QString displayName, NSError *addError,
+        /// The display name is taken (two folders can end up with the same one, e.g. two Spaces
+        /// called "Team"). Runs on the main thread.
+        ///  - It belongs to an orphan: a domain neither the running client registered nor any
+        ///    folder configured (no settings file, the criterion of removeStaleDomains()), e.g.
+        ///    left over from a lost configuration. Remove that one, macOS keeps its unsynced
+        ///    changes, and register ours again under the name.
+        ///  - It belongs to a domain a folder still owns, possibly one that just did not start
+        ///    yet: never touch that one, register ours under the first free "<name> (n)".
+        void resolveNameConflict(QString identifier, QString displayName, NSError *addError,
             std::function<void(DomainResult, const QString &)> callback)
         {
             const QSet<QString> active = activeDomains(); // a copy for the blocks
@@ -313,16 +338,39 @@ namespace Mac {
             const QString message = fromNSString(addError.localizedDescription);
             [NSFileProviderManager getDomainsWithCompletionHandler:^(NSArray<NSFileProviderDomain *> *domains, NSError *listError) {
                 logError("Could not list File Provider domains", identifier, listError);
+                if (listError) {
+                    onMainThread([callback, result, message] { callback(result, message); });
+                    return;
+                }
                 NSMutableArray<NSFileProviderDomain *> *orphans = [NSMutableArray array];
+                NSMutableSet<NSString *> *namesInUse = [NSMutableSet set];
                 for (NSFileProviderDomain *domain in domains) {
                     const QString other = fromNSString(domain.identifier);
-                    if ([domain.displayName isEqualToString:name] && other != identifier && !active.contains(other)) {
+                    if (other == identifier) {
+                        continue;
+                    }
+                    const QString settings = settingsFile(other);
+                    const bool owned = active.contains(other) || settings.isEmpty() || QFileInfo::exists(settings);
+                    if ([domain.displayName isEqualToString:name] && !owned) {
                         [orphans addObject:domain];
+                    } else if (domain.displayName) {
+                        [namesInUse addObject:domain.displayName];
                     }
                 }
                 if (orphans.count == 0) {
-                    // the name belongs to a folder of this client: two folders must not share it
-                    onMainThread([callback, result, message] { callback(result, message); });
+                    QString unique;
+                    for (int n = 2; n < 100 && unique.isEmpty(); ++n) {
+                        const QString candidate = QStringLiteral("%1 (%2)").arg(displayName).arg(n);
+                        if (![namesInUse containsObject:candidate.toNSString()]) {
+                            unique = candidate;
+                        }
+                    }
+                    if (unique.isEmpty()) {
+                        onMainThread([callback, result, message] { callback(result, message); });
+                        return;
+                    }
+                    qCInfo(lcFileProviderDomain) << "The name" << displayName << "belongs to another folder, using" << unique << "for" << identifier;
+                    addDomain(identifier, unique, false, callback);
                     return;
                 }
                 dispatch_group_t removals = dispatch_group_create();
@@ -334,10 +382,7 @@ namespace Mac {
                                                    mode:NSFileProviderDomainRemovalModePreserveDirtyUserData
                                       completionHandler:^(NSURL *preservedLocation, NSError *removeError) {
                                           logError("Failed to remove domain", other, removeError);
-                                          if (preservedLocation) {
-                                              qCWarning(lcFileProviderDomain)
-                                                  << "Unsynced files of the removed domain are kept in" << fromNSString(preservedLocation.path);
-                                          }
+                                          showPreservedData(preservedLocation, other);
                                           if (!removeError) {
                                               removeDomainSettings(other);
                                               removeAuthorization(other);
@@ -360,7 +405,7 @@ namespace Mac {
                            completionHandler:^(NSError *addError) {
                                if (addError && mayReplaceOrphan && nameTaken(addError)) {
                                    onMainThread([identifier, displayName, addError, callback] {
-                                       replaceOrphanedNamesake(identifier, displayName, addError, callback);
+                                       resolveNameConflict(identifier, displayName, addError, callback);
                                    });
                                    return;
                                }
@@ -392,7 +437,12 @@ namespace Mac {
         withDomain(identifier, ^(NSFileProviderDomain *existing, NSError *) {
             // Keep a registered domain as it is: removing and re-adding it would discard what
             // macOS keeps for it, including local changes the extension has not uploaded yet.
-            if (existing && [existing.displayName isEqualToString:name]) {
+            // That includes a numbered name resolveNameConflict() gave it ("<name> (2)"): whichever
+            // folder starts first, each keeps its name.
+            const QString current = fromNSString(existing.displayName);
+            const bool numbered = current.startsWith(displayName + QStringLiteral(" ("))
+                && QRegularExpression(QStringLiteral("^ \\(\\d+\\)$")).match(current.mid(displayName.size())).hasMatch();
+            if (existing && ([existing.displayName isEqualToString:name] || numbered)) {
                 qCInfo(lcFileProviderDomain) << "File Provider domain already registered" << identifier;
                 onMainThread([callback] { callback(DomainResult::Ok, {}); });
                 return;
@@ -455,10 +505,7 @@ namespace Mac {
                                            mode:NSFileProviderDomainRemovalModePreserveDirtyUserData
                               completionHandler:^(NSURL *preservedLocation, NSError *error) {
                                   logError("Failed to remove domain", identifier, error);
-                                  if (preservedLocation) {
-                                      qCWarning(lcFileProviderDomain)
-                                          << "Unsynced files of the removed domain are kept in" << fromNSString(preservedLocation.path);
-                                  }
+                                  showPreservedData(preservedLocation, identifier);
                                   qCInfo(lcFileProviderDomain) << "Unregistered File Provider domain" << identifier;
                                   if (callback) {
                                       onMainThread(callback);
@@ -485,10 +532,7 @@ namespace Mac {
                                                mode:NSFileProviderDomainRemovalModePreserveDirtyUserData
                                   completionHandler:^(NSURL *preservedLocation, NSError *removeError) {
                                       logError("Failed to remove domain", identifier, removeError);
-                                      if (preservedLocation) {
-                                          qCWarning(lcFileProviderDomain)
-                                              << "Unsynced files of the removed domain are kept in" << fromNSString(preservedLocation.path);
-                                      }
+                                      showPreservedData(preservedLocation, identifier);
                                   }];
                 removeDomainSettings(identifier);
                 removeAuthorization(identifier);
