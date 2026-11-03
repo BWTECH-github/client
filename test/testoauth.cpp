@@ -41,7 +41,9 @@ bool acceptsConnections(const QHostAddress &address, quint16 port)
 {
     QTcpSocket socket;
     socket.connectToHost(address, port);
-    return socket.waitForConnected(5000);
+    // Unter macOS 15.8 meldet Qt einen abgewiesenen Verbindungsaufbau über Loopback mitunter als verbunden
+    // (Socket schon geschlossen, Peer-Port 0): nur eine Verbindung mit einem Gegenüber auf diesem Port zählt
+    return socket.waitForConnected(5000) && socket.peerPort() == port;
 }
 
 quint16 redirectPort(const QUrl &authorisationLink)
