@@ -33,6 +33,9 @@
 #include "serveractivityfetcher.h"
 #include "sharedialog.h"
 #include "syncfileitem.h"
+#ifdef Q_OS_MACOS
+#include "common/vfs.h"
+#endif
 
 #include "iconresources.h"
 
@@ -535,6 +538,19 @@ void TrayMenuController::addAccountMenu(AccountState *accountState)
             auto *action = menu->addAction(folderIcon(folder), folderActionText(folder));
             action->setToolTip(folder->path());
             const QString path = folder->path();
+#ifdef Q_OS_MACOS
+            // File Provider: die Dateien zeigt der Finder unter „Orte“; der Ort steht erst fest, wenn macOS die Domain kennt
+            if (folder->vfs().mode() == Vfs::MacFileProvider) {
+                action->setToolTip(folder->displayName());
+                connect(action, &QAction::triggered, this, [folder = QPointer<Folder>(folder)] {
+                    if (folder && !folder->userVisiblePath().isEmpty()) {
+                        QDesktopServices::openUrl(QUrl::fromLocalFile(folder->userVisiblePath()));
+                    }
+                });
+                _folderActions.append(qMakePair(QPointer<QAction>(action), QPointer<Folder>(folder)));
+                continue;
+            }
+#endif
             connect(action, &QAction::triggered, this, [path] { QDesktopServices::openUrl(QUrl::fromLocalFile(path)); });
             _folderActions.append(qMakePair(QPointer<QAction>(action), QPointer<Folder>(folder)));
         }

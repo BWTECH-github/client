@@ -179,6 +179,26 @@ void AdvancedSettingsPageController::buildPage()
     folderPickerLayout->addWidget(_folderButton);
     layout->addLayout(folderPickerLayout);
 
+#ifdef Q_OS_MACOS
+    if (_vfsIsAvailable && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::MacFileProvider) {
+        // File Provider: macOS legt die Dateien selbst ab (Finder, „Orte“), ein Speicherort ist dann nicht zu wählen
+        auto *finderHint = new QLabel(tr("Your files appear in the Finder sidebar under \"Locations\". They are downloaded when you open them, "
+                                         "and you can keep them on this Mac with \"Download Now\"."),
+            _page);
+        finderHint->setWordWrap(true);
+        layout->addWidget(finderHint);
+        auto showLocation = [syncRootLabel, finderHint, this](int id) {
+            const bool fileProvider = id == NewAccount::SyncType::USE_VFS;
+            syncRootLabel->setVisible(!fileProvider);
+            _rootDirEdit->setVisible(!fileProvider);
+            _folderButton->setVisible(!fileProvider);
+            finderHint->setVisible(fileProvider);
+        };
+        connect(_buttonGroup, &QButtonGroup::idClicked, this, showLocation);
+        showLocation(_buttonGroup->checkedId());
+    }
+#endif
+
     _errorField = new QLabel(QString(), _page);
     // Fehlerrot aus dem Theme (WCAG 4,5:1); Qt::red erreichte auf Weiß nur 4:1 und wirkte auf QLabel gar nicht
     ColorManager::applyErrorColor(_errorField);

@@ -140,7 +140,13 @@ void AccountFoldersController::buildMenuActions()
     _chooseSync->setObjectName("selectiveSyncAction");
 
     Vfs::Mode mode = VfsPluginManager::instance().bestAvailableVfsMode();
-    if (mode != Vfs::Off) {
+    bool offerVfsActions = mode != Vfs::Off;
+#ifdef Q_OS_MACOS
+    // File Provider: virtuelle Dateien gibt es nur für neue Ordnerpaare (die Dateien liegen dann nicht im Ordner, ein
+    // Umschalten ließe dort veraltete Kopien zurück), und „Jetzt laden“/„Download entfernen“ bietet der Finder selbst
+    offerVfsActions = offerVfsActions && mode != Vfs::MacFileProvider;
+#endif
+    if (offerVfsActions) {
         // need extra checks:
         if (Theme::instance()->forceVirtualFilesOption()) {
             // get rid of choose sync action as it can never be enabled
@@ -227,7 +233,7 @@ void AccountFoldersController::updateActions()
     // furthermore, we do need to disable if the current folder selection
     // is empty so it's actually a key part of the evaluation for action state here
     // so doing a general if(!_curentFolder) return; handling is not correct
-    _showInSystemFolder->setEnabled(_currentFolder && QFileInfo::exists(_currentFolder->path()));
+    _showInSystemFolder->setEnabled(_currentFolder && !_currentFolder->userVisiblePath().isEmpty() && QFileInfo::exists(_currentFolder->userVisiblePath()));
 
     if (_showInBrowser)
         _showInBrowser->setEnabled(_currentFolder && _currentFolder->isConnected() && _currentFolder->isAvailable());
@@ -264,8 +270,9 @@ void OCC::AccountFoldersController::onShowInSystemFolder()
     if (!_currentFolder)
         return;
 
-    if (QFileInfo::exists(_currentFolder->path()))
-        showInFileManager(_currentFolder->path());
+    const QString path = _currentFolder->userVisiblePath();
+    if (!path.isEmpty() && QFileInfo::exists(path))
+        showInFileManager(path);
 }
 
 void AccountFoldersController::onShowInBrowser()
@@ -337,11 +344,17 @@ void AccountFoldersController::onRemoveSync()
     qCInfo(lcAccountFoldersController) << "Remove Folder " << _currentFolder->path();
     QString shortGuiLocalPath = _currentFolder->shortGuiLocalPath();
 
-    QMessageBox msgBox(QMessageBox::Question, tr("Confirm Folder Sync Connection Removal"),
-        tr("<p>Do you really want to stop syncing the folder <i>%1</i>?</p>"
-           "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
-            .arg(shortGuiLocalPath),
-        QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
+    QString question = tr("<p>Do you really want to stop syncing the folder <i>%1</i>?</p>"
+                          "<p><b>Note:</b> This will <b>not</b> delete any files.</p>")
+                           .arg(shortGuiLocalPath);
+#ifdef Q_OS_MACOS
+    if (_currentFolder->vfs().mode() == Vfs::MacFileProvider) {
+        question = tr("<p>Do you really want to remove <i>%1</i> from the Finder?</p>"
+                      "<p><b>Note:</b> The files stay on the server. Changes that have not been uploaded yet are kept by macOS.</p>")
+                       .arg(_currentFolder->displayName());
+    }
+#endif
+    QMessageBox msgBox(QMessageBox::Question, tr("Confirm Folder Sync Connection Removal"), question, QMessageBox::Yes | QMessageBox::No, ocApp()->mainWindow());
     msgBox.button(QMessageBox::Yes)->setText(tr("Remove Folder Sync Connection"));
     msgBox.button(QMessageBox::No)->setText(tr("Cancel"));
     msgBox.setObjectName("confirmRemoveFolderSyncDialog");

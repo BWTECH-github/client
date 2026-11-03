@@ -45,6 +45,9 @@
 
 #include <QLocale>
 #include <QMessageBox>
+#ifdef Q_OS_MACOS
+#include <QDesktopServices>
+#endif
 #include <QPushButton>
 #include <QTimer>
 #include <QUrl>
@@ -255,6 +258,16 @@ QString Folder::shortGuiLocalPath() const
 }
 
 
+QString Folder::userVisiblePath() const
+{
+#ifdef Q_OS_MACOS
+    if (_vfs && _vfs->mode() == Vfs::MacFileProvider) {
+        return _vfs->fileProviderPath();
+    }
+#endif
+    return path();
+}
+
 QString Folder::cleanPath() const
 {
     QString cleanedPath = QDir::cleanPath(_definition.canonicalPath());
@@ -327,6 +340,9 @@ void Folder::setSyncPaused(bool paused)
     } else {
         setSyncState(SyncResult::Paused);
     }
+#ifdef Q_OS_MACOS
+    updateFileProviderSuspension();
+#endif
     Q_EMIT canSyncChanged();
 }
 
@@ -525,6 +541,13 @@ void Folder::startVfs()
     });
 
     slotNextSyncFullLocalDiscovery();
+#ifdef Q_OS_MACOS
+    if (_vfs->mode() == Vfs::MacFileProvider) {
+        // abgemeldet/angehalten: Die Domain wird getrennt, sobald macOS sie kennt
+        connect(_accountState, &AccountState::stateChanged, this, &Folder::updateFileProviderSuspension, Qt::UniqueConnection);
+        updateFileProviderSuspension();
+    }
+#endif
     _vfs->start(vfsParams);
 }
 
@@ -548,6 +571,12 @@ int Folder::slotWipeErrorBlacklist()
 
 void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason reason)
 {
+#ifdef Q_OS_MACOS
+    // File Provider: hier liegt nur das Journal, die Dateien gleicht die Erweiterung ab
+    if (_vfs && _vfs->mode() == Vfs::MacFileProvider) {
+        return;
+    }
+#endif
     if (!isReady()) {
         // we might be switching backend
         return;
@@ -817,6 +846,12 @@ void Folder::wipeForRemoval()
 
     _vfs->stop();
     _vfs->unregisterFolder();
+#ifdef Q_OS_MACOS
+    if (_vfs->mode() == Vfs::MacFileProvider) {
+        // der Ordner in den Programmdaten enthielt nur das Journal; rmdir entfernt ihn nur, wenn er leer ist
+        QDir().rmdir(path());
+    }
+#endif
 
     // don't kill vfs pointer, as it is a child of the Folder we should let it be auto-deleted by normal qobject destruction sequence.
 }
@@ -848,6 +883,13 @@ void Folder::startSync()
         qCCritical(lcFolder) << "ERROR folder is currently not sync able.";
         return;
     }
+
+#ifdef Q_OS_MACOS
+    if (_vfs->mode() == Vfs::MacFileProvider) {
+        startFileProviderSync();
+        return;
+    }
+#endif
 
     _timeSinceLastSyncStart.start();
     setSyncState(SyncResult::SyncPrepare);
@@ -908,6 +950,77 @@ void Folder::startSync()
 
     Q_EMIT syncStarted();
 }
+
+#ifdef Q_OS_MACOS
+void Folder::startFileProviderSync()
+{
+    // Die File-Provider-Erweiterung gleicht die Dateien selbst ab (Finder, „Orte“), die Sync-Engine bleibt still:
+    // Ein Lauf lässt die Erweiterung nach Änderungen auf dem Server sehen und zeigt den Zustand der Domain.
+    _timeSinceLastSyncStart.start();
+    setSyncState(SyncResult::SyncPrepare);
+    _syncResult.reset();
+    Q_EMIT syncStarted();
+
+    _vfs->fileProviderRefresh();
+    bool needsSystemSettings = false;
+    const QString problem = _vfs->fileProviderProblem(&needsSystemSettings);
+    if (!problem.isEmpty()) {
+        qCWarning(lcFolder) << "File Provider domain of" << path() << "does not work:" << problem;
+        _syncResult.appendErrorString(problem);
+        if (needsSystemSettings && !_fileProviderHintShown) {
+            _fileProviderHintShown = true;
+            showFileProviderHint(problem);
+        }
+    } else {
+        // switched off again later: say it again
+        _fileProviderHintShown = false;
+    }
+
+    QMetaObject::invokeMethod(
+        this,
+        [this, failed = !problem.isEmpty()] {
+            setSyncState(failed ? SyncResult::Error : SyncResult::Success);
+            _lastSyncDuration = std::chrono::milliseconds(_timeSinceLastSyncStart.elapsed());
+            _timeSinceLastSyncDone.start();
+            Q_EMIT syncFinished(_syncResult);
+        },
+        Qt::QueuedConnection);
+}
+
+void Folder::showFileProviderHint(const QString &problem)
+{
+    auto *msgBox = new QMessageBox(QMessageBox::Information, tr("Show your files in the Finder"), problem, QMessageBox::NoButton, ocApp()->mainWindow());
+    QPushButton *openButton = msgBox->addButton(tr("Open System Settings"), QMessageBox::AcceptRole);
+    msgBox->addButton(tr("Later"), QMessageBox::RejectRole);
+    msgBox->setDefaultButton(openButton);
+    msgBox->setAttribute(Qt::WA_DeleteOnClose);
+    connect(msgBox, &QMessageBox::finished, this, [msgBox, openButton] {
+        if (msgBox->clickedButton() == openButton) {
+            // Allgemein > Anmeldeobjekte & Erweiterungen, dort der Schalter „Dateianbieter“ der App
+            QDesktopServices::openUrl(QUrl(QStringLiteral("x-apple.systempreferences:com.apple.LoginItems-Settings.extension")));
+        }
+    });
+    connect(this, &Folder::destroyed, msgBox, &QMessageBox::deleteLater);
+    msgBox->open();
+    ocApp()->tray()->slotShowTrayMessage(msgBox->windowTitle(), problem);
+}
+
+void Folder::updateFileProviderSuspension()
+{
+    if (!_vfs || _vfs->mode() != Vfs::MacFileProvider) {
+        return;
+    }
+    const QString appName = Theme::instance()->appNameGUI();
+    if (!_accountState || _accountState->isSignedOut()) {
+        // abgemeldet: Die Erweiterung verliert auch ihre Zugangsdaten
+        _vfs->fileProviderSetSuspended(tr("You are signed out of %1. Sign in again in %1 to use these files.").arg(appName), false);
+    } else if (syncPaused()) {
+        _vfs->fileProviderSetSuspended(tr("Synchronization is paused in %1.").arg(appName), true);
+    } else {
+        _vfs->fileProviderSetSuspended({}, true);
+    }
+}
+#endif
 
 void Folder::setMoveToTrash(bool trashIt)
 {

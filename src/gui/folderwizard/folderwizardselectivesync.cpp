@@ -29,6 +29,9 @@
 #include "common/vfs.h"
 
 #include <QCheckBox>
+#ifdef Q_OS_MACOS
+#include <QLabel>
+#endif
 #include <QVBoxLayout>
 
 
@@ -47,6 +50,17 @@ FolderWizardSelectiveSync::FolderWizardSelectiveSync(Account *account, FolderWiz
         _virtualFilesCheckBox->setChecked(true);
         layout->addWidget(_virtualFilesCheckBox);
         _virtualFilesCheckBox->setDisabled(Theme::instance()->forceVirtualFilesOption());
+#ifdef Q_OS_MACOS
+        if (VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::MacFileProvider) {
+            // File Provider: Die Dateien zeigt der Finder unter „Orte“, der lokale Ordner der Vorseite bleibt ungenutzt
+            auto *finderHint = new QLabel(tr("With virtual files your files appear in the Finder sidebar under \"Locations\" and are downloaded "
+                                             "when you open them. The local folder chosen before is only used without virtual files."),
+                this);
+            finderHint->setWordWrap(true);
+            layout->addWidget(finderHint);
+            connect(_virtualFilesCheckBox, &QCheckBox::toggled, finderHint, &QWidget::setVisible);
+        }
+#endif
     }
 }
 

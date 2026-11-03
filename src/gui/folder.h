@@ -245,6 +245,12 @@ public:
     QString path() const { return _definition.canonicalPath(); }
 
     /**
+     * Where the user finds the files: path(), with macOS File Provider (Vfs::MacFileProvider) the location the
+     * Finder shows under Locations (~/Library/CloudStorage/…), empty while macOS has not set it up yet.
+     */
+    QString userVisiblePath() const;
+
+    /**
      * cleaned canonical folder path, like path() but never ends with a /
      *
      * Wrapper for QDir::cleanPath(path()) except for "Z:/",
@@ -510,6 +516,16 @@ private:
     // I don't expect it to be very common for it to get called multiple times, though. Part of the todo is to evaluate whether it makes sense
     // to re/build the watcher relative to vfs state as I don't see any connection conceptually (yet, at least).
     void registerFolderWatcher();
+
+#ifdef Q_OS_MACOS
+    /// MacFileProvider: the extension syncs the files itself, a sync of the folder only lets it look for changes on the
+    /// server and shows the state of the File Provider domain.
+    void startFileProviderSync();
+    void showFileProviderHint(const QString &problem);
+    /// signed out or paused: the Finder shows the domain as disconnected, and why
+    void updateFileProviderSuspension();
+    bool _fileProviderHintShown = false;
+#endif
 
     enum LogStatus {
         LogStatusRemove,

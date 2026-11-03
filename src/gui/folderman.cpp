@@ -40,6 +40,11 @@
 #include "common/utility_win.h"
 #endif
 
+#ifdef Q_OS_MACOS
+#include <QStandardPaths>
+#include <QUuid>
+#endif
+
 #include <QEventLoop>
 #include <QMessageBox>
 #include <QMutableSetIterator>
@@ -51,6 +56,25 @@ using namespace std::chrono;
 using namespace std::chrono_literals;
 
 namespace {
+#ifdef Q_OS_MACOS
+/// Whether a new folder becomes a macOS File Provider folder (same rule as in addFolderFromScratch()).
+bool usesMacFileProvider(bool useVfs)
+{
+    using namespace OCC;
+    const bool forceVfs = Theme::instance()->forceVirtualFilesOption() && VfsPluginManager::instance().isVirtualFilesAvailable();
+    return (useVfs || forceVfs) && VfsPluginManager::instance().bestAvailableVfsMode() == Vfs::MacFileProvider;
+}
+
+/// A File Provider folder keeps only its journal locally: the Finder shows the files under Locations
+/// (~/Library/CloudStorage/…), so the folder lives in the app's data instead of the chosen sync root.
+QString newFileProviderFolderPath()
+{
+    const QString path = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation))
+                             .filePath(QStringLiteral("FileProvider/") + QUuid::createUuid().toString(QUuid::WithoutBraces));
+    QDir().mkpath(path);
+    return path;
+}
+#endif
 }
 
 namespace OCC {
@@ -335,12 +359,19 @@ void FolderMan::setUpInitialSyncFolders(AccountState *accountState, bool useVfs)
             setSyncEnabled(false);
 
             const QString localDir(accountState->account()->defaultSyncRoot());
-            if (!FolderManagementUtils::prepareFolder(localDir)) {
-                setSyncEnabled(true);
-                return;
-            }
+            bool useSyncRoot = true;
+#ifdef Q_OS_MACOS
+            // die Dateien zeigt der Finder unter „Orte“: kein leerer Ordner und kein Favorit im Benutzerordner
+            useSyncRoot = !usesMacFileProvider(useVfs);
+#endif
+            if (useSyncRoot) {
+                if (!FolderManagementUtils::prepareFolder(localDir)) {
+                    setSyncEnabled(true);
+                    return;
+                }
 
-            Utility::setupFavLink(localDir);
+                Utility::setupFavLink(localDir);
+            }
 
             FolderDefinition folderDef(accountState->account()->davUrl(), {}, Theme::instance()->appNameGUI());
             folderDef.setLocalPath(localDir);
@@ -392,7 +423,12 @@ void FolderMan::loadSpacesAndCreateFolders(AccountState *accountState, bool useV
         // prepare the root - reality check this as I think the user can change this from default? Yes they can but not for auto-loaded
         // folders eg on account creation, which is what is happening here.
         const QString localDir(accountState->account()->defaultSyncRoot());
-        if (!FolderManagementUtils::prepareFolder(localDir)) {
+        bool useSyncRoot = true;
+#ifdef Q_OS_MACOS
+        // File Provider: die Spaces erscheinen im Finder unter „Orte“, der Ordner im Benutzerordner bliebe leer
+        useSyncRoot = !usesMacFileProvider(useVfs);
+#endif
+        if (useSyncRoot && !FolderManagementUtils::prepareFolder(localDir)) {
             return;
         }
 
@@ -1441,6 +1477,11 @@ bool FolderMan::isSpaceSynced(GraphApi::Space *space) const
 
 Folder *FolderMan::addFolderFromScratch(AccountState *accountState, FolderDefinition &&folderDefinition, bool useVfs)
 {
+#ifdef Q_OS_MACOS
+    if (usesMacFileProvider(useVfs)) {
+        folderDefinition.setLocalPath(newFileProviderFolderPath());
+    }
+#endif
     if (!FolderManagementUtils::prepareFolder(folderDefinition.localPath())) {
         return nullptr;
     }
