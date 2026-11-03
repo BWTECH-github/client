@@ -76,11 +76,28 @@ xcrun notarytool store-credentials oc-notary \
 admin/osx/notarize.sh /Applications/owncloud.online.app        # uses profile "oc-notary"
 ```
 
-The script signs inner-to-outer (dylibs/plugins → frameworks → FinderSyncExt →
-FileProviderExt with its own entitlements → the app with the shared app group),
-verifies, zips, submits with `--wait`, staples, and checks with `spctl`. For the
-Craft release build this replaces the ad-hoc signing; it can be wired into
-`create_mac.sh` once the certificate + profile exist.
+Signing is done by `admin/osx/sign-app.sh` (shared by `notarize.sh`,
+`make_release.sh` and the CI): every Mach-O file deepest first, then the bundles
+inner-to-outer, each extension with its **own** entitlements generated from the
+source tree (`FileProviderExt.entitlements`, `FinderSyncExt.entitlements`: app
+sandbox + app group `<TEAM_ID>.online.owncloud.desktopclient`), the app last with
+`admin/osx/app.entitlements`. It then checks the seal, the team, the hardened
+runtime and the entitlements of every bundle and fails on `get-task-allow`.
+Never re-sign the finished app with a blanket `codesign --force --deep` or without
+entitlements: that strips the extensions' sandbox/app group and pkd/fileproviderd
+reject them.
+
+The File Provider extension is built **unsigned** by
+`admin/osx/make-fileprovider.sh` (bundle id, minimum macOS and architectures taken
+from the app, app group from `TEAM_ID`), embedded, and only then everything is
+signed - no Xcode account or provisioning profile is needed.
+
+Local dry run of the release package (no notarization):
+
+```
+SIGN_IDENTITY=<SHA1 of the Developer ID> OUT=/tmp/ocrelease admin/osx/make_release.sh
+APPLE_TEAM_ID=4545KLA52K SIGN_IDENTITY=<SHA1> admin/osx/ci-sign-notarize.sh --no-notarize <dir-with-dmg>
+```
 
 ## CI (GitHub Actions)
 
@@ -97,7 +114,17 @@ secrets are set (`.github/workflows/main.yml`, steps "Apple signing setup" and
 | `APPLE_API_KEY_ID` | key ID of that API key |
 | `APPLE_API_ISSUER_ID` | issuer ID from App Store Connect → Users and Access → Integrations |
 
-Without the secrets the job builds an unsigned dmg as before. The script keeps the
-dmg layout: it converts the image to read-write, signs everything inside the app
-from the inside out with the hardened runtime, converts it back, signs the dmg,
-submits it to `notarytool` and staples the ticket.
+The team id must be the team of the certificate in `APPLE_CERT_P12`: it is the
+prefix of the app group of app and extensions and, via
+`SOCKETAPI_TEAM_IDENTIFIER_PREFIX` (set from `APPLE_TEAM_ID` in the "Prepare"
+step), of the Finder extension's socket. The notarization API key must belong to
+the same team.
+
+Without the secrets the job builds an unsigned dmg without the File Provider
+extension as before (it would not run without a team signature). With them the
+script keeps the dmg layout: it converts the image to read-write, builds and embeds
+`FileProviderExt.appex`, signs with `sign-app.sh`, renames the volume to
+"owncloud.online", converts it back, signs the dmg, submits it to `notarytool` and
+staples the ticket. `publish-release.yml` calls `macos-sign-release.yml` for the
+published release as well; a dmg that is already signed by the team, notarized,
+stapled and contains the extension is left unchanged there.

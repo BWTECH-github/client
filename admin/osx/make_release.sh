@@ -7,12 +7,13 @@
 # It does NOT notarize; run admin/osx/notarize.sh afterwards (that needs the
 # App Store Connect credentials, see NOTARIZATION.md). Pass --timestamp to sign
 # with a secure timestamp (required before notarization); the default skips it
-# for a fast local build.
+# for a fast local build. Extension build and signing are the same scripts the
+# CI uses (make-fileprovider.sh, sign-app.sh).
 #
 # Env / defaults:
 #   TEAM_ID        4545KLA52K (BW-TECH GmbH)
-#   SIGN_IDENTITY  the "Developer ID Application" identity of TEAM_ID; for a local test
-#                  build e.g. "Apple Development: …" (no notarization possible then)
+#   SIGN_IDENTITY  the "Developer ID Application" identity of TEAM_ID (name or SHA1); for a
+#                  local test build e.g. "Apple Development: …" (no notarization possible then)
 #   CRAFT_ROOT     ~/craft/CraftMaster/macos-clang-arm64
 #   BASE_APP       $CRAFT_ROOT/Applications/KDE/owncloud.online.app  (craft install)
 #   OUT            /tmp/ocrelease
@@ -26,26 +27,20 @@ REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 TS="--timestamp=none"
 [ "${1:-}" = "--timestamp" ] && TS="--timestamp"
 
-DEVID="${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | awk -F'"' -v team="($TEAM_ID)" '/Developer ID Application/ && index($0, team) {print $2; exit}')}"
+DEVID="${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | awk -v team="($TEAM_ID)" '/Developer ID Application/ && index($0, team) {print $2; exit}')}"
 [ -n "$DEVID" ] || { echo "Kein 'Developer ID Application' Zertifikat für Team $TEAM_ID (siehe NOTARIZATION.md)"; exit 1; }
-# App und Erweiterung teilen die App-Gruppe <TEAM_ID>.online.owncloud.desktopclient (Präfix = signierendes Team)
-APP_ENT="$OUT/app.entitlements"
 APP="$OUT/owncloud.online.app"; FW="$APP/Contents/Frameworks"
 rm -rf "$OUT"; mkdir -p "$OUT"
 
-echo "==> 1) File-Provider-Extension bauen"
-xcodebuild -project "$REPO/shell_integration/MacOSX/OwnCloudFileProvider/OwnCloudFileProvider.xcodeproj" \
-  -target FileProviderExt -configuration Release "SYMROOT=$OUT/fpbuild" -allowProvisioningUpdates \
-  "DEVELOPMENT_TEAM=$TEAM_ID" OC_APPLICATION_NAME=owncloud.online \
-  OC_APPLICATION_REV_DOMAIN=online.owncloud.desktopclient "OC_SOCKETAPI_TEAM_IDENTIFIER_PREFIX=${TEAM_ID}." \
-  >/dev/null
-
-echo "==> 2) Basis-App kopieren + Appex einbetten"
+echo "==> 1) Basis-App kopieren"
 cp -R "$BASE_APP" "$APP"
-mkdir -p "$APP/Contents/PlugIns"
+
+echo "==> 2) File-Provider-Erweiterung unsigniert bauen + einbetten"
 # eine Basis-App mit BUILD_MAC_FILE_PROVIDER bringt die Erweiterung schon mit: ersetzen, nicht hineinkopieren
+APPEX="$(TEAM_ID="$TEAM_ID" "$REPO/admin/osx/make-fileprovider.sh" "$APP" "$OUT/fpbuild" | tail -1)"
+mkdir -p "$APP/Contents/PlugIns"
 rm -rf "$APP/Contents/PlugIns/FileProviderExt.appex"
-cp -R "$OUT/fpbuild/Release/FileProviderExt.appex" "$APP/Contents/PlugIns/FileProviderExt.appex"
+ditto "$APPEX" "$APP/Contents/PlugIns/FileProviderExt.appex"
 
 echo "==> 3) macdeployqt (Qt einbetten)"
 "$CRAFT_ROOT/bin/macdeployqt" "$APP" -qmldir="$REPO/src" >/dev/null 2>&1 || true
@@ -69,22 +64,19 @@ for pass in 1 2 3; do
   done < <(find "$APP/Contents" -type f \( -name "*.dylib" -o -name "*.so" \); echo "$APP/Contents/MacOS/owncloud.online")
 done
 
-echo "==> 5) Developer ID signieren (innen nach außen, Hardened Runtime)"
-sign() { codesign --force --options runtime $TS "$@"; }
-find "$FW" "$APP/Contents/PlugIns" -type f \( -name "*.dylib" -o -name "*.so" \) | while read -r f; do sign --sign "$DEVID" "$f"; done
-find "$FW" -maxdepth 1 -name "*.framework" | while read -r fw; do sign --sign "$DEVID" "$fw"; done
-for ax in FinderSyncExt FileProviderExt; do
-  d="$APP/Contents/PlugIns/$ax.appex"; [ -d "$d" ] || continue
-  ent="$OUT/$ax.entitlements"; codesign -d --entitlements "$ent" --xml "$d" 2>/dev/null || true
-  if [ -s "$ent" ]; then sign --entitlements "$ent" --sign "$DEVID" "$d"; else sign --sign "$DEVID" "$d"; fi
-done
-sed -E "s/[A-Z0-9]{10}\.online\.owncloud\.desktopclient/$TEAM_ID.online.owncloud.desktopclient/" "$REPO/admin/osx/app.entitlements" > "$APP_ENT"
-sign --entitlements "$APP_ENT" --sign "$DEVID" "$APP"
+echo "==> 5) Developer ID signieren (innen nach außen, Hardened Runtime, Entitlements je Erweiterung)"
+SIGN_TIMESTAMP=0; [ "$TS" = "--timestamp" ] && SIGN_TIMESTAMP=1
+SIGN_IDENTITY="$DEVID" TEAM_ID="$TEAM_ID" SIGN_TIMESTAMP="$SIGN_TIMESTAMP" "$REPO/admin/osx/sign-app.sh" "$APP"
 
 echo "==> 6) Verifikation + DMG"
 codesign --verify --deep --strict "$APP" && echo "   codesign --deep --strict OK"
 DMG="$OUT/owncloud.online-arm64.dmg"; rm -f "$DMG"
-hdiutil create -volname "owncloud.online" -srcfolder "$APP" -ov -format UDZO "$DMG" >/dev/null
+# wie das CI-dmg: App plus Verknüpfung auf /Applications zum Hineinziehen
+STAGE="$OUT/dmg-root"; rm -rf "$STAGE"; mkdir -p "$STAGE"
+ditto "$APP" "$STAGE/$(basename "$APP")"; ln -s /Applications "$STAGE/Applications"
+hdiutil create -volname "owncloud.online" -srcfolder "$STAGE" -ov -format UDZO "$DMG" >/dev/null
+rm -rf "$STAGE"
+codesign --force $TS --sign "$DEVID" "$DMG"
 echo "==> FERTIG: $APP"
 echo "           $DMG"
 spctl -a -vvv --type exec "$APP" 2>&1 | head -2 || true
