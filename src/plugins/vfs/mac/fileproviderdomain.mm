@@ -281,9 +281,12 @@ namespace Mac {
         SecItemDelete((__bridge CFDictionaryRef)query);
     }
 
-    void registerDomain(const QString &identifier, const QString &displayName,
+    void registerDomain(const QString &identifierRef, const QString &displayNameRef,
         std::function<void(DomainResult, const QString &)> callback)
     {
+        // copies: blocks capture C++ references as references, and macOS answers long after the caller returned
+        const QString identifier = identifierRef;
+        const QString displayName = displayNameRef;
         if (!fileProviderAvailable()) {
             onMainThread([callback] { callback(DomainResult::Unsupported, {}); });
             return;
@@ -314,8 +317,9 @@ namespace Mac {
         });
     }
 
-    void queryDomain(const QString &identifier, std::function<void(DomainResult, const QString &)> callback)
+    void queryDomain(const QString &identifierRef, std::function<void(DomainResult, const QString &)> callback)
     {
+        const QString identifier = identifierRef; // a copy for the blocks
         if (!fileProviderAvailable()) {
             onMainThread([callback] { callback(DomainResult::Unsupported, {}); });
             return;
@@ -343,8 +347,9 @@ namespace Mac {
         });
     }
 
-    void unregisterDomain(const QString &identifier, std::function<void()> callback)
+    void unregisterDomain(const QString &identifierRef, std::function<void()> callback)
     {
+        const QString identifier = identifierRef; // a copy for the blocks
         if (!fileProviderAvailable()) {
             if (callback) {
                 onMainThread(callback);
@@ -404,8 +409,9 @@ namespace Mac {
         }];
     }
 
-    void setDomainSuspended(const QString &identifier, const QString &reason, bool temporary)
+    void setDomainSuspended(const QString &identifierRef, const QString &reason, bool temporary)
     {
+        const QString identifier = identifierRef; // a copy for the blocks
         if (!fileProviderAvailable()) {
             return;
         }
@@ -439,8 +445,9 @@ namespace Mac {
         });
     }
 
-    void signalChanges(const QString &identifier)
+    void signalChanges(const QString &identifierRef)
     {
+        const QString identifier = identifierRef; // a copy for the blocks
         if (!fileProviderAvailable()) {
             return;
         }
@@ -455,8 +462,9 @@ namespace Mac {
         });
     }
 
-    void signalErrorsResolved(const QString &identifier)
+    void signalErrorsResolved(const QString &identifierRef)
     {
+        const QString identifier = identifierRef; // a copy for the blocks
         if (!fileProviderAvailable()) {
             return;
         }
