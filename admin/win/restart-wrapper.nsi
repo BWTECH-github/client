@@ -60,7 +60,7 @@ Name "owncloud.online ${VERSION}"
 OutFile "${OUTFILE}"
 RequestExecutionLevel admin
 SetCompressor /SOLID lzma
-BrandingText "BW-Tech GmbH - owncloud.online"
+BrandingText "BW-TECH GmbH - owncloud.online"
 
 ; Branded default install directory. A different path can be chosen on the
 ; directory page, or passed as /D=... (must be the last parameter, unquoted) -

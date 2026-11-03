@@ -176,7 +176,7 @@ QString Theme::aboutVersions(Theme::VersionFormat format) const
 
 QString Theme::about() const
 {
-    const QString vendor = QStringLiteral(APPLICATION_VENDOR);
+    const QString vendor = QStringLiteral(APPLICATION_VENDOR_DISPLAY);
     return tr("<p>Version %1. For more information visit <a href=\"%2\">https://%3</a></p>"
               "<p><small>By Klaas Freitag, Daniel Molkentin, Olivier Goffart, Markus Götz, "
               " Jan-Christoph Borchardt, Thomas Müller,<br>"

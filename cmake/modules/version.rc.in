@@ -17,8 +17,8 @@ VS_VERSION_INFO VERSIONINFO
         BEGIN
             BLOCK "040904E4"
             BEGIN
-                VALUE "CompanyName", "@APPLICATION_VENDOR@\0"
-                VALUE "LegalCopyright", "Copyright (C) 2014-@MIRALL_VERSION_YEAR@ @APPLICATION_VENDOR@\0"
+                VALUE "CompanyName", "@APPLICATION_VENDOR_DISPLAY@\0"
+                VALUE "LegalCopyright", "Copyright (C) 2014-@MIRALL_VERSION_YEAR@ @APPLICATION_VENDOR_DISPLAY@\0"
                 VALUE "FileVersion", "@MIRALL_VERSION_FULL@\0"
                 VALUE "Comments", "@MIRALL_VERSION_STRING@\0"
                 VALUE "FileDescription", "@APPLICATION_NAME@\0"

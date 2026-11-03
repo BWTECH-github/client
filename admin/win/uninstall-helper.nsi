@@ -73,7 +73,7 @@ Caption "$(TXT_CAPTION)"
 OutFile "${OUTFILE}"
 RequestExecutionLevel admin
 SetCompressor /SOLID lzma
-BrandingText "BW-Tech GmbH - owncloud.online"
+BrandingText "BW-TECH GmbH - owncloud.online"
 InstallDir "$PROGRAMFILES64\${PRODUCT}" ; placeholder - resolved in .onInit
 
 !define MUI_ICON "..\..\src\resources\theme\universal\owncloud-online.ico"

@@ -4,6 +4,10 @@ set( APPLICATION_SHORTNAME  "owncloud.online" )
 set( APPLICATION_EXECUTABLE "owncloud.online" )
 set( APPLICATION_DOMAIN     "owncloud.online" )
 set( APPLICATION_VENDOR     "BW-Tech GmbH" )
+# Sichtbarer Firmenname (Info-Dialog, Copyright in Info.plist und Windows-Dateieigenschaften,
+# Installer-Fußzeile). APPLICATION_VENDOR bleibt unverändert, weil er Registry-Pfade bildet
+# (Software\Policies\<Vendor>\<App>) und Bestandsinstallationen sonst nicht mehr passen.
+set( APPLICATION_VENDOR_DISPLAY "BW-TECH GmbH" )
 # Basisadresse des Update-Feeds: festes Release "update-feed" für alle Kanäle (admin/release/UPDATE-FEED.md);
 # der Client hängt owncloud.online-update-<plattform>-<kanal>.xml an
 set( APPLICATION_UPDATE_URL "https://github.com/BWTECH-github/client/releases/download/update-feed/" CACHE STRING "URL for updater" )
