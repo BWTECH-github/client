@@ -20,6 +20,9 @@ REV_DOMAIN="$(info CFBundleIdentifier)"
 EXE="$(info CFBundleExecutable)"
 APP_NAME="$(info CFBundleName 2>/dev/null || echo "$EXE")"
 MIN_OS="$(info LSMinimumSystemVersion)"
+# die Version der App, damit pluginkit/LaunchServices Kopien unterscheiden
+VERSION="$(info CFBundleShortVersionString)"
+BUILD="$(info CFBundleVersion 2>/dev/null || echo "$VERSION")"
 ARCHS="$(lipo -archs "$APP/Contents/MacOS/$EXE")"
 GROUP="$TEAM_ID.$REV_DOMAIN"
 
@@ -31,6 +34,7 @@ if ! xcodebuild -project "$REPO/shell_integration/MacOSX/OwnCloudFileProvider/Ow
     "SYMROOT=$WORK/sym" "OBJROOT=$WORK/obj" \
     CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY= DEVELOPMENT_TEAM= \
     "ARCHS=$ARCHS" ONLY_ACTIVE_ARCH=NO "MACOSX_DEPLOYMENT_TARGET=$MIN_OS" \
+    "MARKETING_VERSION=$VERSION" "CURRENT_PROJECT_VERSION=$BUILD" \
     "OC_APPLICATION_NAME=$APP_NAME" "OC_APPLICATION_REV_DOMAIN=$REV_DOMAIN" \
     "OC_SOCKETAPI_TEAM_IDENTIFIER_PREFIX=$TEAM_ID." > "$LOG" 2>&1; then
   grep -E "error:|BUILD FAILED" "$LOG" | head -40 >&2 || tail -40 "$LOG" >&2

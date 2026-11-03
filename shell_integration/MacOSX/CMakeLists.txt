@@ -51,6 +51,9 @@ if(BUILD_MAC_FILE_PROVIDER)
             -allowProvisioningUpdates
             "DEVELOPMENT_TEAM=${MAC_FILE_PROVIDER_TEAM}"
             "MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}"
+            # the client's version (as in MacOSXBundleInfo.plist), so pluginkit/LaunchServices tell copies apart
+            "MARKETING_VERSION=${MIRALL_VERSION_STRING}"
+            "CURRENT_PROJECT_VERSION=${MIRALL_VERSION_FULL}"
             "OC_APPLICATION_NAME=${APPLICATION_NAME}"
             "OC_APPLICATION_REV_DOMAIN=${APPLICATION_REV_DOMAIN}"
             "OC_SOCKETAPI_TEAM_IDENTIFIER_PREFIX=${SOCKETAPI_TEAM_IDENTIFIER_PREFIX}"
