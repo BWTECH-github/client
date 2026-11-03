@@ -102,10 +102,23 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         let client = try context.client()
         if container == .workingSet {
             // A full enumeration of the working set (new domain, expired anchor):
-            // everything in the folders the system knows. The baselines stay, so
-            // the next change enumeration still reports what changed since.
+            // everything in the folders the system knows, the root always (also its
+            // baseline: change enumeration starts there). The baselines that exist
+            // stay, so the next change enumeration still reports what changed since.
+            // After a lost store (needsRebuild) nothing is known, while the system
+            // still has items on disk: then the whole tree, so none of them looks
+            // deleted and change enumeration covers every folder again.
+            let store = context.store
+            let rebuild = await store.needsRebuild
+            var queue = await store.knownContainers()
+            if !queue.contains(where: { $0.0 == .rootContainer }) {
+                queue.insert((.rootContainer, ""), at: 0)
+            }
+            var visited = Set<String>()
             var items: [FileProviderItem] = []
-            for (known, path) in await context.store.knownContainers() {
+            while !queue.isEmpty {
+                let (known, path) = queue.removeFirst()
+                guard visited.insert(known.rawValue).inserted else { continue }
                 let entries: [DavEntry]
                 do {
                     entries = try await client.propfind(path: path, depth: 1)
@@ -113,8 +126,19 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     continue
                 }
                 let children = entries.filter { $0.path != path && !SyncRules.isExcluded($0.name) }
-                await context.store.register(entries: children)
+                await store.register(entries: children)
+                var snapshot: [String: Seen] = [:]
+                for child in children {
+                    snapshot[child.identifier.rawValue] = child.seen
+                    if rebuild && child.isFolder {
+                        queue.append((child.identifier, child.path))
+                    }
+                }
+                await store.setBaselineIfUnknown(of: known, to: snapshot)
                 items.append(contentsOf: children.map { FileProviderItem(entry: $0, parent: known) })
+            }
+            if rebuild {
+                await store.finishRebuild()
             }
             return items
         }

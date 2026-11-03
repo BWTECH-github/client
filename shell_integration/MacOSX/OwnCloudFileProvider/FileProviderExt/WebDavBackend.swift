@@ -348,6 +348,10 @@ actor ItemStore {
         var known: [String: [String: Seen]] = [:]
         var anchor = 1
         var pending: Pending?
+        /// Set when the store was lost (didReset): the next full enumeration of the
+        /// working set walks the whole tree to rebuild the baselines. Optional, so
+        /// store files written before it existed still decode.
+        var rebuild: Bool?
     }
 
     private var state = State()
@@ -402,7 +406,18 @@ actor ItemStore {
     func clearReset() {
         guard didReset else { return }
         startOver()
+        state.rebuild = true
         didReset = false
+        save()
+    }
+
+    /// The baselines were lost while the system still has items on disk: the next
+    /// full working set enumeration must cover the whole tree (see clearReset()).
+    var needsRebuild: Bool { state.rebuild == true }
+
+    func finishRebuild() {
+        guard state.rebuild != nil else { return }
+        state.rebuild = nil
         save()
     }
 
