@@ -26,6 +26,7 @@
 #include <QMap>
 #include <QOperatingSystemVersion>
 #include <QSaveFile>
+#include <QSet>
 
 #import <FileProvider/FileProvider.h>
 #import <Foundation/Foundation.h>
@@ -281,6 +282,100 @@ namespace Mac {
         SecItemDelete((__bridge CFDictionaryRef)query);
     }
 
+    namespace {
+        /// Identifiers of the domains the running client registered (main thread only).
+        QSet<QString> &activeDomains()
+        {
+            static QSet<QString> identifiers;
+            return identifiers;
+        }
+
+        /// addDomain() refuses a display name another domain of the app already uses: the Finder
+        /// folder ~/Library/CloudStorage/<app>-<display name> exists (NSFileWriteFileExistsError).
+        bool nameTaken(NSError *error)
+        {
+            return [error.domain isEqualToString:NSCocoaErrorDomain] && error.code == NSFileWriteFileExistsError;
+        }
+
+        // strings by value: the blocks must capture copies, not references
+        void addDomain(QString identifier, QString displayName, bool mayReplaceOrphan,
+            std::function<void(DomainResult, const QString &)> callback);
+
+        /// The display name belongs to a domain no folder of the running client owns (its folder or
+        /// account went away without the domain, e.g. a lost configuration). Remove that one, macOS
+        /// keeps its unsynced changes, and register ours again. Runs on the main thread.
+        void replaceOrphanedNamesake(QString identifier, QString displayName, NSError *addError,
+            std::function<void(DomainResult, const QString &)> callback)
+        {
+            const QSet<QString> active = activeDomains(); // a copy for the blocks
+            NSString *name = displayName.toNSString();
+            const auto result = classify(addError);
+            const QString message = fromNSString(addError.localizedDescription);
+            [NSFileProviderManager getDomainsWithCompletionHandler:^(NSArray<NSFileProviderDomain *> *domains, NSError *listError) {
+                logError("Could not list File Provider domains", identifier, listError);
+                NSMutableArray<NSFileProviderDomain *> *orphans = [NSMutableArray array];
+                for (NSFileProviderDomain *domain in domains) {
+                    const QString other = fromNSString(domain.identifier);
+                    if ([domain.displayName isEqualToString:name] && other != identifier && !active.contains(other)) {
+                        [orphans addObject:domain];
+                    }
+                }
+                if (orphans.count == 0) {
+                    // the name belongs to a folder of this client: two folders must not share it
+                    onMainThread([callback, result, message] { callback(result, message); });
+                    return;
+                }
+                dispatch_group_t removals = dispatch_group_create();
+                for (NSFileProviderDomain *orphan in orphans) {
+                    const QString other = fromNSString(orphan.identifier);
+                    qCInfo(lcFileProviderDomain) << "Removing File Provider domain without a folder" << other << "that uses the name of" << identifier;
+                    dispatch_group_enter(removals);
+                    [NSFileProviderManager removeDomain:orphan
+                                                   mode:NSFileProviderDomainRemovalModePreserveDirtyUserData
+                                      completionHandler:^(NSURL *preservedLocation, NSError *removeError) {
+                                          logError("Failed to remove domain", other, removeError);
+                                          if (preservedLocation) {
+                                              qCWarning(lcFileProviderDomain)
+                                                  << "Unsynced files of the removed domain are kept in" << fromNSString(preservedLocation.path);
+                                          }
+                                          if (!removeError) {
+                                              removeDomainSettings(other);
+                                              removeAuthorization(other);
+                                          }
+                                          dispatch_group_leave(removals);
+                                      }];
+                }
+                dispatch_group_notify(removals, dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
+                    addDomain(identifier, displayName, false, callback);
+                });
+            }];
+        }
+
+        void addDomain(QString identifier, QString displayName, bool mayReplaceOrphan,
+            std::function<void(DomainResult, const QString &)> callback)
+        {
+            NSFileProviderDomain *domain = [[NSFileProviderDomain alloc] initWithIdentifier:identifier.toNSString()
+                                                                               displayName:displayName.toNSString()];
+            [NSFileProviderManager addDomain:domain
+                           completionHandler:^(NSError *addError) {
+                               if (addError && mayReplaceOrphan && nameTaken(addError)) {
+                                   onMainThread([identifier, displayName, addError, callback] {
+                                       replaceOrphanedNamesake(identifier, displayName, addError, callback);
+                                   });
+                                   return;
+                               }
+                               const auto result = classify(addError);
+                               const QString message = fromNSString(addError.localizedDescription);
+                               if (addError) {
+                                   logError("Failed to register domain", identifier, addError);
+                               } else {
+                                   qCInfo(lcFileProviderDomain) << "Registered File Provider domain" << identifier << displayName;
+                               }
+                               onMainThread([callback, result, message] { callback(result, message); });
+                           }];
+        }
+    }
+
     void registerDomain(const QString &identifierRef, const QString &displayNameRef,
         std::function<void(DomainResult, const QString &)> callback)
     {
@@ -291,6 +386,7 @@ namespace Mac {
             onMainThread([callback] { callback(DomainResult::Unsupported, {}); });
             return;
         }
+        activeDomains().insert(identifier);
 
         NSString *name = displayName.toNSString();
         withDomain(identifier, ^(NSFileProviderDomain *existing, NSError *) {
@@ -302,18 +398,7 @@ namespace Mac {
                 return;
             }
             // new, or only the display name changed (addDomain updates it in place)
-            NSFileProviderDomain *domain = [[NSFileProviderDomain alloc] initWithIdentifier:identifier.toNSString() displayName:name];
-            [NSFileProviderManager addDomain:domain
-                           completionHandler:^(NSError *addError) {
-                               const auto result = classify(addError);
-                               const QString message = fromNSString(addError.localizedDescription);
-                               if (addError) {
-                                   logError("Failed to register domain", identifier, addError);
-                               } else {
-                                   qCInfo(lcFileProviderDomain) << "Registered File Provider domain" << identifier << displayName;
-                               }
-                               onMainThread([callback, result, message] { callback(result, message); });
-                           }];
+            addDomain(identifier, displayName, true, callback);
         });
     }
 
@@ -350,6 +435,7 @@ namespace Mac {
     void unregisterDomain(const QString &identifierRef, std::function<void()> callback)
     {
         const QString identifier = identifierRef; // a copy for the blocks
+        activeDomains().remove(identifier);
         if (!fileProviderAvailable()) {
             if (callback) {
                 onMainThread(callback);
