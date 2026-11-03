@@ -14,70 +14,108 @@
 
 import FileProvider
 import os.log
+import UniformTypeIdentifiers
 
 /// The owncloud.online File Provider extension.
 ///
-/// This is the process the Finder talks to: it owns one domain (one synced
-/// folder) and answers metadata, enumeration and content requests. With a
-/// configured WebDAV server it serves the live server tree: enumeration and
-/// hydration (milestone 2) plus create/upload/rename/move/delete with
-/// conditional writes to avoid lost updates (milestone 3).
+/// This is the process the Finder talks to: it owns one domain (one folder of
+/// an account in the client) and serves the server tree over WebDAV - listing,
+/// downloads on demand, uploads, renames, moves and deletions. The client
+/// (src/plugins/vfs/mac) registers the domain, writes the connection settings,
+/// keeps the credentials current and signals changes on the server.
+///
+/// Data safety: every write is conditional. Uploads carry If-Match with the
+/// version the user edited (or If-None-Match for new files), moves never
+/// overwrite (Overwrite: F), deletions of files carry If-Match and deletions of
+/// folders are refused when the folder changed on the server since the system
+/// last saw it. A conflicting edit is kept as a conflict copy next to the
+/// server version, never dropped.
 final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
-    private let domain: NSFileProviderDomain
-    private let client: WebDavClient?
-    private let store: ItemStore?
-    private let log = Logger(subsystem: "online.owncloud.desktopclient", category: "fileprovider")
+    private let context: DomainContext
+    private let log = Logger(subsystem: logSubsystem, category: "fileprovider")
+
+    /// Fields we sync to the server; the rest (tags, last used date, …) stays local.
+    private static let syncedFields: NSFileProviderItemFields = [.filename, .parentItemIdentifier, .contents]
 
     required init(domain: NSFileProviderDomain) {
-        self.domain = domain
-        let loaded = DavConfig.load(domainIdentifier: domain.identifier.rawValue)
-        if let config = loaded, config.isTransportAcceptable {
-            self.client = WebDavClient(config: config)
-            self.store = ItemStore(domainIdentifier: domain.identifier.rawValue)
-        } else {
-            if let config = loaded, !config.isTransportAcceptable {
-                Logger(subsystem: "online.owncloud.desktopclient", category: "fileprovider")
-                    .error("Refusing plain-http WebDAV for a non-local host; use https")
-            }
-            self.client = nil
-            self.store = nil
-        }
+        context = DomainContext(domain: domain)
         super.init()
-        log.info("Extension started for domain \(domain.identifier.rawValue, privacy: .public), server configured: \(self.client != nil)")
+        let store = context.store
+        let identity = domain.backingStoreIdentity
+        Task { await store.adoptBackingStore(identity) }
+        log.info("Extension started for domain \(domain.identifier.rawValue, privacy: .public)")
     }
 
     func invalidate() {
-        log.info("Extension invalidated for domain \(self.domain.identifier.rawValue, privacy: .public)")
+        log.info("Extension invalidated for domain \(self.context.domain.identifier.rawValue, privacy: .public)")
     }
 
     // MARK: - Helpers
 
+    /// The etag the system knows for an item; nil if it has none we gave it
+    /// (beforeFirstSyncComponent: never in sync with the server).
     private static func etag(from version: NSFileProviderItemVersion?) -> String? {
-        guard let data = version?.contentVersion, !data.isEmpty else { return nil }
+        guard let data = version?.contentVersion, !data.isEmpty,
+              data != NSFileProviderItemVersion.beforeFirstSyncComponent
+        else {
+            return nil
+        }
         return String(data: data, encoding: .utf8)
     }
 
-    /// Resolve an identifier to a server path, recovering the mapping from the
-    /// server (fileid -> path) if our local store lost it (e.g. after a store
-    /// reset), so items never become permanently orphaned.
-    private func path(for identifier: NSFileProviderItemIdentifier,
-                      client: WebDavClient, store: ItemStore) async throws -> String {
-        if let path = await store.path(for: identifier) { return path }
-        if let recovered = try await client.resolvePath(fileId: identifier.rawValue) {
-            await store.bind(id: identifier, path: recovered)
-            return recovered
+    private static func fileSize(_ url: URL?) -> Int64? {
+        guard let url = url, let size = (try? FileManager.default.attributesOfItem(atPath: url.path))?[.size] as? NSNumber else {
+            return nil
         }
-        throw DavError.unknownItem
+        return size.int64Value
     }
 
-    /// Fetch fresh metadata for an identifier and build the item.
-    private func item(forPath path: String, client: WebDavClient, store: ItemStore) async throws -> FileProviderItem {
-        guard let entry = try await client.propfind(path: path, depth: 0).first else {
-            throw DavError.http(404)
+    private static func responseEtag(_ response: HTTPURLResponse) -> String? {
+        let value = (response.value(forHTTPHeaderField: "OC-ETag") ?? response.value(forHTTPHeaderField: "ETag"))?
+            .replacingOccurrences(of: "\"", with: "")
+        return value?.isEmpty == false ? value : nil
+    }
+
+    /// Our content just went up as `response`: the entry of the server item,
+    /// describing exactly that version (someone may have changed it since).
+    private func uploadedEntry(at path: String, response: HTTPURLResponse, contents: URL?,
+                               client: WebDavClient) async throws -> DavEntry {
+        guard let entry = try await client.stat(path: path) else {
+            throw DavError.unknownItem
         }
-        await store.register(entries: [entry])
-        let parent = await store.identifier(forPath: entry.parentPath) ?? .rootContainer
-        return FileProviderItem(entry: entry, parent: parent)
+        guard let etag = Self.responseEtag(response), etag != entry.etag else {
+            return entry
+        }
+        context.signalWorkingSet() // the newer server version comes down afterwards
+        return entry.with(etag: etag, size: Self.fileSize(contents) ?? 0)
+    }
+
+    /// Keep a local version the server cannot take (it changed there meanwhile):
+    /// upload it as "name (conflicted copy <date>).ext" next to it, like the
+    /// desktop client does. Never overwrites anything.
+    private func uploadConflictCopy(of contents: URL, named name: String, in parentPath: String,
+                                    modified: Date?, client: WebDavClient) async throws -> String {
+        let sha1 = sha1Hex(of: contents)
+        for attempt in 0..<5 {
+            let conflictName = SyncRules.conflictName(for: name, date: Date().addingTimeInterval(TimeInterval(attempt)))
+            let path = joinPath(parentPath, conflictName)
+            do {
+                try await client.put(path: path, contents: contents, modified: modified, sha1: sha1, ifNoneMatch: "*")
+                log.info("Kept the local version as \(path, privacy: .public)")
+                context.signalWorkingSet()
+                return path
+            } catch DavError.precondition {
+                continue
+            }
+        }
+        throw DavError.precondition
+    }
+
+    private func collisionError(at path: String, client: WebDavClient) async throws -> Error {
+        if let existing = try await client.stat(path: path) {
+            return NSError.fileProviderErrorForCollision(with: try await context.item(for: existing, client: client))
+        }
+        return NSFileProviderError(.filenameCollision)
     }
 
     // MARK: - NSFileProviderReplicatedExtension
@@ -85,24 +123,19 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
     func item(for identifier: NSFileProviderItemIdentifier,
               request: NSFileProviderRequest,
               completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) -> Progress {
-        guard let client = client, let store = store else {
-            if let item = Placeholder.byIdentifier[identifier] {
-                completionHandler(item, nil)
-            } else {
-                completionHandler(nil, NSFileProviderError(.noSuchItem))
-            }
-            return Progress()
-        }
-
         if identifier == .trashContainer || identifier == .workingSet {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return Progress()
         }
-
         Task {
             do {
-                let path = try await self.path(for: identifier, client: client, store: store)
-                completionHandler(try await self.item(forPath: path, client: client, store: store), nil)
+                let client = try context.client()
+                let entry = try await context.entry(for: identifier, client: client)
+                if !entry.path.isEmpty && SyncRules.isExcluded(entry.name) {
+                    throw DavError.unknownItem
+                }
+                await context.store.register(entries: [entry])
+                completionHandler(try await context.item(for: entry, client: client), nil)
             } catch {
                 completionHandler(nil, WebDavClient.fileProviderError(for: error))
             }
@@ -114,26 +147,31 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                        version requestedVersion: NSFileProviderItemVersion?,
                        request: NSFileProviderRequest,
                        completionHandler: @escaping (URL?, NSFileProviderItem?, Error?) -> Void) -> Progress {
-        guard let client = client, let store = store else {
-            completionHandler(nil, nil, NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
-            return Progress()
-        }
-
         let progress = Progress(totalUnitCount: 100)
-        Task {
+        let task = Task {
             do {
-                let path = try await self.path(for: itemIdentifier, client: client, store: store)
-                guard let entry = try await client.propfind(path: path, depth: 0).first, !entry.isFolder else {
-                    completionHandler(nil, nil, NSFileProviderError(.noSuchItem))
-                    return
+                let client = try context.client()
+                let entry = try await context.entry(for: itemIdentifier, client: client)
+                guard !entry.isFolder else {
+                    throw DavError.unknownItem
                 }
-                let url = try await client.fetch(path: entry.path, progress: progress)
-                let parent = await store.identifier(forPath: entry.parentPath) ?? .rootContainer
-                completionHandler(url, FileProviderItem(entry: entry, parent: parent), nil)
+                let (url, response) = try await client.fetch(path: entry.path, into: context.temporaryDirectory(), progress: progress)
+                // the version we got: the file may have changed since the PROPFIND
+                var fetched = entry
+                if let etag = Self.responseEtag(response), etag != entry.etag {
+                    fetched = entry.with(etag: etag, size: Self.fileSize(url) ?? entry.size)
+                }
+                completionHandler(url, try await context.item(for: fetched, client: client), nil)
             } catch {
-                completionHandler(nil, nil, WebDavClient.fileProviderError(for: error))
+                if Task.isCancelled || progress.isCancelled {
+                    completionHandler(nil, nil, CocoaError(.userCancelled))
+                } else {
+                    log.error("Download of \(itemIdentifier.rawValue, privacy: .public) failed: \(String(describing: error), privacy: .public)")
+                    completionHandler(nil, nil, WebDavClient.fileProviderError(for: error))
+                }
             }
         }
+        progress.cancellationHandler = { task.cancel() }
         return progress
     }
 
@@ -143,48 +181,91 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     options: NSFileProviderCreateItemOptions = [],
                     request: NSFileProviderRequest,
                     completionHandler: @escaping (NSFileProviderItem?, NSFileProviderItemFields, Bool, Error?) -> Void) -> Progress {
-        guard let client = client, let store = store else {
-            completionHandler(nil, [], false, NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
+        let name = itemTemplate.filename
+        let type = itemTemplate.contentType ?? .data
+        // Names the client never syncs (.DS_Store, Office lock files, …) and
+        // symbolic links stay on this Mac.
+        if SyncRules.isExcluded(name) || type.conforms(to: .symbolicLink) {
+            completionHandler(nil, [], false, NSFileProviderError(.excludedFromSync))
             return Progress()
         }
-
+        let isFolder = type.conforms(to: .directory)
         let mayAlreadyExist = options.contains(.mayAlreadyExist)
+        let modified = itemTemplate.contentModificationDate ?? nil
+        let progress = Progress(totalUnitCount: 1)
+
         Task {
             do {
-                guard let parentPath = await store.path(for: itemTemplate.parentItemIdentifier) else {
-                    throw DavError.unknownItem
+                let client = try context.client()
+                // an unknown parent fails with noSuchItem: the system creates it first
+                let parentPath = try await context.path(for: itemTemplate.parentItemIdentifier, client: client)
+                let path = joinPath(parentPath, name)
+
+                func finish(_ entry: DavEntry, fetchContent: Bool = false) async throws {
+                    let item = try await self.context.item(for: entry, client: client)
+                    await self.context.store.register(entries: [entry])
+                    await self.context.store.noteChild(entry.identifier, seen: entry.seen, in: item.parentItemIdentifier)
+                    self.log.info("Created \(entry.isFolder ? "folder" : "file", privacy: .public) \(entry.path, privacy: .public)")
+                    completionHandler(item, [], fetchContent, nil)
+                    self.context.signalWorkingSet()
                 }
-                let name = itemTemplate.filename
-                let path = parentPath.isEmpty ? name : "\(parentPath)/\(name)"
-                let isFolder = itemTemplate.contentType == .folder || (itemTemplate.contentType?.conforms(to: .directory) ?? false)
 
                 if isFolder {
-                    // Binds to the folder if it already exists (mkcol returns false).
-                    _ = try await client.mkcol(path: path)
-                } else {
-                    do {
-                        // Refuse to clobber an existing server file on a fresh
-                        // create, unless the system is re-importing a known item.
-                        try await client.put(path: path, contents: url,
-                                             ifNoneMatch: mayAlreadyExist ? nil : "*")
-                    } catch DavError.precondition {
-                        if !mayAlreadyExist {
-                            // A different file already exists under this name.
-                            completionHandler(nil, [], false, NSFileProviderError(.filenameCollision))
-                            return
-                        }
-                        // Re-import of a file we already have: adopt the server copy.
+                    let created = try await client.mkcol(path: path)
+                    guard let entry = try await client.stat(path: path) else { throw DavError.unknownItem }
+                    if !created && !entry.isFolder {
+                        completionHandler(nil, [], false, try await collisionError(at: path, client: client))
+                        return
                     }
+                    // a folder of that name exists already: adopt it, the system merges both
+                    try await finish(entry)
+                    return
                 }
 
-                let item = try await self.item(forPath: path, client: client, store: store)
-                self.log.info("Created \(isFolder ? "folder" : "file", privacy: .public) \(path, privacy: .public)")
-                completionHandler(item, [], false, nil)
+                if url == nil && mayAlreadyExist {
+                    // found on disk without content: match it with the server copy, or refuse it
+                    if let existing = try await client.stat(path: path), !existing.isFolder {
+                        try await finish(existing)
+                    } else {
+                        completionHandler(nil, [], false, nil)
+                    }
+                    return
+                }
+
+                let sha1 = url.flatMap { sha1Hex(of: $0) }
+                if mayAlreadyExist, let existing = try await client.stat(path: path, checksums: true) {
+                    // the system re-imports what it found on disk
+                    if existing.isFolder {
+                        completionHandler(nil, [], false, try await collisionError(at: path, client: client))
+                        return
+                    }
+                    if let local = sha1, existing.sha1 == local {
+                        try await finish(existing) // the same content, nothing to upload
+                        return
+                    }
+                    // another version is on the server: keep both, the server version stays here
+                    if let contents = url {
+                        _ = try await uploadConflictCopy(of: contents, named: name, in: parentPath, modified: modified, client: client)
+                    }
+                    try await finish(existing, fetchContent: true)
+                    return
+                }
+
+                do {
+                    // never replace a file that exists on the server
+                    let response = try await client.put(path: path, contents: url, modified: modified, sha1: sha1, ifNoneMatch: "*")
+                    try await finish(try await uploadedEntry(at: path, response: response, contents: url, client: client))
+                } catch DavError.precondition {
+                    // the system renames ours and tries again
+                    completionHandler(nil, [], false, try await collisionError(at: path, client: client))
+                }
             } catch {
+                log.error("Creating \(name, privacy: .public) failed: \(String(describing: error), privacy: .public)")
                 completionHandler(nil, [], false, WebDavClient.fileProviderError(for: error))
             }
+            progress.completedUnitCount = 1
         }
-        return Progress()
+        return progress
     }
 
     func modifyItem(_ item: NSFileProviderItem,
@@ -194,65 +275,136 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     options: NSFileProviderModifyItemOptions = [],
                     request: NSFileProviderRequest,
                     completionHandler: @escaping (NSFileProviderItem?, NSFileProviderItemFields, Bool, Error?) -> Void) -> Progress {
-        guard let client = client, let store = store else {
-            completionHandler(nil, [], false, NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
-            return Progress()
-        }
-
-        // We do not sync a trash: a move into the trash falls back to a delete.
-        if changedFields.contains(.parentItemIdentifier) && item.parentItemIdentifier == .trashContainer {
-            completionHandler(nil, [], false, NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
-            return Progress()
-        }
-
         let baseEtag = Self.etag(from: version)
+        let identifier = item.itemIdentifier
+        let progress = Progress(totalUnitCount: 1)
+
+        if changedFields.contains(.parentItemIdentifier) && item.parentItemIdentifier == .trashContainer {
+            Task {
+                await self.trash(identifier, baseEtag: baseEtag, completionHandler: completionHandler)
+                progress.completedUnitCount = 1
+            }
+            return progress
+        }
+
+        let renamed = changedFields.contains(.filename) || changedFields.contains(.parentItemIdentifier)
+        if renamed && SyncRules.isExcluded(item.filename) {
+            // renamed to a name that is never synced: the system removes it from the server
+            completionHandler(nil, [], false, NSFileProviderError(.excludedFromSync))
+            return Progress()
+        }
+
         Task {
             do {
-                let oldPath = try await self.path(for: item.itemIdentifier, client: client, store: store)
-                var path = oldPath
+                let client = try context.client()
+                var current = try await context.entry(for: identifier, client: client)
+                let oldParent = try await context.identifier(ofFolder: current.parentPath, client: client)
+                var fetchContent = false
 
-                // Rename / move first (fails with 412 if the destination exists).
-                if changedFields.contains(.filename) || changedFields.contains(.parentItemIdentifier) {
-                    guard let parentPath = await store.path(for: item.parentItemIdentifier) else {
-                        throw DavError.unknownItem
-                    }
-                    let newPath = parentPath.isEmpty ? item.filename : "\(parentPath)/\(item.filename)"
-                    if newPath != oldPath {
+                // Rename / move first; never onto an existing item (412).
+                if renamed {
+                    let parentPath = try await context.path(for: item.parentItemIdentifier, client: client)
+                    let newPath = joinPath(parentPath, item.filename)
+                    if newPath != current.path {
                         do {
-                            try await client.move(path: oldPath, to: newPath)
+                            try await client.move(path: current.path, to: newPath)
                         } catch DavError.precondition {
-                            completionHandler(nil, [], false, NSFileProviderError(.filenameCollision))
+                            completionHandler(nil, [], false, try await collisionError(at: newPath, client: client))
                             return
                         }
-                        await store.move(id: item.itemIdentifier, to: newPath)
-                        self.log.info("Moved \(oldPath, privacy: .public) -> \(newPath, privacy: .public)")
-                        path = newPath
+                        log.info("Moved \(current.path, privacy: .public) -> \(newPath, privacy: .public)")
+                        await context.store.bind(id: identifier, path: newPath)
+                        guard let moved = try await client.stat(path: newPath) else { throw DavError.unknownItem }
+                        current = moved
                     }
                 }
 
-                // Upload new content guarded by the base etag: a concurrent
-                // remote edit yields 412 instead of a silent overwrite.
-                if changedFields.contains(.contents) {
+                // New content, guarded by the version the user edited: a concurrent
+                // edit on the server yields 412 instead of being overwritten.
+                if changedFields.contains(.contents), !current.isFolder, let contents = newContents {
+                    let modified = item.contentModificationDate ?? nil
+                    let localSha1 = sha1Hex(of: contents)
                     do {
-                        try await client.put(path: path, contents: newContents, ifMatch: baseEtag)
-                        self.log.info("Uploaded \(path, privacy: .public)")
+                        guard let base = baseEtag else {
+                            throw DavError.precondition // never in sync: no version to build on
+                        }
+                        let response = try await client.put(path: current.path, contents: contents, modified: modified,
+                                                            sha1: localSha1, ifMatch: base)
+                        current = try await uploadedEntry(at: current.path, response: response, contents: contents, client: client)
+                        log.info("Uploaded \(current.path, privacy: .public)")
                     } catch DavError.precondition {
-                        // Server content is newer. Do not overwrite it; hand the
-                        // current server item back so the system reconciles (the
-                        // user's edit surfaces as an unsynced change / conflict).
-                        self.log.error("Conflict on upload of \(path, privacy: .public); keeping server copy")
-                        let current = try await self.item(forPath: path, client: client, store: store)
-                        completionHandler(current, [], false, nil)
-                        return
+                        guard let server = try await client.stat(path: current.path, checksums: true) else {
+                            // deleted on the server meanwhile: the system re-creates it from the local version
+                            throw DavError.unknownItem
+                        }
+                        if let local = localSha1, server.sha1 == local {
+                            current = server // the server has exactly this content already
+                        } else {
+                            // Changed on the server meanwhile: keep both. The local version goes
+                            // up as a conflict copy, the server version comes down here.
+                            log.error("Conflict on \(current.path, privacy: .public): keeping the local version as a conflict copy")
+                            _ = try await uploadConflictCopy(of: contents, named: current.name, in: current.parentPath,
+                                                             modified: modified, client: client)
+                            current = server
+                            fetchContent = true
+                        }
                     }
                 }
 
-                completionHandler(try await self.item(forPath: path, client: client, store: store), [], false, nil)
+                let result = try await context.item(for: current, client: client)
+                await context.store.noteChild(identifier, seen: current.seen, in: result.parentItemIdentifier, previousContainer: oldParent)
+                var handled = Self.syncedFields
+                if changedFields.contains(.contents) {
+                    handled.insert(.contentModificationDate) // went up with the content (X-OC-Mtime)
+                }
+                // unsupported fields come back as pending; the system then stops sending them
+                completionHandler(result, changedFields.subtracting(handled), fetchContent, nil)
+                context.signalWorkingSet()
             } catch {
+                log.error("Modifying \(identifier.rawValue, privacy: .public) failed: \(String(describing: error), privacy: .public)")
+                // noSuchItem (gone on the server): the system removes it, or re-creates
+                // it if it has local changes - local edits survive either way
                 completionHandler(nil, [], false, WebDavClient.fileProviderError(for: error))
             }
+            progress.completedUnitCount = 1
         }
-        return Progress()
+        return progress
+    }
+
+    /// Move to the Trash: delete on the server, where owncloud.online keeps the
+    /// item in the user's trash bin (restorable in the web interface), and let
+    /// the system remove it from the disk. Something that changed on the server
+    /// since the system last saw it is kept instead and handed back where it is.
+    private func trash(_ identifier: NSFileProviderItemIdentifier, baseEtag: String?,
+                       completionHandler: @escaping (NSFileProviderItem?, NSFileProviderItemFields, Bool, Error?) -> Void) async {
+        do {
+            let client = try context.client()
+            guard let entry = try await context.entryIfExists(for: identifier, client: client) else {
+                await context.store.noteRemoval(identifier, from: nil)
+                completionHandler(nil, [], false, nil) // already gone
+                return
+            }
+            let parent = try await context.identifier(ofFolder: entry.parentPath, client: client)
+            do {
+                guard let base = baseEtag, base == entry.etag else { throw DavError.precondition }
+                try await client.delete(path: entry.path, ifMatch: entry.isFolder ? nil : base)
+            } catch DavError.precondition {
+                log.error("Not trashing \(entry.path, privacy: .public): it changed on the server")
+                let current = try await client.stat(path: entry.path) ?? entry
+                context.signalWorkingSet()
+                completionHandler(try await context.item(for: current, client: client), [], false, nil)
+                return
+            }
+            log.info("Trashed \(entry.path, privacy: .public) (kept in the server's trash bin)")
+            await context.store.noteRemoval(identifier, from: parent)
+            completionHandler(nil, [], false, nil)
+            context.signalWorkingSet()
+        } catch DavError.http(404) {
+            await context.store.noteRemoval(identifier, from: nil)
+            completionHandler(nil, [], false, nil)
+        } catch {
+            completionHandler(nil, [], false, WebDavClient.fileProviderError(for: error))
+        }
     }
 
     func deleteItem(identifier: NSFileProviderItemIdentifier,
@@ -260,51 +412,59 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     options: NSFileProviderDeleteItemOptions = [],
                     request: NSFileProviderRequest,
                     completionHandler: @escaping (Error?) -> Void) -> Progress {
-        guard let client = client, let store = store else {
-            completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError))
-            return Progress()
-        }
-
         let recursive = options.contains(.recursive)
+        let baseEtag = Self.etag(from: version)
         Task {
             do {
-                guard let path = await store.path(for: identifier) else {
+                let client = try context.client()
+                guard let entry = try await context.entryIfExists(for: identifier, client: client) else {
+                    await context.store.noteRemoval(identifier, from: nil)
                     completionHandler(nil) // already gone - deletion is idempotent
                     return
                 }
+                let parent = try await context.identifier(ofFolder: entry.parentPath, client: client)
+                let rejected = { () async throws -> Error in
+                    let current = try await client.stat(path: entry.path) ?? entry
+                    self.context.signalWorkingSet()
+                    return NSError.fileProviderErrorForRejectedDeletion(of: try await self.context.item(for: current, client: client))
+                }
 
-                // Learn the item's kind (and, for a folder, its children) with a
-                // single depth-1 request.
-                let listing = try await client.propfind(path: path, depth: 1)
-                let isFolder = listing.first { $0.identifier == identifier }?.isFolder ?? false
-
-                if isFolder {
-                    // Guard against destroying unsynced server-side children: if
-                    // the caller did not ask for a recursive delete, refuse a
-                    // non-empty folder instead of nuking whatever the server holds.
-                    if !recursive && listing.count > 1 {
+                if entry.isFolder {
+                    let listing = try await client.propfind(path: entry.path, depth: 1)
+                    let hasChildren = listing.contains { $0.path != entry.path && !SyncRules.isExcluded($0.name) }
+                    if !recursive && hasChildren {
                         completionHandler(NSFileProviderError(.directoryNotEmpty))
                         return
                     }
-                    // A folder's etag changes when its children change, so an
-                    // If-Match would spuriously fail; the emptiness check above
-                    // is the safety net instead.
-                    try await client.delete(path: path)
+                    // A recursive delete takes everything below with it: not if the
+                    // folder changed on the server since the system last saw it.
+                    if hasChildren && baseEtag != entry.etag {
+                        log.error("Not deleting \(entry.path, privacy: .public): it changed on the server")
+                        completionHandler(try await rejected())
+                        return
+                    }
+                    try await client.delete(path: entry.path)
                 } else {
-                    // Files: guard against deleting content a concurrent edit
-                    // just changed.
-                    try await client.delete(path: path, ifMatch: Self.etag(from: version))
+                    // Files: never delete content the user has not seen.
+                    guard let base = baseEtag, base == entry.etag else {
+                        log.error("Not deleting \(entry.path, privacy: .public): it changed on the server")
+                        completionHandler(try await rejected())
+                        return
+                    }
+                    do {
+                        try await client.delete(path: entry.path, ifMatch: base)
+                    } catch DavError.precondition {
+                        completionHandler(try await rejected())
+                        return
+                    }
                 }
 
-                await store.remove(id: identifier)
-                self.log.info("Deleted \(path, privacy: .public)")
+                await context.store.noteRemoval(identifier, from: parent)
+                log.info("Deleted \(entry.path, privacy: .public)")
                 completionHandler(nil)
-            } catch DavError.precondition {
-                // Changed on the server since the delete was queued: let the
-                // system re-sync rather than deleting the newer content.
-                completionHandler(NSFileProviderError(.serverUnreachable))
+                context.signalWorkingSet()
             } catch DavError.http(404) {
-                await store.remove(id: identifier)
+                await context.store.noteRemoval(identifier, from: nil)
                 completionHandler(nil)
             } catch {
                 completionHandler(WebDavClient.fileProviderError(for: error))
@@ -315,6 +475,10 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
 
     func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier,
                     request: NSFileProviderRequest) throws -> NSFileProviderEnumerator {
-        FileProviderEnumerator(container: containerItemIdentifier, client: client, store: store)
+        if containerItemIdentifier != .workingSet && containerItemIdentifier != .trashContainer {
+            // the user looks at this folder: bring the working set up to date soon
+            context.signalWorkingSet()
+        }
+        return FileProviderEnumerator(container: containerItemIdentifier, context: context)
     }
 }

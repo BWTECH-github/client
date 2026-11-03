@@ -13,167 +13,180 @@
  */
 
 import FileProvider
+import os.log
 
-/// Enumerates a container's children for the Finder.
+/// Enumerates a container's children for the Finder (a live PROPFIND, depth 1),
+/// and the changes of the working set.
 ///
-/// With a configured server this is a live PROPFIND (depth 1); without one it
-/// serves the static milestone-1 tree. Change enumeration diffs the current
-/// listing against the etag/path snapshot from the previous enumeration and,
-/// crucially, only commits that snapshot after the whole walk succeeds - a
-/// mid-walk failure is retried from the same anchor without losing changes.
+/// Replicated extensions report every remote change through the working set:
+/// the client signals it when the folder's etag on the server changed, the
+/// extension after its own writes. Change enumeration walks the known folders
+/// (DomainContext.walkChanges) and stages the result in the ItemStore until
+/// the system has taken it (two-phase anchors), so nothing is lost when an
+/// enumeration is interrupted.
 final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     private let container: NSFileProviderItemIdentifier
-    private let client: WebDavClient?
-    private let store: ItemStore?
+    private let context: DomainContext
+    /// The listing of the container, kept for the following pages.
+    private var listing: [FileProviderItem]?
+    private let log = Logger(subsystem: logSubsystem, category: "enumeration")
 
-    init(container: NSFileProviderItemIdentifier, client: WebDavClient?, store: ItemStore?) {
+    init(container: NSFileProviderItemIdentifier, context: DomainContext) {
         self.container = container
-        self.client = client
-        self.store = store
+        self.context = context
         super.init()
     }
 
-    func invalidate() {}
-
-    /// The children of a depth-1 listing: every entry except the container
-    /// itself (identified by matching identifier, not by position).
-    private func children(of entries: [DavEntry], container: NSFileProviderItemIdentifier) -> [DavEntry] {
-        entries.filter { $0.identifier != container }
+    func invalidate() {
+        listing = nil
     }
 
-    func enumerateItems(for observer: NSFileProviderEnumerationObserver,
-                        startingAt page: NSFileProviderPage) {
-        if container == .workingSet {
+    // MARK: pages
+
+    private static let pagePrefix = "offset:"
+
+    private static func offset(of page: NSFileProviderPage) -> Int {
+        guard let text = String(data: page.rawValue, encoding: .utf8), text.hasPrefix(pagePrefix) else { return 0 }
+        return Int(text.dropFirst(pagePrefix.count)) ?? 0
+    }
+
+    private static func page(at offset: Int) -> NSFileProviderPage {
+        NSFileProviderPage(Data("\(pagePrefix)\(offset)".utf8))
+    }
+
+    private static func anchor(_ value: Int) -> NSFileProviderSyncAnchor {
+        NSFileProviderSyncAnchor(Data("\(value)".utf8))
+    }
+
+    private static func value(of anchor: NSFileProviderSyncAnchor) -> Int? {
+        String(data: anchor.rawValue, encoding: .utf8).flatMap { Int($0) }
+    }
+
+    // MARK: NSFileProviderEnumerator
+
+    func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
+        if container == .trashContainer {
+            // Moving to the Trash deletes on the server, so our trash stays empty.
             observer.finishEnumerating(upTo: nil)
             return
         }
-
-        guard let client = client, let store = store else {
-            if container == .rootContainer {
-                observer.didEnumerate(Placeholder.children)
-            }
-            observer.finishEnumerating(upTo: nil)
-            return
-        }
-
-        let container = self.container
+        let offset = Self.offset(of: page)
+        let pageSize = max(observer.suggestedPageSize ?? 200, 100)
         Task {
             do {
-                guard let path = await store.path(for: container) else {
-                    observer.finishEnumeratingWithError(NSFileProviderError(.noSuchItem))
-                    return
+                if offset == 0 || self.listing == nil {
+                    self.listing = try await self.load()
                 }
-                let entries = try await client.propfind(path: path, depth: 1)
-                let children = self.children(of: entries, container: container)
-                await store.register(entries: children)
-                await store.setChildren(of: container, to: children.etagSnapshot())
-                observer.didEnumerate(children.map { FileProviderItem(entry: $0, parent: container) })
-                observer.finishEnumerating(upTo: nil)
+                let items = self.listing ?? []
+                let start = min(offset, items.count)
+                let end = min(start + pageSize, items.count)
+                if start < end {
+                    observer.didEnumerate(Array(items[start..<end]))
+                }
+                if end < items.count {
+                    observer.finishEnumerating(upTo: Self.page(at: end))
+                } else {
+                    self.listing = nil
+                    observer.finishEnumerating(upTo: nil)
+                }
             } catch {
+                self.listing = nil
+                self.log.error("Enumerating \(self.container.rawValue, privacy: .public) failed: \(String(describing: error), privacy: .public)")
                 observer.finishEnumeratingWithError(WebDavClient.fileProviderError(for: error))
             }
         }
     }
 
-    func enumerateChanges(for observer: NSFileProviderChangeObserver,
-                          from anchor: NSFileProviderSyncAnchor) {
-        guard let client = client, let store = store else {
+    /// The whole listing of the container, as items.
+    private func load() async throws -> [FileProviderItem] {
+        let client = try context.client()
+        if container == .workingSet {
+            // A full enumeration of the working set (new domain, expired anchor):
+            // everything in the folders the system knows. The baselines stay, so
+            // the next change enumeration still reports what changed since.
+            var items: [FileProviderItem] = []
+            for (known, path) in await context.store.knownContainers() {
+                let entries: [DavEntry]
+                do {
+                    entries = try await client.propfind(path: path, depth: 1)
+                } catch DavError.http(404) {
+                    continue
+                }
+                let children = entries.filter { $0.path != path && !SyncRules.isExcluded($0.name) }
+                await context.store.register(entries: children)
+                items.append(contentsOf: children.map { FileProviderItem(entry: $0, parent: known) })
+            }
+            return items
+        }
+
+        let path = try await context.path(for: container, client: client)
+        let entries = try await client.propfind(path: path, depth: 1)
+        guard let own = entries.first(where: { $0.path == path }) else {
+            throw DavError.unknownItem
+        }
+        if !own.isFolder {
+            // a document enumerator (live updates for an open file): the item itself
+            return [try await context.item(for: own, client: client)]
+        }
+        let children = entries.filter { $0.path != path && !SyncRules.isExcluded($0.name) }
+        await context.store.register(entries: children)
+        var snapshot: [String: Seen] = [:]
+        for child in children {
+            snapshot[child.identifier.rawValue] = child.seen
+        }
+        await context.store.setBaselineIfUnknown(of: container, to: snapshot)
+        return children.map { FileProviderItem(entry: $0, parent: container) }
+    }
+
+    func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
+        guard container == .workingSet else {
+            // All remote changes arrive through the working set.
             observer.finishEnumeratingChanges(upTo: anchor, moreComing: false)
             return
         }
-
-        let container = self.container
+        let batchSize = max(observer.suggestedBatchSize ?? 200, 100)
         Task {
-            // A lost delta baseline (corrupt store) means we cannot answer
-            // "changes since anchor N"; ask the system to re-enumerate instead.
+            let store = self.context.store
+            // A lost baseline (corrupt store) cannot answer "changes since N":
+            // the system re-enumerates instead.
             if await store.didReset {
+                await store.clearReset()
                 observer.finishEnumeratingWithError(NSFileProviderError(.syncAnchorExpired))
                 return
             }
-
+            guard let value = Self.value(of: anchor), await store.beginChanges(from: value) else {
+                self.log.info("Unknown sync anchor, asking the system to re-enumerate")
+                observer.finishEnumeratingWithError(NSFileProviderError(.syncAnchorExpired))
+                return
+            }
             do {
-                let containers: [NSFileProviderItemIdentifier]
-                if container == .workingSet {
-                    containers = await store.knownContainers()
-                } else {
-                    containers = [container]
+                let changes = try await self.context.walkChanges()
+                if changes.isEmpty {
+                    observer.finishEnumeratingChanges(upTo: Self.anchor(await store.currentAnchor()), moreComing: false)
+                    return
                 }
-
-                // Collect everything first; commit to the store only after the
-                // whole walk succeeds, so a failure part-way is safely retried.
-                var updates: [FileProviderItem] = []
-                var deletions: [NSFileProviderItemIdentifier] = []
-                var pendingSnapshots: [(NSFileProviderItemIdentifier, [String: String])] = []
-                var pendingBindings: [(NSFileProviderItemIdentifier, String)] = []
-                var pendingRemovals: [NSFileProviderItemIdentifier] = []
-
-                for current in containers {
-                    guard let path = await store.path(for: current) else { continue }
-                    let entries: [DavEntry]
-                    do {
-                        entries = try await client.propfind(path: path, depth: 1)
-                    } catch DavError.http(404) {
-                        continue // container gone; its parent's diff reports it
-                    }
-                    let children = self.children(of: entries, container: current)
-                    let snapshot = children.etagSnapshot()
-                    let previous = await store.children(of: current)
-
-                    for entry in children {
-                        let id = entry.identifier.rawValue
-                        let etagChanged = previous[id] != entry.etag
-                        let pathChanged = await store.path(for: entry.identifier) != entry.path
-                        if etagChanged || pathChanged {
-                            updates.append(FileProviderItem(entry: entry, parent: current))
-                            pendingBindings.append((entry.identifier, entry.path))
-                        }
-                    }
-
-                    // Ids that vanished from this container: distinguish a real
-                    // deletion from a server-side move (same fileid, new path).
-                    for goneId in previous.keys where snapshot[goneId] == nil {
-                        let ident = NSFileProviderItemIdentifier(goneId)
-                        if let movedPath = try await client.resolvePath(fileId: goneId) {
-                            pendingBindings.append((ident, movedPath))
-                            if let moved = try await client.propfind(path: movedPath, depth: 0).first {
-                                let parent = await store.identifier(forPath: moved.parentPath) ?? .rootContainer
-                                updates.append(FileProviderItem(entry: moved, parent: parent))
-                            }
-                        } else {
-                            deletions.append(ident)
-                            pendingRemovals.append(ident)
-                        }
-                    }
-
-                    pendingSnapshots.append((current, snapshot))
+                let next = await store.stage(snapshots: changes.snapshots, removedContainers: changes.removedContainers)
+                self.log.info("Reporting \(changes.updates.count) updated and \(changes.deletions.count) deleted items")
+                var start = 0
+                while start < changes.updates.count {
+                    let end = min(start + batchSize, changes.updates.count)
+                    observer.didUpdate(Array(changes.updates[start..<end]))
+                    start = end
                 }
-
-                // Commit.
-                for (id, path) in pendingBindings { await store.bind(id: id, path: path) }
-                for (container, snapshot) in pendingSnapshots { await store.setChildren(of: container, to: snapshot) }
-                for id in pendingRemovals { await store.remove(id: id) }
-
-                if !updates.isEmpty { observer.didUpdate(updates) }
-                if !deletions.isEmpty { observer.didDeleteItems(withIdentifiers: deletions) }
-
-                let changed = !updates.isEmpty || !deletions.isEmpty
-                let anchorValue = changed ? await store.bumpAnchor() : await store.currentAnchor()
-                observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(Data("\(anchorValue)".utf8)),
-                                                  moreComing: false)
+                if !changes.deletions.isEmpty {
+                    observer.didDeleteItems(withIdentifiers: changes.deletions)
+                }
+                observer.finishEnumeratingChanges(upTo: Self.anchor(next), moreComing: false)
             } catch {
+                self.log.error("Change enumeration failed: \(String(describing: error), privacy: .public)")
                 observer.finishEnumeratingWithError(WebDavClient.fileProviderError(for: error))
             }
         }
     }
 
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-        guard let store = store else {
-            completionHandler(NSFileProviderSyncAnchor(Data("1".utf8)))
-            return
-        }
         Task {
-            let anchor = await store.currentAnchor()
-            completionHandler(NSFileProviderSyncAnchor(Data("\(anchor)".utf8)))
+            completionHandler(Self.anchor(await self.context.store.currentAnchor()))
         }
     }
 }

@@ -20,95 +20,78 @@ import UniformTypeIdentifiers
 /// Identifiers are the server's stable file ids (oc:fileid), so they survive
 /// renames and moves the way the File Provider contract requires.
 final class FileProviderItem: NSObject, NSFileProviderItem {
-    let identifier: NSFileProviderItemIdentifier
-    let parentIdentifier: NSFileProviderItemIdentifier
-    let name: String
-    let isFolder: Bool
-    let size: Int64
-    let etag: String
-    let modified: Date?
+    let entry: DavEntry
+    private let parentIdentifier: NSFileProviderItemIdentifier
 
-    init(identifier: NSFileProviderItemIdentifier,
-         parent: NSFileProviderItemIdentifier,
-         name: String,
-         isFolder: Bool,
-         size: Int64 = 0,
-         etag: String = "static",
-         modified: Date? = nil) {
-        self.identifier = identifier
-        self.parentIdentifier = parent
-        self.name = name
-        self.isFolder = isFolder
-        self.size = size
-        self.etag = etag
-        self.modified = modified
+    init(entry: DavEntry, parent: NSFileProviderItemIdentifier) {
+        self.entry = entry
+        self.parentIdentifier = entry.path.isEmpty ? .rootContainer : parent
     }
 
-    convenience init(entry: DavEntry, parent: NSFileProviderItemIdentifier) {
-        self.init(identifier: entry.identifier,
-                  parent: parent,
-                  name: entry.path.isEmpty ? "owncloud.online" : entry.name,
-                  isFolder: entry.isFolder,
-                  size: entry.size,
-                  etag: entry.etag.isEmpty ? "unknown" : entry.etag,
-                  modified: entry.modified)
-    }
-
-    var itemIdentifier: NSFileProviderItemIdentifier { identifier }
+    var itemIdentifier: NSFileProviderItemIdentifier { entry.identifier }
     var parentItemIdentifier: NSFileProviderItemIdentifier { parentIdentifier }
-    var filename: String { name }
+    // The root's name is not shown (the system uses the domain's display name).
+    var filename: String { entry.path.isEmpty ? "owncloud.online" : entry.name }
 
     var contentType: UTType {
-        if isFolder {
+        if entry.isFolder {
             return .folder
         }
-        let ext = (name as NSString).pathExtension
+        let ext = (entry.name as NSString).pathExtension
         if ext.isEmpty {
             return .data
         }
         return UTType(filenameExtension: ext) ?? .data
     }
 
-    var capabilities: NSFileProviderItemCapabilities {
-        if isFolder {
-            return [.allowsReading, .allowsContentEnumerating, .allowsAddingSubItems,
-                    .allowsRenaming, .allowsReparenting, .allowsDeleting]
-        }
-        return [.allowsReading, .allowsWriting, .allowsRenaming, .allowsReparenting, .allowsDeleting]
+    /// oc:permissions: W write, C/K create file/folder, N rename, V move,
+    /// D delete. Without permissions from the server everything is allowed and
+    /// the server has the last word.
+    private func permitted(_ letters: String) -> Bool {
+        entry.permissions.isEmpty || letters.contains(where: { entry.permissions.contains($0) })
     }
 
-    var documentSize: NSNumber? { isFolder ? nil : NSNumber(value: size) }
-    var contentModificationDate: Date? { modified }
+    var capabilities: NSFileProviderItemCapabilities {
+        var caps: NSFileProviderItemCapabilities = [.allowsReading]
+        if entry.isFolder {
+            caps.insert(.allowsContentEnumerating)
+            if permitted("CK") { caps.insert(.allowsAddingSubItems) }
+        } else if permitted("W") {
+            caps.insert(.allowsWriting)
+        }
+        if entry.path.isEmpty {
+            return caps // the domain root can neither be renamed, moved nor deleted
+        }
+        if permitted("N") { caps.insert(.allowsRenaming) }
+        if permitted("V") { caps.insert(.allowsReparenting) }
+        if permitted("D") {
+            // Moving to the Trash deletes on the server, where owncloud.online keeps
+            // the item in the user's trash bin (see modifyItem).
+            caps.insert(.allowsDeleting)
+            caps.insert(.allowsTrashing)
+        }
+        return caps
+    }
+
+    var fileSystemFlags: NSFileProviderFileSystemFlags {
+        var flags: NSFileProviderFileSystemFlags = [.userReadable]
+        if entry.isFolder {
+            flags.insert(.userExecutable)
+            if permitted("CK") { flags.insert(.userWritable) }
+        } else if permitted("W") {
+            flags.insert(.userWritable)
+        }
+        return flags
+    }
+
+    var documentSize: NSNumber? { entry.isFolder ? nil : NSNumber(value: entry.size) }
+    var contentModificationDate: Date? { entry.modified }
 
     var itemVersion: NSFileProviderItemVersion {
-        NSFileProviderItemVersion(contentVersion: Data(etag.utf8),
-                                  metadataVersion: Data(etag.utf8))
+        let etag = entry.etag.isEmpty ? "unknown" : entry.etag
+        // The etag stays the same on a rename on some servers; the path makes
+        // sure a metadata change is always a new metadata version.
+        return NSFileProviderItemVersion(contentVersion: Data(etag.utf8),
+                                         metadataVersion: Data("\(etag)|\(entry.path)".utf8))
     }
-}
-
-/// Static fallback tree, served when no server configuration exists yet. It
-/// keeps the extension verifiable (milestone 1 behaviour) on machines where
-/// the client has not written `FileProviderConfig.json`.
-enum Placeholder {
-    static let root = FileProviderItem(identifier: .rootContainer,
-                                       parent: .rootContainer,
-                                       name: "owncloud.online",
-                                       isFolder: true)
-
-    static let children: [FileProviderItem] = [
-        FileProviderItem(identifier: .init("documents"), parent: .rootContainer,
-                         name: "Documents", isFolder: true),
-        FileProviderItem(identifier: .init("photos"), parent: .rootContainer,
-                         name: "Photos", isFolder: true),
-        FileProviderItem(identifier: .init("readme.txt"), parent: .rootContainer,
-                         name: "README.txt", isFolder: false, size: 64),
-    ]
-
-    static let byIdentifier: [NSFileProviderItemIdentifier: FileProviderItem] = {
-        var map: [NSFileProviderItemIdentifier: FileProviderItem] = [.rootContainer: root]
-        for child in children {
-            map[child.identifier] = child
-        }
-        return map
-    }()
 }
