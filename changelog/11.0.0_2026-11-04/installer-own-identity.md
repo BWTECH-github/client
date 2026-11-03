@@ -7,9 +7,9 @@ menu entry lives in its own "owncloud.online" folder and points at the real
 client, and the registry keys are Software\BW-Tech GmbH\owncloud.online and
 Uninstall\owncloud.online. The Explorer overlay and context menu handlers use
 their own CLSIDs and names, so they no longer overwrite or remove the
-registration of the official ownCloud client.
+registration of the official upstream client.
 
-Updating from 7.x moves over cleanly: the old "ownCloud" uninstall entry and
+Updating from 7.x moves over cleanly: the old upstream-named uninstall entry and
 registry key are removed when they belong to this client (the official 6.x MSI
 would otherwise run our uninstaller as its "legacy installation"), as are the
 old Explorer registrations pointing into our folder and the old Start menu

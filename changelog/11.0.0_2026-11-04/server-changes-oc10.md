@@ -1,6 +1,6 @@
 Bugfix: Changes on owncloud.online servers arrive within 30 seconds
 
-Without Spaces (owncloud.online and ownCloud 10) nothing told the client
+Without Spaces (owncloud.online and other oC10 servers) nothing told the client
 about changes on the server: only Spaces report a changed ETag. A file
 created on the server, for example in the web interface or by another
 device, therefore only arrived with the full synchronization roughly

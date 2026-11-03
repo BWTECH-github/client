@@ -8,6 +8,5 @@ cleanly - accounts and sync folders live in the user profile and are
 not affected.
 
 The entry in Windows' "Apps & Features" is rebranded as well: it now
-reads "owncloud.online Client <version>" with publisher "BW.Tech GmbH"
-and the branded icon, instead of the upstream "ownCloud" / "ownCloud
-GmbH" naming.
+reads "owncloud.online Client <version>" with publisher "BW-Tech GmbH"
+and the branded icon, instead of the upstream naming.

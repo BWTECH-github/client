@@ -1,6 +1,6 @@
 # Table of Contents
 
-* [Changelog for unreleased](#changelog-for-owncloud-desktop-client-unreleased-unreleased)
+* [Changelog for 11.0.0](#changelog-for-owncloudonline-desktop-client-1100-2026-11-04)
 * [Changelog for 7.1.1](#changelog-for-owncloud-desktop-client-711-2026-08-27)
 * [Changelog for 7.1.0](#changelog-for-owncloud-desktop-client-710-2026-06-08)
 * [Changelog for 6.0.3](#changelog-for-owncloud-desktop-client-603-2026-01-07)
@@ -43,33 +43,622 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
-# Changelog for ownCloud Desktop Client [unreleased] (UNRELEASED)
+# Changelog for owncloud.online Desktop Client [11.0.0] (2026-11-04)
 
-The following sections list the changes in ownCloud Desktop Client unreleased relevant to
-ownCloud admins and users.
+The following sections list the changes in owncloud.online Desktop Client 11.0.0 relevant to
+owncloud.online admins and users. 11.0.0 is the first final release with the 7.2 code base;
+it contains everything from the pre-releases 11.0.0-beta1 to 11.0.0-beta5.
 
-[unreleased]: https://github.com/owncloud/client/compare/v7.1.1...master
+[11.0.0]: https://github.com/BWTECH-github/client/compare/v7.11.1...v11.0.0
 
 ## Summary
 
+* Security - Credentials no longer end up in HTTP debug logs
+* Security - Update packages must carry our exact certificate subject
 * Bugfix - Ensure changes to selective sync always triggers remote discovery: [#12645](https://github.com/owncloud/client/pull/12645)
+* Bugfix - An account is still recognized after its server address was changed
+* Bugfix - The client no longer stops right after a new account connects
+* Bugfix - Enabling a bandwidth limit no longer crashes the client
+* Bugfix - Bandwidth limit could block all transfers; download checkbox did not stick (TC-16)
+* Bugfix - Bandwidth limit throttled to ~147 kB/s regardless of the setting (TC-16)
+* Bugfix - Unusual server answers and system states no longer end the client
+* Bugfix - Files uploaded in bulk are recorded with their permissions
+* Bugfix - Error paths of chunked uploads no longer hit internal assertions
+* Bugfix - Explorer integration (overlay icons, context menu) is now activated
+* Bugfix - Cancelling a folder confirmation no longer carries out the action
+* Bugfix - Setup touched the official upstream client and restarted Windows in silent mode (7.8.0-7.11.0)
+* Bugfix - Setup destroyed the installation it had just made (7.8.0-7.10.0)
+* Bugfix - Large uploads no longer fail on server-side transaction deadlocks
+* Bugfix - No leftover Explorer entry of a virtual files folder
+* Bugfix - An expired access token no longer ends in a new sign-in
+* Bugfix - No empty policies key left in the registry
+* Bugfix - Large downloads survive interruptions and keep going
+* Bugfix - Changes on owncloud.online servers arrive within 30 seconds
+* Bugfix - Settings/sign-in window could appear in a screen corner
+* Bugfix - The sign-in dialogs in the account view show the complete logo
+* Bugfix - No spaces request to servers without spaces
+* Bugfix - Working, branded Start menu entry on Windows
+* Bugfix - Uninstall left the autostart entry behind; share dialog opened too small
+* Bugfix - Uninstalling left shortcuts and the Explorer integration behind (TC-03)
+* Bugfix - Uninstalling via Apps & Features removed nothing (7.10.2, TC-03)
+* Bugfix - Pre-releases are offered the final release
+* Bugfix - Uploads of 10 GB and larger no longer time out at the final step
+* Bugfix - A file that changes while it is uploaded is retried, not blocked
+* Bugfix - Resumed uploads looked like complete restarts (TC-14)
+* Bugfix - Interrupted large uploads restarted from scratch (TC-14)
+* Bugfix - Excluded files show their state in Explorer with virtual files on Windows
+* Bugfix - Hydrating virtual files on Windows no longer crashes occasionally
+* Bugfix - Messages and options in the account wizard are fully readable
 * Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
 * Change - We ended support for OWNCLOUD_FORCE_DARK_MODE environment variable: [#12625](https://github.com/owncloud/client/pull/12625)
 * Change - Introduce a user editable account alias: [#12639](https://github.com/owncloud/client/pull/12639)
+* Change - Windows installer with its own identity and uninstall choices
+* Change - Third party upgrades in distributed binaries
+* Change - Visible company name is BW-TECH GmbH
+* Change - Version 11.0.0
+* Enhancement - Bring back the folder-sync approval options
+* Enhancement - Show the remote folder structure right away
+* Enhancement - Clean visual refresh in the owncloud.online brand colors
+* Enhancement - The folder browser shows files and handles empty folders properly
+* Enhancement - Sync folders are pinned to the Explorer navigation pane
+* Enhancement - Browse the remote file structure directly in the folder list
+* Enhancement - German translations for all recently added texts
+* Enhancement - Take over accounts and folders from the official desktop client
+* Enhancement - Installer defaults to C:\Program Files\owncloud.online and brands the uninstall entry
+* Enhancement - Signed and notarized macOS package (Apple Silicon)
+* Enhancement - Virtual files in the Finder on macOS
+* Enhancement - Owncloudcmd offers the options of the 6.0.3 client again
+* Enhancement - Sign in with user name and password on servers without OAuth2
+* Enhancement - Storage quota bar with a nearly-full warning
+* Enhancement - Ask before a sync deletes all or very many files
+* Enhancement - Clear setup messages when a server cannot be used
+* Enhancement - Windows setup wrapper that requires and performs the restart
+* Enhancement - Share files and folders directly from the client
+* Enhancement - System-wide exclude list next to the program
+* Enhancement - Prompt for the Windows restart that completes an installation
 
 ## Details
 
+* Security - Credentials no longer end up in HTTP debug logs
+
+   Since Qt 6.7 request header names are reported in lower case, so the HTTP
+   logger no longer recognised the Authorization header and wrote Basic
+   credentials and Bearer tokens in clear text to the debug log. Request and
+   response bodies of the OAuth2 token endpoint (authorization code, code
+   verifier, access and refresh tokens) were logged unredacted as well.
+
+   The Authorization header is now redacted regardless of its case, Cookie and
+   Set-Cookie headers are hidden, and token values in form and JSON bodies are
+   replaced by "[redacted]". Debug logs written by earlier versions may contain
+   credentials and should be deleted; affected app passwords and tokens should
+   be revoked.
+
+* Security - Update packages must carry our exact certificate subject
+
+   The Windows updater accepted any valid signature whose signer merely
+   contained "BW-TECH GmbH". It now requires the exact subject common name
+   "BW-TECH GmbH, IT Service für Systemintegration & Datensicherheit" and a
+   certificate issued by DigiCert; anything else is rejected and deleted.
+
 * Bugfix - Ensure changes to selective sync always triggers remote discovery: [#12645](https://github.com/owncloud/client/pull/12645)
 
-   The symptom of the bug: user edits the collection of subfolders to sync in the
-   selective sync gui. After completing the operation, the folder reports sync was
-   successful, though sometimes remote content has not been downloaded.
+   The symptom of the bug: user edits the collection of subfolders to sync in
+   the selective sync gui. After completing the operation, the folder reports
+   sync was successful, though sometimes remote content has not been downloaded.
 
    The fix forces remote discovery every time the selective sync definition has
    changed. This ensures all remote content in the most recently selected
    subfolders will be downloaded, as expected.
 
    https://github.com/owncloud/client/pull/12645
+
+* Bugfix - An account is still recognized after its server address was changed
+
+   After "Change server address" and moving back, the account wizard no longer
+   recognized the account as already set up when the stored address differed
+   only by a trailing "/", and offered to add the same account a second time.
+   The wizard now compares addresses and user names the same way as the server
+   address change: a trailing "/" and the case of the user name do not matter.
+
+* Bugfix - The client no longer stops right after a new account connects
+
+   Beta builds 11.0.0-beta1 to 11.0.0-beta3 stopped one to three seconds after
+   "Finish" in the account wizard: the activity and notification requests of the
+   new account were created with the account itself as parent, which an internal
+   check rejects. The account was never saved, so the next start offered the
+   setup again. The requests now belong to the account state.
+
+   Further crashes around the account setup were fixed. An address with a
+   doubled scheme or "//" in its path ("https://https://server/",
+   "https://server//") stopped the client right after "Sign in"; the address is
+   now cleaned up. Addresses named by the server (the OpenID Connect issuer from
+   WebFinger, the instances found after signing in and the authorization
+   endpoint of the OpenID configuration) are cleaned up as well, and parameters
+   of the provider in the authorization endpoint are kept. When a new account
+   could not connect while the setup finished, it was removed in the middle of a
+   state change, which could crash; this now happens afterwards. A renewal of
+   the sign-in that is only delayed, for example because the access token
+   expired during the setup, no longer discards the new account. "Add
+   account..." and "Import from official client..." bring an open wizard or
+   dialog to the front instead of starting a second wizard that would propose
+   the same sync folder.
+
+* Bugfix - Enabling a bandwidth limit no longer crashes the client
+
+   With an upload or download speed limit active, the bandwidth manager wakes
+   transfers up through the event queue and hands out quota once a second. Such
+   a wakeup could arrive just after a transfer had finished and its network
+   reply was already gone - an internal assertion then terminated the client
+   immediately (the sync itself continued fine after a restart, which is why
+   files still arrived).
+
+   The wakeup handler now simply ignores transfers whose reply is gone, so
+   bandwidth limiting works while large syncs are running.
+
+* Bugfix - Bandwidth limit could block all transfers; download checkbox did not stick (TC-16)
+
+   Two defects in the bandwidth limiter: (1) When a request was retried (e.g.
+   after a token refresh or an HTTP/2 resend), the upload device had already
+   unregistered itself from the bandwidth manager and never received transfer
+   quota again - the retried upload stalled at zero bytes, occupied a transfer
+   slot for its full five-minute timeout and thereby blocked downloads too.
+   Devices now stay registered for their whole lifetime, and the per-tick budget
+   is divided only among consumers that can actually use it. (2) Opening the
+   network settings silently reverted the "limit download bandwidth" checkbox:
+   loading the upload checkbox fired an immediate save that overwrote the
+   not-yet-loaded download setting. Saving now only happens on real user clicks.
+
+   Two crash-on-release landmines in the same code paths (asserts reachable with
+   QT_FORCE_ASSERTS in the throttled-download drain and the request retry) were
+   defused as well.
+
+* Bugfix - Bandwidth limit throttled to ~147 kB/s regardless of the setting (TC-16)
+
+   With an absolute limit configured, throughput converged to ~147 kB/s no
+   matter what value was set (100 kB/s ran at 147, 1000 kB/s at 149). Cause: the
+   limiter granted transfer quota once per second, and each grant wakes Qt's
+   HTTP pipeline exactly once - one wake moves at most one socket-buffer fill
+   (~144 KiB), so the wake rate, not the configured limit, dictated the
+   throughput. The quota timer now ticks ten times per second with a tenth of
+   the budget each, and unconsumed quota accumulates (capped at two seconds of
+   budget) instead of being discarded, so the configured limit is enforced in
+   both directions. Note: files up to 1 MiB are sent via the bulk upload path,
+   which is not yet throttled - the displayed transfer rate can therefore
+   briefly exceed the limit while small files sync.
+
+* Bugfix - Unusual server answers and system states no longer end the client
+
+   Beta builds stop at every violated internal check. Many of these checks could
+   be triggered from outside, so the client ended instead of reporting a
+   problem. Now handled and logged: missing or already removed keychain entries
+   when signing out or removing an account, a browser connection that closes
+   before the sign-in callback is read, sign-in services announcing unknown
+   prompt values, quitting while a WebFinger lookup, a confirmation or the
+   removal of a folder is still running, a sync root that cannot be created or
+   is already marked, switching to another account while a sign-in dialog
+   finishes, server dates in an unexpected format, empty etags, depth 0 listings
+   with several entries, server paths outside the requested folder, URLs with
+   "//" or a query, negative sizes, an unwritable resources cache, files locked
+   by other programs when setting their modification time, failed writes to the
+   sync journal, malformed messages from other local programs on the shell
+   integration socket, retrying a failed update after a restart, and on Windows
+   refused shutdown blocks, partial hydration requests and placeholder records
+   sharing a file id. A deleted item replaced by a rename in an unexpected state
+   is now resolved as a rename instead of ending every sync (this also affected
+   release builds). Error texts from the sign-in service can no longer make the
+   error page loop or abort.
+
+* Bugfix - Files uploaded in bulk are recorded with their permissions
+
+   Against servers that offer the bulk upload endpoint (owncloud.online 11.0.14
+   or later), new files of up to 1 MiB are uploaded in batches. The server's
+   answer carries no file permissions, but the sync journal requires them: the
+   files were recorded without permissions, and builds with assertions enabled
+   terminated on the first batch.
+
+   The client now looks up the permissions of every uploaded file with one small
+   PROPFIND, the same lookup a single upload does, and keeps no more of these
+   requests in flight than it allows parallel transfers. If a lookup fails, the
+   file stays on the server and the next sync records it without uploading it
+   again.
+
+* Bugfix - Error paths of chunked uploads no longer hit internal assertions
+
+   Two error paths of the resumable (chunked) upload hit an internal assertion
+   (fatal in builds with assertions enabled): a failed deletion of a stale chunk
+   while resuming an upload left the transfer outside the propagator's
+   bookkeeping, and a success answer other than 201 Created to the creation of
+   the upload folder (likewise any answer other than 207 to the resume request,
+   as some proxies send) was classified as a network error.
+
+   A failed deletion now starts the upload over as intended. The unexpected
+   answers fail the transfer with a clear error, and the next sync retries it; a
+   resumable upload keeps its session for that.
+
+* Bugfix - Explorer integration (overlay icons, context menu) is now activated
+
+   The installer shipped the Explorer shell extensions (OCOverlays.dll and
+   OCContextMenu.dll) but never registered them with Windows - so Explorer
+   showed neither the sync status overlay icons (green check, blue sync, red
+   error) nor the owncloud.online context menu (Share, Show in web browser, Copy
+   private link, conflict actions, Free up space / Always keep on this device).
+
+   The setup wrapper now registers both extensions during installation. After
+   the (already required) Windows restart, sync folders show live status badges
+   on every file and folder, and the right-click menu offers the full
+   owncloud.online action set.
+
+* Bugfix - Cancelling a folder confirmation no longer carries out the action
+
+   "Cancel" in the confirmation for deactivating virtual files deactivated them
+   anyway, and all files marked as online only were downloaded: the answer of
+   the message box was compared with the wrong value. Quitting the client while
+   the confirmation to remove a folder sync connection was open removed the
+   connection. Both now act only on the confirming button, as do "Sync now" on a
+   metered connection and pausing a running sync. A right click into an empty
+   folder list no longer crashes the client on Windows.
+
+* Bugfix - Setup touched the official upstream client and restarted Windows in silent mode (7.8.0-7.11.0)
+
+   Two things the Windows setup and the uninstall helper did could hit a machine
+   that also has the official upstream client installed: the setup removed
+   "C:\Program Files\ownCloud" recursively as soon as it found files there and
+   the new client lived elsewhere - without checking what that directory
+   contained - and both stopped owncloud.exe, deleted the upstream-named
+   shortcuts and the upstream autostart entry "defensively". On a machine with
+   the official client (MSI 6.x or craft 7.x, which lives exactly there) that
+   destroyed that installation.
+
+   The old directory is now touched only when it demonstrably holds an old
+   installation of THIS client (bin\owncloud.online.exe, versions 7.4-7.7);
+   otherwise it is left untouched and the setup says so in its log. Only the own
+   process name (owncloud.online.exe), the own shortcuts and the own autostart
+   entry are stopped or removed; the broken upstream-named Start menu entry the
+   embedded base installer creates is removed only if it did not exist before
+   the setup ran. The uninstall helper runs the embedded uninstaller,
+   unregisters the shell extensions and removes the directory only for a
+   directory holding this client, and keeps the shared registry entries when
+   they describe the official client.
+
+   Silent installs and uninstalls (/S, e.g. baramundi, Intune, SCCM) no longer
+   restart Windows on their own. They return exit code 3010 when a restart is
+   pending (the msiexec convention deployment tools understand; set only when a
+   locked file had to be scheduled for the next restart) and 0 otherwise. /S
+   /forcerestart restarts right away; /S /norestart is still accepted and
+   behaves like plain /S. Interactive installs keep offering the restart on the
+   finish page.
+
+   The release no longer publishes the raw base installer
+   (owncloud.online-client-<version>-win-x64.exe): it carried the upstream
+   identity (upstream name and publisher in Apps & Features, a Start menu entry
+   pointing at a non-existent bin\owncloud.exe, no Explorer integration). The
+   Setup is the only Windows installer offered.
+
+* Bugfix - Setup destroyed the installation it had just made (7.8.0-7.10.0)
+
+   The embedded craft installer ignores the /D= install directory switch: its
+   MultiUser initialization unconditionally resets the target directory and then
+   applies the Install_Dir registry value when one exists. On machines upgrading
+   from 7.7.x (and on fresh machines) the client was therefore installed into
+   the old "C:\Program Files\ownCloud" directory - after which the setup's
+   migration step removed that directory as a supposed leftover, deleting the
+   freshly installed client. The machine ended up with no client, dead
+   shortcuts, no Explorer integration and a ghost Apps & Features entry.
+
+   The setup now steers the embedded installer via the Install_Dir registry
+   value (the mechanism it actually honors), verifies that the client binary
+   really exists in the new directory, and only then removes an old-directory
+   installation - the migration can no longer touch the installation it just
+   made. If the client binary cannot be found after a reported success, the
+   setup says so loudly instead of finishing silently. Running the 7.10.1 setup
+   repairs machines broken by the affected versions.
+
+* Bugfix - Large uploads no longer fail on server-side transaction deadlocks
+
+   Uploading large files (chunked upload) could permanently fail against
+   owncloud.online (oc10) servers on MySQL/MariaDB with "SQLSTATE[40001]:
+   Serialization failure: 1213 Deadlock found when trying to get lock" - the
+   concurrent chunk PUTs into the same upload directory provoke the deadlock.
+
+   The client now recognizes this reply as transient: the affected chunk (or the
+   MKCOL / final assembling MOVE) is retried in the same sync run with a
+   backoff, and the transfer - as well as all further chunked uploads of the
+   sync run - falls back to serial chunk uploads to stop provoking the deadlock.
+   The new OWNCLOUD_MAX_PARALLEL_CHUNKS environment variable can pin the chunk
+   concurrency (e.g. to 1) for affected servers.
+
+* Bugfix - No leftover Explorer entry of a virtual files folder
+
+   Windows keeps a copy of the navigation pane entry of a virtual files folder
+   in the 32-bit registry view
+   (HKEY_CURRENT_USER\Software\Classes\WOW6432Node\CLSID) when the folder is
+   unregistered. The copy stayed behind whenever such a folder was removed,
+   switched to classic synchronization or the client was uninstalled, with the
+   path of the folder and the icon of the deleted program. The client and the
+   uninstaller now remove it as well.
+
+* Bugfix - An expired access token no longer ends in a new sign-in
+
+   The client asked users to sign in again although their refresh token was
+   still valid. Three failed refresh attempts in a row (server maintenance, a
+   proxy error, a network change after sleep) discarded the refresh token. A
+   refresh gave up after 30 seconds while the server had already replaced the
+   tokens, and the retry with the old refresh token was rejected. A retry timer
+   could start a second refresh with the same refresh token, and the token
+   request carried the session cookie, which made the server count the client id
+   as a failed login and slow down further requests.
+
+   The client now always tries the refresh token first and asks for a new
+   sign-in only when the server rejects it (invalid_grant). Network and server
+   errors, timeouts, maintenance mode, unexpected answers, a disabled account
+   and a disabled sign-in service keep the refresh token and are retried after
+   30 seconds, growing to 5 minutes. The regular connection check of the account
+   does not shorten this pause; only a network that comes back after being
+   disconnected, a server that answers again after an outage or maintenance, or
+   an accepted certificate brings the next attempt forward, at most every 10
+   seconds. The account status names the cause, for example "Your account on the
+   server is disabled" (with an OpenID Connect provider "The sign-in service of
+   the server does not accept this application") or "The sign-in service of the
+   server is not available". Only one refresh runs at a time, and all requests
+   rejected in the meantime are sent again with the new token. Tokens are
+   renewed before they expire (at 80 % of their lifetime and, after sleep,
+   before the next request), also the first token after a sign-in in the wizard,
+   after a new sign-in or after changing the server address of an account. Token
+   requests carry no cookies and wait up to 120 seconds. A new refresh token is
+   stored in the keychain before it is used; if that fails it stays in memory
+   and storing it is retried. If storing keeps failing, the account shows a
+   warning and a notification, because a new sign-in may be needed after a
+   restart. On Linux a keychain that is not ready yet at login is read again
+   instead of asking for a new sign-in.
+
+   Reconnecting while the server settings were still being fetched could end the
+   client (beta builds stop on internal checks); the running fetch is now
+   awaited instead of starting a second one.
+
+   owncloudcmd with --oauth-token-file follows the same rules: it renews the
+   token before it expires, retries temporary failures five times and exits with
+   code 2 only on invalid_grant.
+
+   The oauth2 app 0.10.0 on the server accepts the previous refresh token for
+   another 180 seconds and answers a repeated refresh with the same new tokens,
+   so a refresh whose answer got lost no longer costs the sign-in either.
+
+* Bugfix - No empty policies key left in the registry
+
+   Started with administrator rights, for example right after the setup or on a
+   system without user account control, the client created an empty key
+   HKEY_LOCAL_MACHINE\Software\Policies\BW-Tech GmbH\owncloud.online while
+   looking for administrator policies, and no uninstallation removed it. The
+   client now reads this key only if it exists. Uninstalling removes such an
+   empty key left behind by an earlier version (7.4 up to 11.0.0-beta2), and
+   then HKEY_LOCAL_MACHINE\Software\Policies\BW-Tech GmbH if it is empty as
+   well, also when uninstalling silently. A key with values or subkeys, such as
+   policies set by an administrator, is kept.
+
+* Bugfix - Large downloads survive interruptions and keep going
+
+   A dropped connection, stall or server hiccup during a large download no
+   longer fails the file - and a timeout no longer aborts the whole sync run (it
+   was classified as a fatal error before). The transfer now resumes in-run from
+   the partial temp file with a short backoff; every attempt that received data
+   resets the retry counter, so a download that keeps making progress is resumed
+   indefinitely. Only repeated attempts with zero progress hand over to the
+   normal error handling - and even then the retry backoff for resumable
+   downloads is capped at one minute (instead of growing to 24 hours), so the
+   next sync run picks the file up right where it stopped. Net effect: a 10 GB
+   download keeps inching forward until it completes.
+
+* Bugfix - Changes on owncloud.online servers arrive within 30 seconds
+
+   Without Spaces (owncloud.online and other oC10 servers) nothing told the
+   client about changes on the server: only Spaces report a changed ETag. A file
+   created on the server, for example in the web interface or by another device,
+   therefore only arrived with the full synchronization roughly once an hour, or
+   with the next local change.
+
+   The client now asks for the ETag of the server folder of every folder sync
+   connection without a Space every 30 seconds (remotePollInterval), like the
+   classic client did, and synchronizes the folder when it changed. It asks only
+   after the first synchronization of the folder, never while the folder is
+   synchronizing, and at most once at a time per folder.
+
+* Bugfix - Settings/sign-in window could appear in a screen corner
+
+   On the first start (and whenever the stored window placement is no longer on
+   any screen) the main window - including the sign-in step shown there -
+   appeared wherever the platform dropped it, e.g. the top-right corner of the
+   screen, instead of nicely centered. The window now centers itself on its
+   screen on first show; a placement the user chose is still restored unchanged.
+
+   Code hygiene in the same area: 29 addWidget/addLayout calls in the sign-in
+   widget and the account wizard passed Qt::Alignment constants into the int
+   stretch parameter, where they were silently never applied as alignments. They
+   now use the correct overloads (provably no visual change - the layout
+   behavior was governed by the widgets' own alignment and size policies all
+   along).
+
+* Bugfix - The sign-in dialogs in the account view show the complete logo
+
+   When a password or a new browser sign-in was needed, the dialog in the
+   account view showed the logo cut off at the top and bottom, without "ONLINE",
+   on small screens such as 1024×768. The dialog was taller than the account
+   view and the layout shrank the logo first. Like the pages of the account
+   wizard, the content now scrolls if it does not fit, and the buttons stay
+   visible below it.
+
+* Bugfix - No spaces request to servers without spaces
+
+   Right after sign-in the client could ask the server for graph/v1.0/me/drives
+   before it knew the server capabilities, which a server without spaces such as
+   owncloud.online answers with an error. The spaces list is now only requested
+   once the capabilities announce spaces.
+
+* Bugfix - Working, branded Start menu entry on Windows
+
+   The embedded base installer creates its Start menu shortcut with the upstream
+   binary name (bin\owncloud.exe) hardcoded - but this client's binary is
+   bin\owncloud.online.exe. The resulting upstream-named entry pointed at a
+   missing file: no icon, wrong name, and launching it failed (broken upstream
+   since client 5.7.x, when packaging moved to the 7z payload/bin layout).
+
+   The setup wrapper now repairs this after the installation: it locates the
+   real client binary (covering the current bin\owncloud.online.exe layout and
+   older layouts/names), removes the broken upstream-named shortcuts and creates
+   working "owncloud.online" Start menu AND desktop shortcuts with the branded
+   icon. The wrapper also gained a directory page and forwards a custom install
+   path (/D=...) to the embedded installer, which previously ignored it.
+
+* Bugfix - Uninstall left the autostart entry behind; share dialog opened too small
+
+   The client registers itself for launch on login (HKCU Run key) at first run;
+   uninstalling never removed that entry, so Windows kept trying to start the
+   removed client (TC-03 follow-up). The uninstall helper now deletes both
+   value-name generations. The native share dialog opens at 700px width so the
+   copy/delete buttons of listed links are visible without manual resizing
+   (TC-07).
+
+* Bugfix - Uninstalling left shortcuts and the Explorer integration behind (TC-03)
+
+   Uninstalling via Windows "Apps & Features" removed the program but kept the
+   desktop and start menu shortcuts, left the Explorer shell extensions (overlay
+   icons, context menu) registered and loaded, and never asked for the Windows
+   restart needed to unload them.
+
+   The setup now installs a branded uninstall helper and routes the Apps &
+   Features entry through it: it stops the client, unregisters the shell
+   extensions, runs the original uninstaller, removes the shortcuts (all users
+   and current user), best-effort removes the navigation-pane registry entries,
+   cleans leftover files and registry keys in both registry views, and offers
+   the required Windows restart (interactive) or reboots automatically (silent
+   /S; suppress with /norestart, which then exits with code 3010 so deployment
+   tools can schedule the reboot). The local sync folder and account settings
+   remain untouched, as before.
+
+* Bugfix - Uninstalling via Apps & Features removed nothing (7.10.2, TC-03)
+
+   The 7.10.2 uninstall helper lived inside the installation directory and
+   started the original uninstaller in-place there. The uninstaller's first step
+   terminates every process running from that directory - silently answered with
+   "yes, kill" - which terminated both the helper and the uninstaller itself
+   before anything was removed. Uninstalling via Windows "Apps & Features"
+   therefore did nothing, while running uninstall.exe manually worked (started
+   directly, it relocates itself to %TEMP% and runs outside that kill zone).
+
+   The helper is now installed to its own admin-only-writable directory next to
+   (not inside) the installation - outside the kill zone by construction - and
+   runs the original uninstaller as a %TEMP% copy, so neither process can be
+   terminated by the process check. The flow stays fully synchronous for silent
+   callers (real exit codes: 2 on failure, 3010 for "reboot required" with /S
+   /norestart). The helper additionally verifies afterwards that the client
+   binary is really gone before touching any registry entries, and reports a
+   clear error otherwise. Upgrading to 7.10.3 replaces the misplaced 7.10.2
+   helper and repoints the Apps & Features entry.
+
+* Bugfix - Pre-releases are offered the final release
+
+   A pre-release such as 11.0.0-beta1 never saw the final 11.0.0 in the update
+   feed, because the client compared plain version numbers and its own build
+   number made it look newer. The pre-release suffix now counts: a pre-release
+   is older than the final release of the same version, and later pre-releases
+   (beta2, beta10, rc1) are offered in order. Feeds of pre-releases carry their
+   suffix so that a pre-release never offers itself again.
+
+* Bugfix - Uploads of 10 GB and larger no longer time out at the final step
+
+   After the last chunk is transferred the server assembles the file in one long
+   MOVE request during which it sends nothing - for very large files this takes
+   well over the default 5-minute network timeout. The timeout is scaled with
+   the file size (3 minutes per gigabyte), but the scaling had a boundary bug:
+   at 10 GB the computed value hit the 30-minute cap and was then silently
+   discarded instead of clamped, so files of exactly 10 GB or more kept the
+   5-minute default and the upload failed at 100%.
+
+   The cap now clamps (up to 60 minutes), so the client waits long enough for
+   the server to finish assembling files of 10 GB and beyond.
+
+* Bugfix - A file that changes while it is uploaded is retried, not blocked
+
+   When a file changed while it was being uploaded, the server rejected the
+   upload because the content no longer matched the checksum sent with it (400
+   "The computed checksum does not match the one received from the client.").
+   The client reported an error and blocked the file for a while, so the next
+   sync run skipped it and failed as well. owncloudcmd, which uploads without a
+   minimum file age, ran into this right after a restart.
+
+   Such a rejection is now treated like any other change detected during the
+   sync: the item is reported as "Local file changed during sync. It will be
+   resumed.", another sync is scheduled and the new content is uploaded, for
+   single uploads as well as chunked ones.
+
+* Bugfix - Resumed uploads looked like complete restarts (TC-14)
+
+   Three follow-ups to the 7.10.2 resume fixes: (1) Reused chunks are now
+   reported to the UI immediately after the resume inventory - previously the
+   progress stayed at zero until the first NEW chunk completed, which at
+   throttled speeds took minutes and made a successful resume look like a full
+   restart. (2) A transiently unavailable checksum (e.g. the file was briefly
+   unreadable while hashing) no longer marks the upload session as stale - that
+   path DELETED the server-side chunks of a perfectly resumable upload and
+   forced a restart from zero; size and modification time are used for
+   validation whenever a checksum comparison is impossible. (3) When the server
+   itself reports the upload session gone (HTTP 404/410), a log line now says so
+   explicitly, so a genuine server-side session expiry can be told apart from a
+   client-side discard in QA logs.
+
+* Bugfix - Interrupted large uploads restarted from scratch (TC-14)
+
+   A connection loss during a large chunked upload frequently threw away all
+   progress instead of resuming: the retry run inside the error-backoff window
+   wiped the stored upload session from the journal (restart at byte 0), a
+   transient error during the resume lookup discarded the server-side session
+   unnecessarily, completed chunks after a gap were deleted from the server
+   instead of being reused, and the retry backoff escalated up to 24 hours -
+   together these caused the "complete sync restart with a very long
+   recalculation" the QA observed.
+
+   Fixed: the upload session survives temporary blacklisting, the resume lookup
+   only starts over when the server reports the session gone (404/410),
+   completed chunks after a gap are kept, and interrupted uploads retry within
+   60 seconds like interrupted downloads already did (quota-exceeded and
+   locked-file errors keep the normal escalating backoff). The content checksum
+   is still freshly computed on each attempt - that is deliberate, it is the
+   integrity check that protects resumed chunks against files edited in place -
+   but with working resume it costs seconds, not a restart from zero. A
+   release-build crash with servers that advertise no checksum type was fixed
+   along the way (such servers now resume based on size and modification time),
+   and HTTP/2 is back to opt-in (off by default), matching its documentation -
+   it multiplied parallel chunk loss on interrupted transfers and can stall with
+   some proxy setups.
+
+* Bugfix - Excluded files show their state in Explorer with virtual files on Windows
+
+   In a folder with virtual files, files that are excluded from syncing (hidden
+   files, entries of the exclude list) are not Cloud Files placeholders.
+   Explorer therefore showed no or a misleading sync state for them. The client
+   now converts such a file into a placeholder that is marked as in sync and
+   excluded, so Explorer shows it as excluded. A file that another program has
+   open at that moment (for example an Office lock or temporary file, or the
+   client's own journal database) is left alone; the conversion is retried on
+   the next status change. If the file is synced later, the upload sets its file
+   identity as for any other placeholder.
+
+* Bugfix - Hydrating virtual files on Windows no longer crashes occasionally
+
+   The Windows virtual files support kept a pointer into the callback data of
+   the Cloud Filter API (the correlation vector of a hydration request) and used
+   it after the callback had returned, when the downloaded data was handed to
+   Windows, when it was validated, or when a hydration was restarted. That
+   memory is only valid during the callback, so the client could crash while
+   files were hydrated. The correlation vector is now copied.
+
+* Bugfix - Messages and options in the account wizard are fully readable
+
+   The pages of the account wizard scroll when their content does not fit, so
+   long messages, longer translations or larger fonts are no longer cut off
+   below the buttons. The message about the missing "OAuth2" app is one short
+   paragraph for users and administrators. The options on the "Advanced" page
+   wrap instead of being cut off at "(saves hard drive space)", and the logo of
+   the address page comes back after a message.
 
 * Change - Eliminated excessive server checks: [#12619](https://github.com/owncloud/client/pull/12619)
 
@@ -84,19 +673,19 @@ ownCloud admins and users.
 
 * Change - We ended support for OWNCLOUD_FORCE_DARK_MODE environment variable: [#12625](https://github.com/owncloud/client/pull/12625)
 
-   The application now relies exclusively on the chosen system theme to determine
-   if dark mode should be used.
+   The application now relies exclusively on the chosen system theme to
+   determine if dark mode should be used.
 
    https://github.com/owncloud/client/pull/12625
 
 * Change - Introduce a user editable account alias: [#12639](https://github.com/owncloud/client/pull/12639)
 
-   The identifying text on account button has been very unsatisfying because there
-   is no straightforward way to identify an account using short-ish text that is
-   unique, and which the user can identify with.
+   The identifying text on account button has been very unsatisfying because
+   there is no straightforward way to identify an account using short-ish text
+   that is unique, and which the user can identify with.
 
-   Our new approach is to use an account alias as text on the account buttons which
-   the user can customize to their liking.
+   Our new approach is to use an account alias as text on the account buttons
+   which the user can customize to their liking.
 
    The default alias value is derived from the first word that appears in the
    display name (usually the user's first name)
@@ -105,6 +694,312 @@ ownCloud admins and users.
    and selecting "Change alias..." which will pop a simple input dialog.
 
    https://github.com/owncloud/client/pull/12639
+
+* Change - Windows installer with its own identity and uninstall choices
+
+   The embedded installer is now built from our own craft blueprint fork
+   (BWTECH-github/craft-blueprints-owncloud, branch bwtech): Apps & Features
+   shows "owncloud.online" by "BW-Tech GmbH" with the owncloud.online link, the
+   Start menu entry lives in its own "owncloud.online" folder and points at the
+   real client, and the registry keys are Software\BW-Tech GmbH\owncloud.online
+   and Uninstall\owncloud.online. The Explorer overlay and context menu handlers
+   use their own CLSIDs and names, so they no longer overwrite or remove the
+   registration of the official upstream client.
+
+   Updating from 7.x moves over cleanly: the old upstream-named uninstall entry
+   and registry key are removed when they belong to this client (the official
+   6.x MSI would otherwise run our uninstaller as its "legacy installation"), as
+   are the old Explorer registrations pointing into our folder and the old Start
+   menu shortcut. Shell extension DLLs that Explorer keeps loaded are moved
+   aside so the new ones are installed.
+
+   Uninstalling asks what to remove besides the program: settings, accounts and
+   credentials (on by default) and sync databases and logs in the sync folders
+   (off by default). The sync roots of the client are unregistered, so
+   online-only placeholders disappear while downloaded files stay; the files in
+   the sync folders are never deleted. A silent uninstall (/S) keeps settings,
+   accounts and credentials, /S /purge removes them.
+
+* Change - Third party upgrades in distributed binaries
+
+   We updated OpenSSL to 3.4.5
+
+* Change - Visible company name is BW-TECH GmbH
+
+   The About dialog, the copyright in the macOS Info.plist, the company name and
+   copyright in the Windows file properties and the footer of the Windows setup
+   now name "BW-TECH GmbH". The technical vendor name that forms registry paths
+   (Software\BW-Tech GmbH, Software\Policies\BW-Tech GmbH) is unchanged, so
+   existing installations, policies and settings keep working.
+
+* Change - Version 11.0.0
+
+   With the release that brings in the upstream 7.2 code base the client version
+   moves to 11.0.0. The first pre-release is 11.0.0-beta1; pre-releases look for
+   updates in the beta channel, the final release in the stable channel.
+
+* Enhancement - Bring back the folder-sync approval options
+
+   The general settings offer the two classic approval options again (only
+   effective while virtual files are off): "Ask for confirmation before
+   synchronizing folders larger than X MB" (default 500 MB) and "Ask for
+   confirmation before synchronizing external storages".
+
+   When a new remote folder exceeds the limit or comes from an external storage
+   mount, it is excluded from the sync, announced via a notification, and the
+   client asks directly whether it should be synchronized to this computer.
+   Approved folders sync immediately; declined folders stay excluded (they can
+   be re-included any time via the folder browser checkboxes or "Manage
+   subfolder sync").
+
+* Enhancement - Show the remote folder structure right away
+
+   The folder rows on the account page now expand automatically when they
+   appear, so the remote directory tree (with its selective sync checkboxes) is
+   visible immediately - like the classic client showed it - instead of hiding
+   behind the expander arrow.
+
+* Enhancement - Clean visual refresh in the owncloud.online brand colors
+
+   The client now uses the owncloud.online brand turquoise (#00e2bb, the
+   app-icon color) as its accent throughout the main window instead of the
+   operating system's blue:
+
+   - The active tab in the top bar (account, Activity, Settings) gets a
+   turquoise underline and a subtle turquoise tint - so it is always obvious
+   where you are. - Account chips without an avatar picture use the brand
+   colors: calm teal, full brand turquoise for the currently selected account. -
+   Selected rows in the folder list and the folder browser highlight in
+   translucent brand turquoise. The tint keeps the normal text color, so it
+   stays readable in both the light and the dark theme.
+
+   The logo, icons and all layouts are unchanged - just cleaner, calmer and
+   consistently in brand colors.
+
+* Enhancement - The folder browser shows files and handles empty folders properly
+
+   Expanding a folder in the in-app folder browser now also lists the files it
+   contains (with their size, or their availability when virtual files are on),
+   not only the subfolders. Files are informational rows below the folders;
+   syncing selection stays folder-based. With virtual files on, the right-click
+   pin menu (Always keep on this device / Free up space) works on single files
+   too.
+
+   A folder that is empty on the server now says so ("This folder is empty on
+   the server.") instead of leaving a stale "Loading ..." row behind, and keeps
+   its expander like Explorer does - collapsing and re-expanding re-checks the
+   server. A folder that vanished from the server gets a clearer message as
+   well.
+
+   The pointless "0 out of 0 folders are synchronized" line below the folder
+   list was removed.
+
+* Enhancement - Sync folders are pinned to the Explorer navigation pane
+
+   Classic sync folders now appear as their own entry in the left-hand
+   navigation pane of Windows Explorer - with the owncloud.online icon, the way
+   OneDrive appears there. One entry is created per sync folder (named after the
+   folder when several are configured), giving one-click access to the synced
+   data from every Explorer window and file dialog.
+
+   Virtual-files folders already got their entry from the Windows Cloud Files
+   API registration; this covers the classic (non-VFS) folders. The pins live in
+   the current user's registry (no admin rights involved), follow folder
+   additions, removals and renames automatically, and can be turned off in
+   Settings > General with "Show sync folders in the Explorer navigation pane".
+
+* Enhancement - Browse the remote file structure directly in the folder list
+
+   The folder rows on the account page are now expandable: expanding a row lists
+   the remote subfolders (loaded lazily from the server, with their sizes), and
+   those rows can be expanded further, so the whole directory tree can be
+   browsed without leaving the client.
+
+   For folders synced without virtual files the rows carry the selective sync
+   checkboxes known from the classic client; changes are applied via an
+   apply/discard bar below the list. For virtual files folders the rows show the
+   current availability instead, and a right click sets the pin state (always
+   keep on this device / free up space / reset to default).
+
+* Enhancement - German translations for all recently added texts
+
+   All texts introduced by the recent releases - the folder browser (including
+   file rows and the empty-folder notice), the selective-sync apply bar, the
+   bandwidth limits, the Explorer navigation-pane option, the folder-approval
+   settings, the big-folder confirmation dialogs, the Windows restart prompt and
+   the new storage quota display - are now translated into German (formal and
+   informal variants).
+
+* Enhancement - Take over accounts and folders from the official desktop client
+
+   On the first start (and via "Import from official client..." in the menu) the
+   client offers to take over the accounts and sync folders of the official
+   desktop client (owncloud.cfg of 2.x to 6.x). Its configuration and journals
+   are only read: every account is signed in again (in the browser, or with user
+   name and password on servers without the "OAuth2" app), classically
+   synchronized folders are adopted in place with a copy of their journal, so
+   nothing is downloaded again, and folders with virtual files are set up again
+   as virtual files folders (placeholders only). A running official client is
+   detected and reported, so that the folders are not synchronized twice. All
+   folders of an account are taken over; like in the folder wizard, each server
+   folder is synchronized only once.
+
+* Enhancement - Installer defaults to C:\Program Files\owncloud.online and brands the uninstall entry
+
+   The Windows setup now installs to "C:\Program Files\owncloud.online" by
+   default (a different path can still be chosen on the directory page or via
+   /D=...). An existing installation in the old default directory "C:\Program
+   Files\ownCloud" is uninstalled first so upgrades move over cleanly - accounts
+   and sync folders live in the user profile and are not affected.
+
+   The entry in Windows' "Apps & Features" is rebranded as well: it now reads
+   "owncloud.online Client <version>" with publisher "BW-Tech GmbH" and the
+   branded icon, instead of the upstream naming.
+
+* Enhancement - Signed and notarized macOS package (Apple Silicon)
+
+   The release ships owncloud.online-client-x.y.z-macos-arm64.dmg (macOS 13 or
+   newer, Apple Silicon) with checksums. The app and its Finder and File
+   Provider extensions are signed with the Developer ID of BW-TECH GmbH
+   (hardened runtime, each extension with its own sandbox and app group
+   entitlements) and the dmg is notarized by Apple, so it opens without a
+   Gatekeeper warning.
+
+   The macOS CI job used to fail at packaging because the craft blueprint
+   derived the bundle name from an environment variable with the fallback
+   "owncloud"; the packaging step now exports the branded name. Signing no
+   longer re-signs the extensions without their entitlements, which had left the
+   Finder extension of the pre-releases without its sandbox.
+
+* Enhancement - Virtual files in the Finder on macOS
+
+   On macOS 13 and newer the client offers virtual files through an Apple File
+   Provider extension, like on Windows: the account appears under "Locations" in
+   the Finder sidebar, files are listed as online-only placeholders and are
+   downloaded when opened; new, changed, renamed, moved and deleted files are
+   sent to the server. Changes on the server reach the Finder within about 30
+   seconds.
+
+   The extension gets the account's credentials from the client through the
+   login keychain and follows token refreshes, sign-out, pausing, removing the
+   account and server moves. Until the extension is switched on in System
+   Settings (General, Login Items & Extensions, "File Provider") the client
+   shows how to enable it. Classic sync with selective folders remains
+   available.
+
+* Enhancement - Owncloudcmd offers the options of the 6.0.3 client again
+
+   owncloudcmd understands --trust, --httpproxy (http:// or socks5://),
+   --exclude, --unsyncedfolders, --uplimit/--downlimit (KB/s),
+   --sync-hidden-files (hidden files are ignored by default, as in 6.0.3),
+   --max-sync-retries, --non-interactive, --silent, --logdebug and --version,
+   and accepts the remote folder as third argument. The password can come from
+   OWNCLOUDCMD_PASSWORD instead of -p (which is visible in the process list);
+   without both, owncloudcmd asks for it on the terminal.
+
+* Enhancement - Sign in with user name and password on servers without OAuth2
+
+   Like the 6.0.3 client, the desktop client again signs in with user name and
+   password (or an app password, which is recommended) when the server has
+   neither the "OAuth2" app nor OpenID Connect. After the server address, the
+   wizard detects how the server wants users to sign in: servers with OAuth2 or
+   OpenID Connect still open the browser as before, all others show a page for
+   user name and password instead of the message about the missing "OAuth2" app.
+   A wrong password is reported clearly and can be corrected on the spot.
+
+   The password is kept in the system keychain. When the server rejects it
+   later, the account view asks for the password again ("Stay logged out" signs
+   the account out); signing out removes it from the keychain. Changing the
+   server address and taking over accounts from the official client work for
+   these accounts as well; the login name of the official client is filled in.
+   The account settings store the sign-in method with the keys of the 6.0.3
+   client (http_oauth, http_user) and no longer remove them when loading an
+   older configuration. An account whose keys an earlier 11.0 beta already
+   removed is treated as an OAuth2 account; remove it and set it up again.
+
+   The password never appears in logs: the HTTP log redacts the Authorization
+   header ("Basic [redacted]") and password form fields.
+
+* Enhancement - Storage quota bar with a nearly-full warning
+
+   Each account now shows a slim storage bar directly below its connection
+   status: used space versus the quota reported by the server, in the
+   owncloud.online brand color and turning red once usage passes 90%. When the
+   server reports no limit, the plain used amount is shown instead.
+
+   The quota is refreshed when the account connects and every five minutes while
+   it stays connected. When usage crosses 90% the client shows a one-time tray
+   warning ("Storage space almost full") so action can be taken before uploads
+   start failing; the warning re-arms once usage drops below 85% again.
+
+* Enhancement - Ask before a sync deletes all or very many files
+
+   As in the 2.x client, a sync that would delete all files of a folder (for
+   example because the local folder is empty, a drive is not mounted or the
+   server storage is broken) stops before changing anything and asks: "Keep
+   files" restores the deleted files from the other side, "Delete files" lets
+   the sync go ahead. The folder stays paused until the question is answered.
+
+   New compared to 2.x: the question also comes when at least 200 files and at
+   least half of the known files would be deleted, "Keep files" only restores
+   the reported files (other changes are synced as usual), and placeholders of
+   virtual files without local content do not count. The config key
+   promptDeleteAllFiles=false turns the question off. owncloudcmd asks on the
+   terminal; with --non-interactive it stops with exit code 3 without deleting.
+
+* Enhancement - Clear setup messages when a server cannot be used
+
+   The account setup now tells apart why a server address does not work instead
+   of showing a technical error. If the owncloud.online server lacks the
+   "OAuth2" app and does not accept a user name and password either, the wizard
+   says so and explains how an administrator installs and enables it; the
+   detection checks the app's token endpoint and the OpenID Connect
+   configuration, so servers that sign in via OpenID Connect are not affected.
+   Unreachable servers, TLS and certificate problems, maintenance mode and
+   addresses that do not point to an owncloud.online server each get their own
+   message as well.
+
+* Enhancement - Windows setup wrapper that requires and performs the restart
+
+   The Windows release now ships an additional Setup installer
+   (owncloud.online-client-<version>-win-x64-Setup.exe) that stops a running
+   client first (so the update actually replaces the binaries), installs
+   silently, and then requires the Windows restart that loads the Explorer
+   integration - offering to perform it directly. In silent mode (/S, e.g.
+   baramundi) it reboots automatically unless /norestart is passed.
+
+   The in-client restart prompt now also recognizes a recent Windows restart and
+   skips itself in that case.
+
+* Enhancement - Share files and folders directly from the client
+
+   Right-clicking a synced file or folder in Explorer and choosing "Share with
+   owncloud.online" now opens a native sharing dialog instead of the web
+   browser. It lists the existing public links (copy to clipboard, delete) and
+   creates new ones - optionally protected with a password and/or an expiration
+   date - via the server's OCS share API. A freshly created link is copied to
+   the clipboard automatically. Server-side policies (e.g. an enforced password)
+   are reported with the server's own message. When the share API is disabled on
+   the server, the browser share page opens as before.
+
+* Enhancement - System-wide exclude list next to the program
+
+   Administrators can again place a sync-exclude.lst next to the program as in
+   the 6.0.3 client (Windows: installation folder; Linux: /etc/owncloud.online/,
+   next to the binary or ../etc/owncloud.online/; macOS: /Library/Application
+   Support/owncloud.online/ or the Resources of the app bundle). It extends the
+   built-in list, the personal list in the settings stays as it is. Its entries
+   are shown read-only in the ignored files editor.
+
+* Enhancement - Prompt for the Windows restart that completes an installation
+
+   On the first start of a newly installed or updated version on Windows, the
+   client now explains that Windows needs to be restarted so that the file
+   explorer integration (overlay icons, context menu, virtual files sync root)
+   works correctly, and offers to run the restart right away ("Restart Windows
+   now" executes the reboot after 10 seconds). The prompt appears once per
+   installed version. Before rebooting, launch-on-login is enabled so the client
+   is running again right after the restart.
 
 # Changelog for ownCloud Desktop Client [7.1.1] (2026-08-27)
 

@@ -2,7 +2,7 @@ Bugfix: Working, branded Start menu entry on Windows
 
 The embedded base installer creates its Start menu shortcut with the upstream
 binary name (bin\owncloud.exe) hardcoded - but this client's binary is
-bin\owncloud.online.exe. The resulting "ownCloud" entry pointed at a missing
+bin\owncloud.online.exe. The resulting upstream-named entry pointed at a missing
 file: no icon, wrong name, and launching it failed (broken upstream since
 client 5.7.x, when packaging moved to the 7z payload/bin layout).
 
