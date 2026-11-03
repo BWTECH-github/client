@@ -49,6 +49,24 @@ Open: CI builds do not embed the extension yet (CI signing has to keep the exten
 entitlements); notarized Developer ID build with the extension; Finder UI checks (sidebar,
 context menu "Remove Download", System Settings switch) need an unlocked GUI session.
 
+Tested on 2026-11-03 against testoo.bw.tech (owncloud.online 11.0.46, OAuth2, account
+qa-test) with a locked GUI session, so the wizard could not be driven: the account was
+written like the wizard does (OAuth refresh token in the keychain, folder with
+`virtualFilesMode=macfileprovider`). Client side, seen in its log: domain registered, token
+refreshed at start, after a restart and while running (the extension gets one 401 with the
+old token, asks, and goes on with the mirrored one), ETag poll finds server changes within
+30 s and the extension reports them, a restart keeps the domain. Finder-like operations ran
+through the probe app (same extension sources, domain on a test folder), because a shell may
+not open the client's CloudStorage folder (TCC `kTCCServiceFileProviderDomain`): listing,
+hydration, create, rename, move, folder rename, delete (server trash bin), recursive folder
+delete, 1 GB upload as one PUT (server SHA1 matches) and download, edit conflict (both
+versions kept), delete of a file changed on the server (rejected, server version comes
+back), offline → online through a local proxy (pending changes uploaded after
+`signalErrorResolved`). Found and fixed: a domain left over without its folder blocked a new
+domain with the same display name. Not evictable (`-2008`, fileproviderd: "content policy
+prevention"): files written by the sandboxed probe app, probably because of their quarantine
+xattr, which the extension does not sync; files from the server evict fine.
+
 > This doc is a handoff for a Claude Code session running **on a Mac** (Xcode + CMake +
 > Qt 6.8 + an Apple Developer account for signing). It captures the ownCloud-side
 > architecture we already know and the plan; the exact Nextcloud code must be fetched +
