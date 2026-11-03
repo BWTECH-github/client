@@ -117,13 +117,17 @@ jobs:
   # "release: published"-Lauf, daher den Update-Feed hier direkt erzeugen:
   # für stabile Releases UND Vorabversionen, am Release selbst und am festen
   # Ablageort (Release "update-feed").
-  # Der Feed erst, wenn das dmg signiert und notarisiert ist: sonst böte er
+  # Windows und Linux bekommen ihren Feed unabhängig von macOS. Den macOS-Feed
+  # nur, wenn das dmg signiert und notarisiert ist: sonst böte er
   # macOS-Installationen ein Paket an, das Gatekeeper ablehnt. Scheitert
-  # sign-macos, den Feed nach der Korrektur von Hand mit "Update feed" nachholen.
+  # sign-macos, den macOS-Feed nach der Korrektur von Hand mit "Update feed"
+  # nachholen.
   update-feed:
     needs: [publish, sign-macos]
+    if: ${{ always() && needs.publish.result == 'success' }}
     permissions:
       contents: write # Feed-Dateien an die Releases hängen, Ablage-Release anlegen
     uses: ./.github/workflows/update-feed.yml
     with:
       tag: ${{ inputs.tag }}
+      include_macos: ${{ needs.sign-macos.result == 'success' }}

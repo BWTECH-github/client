@@ -41,6 +41,11 @@ on:
         description: 'Release-Tag, z. B. v7.11.1'
         required: true
         type: string
+      include_macos:
+        description: 'Auch den macOS-Feed schreiben (false, solange das dmg nicht signiert und notarisiert ist)'
+        required: false
+        default: true
+        type: boolean
 
 permissions:
   contents: write # Feed-Dateien an die Releases hängen, Ablage-Release anlegen
@@ -62,6 +67,8 @@ jobs:
       TAG: ${{ inputs.tag || github.event.release.tag_name }}
       FEED_TAG: update-feed
       ALLOW_OLDER: ${{ inputs.allow_older && 'true' || 'false' }}
+      # nur workflow_call setzt es; sonst leer = macOS mit aufnehmen
+      INCLUDE_MACOS: ${{ format('{0}', inputs.include_macos) }}
     steps:
       - name: Check out the generator
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -126,7 +133,9 @@ jobs:
           else
             echo "::warning::Kein AppImage im Release $TAG, daher kein Feed für linux-x86_64"
           fi
-          if [ -n "$(asset_url "owncloud.online-client-${VER}-macos-arm64.dmg")" ]; then
+          if [ "$INCLUDE_MACOS" = "false" ]; then
+            echo "::warning::macOS-Signierung/Notarisierung für $TAG nicht erfolgreich, daher kein Feed für macos-arm64 (nach der Korrektur mit \"Update feed\" nachholen)"
+          elif [ -n "$(asset_url "owncloud.online-client-${VER}-macos-arm64.dmg")" ]; then
             platforms+=(--platform macos-arm64)
           else
             echo "::warning::Kein dmg im Release $TAG, daher kein Feed für macos-arm64"
