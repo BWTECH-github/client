@@ -5,6 +5,50 @@ experience on macOS that it already has on Windows (Cloud Files API). One codeba
 one client — the Windows build keeps `vfs/win` (CfApi), the macOS build adds a new
 `vfs/mac` backed by Apple's **FileProvider** framework. No separate Mac fork.
 
+## Status (November 2026)
+
+Implemented; sections 0–6 below are the original plan and kept for reference.
+
+- **Extension** (`shell_integration/MacOSX/OwnCloudFileProvider/FileProviderExt`): an
+  `NSFileProviderReplicatedExtension` that talks WebDAV itself (`WebDavBackend.swift`).
+  One domain = one folder of an account. Settings come from
+  `FileProviderConfig-<domain>.json` in the app group container (no secrets, re-read when
+  the client rewrites them, e.g. after a server move); the `Authorization` header comes
+  from the login keychain (service `<app group>.fileprovider`, account = domain id, access
+  list: client + extension). The data protection keychain is not an option: without a
+  provisioning profile it refuses app groups as access groups (`-34018`). After a 401 the
+  extension posts the Darwin notification `<app group>.fileprovider.credentials` and waits
+  up to 12 s for a new header; it never refreshes tokens itself.
+- **Change detection**: the client polls the folder ETag every `remotePollInterval` and
+  calls `signalEnumerator(.workingSet)`; the extension walks from the root into known
+  folders whose ETag changed, tells moves from deletions by file id (`dav/meta`), and
+  stages each batch until the system acknowledges its anchor (`ItemStore`, two-phase).
+- **Data safety**: uploads with `If-Match` (new files `If-None-Match: *`), moves with
+  `Overwrite: F`, file deletes with `If-Match`, recursive folder deletes/trash only if the
+  folder ETag is unchanged (else `deletionRejected` / handed back), conflicting edits kept
+  as `name (conflicted copy <date>).ext`, SHA1 checked on download (`OC-Checksum`) and sent
+  on upload. Trash = delete on the server (owncloud.online keeps it in its trash bin).
+- **App side** (`src/plugins/vfs/mac`): domain per folder (id = SHA1 of account uuid + local
+  path), credential mirroring, polling, sign-out → disconnect + drop credentials, pause →
+  temporary disconnect, folder/account removal → domain + settings + keychain item removed,
+  stale domains (no settings file) removed at start, System Settings switch off (`FP -2011`)
+  shown as folder error plus a one-time hint with "Open System Settings".
+- **GUI**: wizard and folder wizard offer virtual files on macOS 13+ when the extension is
+  embedded (no environment variable). A File Provider folder keeps only its journal in
+  `~/Library/Application Support/owncloud.online/FileProvider/<uuid>`.
+
+Build / test on this Mac: Craft (`--compile`, `--install --qmerge`) with
+`BUILD_MAC_FILE_PROVIDER=ON` and `SOCKETAPI_TEAM_IDENTIFIER_PREFIX=4545KLA52K.`, then
+`SIGN_IDENTITY="Apple Development: …" admin/osx/make_release.sh` (or the Developer ID
+default), install to `/Applications`, `lsregister -f` + `pluginkit -a/-e use`. The extension
+logic can be driven outside the system with a harness that compiles the extension sources
+against a WebDAV mock; inside the system with `~/ocvfsprobe` (sandboxed driver app whose
+extension target takes the same sources).
+
+Open: CI builds do not embed the extension yet (CI signing has to keep the extension's
+entitlements); notarized Developer ID build with the extension; Finder UI checks (sidebar,
+context menu "Remove Download", System Settings switch) need an unlocked GUI session.
+
 > This doc is a handoff for a Claude Code session running **on a Mac** (Xcode + CMake +
 > Qt 6.8 + an Apple Developer account for signing). It captures the ownCloud-side
 > architecture we already know and the plan; the exact Nextcloud code must be fetched +
