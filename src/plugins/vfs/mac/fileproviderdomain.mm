@@ -498,26 +498,5 @@ namespace Mac {
         credentialRequestHandlers().remove(token);
     }
 
-    QString domainResultMessage(DomainResult result)
-    {
-        switch (result) {
-        case DomainResult::Ok:
-            return {};
-        case DomainResult::ExtensionDisabled:
-            return QCoreApplication::translate("OCC::Mac",
-                "The files are not shown in the Finder yet: macOS needs your permission. Open System Settings > General > "
-                "Login Items & Extensions, click the info button next to %1 under \"Extensions\" and switch on \"File Providers\".")
-                .arg(QCoreApplication::applicationName());
-        case DomainResult::ExtensionMissing:
-            return QCoreApplication::translate("OCC::Mac",
-                "macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.");
-        case DomainResult::Unsupported:
-            return QCoreApplication::translate("OCC::Mac", "Virtual files require macOS Ventura or newer.");
-        case DomainResult::Failed:
-            break;
-        }
-        return QCoreApplication::translate("OCC::Mac", "The virtual files folder could not be registered with macOS.");
-    }
-
 } // namespace Mac
 } // namespace OCC

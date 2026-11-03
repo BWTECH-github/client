@@ -22,6 +22,7 @@
 #include "networkjobs.h"
 #include "syncfileitem.h"
 
+#include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QLoggingCategory>
 #include <QNetworkReply>
@@ -49,6 +50,26 @@ QString remoteRoot(const VfsSetupParams &params)
     }
     return root;
 }
+}
+
+// here and not in fileproviderdomain.mm: lupdate reads no Objective-C++
+QString OCC::Mac::domainResultMessage(Mac::DomainResult result)
+{
+    switch (result) {
+    case DomainResult::Ok:
+        return {};
+    case DomainResult::ExtensionDisabled:
+        return VfsMac::tr("The files are not shown in the Finder yet: macOS needs your permission. Open System Settings > General > "
+                          "Login Items & Extensions, click the info button next to %1 under \"Extensions\" and switch on \"File Providers\".")
+            .arg(QCoreApplication::applicationName());
+    case DomainResult::ExtensionMissing:
+        return VfsMac::tr("macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.");
+    case DomainResult::Unsupported:
+        return VfsMac::tr("Virtual files require macOS Ventura or newer.");
+    case DomainResult::Failed:
+        break;
+    }
+    return VfsMac::tr("The virtual files folder could not be registered with macOS.");
 }
 
 VfsMac::VfsMac(QObject *parent)
