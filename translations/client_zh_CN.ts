@@ -173,7 +173,7 @@ File synchronization desktop utility.</source>
         <translation>无法重命名 %1，该文件当前正在使用中</translation>
     </message>
     <message>
-        <location filename="../src/libsync/filesystem.cpp" line="+192"/>
+        <location filename="../src/libsync/filesystem.cpp" line="+193"/>
         <source>Could not remove folder</source>
         <translation>无法删除文件夹</translation>
     </message>
@@ -254,7 +254,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderManagementUtils</name>
     <message>
-        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+94"/>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+97"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>路径“%1”过长。请在 Windows 设置中启用长路径，或选择其他文件夹。</translation>
@@ -411,7 +411,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+264"/>
         <source>Connection timed out</source>
         <translation>连接超时</translation>
     </message>
@@ -437,7 +437,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+718"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>您在服务器上的账户已被停用（%1）。请联系您的系统管理员。</translation>
@@ -471,26 +471,26 @@ File synchronization desktop utility.</source>
     <name>OCC::AccountFoldersController</name>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+129"/>
-        <location line="+105"/>
+        <location line="+113"/>
         <source>Sync now</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>立即同步</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-103"/>
         <source>Manage subfolder sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>管理子文件夹同步</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+238"/>
+        <location line="+27"/>
+        <location line="+252"/>
         <source>Manage availability</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>管理可用性</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-240"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as &apos;Remove folder sync&apos; or &apos;Remove Space sync&apos;</extracomment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -521,12 +521,12 @@ This action will abort any currently running synchronization.</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+135"/>
+        <location line="+147"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location line="-107"/>
+        <location line="-117"/>
         <source>Restart sync</source>
         <translation>重新开始同步</translation>
     </message>
@@ -553,7 +553,7 @@ This action will abort any currently running synchronization.</source>
         <translation>启用虚拟文件</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <source>Internet connection is metered</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>互联网连接为按流量计费</translation>
@@ -565,7 +565,7 @@ This action will abort any currently running synchronization.</source>
         <translation>由于互联网连接为按流量计费，同步已暂停。&lt;p&gt;确定要立即强制同步吗？</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Sync Running</source>
         <translation>正在同步</translation>
     </message>
@@ -576,28 +576,34 @@ This action will abort any currently running synchronization.</source>
         <translation>同步操作正在进行。&lt;br/&gt;是否要停止？</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Sync paused by user</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>用户已暂停同步</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
+        <source>&lt;p&gt;Do you really want to remove &lt;i&gt;%1&lt;/i&gt; from the Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; The files stay on the server. Changes that have not been uploaded yet are kept by macOS.&lt;/p&gt;</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;确定要从访达中移除 &lt;i&gt;%1&lt;/i&gt; 吗？&lt;/p&gt;&lt;p&gt;&lt;b&gt;注意：&lt;/b&gt;文件仍保留在服务器上。尚未上传的更改由 macOS 保留。&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>确定断开文件夹同步</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-10"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;你确定要停止文件夹同步？ &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; 这 &lt;b&gt;不会&lt;/b&gt; 删除任何文件&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Remove Folder Sync Connection</source>
         <translation>断开文件夹同步</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+33"/>
         <source>Choose what to sync</source>
         <translation>选择同步内容</translation>
     </message>
@@ -803,7 +809,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>注销</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+44"/>
         <source>Confirm Account Removal</source>
         <translation>确认删除账号</translation>
     </message>
@@ -1022,7 +1028,13 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>选择下载位置</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+14"/>
+        <source>Your files appear in the Finder sidebar under &quot;Locations&quot;. They are downloaded when you open them, and you can keep them on this Mac with &quot;Download Now&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>您的文件显示在访达边栏的“位置”下。打开时才会下载，使用“立即下载”可将其保留在这台 Mac 上。</translation>
+    </message>
+    <message>
+        <location line="+105"/>
         <source>Invalid local download directory %1: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无效的本地下载目录 %1：%2</translation>
@@ -1114,7 +1126,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>应用名称徽标 %1</translation>
@@ -1339,7 +1351,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+230"/>
         <source>Failed to parse credentials %1</source>
         <translation>解析凭证 %1 失败</translation>
     </message>
@@ -1376,14 +1388,14 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="+337"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>在 PROPFIND 任务开始前账户已被删除</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location line="+112"/>
+        <location line="+117"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>服务器错误: PROPFIND 返回的不是XML格式！</translation>
     </message>
@@ -1391,7 +1403,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location line="-213"/>
+        <location line="-218"/>
         <source>Error while opening directory %1</source>
         <translation>打开目录 %1 时出现错误</translation>
     </message>
@@ -1443,7 +1455,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+407"/>
+        <location filename="../src/gui/folder.cpp" line="+427"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 已移除。</translation>
@@ -1545,18 +1557,48 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>同步活动</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+218"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在切换文件夹“%1”的 VFS 模式</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Could not read system exclude file</source>
         <translation>无法读取系统排除的文件</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+82"/>
+        <source>Show your files in the Finder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>在访达中显示您的文件</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open System Settings</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>打开系统设置</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>稍后</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>You are signed out of %1. Sign in again in %1 to use these files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>您已从 %1 退出登录。请在 %1 中重新登录以使用这些文件。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Synchronization is paused in %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 中的同步已暂停。</translation>
+    </message>
+    <message>
+        <location line="+168"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>文件夹 %1 已创建，但之前已从同步中排除。 里面的数据不会同步。</translation>
     </message>
@@ -1776,13 +1818,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+185"/>
+        <location filename="../src/gui/folderman.cpp" line="+214"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>应用程序正在关闭</translation>
     </message>
     <message>
-        <location line="+386"/>
+        <location line="+398"/>
         <source>Could not reset folder state</source>
         <translation>不能重置文件夹状态</translation>
     </message>
@@ -1811,7 +1853,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>用户已暂停同步</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+346"/>
         <source>User triggered force sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>用户触发了强制同步</translation>
@@ -1911,7 +1953,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>您没有写入所选文件夹的权限。</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>该账户已不存在。</translation>
@@ -1923,13 +1965,13 @@ This means that the synchronization client might not upload local changes immedi
         <translation>无法将本地文件夹 %1 设置为同步。</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-308"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>文件夹“%1”已被其他账户使用。</translation>
     </message>
     <message>
-        <location line="-625"/>
+        <location line="-630"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>在 macOS 上，仅支持 Apple 文件系统（APFS）。</translation>
@@ -1953,7 +1995,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWatcher</name>
     <message>
-        <location filename="../src/gui/folderwatcher.cpp" line="+123"/>
+        <location filename="../src/gui/folderwatcher.cpp" line="+124"/>
         <source>The watcher did not receive a test notification.</source>
         <translation>监控没有收到测试通知。</translation>
     </message>
@@ -2124,10 +2166,16 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+45"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+48"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>使用虚拟文件，而不是立即下载内容</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>With virtual files your files appear in the Finder sidebar under &quot;Locations&quot; and are downloaded when you open them. The local folder chosen before is only used without virtual files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>使用虚拟文件时，您的文件显示在访达边栏的“位置”下，并在打开时下载。之前选择的本地文件夹仅在不使用虚拟文件时使用。</translation>
     </message>
 </context>
 <context>
@@ -2161,7 +2209,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="+86"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="+96"/>
         <source>Personal</source>
         <translation>个人</translation>
     </message>
@@ -2968,7 +3016,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-498"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>登录成功</translation>
@@ -2980,7 +3028,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>现在，在桌面上体验 %1 吧。</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+123"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>来自服务器返回的错误&lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -3212,7 +3260,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+831"/>
         <source>File %1 is currently in use</source>
         <translation>文件 %1 当前正在使用中</translation>
     </message>
@@ -3293,14 +3341,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+101"/>
         <location line="+342"/>
-        <location line="+710"/>
+        <location line="+715"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>缺少 VFS 实例，无法继续。</translation>
     </message>
     <message>
-        <location line="-1079"/>
+        <location line="-1084"/>
         <source>server reported no %1</source>
         <translation>服务器回复没有 %1</translation>
     </message>
@@ -3312,7 +3360,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>账户已被删除，无法继续</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+164"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>选择性同步：已忽略，因为该路径未被选中</translation>
@@ -3345,13 +3393,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>你没有权限增加子目录</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>重命名时出错，未处理的状态码：%1</translation>
     </message>
     <message>
-        <location line="+574"/>
+        <location line="+579"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>你没有权限增加文件</translation>
     </message>
@@ -3375,7 +3423,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+346"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+347"/>
         <source>Error updating metadata: %1</source>
         <translation>更新元数据时出错: %1</translation>
     </message>
@@ -3414,7 +3462,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>已从服务器删除文件</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>损坏的网络服务器在简历上返回了非空文件的空内容长度</translation>
     </message>
@@ -3439,16 +3487,16 @@ Note that using any logging command line options will override the settings.</so
         <translation>更新元数据时出错: %1</translation>
     </message>
     <message>
-        <location line="-517"/>
-        <location line="+453"/>
+        <location line="-518"/>
+        <location line="+454"/>
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
         <translation>文件 %1 当前正在使用中</translation>
     </message>
     <message>
-        <location line="-639"/>
-        <location line="+596"/>
+        <location line="-640"/>
+        <location line="+597"/>
         <source>File has changed since discovery</source>
         <translation>自从发现文件以来，它已经被改变了</translation>
     </message>
@@ -3456,7 +3504,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-961"/>
         <source>; Restoration Failed: %1</source>
         <translation>；恢复失败：%1</translation>
     </message>
@@ -3604,7 +3652,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1142"/>
         <source>Could not update file : %1</source>
         <translation>无法更新文件 : %1</translation>
     </message>
@@ -3842,7 +3890,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+48"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>应用名称徽标 %1</translation>
@@ -3902,7 +3950,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>登录</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+108"/>
         <source>URL copied</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>URL 已复制</translation>
@@ -3954,19 +4002,19 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+22"/>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Currently there are no subfolders on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>服务器上目前没有子文件夹。</translation>
     </message>
     <message>
-        <location line="-153"/>
+        <location line="-158"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>加载子文件夹列表时出错。</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+369"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>请在下方浏览您的文件。右键单击文件夹可更改其可用性：始终保留在此设备上，或设为仅在线以释放空间。</translation>
@@ -4893,7 +4941,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+529"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5193,7 +5241,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="+906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="+912"/>
         <source>Failed to connect database.</source>
         <translation>连接数据库失败。</translation>
     </message>
@@ -5241,21 +5289,21 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+653"/>
+        <location line="+666"/>
         <source>Offline</source>
         <translation>离线</translation>
     </message>
     <message>
-        <location line="-671"/>
-        <location line="+678"/>
+        <location line="-684"/>
+        <location line="+691"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在同步</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-689"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在中止同步</translation>
@@ -5279,7 +5327,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
@@ -5287,14 +5335,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>同步已暂停</translation>
     </message>
     <message>
-        <location line="-652"/>
-        <location line="+658"/>
+        <location line="-665"/>
+        <location line="+671"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>不可用</translation>
     </message>
     <message numerus="yes">
-        <location line="-546"/>
+        <location line="-559"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -5351,7 +5399,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>退出 %1</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+46"/>
         <location line="+95"/>
         <source>Open in browser</source>
         <translation>在浏览器中打开</translation>
@@ -5712,7 +5760,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="+81"/>
+        <location filename="../src/common/vfs.cpp" line="+85"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translation>虚拟文件系统功能不支持将一个驱动器作为同步根目录</translation>
     </message>
@@ -5728,9 +5776,43 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::VfsMac</name>
+    <message>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>文件尚未显示在访达中：macOS 需要您的许可。请打开 系统设置 &gt; 通用 &gt; 登录项与扩展，在“扩展”下点按 %1 旁边的信息按钮，然后打开“文件提供程序”。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>macOS 找不到此 App 的虚拟文件扩展。请将 App 移到“应用程序”文件夹并重新启动。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual files require macOS Ventura or newer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>虚拟文件需要 macOS Ventura 或更高版本。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The virtual files folder could not be registered with macOS.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>无法在 macOS 中注册虚拟文件文件夹。</translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <location line="+3"/>
+        <source>%1 - %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5787,7 +5869,8 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+75"/>
+        <location line="+7"/>
         <source>Failed to retrieve user info</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>无法获取用户信息</translation>
@@ -5849,7 +5932,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="+309"/>
+        <location filename="../src/common/utility.cpp" line="+313"/>
         <source>in the future</source>
         <translation>将来</translation>
     </message>

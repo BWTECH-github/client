@@ -177,7 +177,7 @@ File synchronization desktop utility.</source>
         <translation>%1 نىڭ نامىنى ئۆزگەرتەلمەيدۇ، ھۆججەت ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
     <message>
-        <location filename="../src/libsync/filesystem.cpp" line="+192"/>
+        <location filename="../src/libsync/filesystem.cpp" line="+193"/>
         <source>Could not remove folder</source>
         <translation>ھۆججەت قىسقۇچنى ئۆچۈرەلمىدى</translation>
     </message>
@@ -257,7 +257,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderManagementUtils</name>
     <message>
-        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+94"/>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+97"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>&apos;%1&apos; يولى بەك ئۇزۇن. Windows تەڭشەكلىرىدە ئۇزۇن يولنى قوزغىتىڭ ياكى باشقا قىسقۇچ تاللاڭ.</translation>
@@ -421,7 +421,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+264"/>
         <source>Connection timed out</source>
         <translation>ئۇلىنىش ۋاقتى توشتى</translation>
     </message>
@@ -449,7 +449,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+718"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىردىكى ھېساباتىڭىز چەكلەنگەن (%1). سىستېما باشقۇرغۇچىڭىز بىلەن ئالاقىلىشىڭ.</translation>
@@ -482,32 +482,32 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+371"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+391"/>
         <source>Choose what to sync</source>
         <translation>ماسقەدەملەشنى تاللاڭ</translation>
     </message>
     <message>
-        <location line="-242"/>
-        <location line="+105"/>
+        <location line="-262"/>
+        <location line="+113"/>
         <source>Sync now</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھازىر ماس قەدەملەش</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-103"/>
         <source>Manage subfolder sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تارماق قىسقۇچ ماس قەدەملەشنى باشقۇرۇش</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+238"/>
+        <location line="+27"/>
+        <location line="+252"/>
         <source>Manage availability</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىشلەتكىلى بولۇشچانلىقنى باشقۇرۇش</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-240"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as &apos;Remove folder sync&apos; or &apos;Remove Space sync&apos;</extracomment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -537,7 +537,7 @@ This action will abort any currently running synchronization.</source>
         <translation>قوللاشنى چەكلەڭ</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+32"/>
         <source>Restart sync</source>
         <translation>ماسقەدەملەشنى قايتا قوزغىتىڭ</translation>
     </message>
@@ -564,7 +564,7 @@ This action will abort any currently running synchronization.</source>
         <translation>مەۋھۇم ھۆججەتلەرنى قوزغىتىش</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <source>Internet connection is metered</source>
         <translation>تور ئۇلىنىشى ئۆلچەم قىلىنغان</translation>
     </message>
@@ -574,7 +574,7 @@ This action will abort any currently running synchronization.</source>
         <translation>ئىنتېرنېت ئۇلىنىشى ئۆلچەملىك ئۇلىنىش بولغانلىقى ئۈچۈن ماس قەدەملىك توختىتىلىدۇ &lt;p&gt; ھازىر ماسقەدەملەشنى زورلىماقچىمۇ؟</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Sync Running</source>
         <translation>ماسقەدەملەش</translation>
     </message>
@@ -584,29 +584,35 @@ This action will abort any currently running synchronization.</source>
         <translation>ماسقەدەملەش مەشغۇلاتى ئىجرا بولۇۋاتىدۇ. &lt;br/&gt; ئۇنى توختاتماقچىمۇ؟</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Sync paused by user</source>
         <translation>ئىشلەتكۈچى ماسقەدەملەش</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
+        <source>&lt;p&gt;Do you really want to remove &lt;i&gt;%1&lt;/i&gt; from the Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; The files stay on the server. Changes that have not been uploaded yet are kept by macOS.&lt;/p&gt;</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;&lt;i&gt;%1&lt;/i&gt; نى Finder دىن راستىنلا چىقىرىۋېتەمسىز؟&lt;/p&gt;&lt;p&gt;&lt;b&gt;ئەسكەرتىش:&lt;/b&gt; ھۆججەتلەر مۇلازىمېتىردا قالىدۇ. تېخى يۈكلەنمىگەن ئۆزگىرىشلەرنى macOS ساقلاپ قالىدۇ.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>ھۆججەت قىسقۇچ ماسقەدەملەشنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-10"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>&lt;p&gt;&lt;i&gt;%1&lt;/i&gt; قىسقۇچىنى ماس قەدەملەشنى راستىنلا توختىتامسىز؟&lt;/p&gt;&lt;p&gt;&lt;b&gt;ئەسكەرتىش:&lt;/b&gt; بۇ ھېچقانداق ھۆججەتنى &lt;b&gt;ئۆچۈرمەيدۇ&lt;/b&gt;.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Remove Folder Sync Connection</source>
         <translation>ھۆججەت قىسقۇچ ئۇلىنىشىنى ئۆچۈرۈڭ</translation>
     </message>
     <message>
-        <location line="-134"/>
-        <location line="+135"/>
+        <location line="-146"/>
+        <location line="+147"/>
         <source>Cancel</source>
         <translation>ۋازكەچ</translation>
     </message>
@@ -807,7 +813,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>تىزىمدىن چىق</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+44"/>
         <source>Confirm Account Removal</source>
         <translation>ھېسابات ئۆچۈرۈشنى جەزملەشتۈرۈڭ</translation>
     </message>
@@ -1023,7 +1029,13 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>چۈشۈرۈش ئورنىنى تاللاش</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+14"/>
+        <source>Your files appear in the Finder sidebar under &quot;Locations&quot;. They are downloaded when you open them, and you can keep them on this Mac with &quot;Download Now&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھۆججەتلىرىڭىز Finder نىڭ يان بالدىقىدىكى «ئورۇنلار» ئاستىدا كۆرۈنىدۇ. ئاچقاندا چۈشۈرۈلىدۇ، «ھازىر چۈشۈر» ئارقىلىق بۇ Mac تا ساقلىيالايسىز.</translation>
+    </message>
+    <message>
+        <location line="+105"/>
         <source>Invalid local download directory %1: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىناۋەتسىز يەرلىك چۈشۈرۈش مۇندەرىجىسى %1: %2</translation>
@@ -1116,7 +1128,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئەپ نامى تامغىسى %1</translation>
@@ -1342,7 +1354,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+230"/>
         <source>Failed to parse credentials %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>كىملىك ئۇچۇرى %1 نى تەھلىل قىلالمىدى</translation>
@@ -1380,14 +1392,14 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="+337"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>PROPFIND ۋەزىپىسى باشلىنىشتىن ئىلگىرى ھېسابات ئۆچۈرۈلدى</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location line="+112"/>
+        <location line="+117"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>مۇلازىمېتىر خاتالىقى: PROPFIND جاۋاب XML فورماتى ئەمەس!</translation>
     </message>
@@ -1395,7 +1407,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location line="-213"/>
+        <location line="-218"/>
         <source>Error while opening directory %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 مۇندەرىجىسىنى ئاچقاندا خاتالىق كۆرۈلدى</translation>
@@ -1450,7 +1462,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+407"/>
+        <location filename="../src/gui/folder.cpp" line="+427"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -1570,18 +1582,48 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ماسقەدەملەش پائالىيىتى</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+218"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>&apos;%1&apos; قىسقۇچىدا VFS ھالىتى ئالماشتۇرۇلۇۋاتىدۇ</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Could not read system exclude file</source>
         <translation>ھۆججەتنى چىقىرىۋېتىش سىستېمىسىنى ئوقۇيالمىدى</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+82"/>
+        <source>Show your files in the Finder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھۆججەتلىرىڭىزنى Finder دا كۆرسىتىش</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open System Settings</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>سىستېما تەڭشەكلىرىنى ئېچىش</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>كېيىن</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>You are signed out of %1. Sign in again in %1 to use these files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 دىن چېكىندىڭىز. بۇ ھۆججەتلەرنى ئىشلىتىش ئۈچۈن %1 دا قايتا كىرىڭ.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Synchronization is paused in %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 دىكى ماس قەدەملەش ۋاقىتلىق توختىتىلدى.</translation>
+    </message>
+    <message>
+        <location line="+168"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 قىسقۇچى قۇرۇلدى، ئەمما ئىلگىرى ماس قەدەملەشتىن چىقىرىۋېتىلگەن. ئۇنىڭ ئىچىدىكى سانلىق مەلۇماتلار ماس قەدەملەنمەيدۇ.</translation>
@@ -1803,7 +1845,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+571"/>
+        <location filename="../src/gui/folderman.cpp" line="+612"/>
         <source>Could not reset folder state</source>
         <translation>ھۆججەت قىسقۇچ ھالىتىنى ئەسلىگە كەلتۈرەلمىدى</translation>
     </message>
@@ -1831,7 +1873,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ئىشلەتكۈچى ماسقەدەملەش</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+346"/>
         <source>User triggered force sync</source>
         <translation>ئىشلەتكۈچى كۈچ ماسقەدەملەشنى قوزغىدى</translation>
     </message>
@@ -1930,7 +1972,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>تاللانغان قىسقۇچقا يېزىش ھوقۇقىڭىز يوق.</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھېسابات ئەمدى مەۋجۇت ئەمەس.</translation>
@@ -1942,19 +1984,19 @@ This means that the synchronization client might not upload local changes immedi
         <translation>%1 يەرلىك قىسقۇچىنى ماس قەدەملەش ئۈچۈن تەڭشىگىلى بولمىدى.</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-308"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>&apos;%1&apos; قىسقۇچىنى باشقا بىر ھېسابات ئاللىقاچان ئىشلىتىۋاتىدۇ.</translation>
     </message>
     <message>
-        <location line="-1029"/>
+        <location line="-1046"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئەپ تاقىلىۋاتىدۇ</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+416"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>macOS دا پەقەت Apple ھۆججەت سىستېمىسى (APFS) قوللىنىدۇ.</translation>
@@ -1978,7 +2020,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWatcher</name>
     <message>
-        <location filename="../src/gui/folderwatcher.cpp" line="+123"/>
+        <location filename="../src/gui/folderwatcher.cpp" line="+124"/>
         <source>The watcher did not receive a test notification.</source>
         <translation>كۈزەتكۈچى سىناق ئۇقتۇرۇشىنى تاپشۇرۇۋالمىغان.</translation>
     </message>
@@ -2148,9 +2190,15 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+45"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+48"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translation>مەزمۇننى دەرھال چۈشۈرۈشنىڭ ئورنىغا مەۋھۇم ھۆججەتلەرنى ئىشلىتىڭ</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>With virtual files your files appear in the Finder sidebar under &quot;Locations&quot; and are downloaded when you open them. The local folder chosen before is only used without virtual files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مەۋھۇم ھۆججەتلەر بىلەن ھۆججەتلىرىڭىز Finder نىڭ يان بالدىقىدىكى «ئورۇنلار» ئاستىدا كۆرۈنىدۇ ۋە ئاچقاندا چۈشۈرۈلىدۇ. ئىلگىرى تاللانغان يەرلىك قىسقۇچ پەقەت مەۋھۇم ھۆججەت ئىشلەتمىگەندىلا ئىشلىتىلىدۇ.</translation>
     </message>
 </context>
 <context>
@@ -2184,7 +2232,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="+86"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="+96"/>
         <source>Personal</source>
         <translation>شەخسىي</translation>
     </message>
@@ -2988,7 +3036,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-498"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇۋەپپەقىيەتلىك كىردى</translation>
@@ -3000,7 +3048,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ئەمدى ئۈستەلئۈستىدە %1 نى ئىشلىتىپ بېقىڭ.</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+123"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىر قايتۇرغان خاتالىق: &lt;em&gt;%1&lt;/em&gt;</translation>
@@ -3240,7 +3288,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+831"/>
         <source>File %1 is currently in use</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 ھۆججىتى ھازىر ئىشلىتىلىۋاتىدۇ</translation>
@@ -3323,14 +3371,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+101"/>
         <location line="+342"/>
-        <location line="+710"/>
+        <location line="+715"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>VFS مىسالى يوق. داۋاملاشتۇرغىلى بولمايدۇ.</translation>
     </message>
     <message>
-        <location line="-1079"/>
+        <location line="-1084"/>
         <source>server reported no %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مۇلازىمېتىر %1 يوق دەپ دوكلات قىلدى</translation>
@@ -3343,7 +3391,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ھېسابات ئۆچۈرۈلدى. داۋاملاشتۇرغىلى بولمايدۇ</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+164"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync: ئۇنىڭ يولى تاللانغانلىقى ئۈچۈن سەل قارىلىدۇ</translation>
     </message>
@@ -3375,13 +3423,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>رۇخسەت قىلىنمايدۇ ، چۈنكى بۇ قىسقۇچقا تارماق ھۆججەت قىسقۇچ قوشۇشقا ئىجازەت يوق</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>نام ئۆزگەرتىۋاتقاندا خاتالىق، بىر تەرەپ قىلىنمىغان ھالەت كودى: %1</translation>
     </message>
     <message>
-        <location line="+574"/>
+        <location line="+579"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>رۇخسەت قىلىنمايدۇ ، چۈنكى ئۇ ھۆججەت قىسقۇچقا ھۆججەت قوشۇش ھوقۇقىڭىز يوق</translation>
     </message>
@@ -3405,7 +3453,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+346"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+347"/>
         <source>Error updating metadata: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>مېتا سانلىق مەلۇماتنى يېڭىلاشتا خاتالىق: %1</translation>
@@ -3449,7 +3497,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ھۆججەت مۇلازىمېتىردىن ئۆچۈرۈلدى</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>بۇزۇلغان تور مۇلازىمېتىرى قۇرۇق ھۆججەتنىڭ قۇرۇق مەزمۇنىنى ئەسلىگە كەلتۈردى</translation>
     </message>
@@ -3477,8 +3525,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>مېتا سانلىق مەلۇماتنى يېڭىلاشتا خاتالىق: %1</translation>
     </message>
     <message>
-        <location line="-517"/>
-        <location line="+453"/>
+        <location line="-518"/>
+        <location line="+454"/>
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
@@ -3486,8 +3534,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1 ھۆججىتى ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
     <message>
-        <location line="-639"/>
-        <location line="+596"/>
+        <location line="-640"/>
+        <location line="+597"/>
         <source>File has changed since discovery</source>
         <translation>ھۆججەت بايقالغاندىن بۇيان ئۆزگەردى</translation>
     </message>
@@ -3495,7 +3543,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-961"/>
         <source>; Restoration Failed: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>؛ ئەسلىگە كەلتۈرۈش مەغلۇپ بولدى: %1</translation>
@@ -3662,7 +3710,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1142"/>
         <source>Could not update file : %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھۆججەتنى يېڭىلىيالمىدى: %1</translation>
@@ -3907,7 +3955,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+48"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئەپ نامى تامغىسى %1</translation>
@@ -3965,7 +4013,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>تىزىملىتىڭ</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+108"/>
         <source>URL copied</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>URL كۆچۈرۈلدى</translation>
@@ -4017,17 +4065,17 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+22"/>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Currently there are no subfolders on the server.</source>
         <translation>ھازىر مۇلازىمېتىردا تارماق قىسقۇچ يوق.</translation>
     </message>
     <message>
-        <location line="-153"/>
+        <location line="-158"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translation>تارماق قىسقۇچلارنىڭ تىزىملىكىنى يۈكلەۋاتقاندا خاتالىق كۆرۈلدى.</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+369"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھۆججەتلىرىڭىزنى تۆۋەندە كۆرۈڭ. قىسقۇچنىڭ ئىشلەتكىلى بولۇشچانلىقىنى ئۆزگەرتىش ئۈچۈن ئۇنى ئوڭ چېكىڭ: ھەمىشە بۇ ئۈسكۈنىدە ساقلاڭ ياكى پەقەت توردا قىلىپ بوشلۇق بوشىتىڭ.</translation>
@@ -4954,7 +5002,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+529"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5258,7 +5306,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="+906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="+912"/>
         <source>Failed to connect database.</source>
         <translation>سانداننى ئۇلاش مەغلۇپ بولدى.</translation>
     </message>
@@ -5305,21 +5353,21 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+653"/>
+        <location line="+666"/>
         <source>Offline</source>
         <translation>تورسىز</translation>
     </message>
     <message>
-        <location line="-671"/>
-        <location line="+678"/>
+        <location line="-684"/>
+        <location line="+691"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ماس قەدەملىنىۋاتىدۇ</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-689"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ماس قەدەملەش توختىتىلىۋاتىدۇ</translation>
@@ -5343,7 +5391,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
@@ -5351,14 +5399,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>ماس قەدەملەش ۋاقىتلىق توختىتىلدى</translation>
     </message>
     <message>
-        <location line="-652"/>
-        <location line="+658"/>
+        <location line="-665"/>
+        <location line="+671"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىشلەتكىلى بولمايدۇ</translation>
     </message>
     <message numerus="yes">
-        <location line="-546"/>
+        <location line="-559"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -5419,7 +5467,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1 دىن چېكىنىش</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+46"/>
         <location line="+95"/>
         <source>Open in browser</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5784,7 +5832,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="+81"/>
+        <location filename="../src/common/vfs.cpp" line="+85"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translation>مەۋھۇم ھۆججەت سىستېمىسى ئىقتىدارى ماس قەدەملىك قوزغاتقۇچنى قوزغاتمايدۇ</translation>
     </message>
@@ -5801,9 +5849,43 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::VfsMac</name>
+    <message>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ھۆججەتلەر تېخى Finder دا كۆرۈنمەيدۇ: macOS سىزنىڭ ئىجازىتىڭىزگە موھتاج. سىستېما تەڭشەكلىرى &gt; ئادەتتىكى &gt; كىرىش تۈرلىرى ۋە كېڭەيتمىلەر نى ئېچىپ، «كېڭەيتمىلەر» ئاستىدىكى %1 يېنىدىكى ئۇچۇر كۇنۇپكىسىنى چېكىپ، «ھۆججەت تەمىنلىگۈچىلەر» نى ئېچىڭ.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>macOS بۇ ئەپنىڭ مەۋھۇم ھۆججەت كېڭەيتمىسىنى تاپالمىدى. ئەپنى پروگراممىلار قىسقۇچىغا يۆتكەپ قايتا قوزغىتىڭ.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual files require macOS Ventura or newer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مەۋھۇم ھۆججەتلەر macOS Ventura ياكى ئۇنىڭدىن يېڭىسىنى تەلەپ قىلىدۇ.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The virtual files folder could not be registered with macOS.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مەۋھۇم ھۆججەت قىسقۇچىنى macOS قا تىزىملىغىلى بولمىدى.</translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <location line="+3"/>
+        <source>%1 - %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5861,7 +5943,8 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+75"/>
+        <location line="+7"/>
         <source>Failed to retrieve user info</source>
         <translation>ئىشلەتكۈچى ئۇچۇرىغا ئېرىشەلمىدى</translation>
     </message>
@@ -5924,7 +6007,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="+309"/>
+        <location filename="../src/common/utility.cpp" line="+313"/>
         <source>in the future</source>
         <translation>كەلگۈسىدە</translation>
     </message>

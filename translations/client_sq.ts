@@ -166,7 +166,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
         <translation>S’riemërtohet dot %1, kartela është aktualisht në përdorim</translation>
     </message>
     <message>
-        <location filename="../src/libsync/filesystem.cpp" line="+192"/>
+        <location filename="../src/libsync/filesystem.cpp" line="+193"/>
         <source>Could not remove folder</source>
         <translation>S’u hoq dot dosje</translation>
     </message>
@@ -238,7 +238,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>FolderManagementUtils</name>
     <message>
-        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+94"/>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+97"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translation>Shtegu “%1” është shumë i gjatë. Ju lutemi, aktivizoni shtigje të gjatë te rregullimet e Windows-it, ose zgjidhni një dosje tjetër.</translation>
     </message>
@@ -392,7 +392,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+264"/>
         <source>Connection timed out</source>
         <translation>Lidhjes i mbaroi koha</translation>
     </message>
@@ -418,7 +418,7 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+718"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Llogaria juaj në shërbyes është çaktivizuar (%1). Ju lutemi, lidhuni me përgjegjësin e sistemit tuaj.</translation>
@@ -451,30 +451,30 @@ Mjet njëkohësimi kartelash për desktop.</translation>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+371"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+391"/>
         <source>Choose what to sync</source>
         <translation>Zgjidhni çfarë të njëkohësohet</translation>
     </message>
     <message>
-        <location line="-242"/>
-        <location line="+105"/>
+        <location line="-262"/>
+        <location line="+113"/>
         <source>Sync now</source>
         <translation>Njëkohësoje tani</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-103"/>
         <source>Manage subfolder sync</source>
         <translation>Administroni njëkohësim nëndosjesh</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+238"/>
+        <location line="+27"/>
+        <location line="+252"/>
         <source>Manage availability</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Administroni gatishmërinë</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-240"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as &apos;Remove folder sync&apos; or &apos;Remove Space sync&apos;</extracomment>
         <translation>Hiqe njëkohësimin e %1</translation>
@@ -503,7 +503,7 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <translation>Çaktivizoje mbulimin</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+32"/>
         <source>Restart sync</source>
         <translation>Rinise njëkohësimin</translation>
     </message>
@@ -528,7 +528,7 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <translation>Aktivizo kartela virtuale</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <source>Internet connection is metered</source>
         <translation>Lidhja Internet është me racion</translation>
     </message>
@@ -538,7 +538,7 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <translation>Njëkohësimi është ndalur, ngaqë lidhja Internet është një lidhje me racion&lt;p&gt;Doni vërtet të detyrohet Njëkohësimi tani?</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Sync Running</source>
         <translation>Njëkohësimi Po Kryhet</translation>
     </message>
@@ -548,28 +548,34 @@ Ky veprim do të shkaktojë ndërprerjen e çfarëdo njëkohësimi në kryerje e
         <translation>Veprimi i njëkohësimit po kryhet.&lt;br/&gt;Doni të ndalet?</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Sync paused by user</source>
         <translation>Njëkohësim i ndalur nga përdoruesi</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
+        <source>&lt;p&gt;Do you really want to remove &lt;i&gt;%1&lt;/i&gt; from the Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; The files stay on the server. Changes that have not been uploaded yet are kept by macOS.&lt;/p&gt;</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;Doni vërtet të hiqet &lt;i&gt;%1&lt;/i&gt; nga Finder-i?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Shënim:&lt;/b&gt; Kartelat mbeten në shërbyes. Ndryshimet që s’janë ngarkuar ende i ruan macOS-i.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Ripohoni Heqje Lidhjeje Njëkohësimi Dosjeje</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-10"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Doni vërtet të ndalet njëkohësimi i dosjes &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Shënim:&lt;/b&gt; Kjo &lt;b&gt;nuk&lt;/b&gt; do të fshijë ndonjë kartelë.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Hiqe Lidhjen Për Njëkohësim Dosjeje</translation>
     </message>
     <message>
-        <location line="-134"/>
-        <location line="+135"/>
+        <location line="-146"/>
+        <location line="+147"/>
         <source>Cancel</source>
         <translation>Anuloje</translation>
     </message>
@@ -759,7 +765,7 @@ Ju lutemi, krijoni një llogari duke përzgjedhur mundësinë “Shtoni llogari�
         <translation>Dilni</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+44"/>
         <source>Confirm Account Removal</source>
         <translation>Ripohoni Heqjen e Llogarisë</translation>
     </message>
@@ -956,7 +962,13 @@ Ju lutemi, kontrolloni qenien në punë të shërbyesit dhe rixhironi ndihmësin
         <translation>Shfletoni për një vendndodhje shkarkimesh</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+14"/>
+        <source>Your files appear in the Finder sidebar under &quot;Locations&quot;. They are downloaded when you open them, and you can keep them on this Mac with &quot;Download Now&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kartelat tuaja shfaqen te shtylla anësore e Finder-it, nën “Vendndodhje”. Shkarkohen kur i hapni dhe mund t’i mbani në këtë Mac me “Shkarkoje Tani”.</translation>
+    </message>
+    <message>
+        <location line="+105"/>
         <source>Invalid local download directory %1: %2</source>
         <translation>Drejtori vendore shkarkimesh e pavlefshme %1: %2</translation>
     </message>
@@ -1038,7 +1050,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
         <source>Application Name Logo %1</source>
         <translation>Stemë Emri Aplikacioni %1</translation>
     </message>
@@ -1249,7 +1261,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+230"/>
         <source>Failed to parse credentials %1</source>
         <translation>S’u arrit të përtypen kredencialet %1</translation>
     </message>
@@ -1283,13 +1295,13 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="+337"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translation>Llogari qe fshirë para se të mund të nisnin aktin “propfind”</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location line="+112"/>
+        <location line="+117"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>Gabim shërbyesi: përgjigja PROPFIND s’është e formatuar si XML!</translation>
     </message>
@@ -1297,7 +1309,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location line="-213"/>
+        <location line="-218"/>
         <source>Error while opening directory %1</source>
         <translation>Gabim gjatë hapjes së drejtorisë %1</translation>
     </message>
@@ -1346,7 +1358,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+407"/>
+        <location filename="../src/gui/folder.cpp" line="+427"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 u hoq.</translation>
@@ -1451,17 +1463,47 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
         <translation>Veprimtari Njëkohësimesh</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+218"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Po ndërrohet mënyrë VFS në dosjen “%1”</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Could not read system exclude file</source>
         <translation>S’u lexua dot kartelë përjashtimi sistemi</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+82"/>
+        <source>Show your files in the Finder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Shfaqni kartelat tuaja në Finder</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open System Settings</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Hapni Rregullime Sistemi</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Më vonë</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>You are signed out of %1. Sign in again in %1 to use these files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Keni dalë nga %1. Hyni sërish në %1 që të përdorni këto kartela.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Synchronization is paused in %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Njëkohësimi është ndalur në %1.</translation>
+    </message>
+    <message>
+        <location line="+168"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Dosja %1 qe krijuar, por qe përjashtuar më herët nga njëkohësimi. Të dhënat brenda saj nuk do të njëkohësohen.</translation>
     </message>
@@ -1677,7 +1719,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+571"/>
+        <location filename="../src/gui/folderman.cpp" line="+612"/>
         <source>Could not reset folder state</source>
         <translation>Gjendja e dosjes s’u ricaktua dot</translation>
     </message>
@@ -1703,7 +1745,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
         <translation>Njëkohësim i ndalur nga përdoruesi</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+346"/>
         <source>User triggered force sync</source>
         <translation>Përdoruesi shkaktoi njëkohësim të detyruar</translation>
     </message>
@@ -1792,7 +1834,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
         <translation>S’keni leje të shkruani te dosja e përzgjedhur.</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Llogaria s’ekziston më.</translation>
@@ -1804,18 +1846,18 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
         <translation>Dosja vendore %1 s’u ujdis dot për njëkohësim.</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-308"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>Dosja “%1” është tashmë në përdorim nga një tjetër llogari.</translation>
     </message>
     <message>
-        <location line="-1029"/>
+        <location line="-1046"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Aplikacioni po mbyllet</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+416"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>Në macOS, mbulohet vetëm Apple File System.</translation>
     </message>
@@ -1836,7 +1878,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
 <context>
     <name>OCC::FolderWatcher</name>
     <message>
-        <location filename="../src/gui/folderwatcher.cpp" line="+123"/>
+        <location filename="../src/gui/folderwatcher.cpp" line="+124"/>
         <source>The watcher did not receive a test notification.</source>
         <translation>Vëzhguesi s’mori njoftim testi.</translation>
     </message>
@@ -2007,9 +2049,15 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
 <context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+45"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+48"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translation>Përdorni kartela virtuale, në vend se të shkarkoni lëndë menjëherë</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>With virtual files your files appear in the Finder sidebar under &quot;Locations&quot; and are downloaded when you open them. The local folder chosen before is only used without virtual files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Me kartela virtuale, kartelat tuaja shfaqen te shtylla anësore e Finder-it, nën “Vendndodhje”, dhe shkarkohen kur i hapni. Dosja vendore e zgjedhur më parë përdoret vetëm pa kartela virtuale.</translation>
     </message>
 </context>
 <context>
@@ -2043,7 +2091,7 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="+86"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="+96"/>
         <source>Personal</source>
         <translation>Personale</translation>
     </message>
@@ -2824,7 +2872,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-498"/>
         <source>Successfully signed in</source>
         <translation>U hy me sukses</translation>
     </message>
@@ -2834,7 +2882,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Tani, eksploroni %1 në desktop.</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+123"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Gabim i kthyer nga shërbyesi: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -3044,7 +3092,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+831"/>
         <source>File %1 is currently in use</source>
         <translation>Kartela %1 është aktualisht në përdorim</translation>
     </message>
@@ -3124,13 +3172,13 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     <message>
         <location line="+101"/>
         <location line="+342"/>
-        <location line="+710"/>
+        <location line="+715"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translation>instanca VFS mungon. S’arrihet të vazhdohet.</translation>
     </message>
     <message>
-        <location line="-1079"/>
+        <location line="-1084"/>
         <source>server reported no %1</source>
         <translation>shërbyesi s’raportoi %1</translation>
     </message>
@@ -3141,7 +3189,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>llogaria qe fshirë. S’është në gjendje të vazhdohet</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+164"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync: U shpërfill, pasi shtegu i vet qe shpërzgjedhur</translation>
     </message>
@@ -3171,12 +3219,12 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>S’lejohet, ngaqë s’keni leje për shtim nëndosjesh te ajo dosje</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>Gabim teksa bëhej një riemërtim, kod gjendjeje të patrajtuar: %1</translation>
     </message>
     <message>
-        <location line="+574"/>
+        <location line="+579"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>S’lejohet, ngaqë s’keni leje të shtoni kartela te ajo dosje</translation>
     </message>
@@ -3199,7 +3247,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+346"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+347"/>
         <source>Error updating metadata: %1</source>
         <translation>Gabim në përditësim tejtëdhënash: %1</translation>
     </message>
@@ -3239,7 +3287,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Kartela është fshirë te shërbyesi</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>Shërbyes i dëmtuar u përgjigj me gjatësi lënde të zbrazët për kartelë jo të zbrazët, gjatë rimarrjeje</translation>
     </message>
@@ -3264,16 +3312,16 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Gabim në përditësim tejtëdhënash: %1</translation>
     </message>
     <message>
-        <location line="-517"/>
-        <location line="+453"/>
+        <location line="-518"/>
+        <location line="+454"/>
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
         <translation>Kartela %1 është aktualisht në përdorim</translation>
     </message>
     <message>
-        <location line="-639"/>
-        <location line="+596"/>
+        <location line="-640"/>
+        <location line="+597"/>
         <source>File has changed since discovery</source>
         <translation>Kartela ka ndryshuar, qëkurse u zbulua</translation>
     </message>
@@ -3281,7 +3329,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-961"/>
         <source>; Restoration Failed: %1</source>
         <translation>; Rikthimi Dështoi: %1</translation>
     </message>
@@ -3428,7 +3476,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1142"/>
         <source>Could not update file : %1</source>
         <translation>S’u përditësua dot kartela : %1</translation>
     </message>
@@ -3661,7 +3709,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+48"/>
         <source>Application Name Logo %1</source>
         <translation>Stemë Emri Aplikacioni %1</translation>
     </message>
@@ -3712,7 +3760,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Hyni</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+108"/>
         <source>URL copied</source>
         <translation>URL-ja u kopjua</translation>
     </message>
@@ -3759,17 +3807,17 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
     <message>
         <location line="+22"/>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Currently there are no subfolders on the server.</source>
         <translation>Aktualisht te shërbyesi s’ka nëndosje.</translation>
     </message>
     <message>
-        <location line="-153"/>
+        <location line="-158"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translation>Ndodhi një gabim teksa ngarkohej lista e nëndosjeve.</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+369"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Shfletoni më poshtë kartelat tuaja. Që të ndryshoni gatishmërinë e një dosjeje, klikoni mbi të me të djathtin: mbajeni përherë në këtë pajisje, ose lironi hapësirë duke e bërë vetëm në linjë.</translation>
@@ -4691,7 +4739,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+529"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>Ndaje me %1</translation>
@@ -4973,7 +5021,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="+906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="+912"/>
         <source>Failed to connect database.</source>
         <translation>S’u arrit të lidhej baza e të dhënave.</translation>
     </message>
@@ -5018,21 +5066,21 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+653"/>
+        <location line="+666"/>
         <source>Offline</source>
         <translation>Jashtë linje</translation>
     </message>
     <message>
-        <location line="-671"/>
-        <location line="+678"/>
+        <location line="-684"/>
+        <location line="+691"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Po njëkohësohet</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-689"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Po ndërpritet njëkohësimi</translation>
@@ -5056,21 +5104,21 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
     <message>
         <location line="+2"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>Njëkohësimi u ndal</translation>
     </message>
     <message>
-        <location line="-652"/>
-        <location line="+658"/>
+        <location line="-665"/>
+        <location line="+671"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Jo gati</translation>
     </message>
     <message numerus="yes">
-        <location line="-546"/>
+        <location line="-559"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -5126,7 +5174,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
         <translation>Dilni nga %1</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+46"/>
         <location line="+95"/>
         <source>Open in browser</source>
         <translation>Hape në shfletues</translation>
@@ -5472,7 +5520,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="+81"/>
+        <location filename="../src/common/vfs.cpp" line="+85"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translation>Veçoria për sistem Virtual kartelash nuk mbulon disk si “sync root”</translation>
     </message>
@@ -5488,9 +5536,43 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
     </message>
 </context>
 <context>
+    <name>OCC::VfsMac</name>
+    <message>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kartelat s’shfaqen ende në Finder: macOS-i lyp lejen tuaj. Hapni Rregullime Sistemi &gt; Të përgjithshme &gt; Elemente hyrjeje dhe zgjerime, klikoni butonin e hollësive pranë %1 nën “Zgjerime” dhe aktivizoni “Furnizues kartelash”.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>macOS-i s’gjen zgjerimin e kartelave virtuale të këtij aplikacioni. Kalojeni aplikacionin te dosja Aplikacione dhe nisni sërish.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual files require macOS Ventura or newer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Kartelat virtuale lypin macOS Ventura ose më të ri.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The virtual files folder could not be registered with macOS.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dosja e kartelave virtuale s’u regjistrua dot te macOS-i.</translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <location line="+3"/>
+        <source>%1 - %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5539,7 +5621,8 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+75"/>
+        <location line="+7"/>
         <source>Failed to retrieve user info</source>
         <translation>S’u arrit të merren hollësi përdoruesi</translation>
     </message>
@@ -5599,7 +5682,7 @@ Kini parasysh se përdorimi i çfarëdo mundësie regjistrimi që nga rresht urd
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="+309"/>
+        <location filename="../src/common/utility.cpp" line="+313"/>
         <source>in the future</source>
         <translation>në të ardhmen</translation>
     </message>

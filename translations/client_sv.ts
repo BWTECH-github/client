@@ -166,7 +166,7 @@ Skrivbordsverktyg för filsynkronisering.</translation>
         <translation>Kan inte byta namn på %1 eftersom filen används just nu</translation>
     </message>
     <message>
-        <location filename="../src/libsync/filesystem.cpp" line="+192"/>
+        <location filename="../src/libsync/filesystem.cpp" line="+193"/>
         <source>Could not remove folder</source>
         <translation>Kunde inte ta bort mappen</translation>
     </message>
@@ -238,7 +238,7 @@ Skrivbordsverktyg för filsynkronisering.</translation>
 <context>
     <name>FolderManagementUtils</name>
     <message>
-        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+94"/>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+97"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translation>Sökvägen &apos;%1&apos; är för lång. Aktivera långa sökvägar i Windows-inställningarna eller välj en annan mapp.</translation>
     </message>
@@ -392,7 +392,7 @@ Skrivbordsverktyg för filsynkronisering.</translation>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+264"/>
         <source>Connection timed out</source>
         <translation>Tidsgräns för anslutningen överskreds</translation>
     </message>
@@ -418,7 +418,7 @@ Skrivbordsverktyg för filsynkronisering.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+718"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ditt konto på servern är inaktiverat (%1). Kontakta din systemadministratör.</translation>
@@ -451,30 +451,30 @@ Skrivbordsverktyg för filsynkronisering.</translation>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+371"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+391"/>
         <source>Choose what to sync</source>
         <translation>Välj vad som ska synkas</translation>
     </message>
     <message>
-        <location line="-242"/>
-        <location line="+105"/>
+        <location line="-262"/>
+        <location line="+113"/>
         <source>Sync now</source>
         <translation>Synkronisera nu</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-103"/>
         <source>Manage subfolder sync</source>
         <translation>Hantera synkronisering av undermappar</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+238"/>
+        <location line="+27"/>
+        <location line="+252"/>
         <source>Manage availability</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Hantera tillgänglighet</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-240"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as &apos;Remove folder sync&apos; or &apos;Remove Space sync&apos;</extracomment>
         <translation>Ta bort synkronisering av %1</translation>
@@ -503,7 +503,7 @@ Den enda fördelen med att inaktivera stödet för virtuella filer är att funkt
         <translation>Inaktivera stöd</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+32"/>
         <source>Restart sync</source>
         <translation>Starta om synkning</translation>
     </message>
@@ -528,7 +528,7 @@ Den enda fördelen med att inaktivera stödet för virtuella filer är att funkt
         <translation>Aktivera virtuella filer</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <source>Internet connection is metered</source>
         <translation>Internetanslutningen har datamätning</translation>
     </message>
@@ -538,7 +538,7 @@ Den enda fördelen med att inaktivera stödet för virtuella filer är att funkt
         <translation>Synkroniseringen är pausad eftersom internetanslutningen har datamätning.&lt;p&gt;Vill du verkligen tvinga fram en synkronisering nu?</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Sync Running</source>
         <translation>Synkronisering pågår</translation>
     </message>
@@ -548,28 +548,34 @@ Den enda fördelen med att inaktivera stödet för virtuella filer är att funkt
         <translation>Synkroniseringen körs.&lt;br/&gt;Vill du stoppa den?</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Sync paused by user</source>
         <translation>Synkronisering pausad av användaren</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
+        <source>&lt;p&gt;Do you really want to remove &lt;i&gt;%1&lt;/i&gt; from the Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; The files stay on the server. Changes that have not been uploaded yet are kept by macOS.&lt;/p&gt;</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;Vill du verkligen ta bort &lt;i&gt;%1&lt;/i&gt; från Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Obs!&lt;/b&gt; Filerna finns kvar på servern. Ändringar som inte har laddats upp än sparas av macOS.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Bekräfta radering av anslutning till mappsynkronisering</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-10"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Vill du verkligen avbryta synkronisering av mappen &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Observera:&lt;/b&gt; Detta kommer &lt;b&gt;inte&lt;/b&gt; radera några filer.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Ta bort anslutning till mappsynkronisering</translation>
     </message>
     <message>
-        <location line="-134"/>
-        <location line="+135"/>
+        <location line="-146"/>
+        <location line="+147"/>
         <source>Cancel</source>
         <translation>Avbryt</translation>
     </message>
@@ -757,7 +763,7 @@ Skapa ett konto genom att välja alternativet &quot;Lägg till konto...&quot; i 
         <translation>Logga ut</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+44"/>
         <source>Confirm Account Removal</source>
         <translation>Bekräfta radering an kontot</translation>
     </message>
@@ -952,7 +958,13 @@ Kontrollera att servern är tillgänglig och kör sedan guiden igen.</translatio
         <translation>Bläddra efter en nedladdningsplats</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+14"/>
+        <source>Your files appear in the Finder sidebar under &quot;Locations&quot;. They are downloaded when you open them, and you can keep them on this Mac with &quot;Download Now&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Dina filer visas i Finders sidofält under ”Platser”. De hämtas när du öppnar dem, och med ”Hämta nu” behåller du dem på den här datorn.</translation>
+    </message>
+    <message>
+        <location line="+105"/>
         <source>Invalid local download directory %1: %2</source>
         <translation>Ogiltig lokal nedladdningskatalog %1: %2</translation>
     </message>
@@ -1034,7 +1046,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
         <source>Application Name Logo %1</source>
         <translation>Programlogotyp %1</translation>
     </message>
@@ -1245,7 +1257,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+230"/>
         <source>Failed to parse credentials %1</source>
         <translation>Det gick inte att tolka inloggningsuppgifter %1</translation>
     </message>
@@ -1279,13 +1291,13 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="+337"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translation>Kontot raderades innan propfind-jobbet kunde startas</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location line="+112"/>
+        <location line="+117"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>Serverfel: PROPFIND-svaret är inte XML-formaterat!</translation>
     </message>
@@ -1293,7 +1305,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location line="-213"/>
+        <location line="-218"/>
         <source>Error while opening directory %1</source>
         <translation>Fel när mappen %1 öppnades</translation>
     </message>
@@ -1342,7 +1354,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+407"/>
+        <location filename="../src/gui/folder.cpp" line="+427"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 har tagits bort.</translation>
@@ -1447,17 +1459,47 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
         <translation>Synk aktivitet</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+218"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Växlar VFS-läge för mappen &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Could not read system exclude file</source>
         <translation>Kunde inte läsa systemets exkluderings-fil</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+82"/>
+        <source>Show your files in the Finder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Visa dina filer i Finder</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open System Settings</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Öppna Systeminställningar</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Senare</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>You are signed out of %1. Sign in again in %1 to use these files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Du är utloggad från %1. Logga in igen i %1 för att använda de här filerna.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Synchronization is paused in %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synkroniseringen är pausad i %1.</translation>
+    </message>
+    <message>
+        <location line="+168"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Mappen %1 skapades men var tidigare exkluderad från synkronisering. Data i den synkroniseras inte.</translation>
     </message>
@@ -1673,7 +1715,7 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+571"/>
+        <location filename="../src/gui/folderman.cpp" line="+612"/>
         <source>Could not reset folder state</source>
         <translation>Kunde inte återställa mappens skick</translation>
     </message>
@@ -1699,7 +1741,7 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
         <translation>Synkronisering pausad av användaren</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+346"/>
         <source>User triggered force sync</source>
         <translation>Användaren utlöste tvingad synkronisering</translation>
     </message>
@@ -1788,7 +1830,7 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
         <translation>Du har inte behörighet att skriva till den valda mappen.</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kontot finns inte längre.</translation>
@@ -1800,18 +1842,18 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
         <translation>Den lokala mappen %1 kunde inte konfigureras för synkronisering.</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-308"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>Mappen &apos;%1&apos; används redan av ett annat konto.</translation>
     </message>
     <message>
-        <location line="-1029"/>
+        <location line="-1046"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Programmet avslutas</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+416"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>På macOS stöds endast Apple-filsystemet.</translation>
     </message>
@@ -1832,7 +1874,7 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
 <context>
     <name>OCC::FolderWatcher</name>
     <message>
-        <location filename="../src/gui/folderwatcher.cpp" line="+123"/>
+        <location filename="../src/gui/folderwatcher.cpp" line="+124"/>
         <source>The watcher did not receive a test notification.</source>
         <translation>Filbevakaren fick ingen testnotis.</translation>
     </message>
@@ -2002,9 +2044,15 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
 <context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+45"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+48"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translation>Använd virtuella filer i stället för att ladda ner innehållet omedelbart</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>With virtual files your files appear in the Finder sidebar under &quot;Locations&quot; and are downloaded when you open them. The local folder chosen before is only used without virtual files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Med virtuella filer visas dina filer i Finders sidofält under ”Platser” och hämtas när du öppnar dem. Den lokala mappen du valde tidigare används bara utan virtuella filer.</translation>
     </message>
 </context>
 <context>
@@ -2038,7 +2086,7 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="+86"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="+96"/>
         <source>Personal</source>
         <translation>Personligt</translation>
     </message>
@@ -2819,7 +2867,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-498"/>
         <source>Successfully signed in</source>
         <translation>Inloggningen lyckades</translation>
     </message>
@@ -2829,7 +2877,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Utforska nu %1 på skrivbordet.</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+123"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Fel returnerat från server: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -3039,7 +3087,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+831"/>
         <source>File %1 is currently in use</source>
         <translation>Filen %1 används för närvarande</translation>
     </message>
@@ -3119,13 +3167,13 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
     <message>
         <location line="+101"/>
         <location line="+342"/>
-        <location line="+710"/>
+        <location line="+715"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translation>VFS-instansen saknas. Det går inte att fortsätta.</translation>
     </message>
     <message>
-        <location line="-1079"/>
+        <location line="-1084"/>
         <source>server reported no %1</source>
         <translation>servern rapporterade inget %1</translation>
     </message>
@@ -3136,7 +3184,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>kontot har tagits bort. Det går inte att fortsätta</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+164"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>Selektiv synkronisering: ignorerades eftersom sökvägen inte är vald</translation>
     </message>
@@ -3166,12 +3214,12 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Otillåtet eftersom du inte har rättigheter att lägga till undermappar i den mappen.</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>Fel vid namnbyte, ohanterad statuskod: %1</translation>
     </message>
     <message>
-        <location line="+574"/>
+        <location line="+579"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>Otillåtet eftersom du inte har rättigheter att lägga till filer i den mappen.</translation>
     </message>
@@ -3194,7 +3242,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+346"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+347"/>
         <source>Error updating metadata: %1</source>
         <translation>Fel vid uppdatering av metadata: %1</translation>
     </message>
@@ -3233,7 +3281,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Filen har tagits bort från servern</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>En felaktig webbserver returnerade tomt Content-Length för en icke-tom fil vid återupptagning</translation>
     </message>
@@ -3258,16 +3306,16 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Fel vid uppdatering av metadata: %1</translation>
     </message>
     <message>
-        <location line="-517"/>
-        <location line="+453"/>
+        <location line="-518"/>
+        <location line="+454"/>
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
         <translation>Filen %1 används för närvarande</translation>
     </message>
     <message>
-        <location line="-639"/>
-        <location line="+596"/>
+        <location line="-640"/>
+        <location line="+597"/>
         <source>File has changed since discovery</source>
         <translation>Filen har ändrats sedan upptäckten</translation>
     </message>
@@ -3275,7 +3323,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-961"/>
         <source>; Restoration Failed: %1</source>
         <translation>; Återställning misslyckades: %1</translation>
     </message>
@@ -3422,7 +3470,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1142"/>
         <source>Could not update file : %1</source>
         <translation>Det gick inte att uppdatera filen: %1</translation>
     </message>
@@ -3654,7 +3702,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+48"/>
         <source>Application Name Logo %1</source>
         <translation>Programlogotyp %1</translation>
     </message>
@@ -3705,7 +3753,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Logga in</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+108"/>
         <source>URL copied</source>
         <translation>URL kopierad</translation>
     </message>
@@ -3752,17 +3800,17 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
     </message>
     <message>
         <location line="+22"/>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Currently there are no subfolders on the server.</source>
         <translation>Det finns för närvarande inga undermappar på servern.</translation>
     </message>
     <message>
-        <location line="-153"/>
+        <location line="-158"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translation>Det uppstod ett fel när listan över undermappar lästes in.</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+369"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Bläddra bland dina filer nedan. Högerklicka på en mapp för att ändra dess tillgänglighet: behåll den alltid på den här enheten eller frigör utrymme genom att göra den tillgänglig endast online.</translation>
@@ -4688,7 +4736,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+529"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>Dela med %1</translation>
@@ -4970,7 +5018,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="+906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="+912"/>
         <source>Failed to connect database.</source>
         <translation>Det gick inte att ansluta till databasen.</translation>
     </message>
@@ -5015,21 +5063,21 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+653"/>
+        <location line="+666"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location line="-671"/>
-        <location line="+678"/>
+        <location line="-684"/>
+        <location line="+691"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Synkroniserar</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-689"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Avbryter synkroniseringen</translation>
@@ -5052,21 +5100,21 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
     </message>
     <message>
         <location line="+2"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>Synkronisering pausad</translation>
     </message>
     <message>
-        <location line="-652"/>
-        <location line="+658"/>
+        <location line="-665"/>
+        <location line="+671"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Inte tillgänglig</translation>
     </message>
     <message numerus="yes">
-        <location line="-546"/>
+        <location line="-559"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -5122,7 +5170,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Avsluta %1</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+46"/>
         <location line="+95"/>
         <source>Open in browser</source>
         <translation>Öppna i webbläsare</translation>
@@ -5471,7 +5519,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="+81"/>
+        <location filename="../src/common/vfs.cpp" line="+85"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translation>Funktionen Virtuellt filsystem stöder inte en enhet som synkroniseringsrot</translation>
     </message>
@@ -5487,9 +5535,43 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
     </message>
 </context>
 <context>
+    <name>OCC::VfsMac</name>
+    <message>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Filerna visas inte i Finder än: macOS behöver ditt tillstånd. Öppna Systeminställningar &gt; Allmänt &gt; Inloggningsobjekt och tillägg, klicka på infoknappen bredvid %1 under ”Tillägg” och slå på ”Filleverantörer”.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>macOS hittar inte appens tillägg för virtuella filer. Flytta appen till mappen Program och starta den igen.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual files require macOS Ventura or newer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Virtuella filer kräver macOS Ventura eller senare.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The virtual files folder could not be registered with macOS.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Mappen för virtuella filer kunde inte registreras i macOS.</translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <location line="+3"/>
+        <source>%1 - %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5538,7 +5620,8 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+75"/>
+        <location line="+7"/>
         <source>Failed to retrieve user info</source>
         <translation>Det gick inte att hämta användarinformation</translation>
     </message>
@@ -5598,7 +5681,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="+309"/>
+        <location filename="../src/common/utility.cpp" line="+313"/>
         <source>in the future</source>
         <translation>i framtiden</translation>
     </message>

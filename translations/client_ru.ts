@@ -173,7 +173,7 @@ File synchronization desktop utility.</source>
         <translation>Невозможно переименовать %1, файл сейчас используется</translation>
     </message>
     <message>
-        <location filename="../src/libsync/filesystem.cpp" line="+192"/>
+        <location filename="../src/libsync/filesystem.cpp" line="+193"/>
         <source>Could not remove folder</source>
         <translation>Не удалось удалить каталог</translation>
     </message>
@@ -252,7 +252,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderManagementUtils</name>
     <message>
-        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+94"/>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+97"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translation>Путь &apos;%1&apos; слишком длинный. Пожалуйста, включите длинные пути в настройках Windows или выберите другую папку.</translation>
     </message>
@@ -408,7 +408,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+264"/>
         <source>Connection timed out</source>
         <translation>Время ожидания соединения превышено</translation>
     </message>
@@ -434,7 +434,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+718"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ваша учётная запись на сервере отключена (%1). Обратитесь к системному администратору.</translation>
@@ -468,26 +468,26 @@ File synchronization desktop utility.</source>
     <name>OCC::AccountFoldersController</name>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+129"/>
-        <location line="+105"/>
+        <location line="+113"/>
         <source>Sync now</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Синхронизировать сейчас</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-103"/>
         <source>Manage subfolder sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Управление синхронизацией подпапок</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+238"/>
+        <location line="+27"/>
+        <location line="+252"/>
         <source>Manage availability</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Управление доступностью</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-240"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as &apos;Remove folder sync&apos; or &apos;Remove Space sync&apos;</extracomment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -518,12 +518,12 @@ This action will abort any currently running synchronization.</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+135"/>
+        <location line="+147"/>
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location line="-107"/>
+        <location line="-117"/>
         <source>Restart sync</source>
         <translation>Перезапустить синхронизацию</translation>
     </message>
@@ -550,7 +550,7 @@ This action will abort any currently running synchronization.</source>
         <translation>Включить виртуальные файлы</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <source>Internet connection is metered</source>
         <translation>лимитное подключение к Интернету</translation>
     </message>
@@ -561,7 +561,7 @@ This action will abort any currently running synchronization.</source>
         <translation>Синхронизация приостановлена, так как подключение к Интернету лимитное.&lt;p&gt;Вы действительно хотите принудительно запустить синхронизацию сейчас?</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Sync Running</source>
         <translation>Синхронизация запущена</translation>
     </message>
@@ -571,27 +571,33 @@ This action will abort any currently running synchronization.</source>
         <translation>Выполняется синхронизация.&lt;br/&gt;Вы хотите её остановить?</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Sync paused by user</source>
         <translation>Синхронизация приостановлена пользователем</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
+        <source>&lt;p&gt;Do you really want to remove &lt;i&gt;%1&lt;/i&gt; from the Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; The files stay on the server. Changes that have not been uploaded yet are kept by macOS.&lt;/p&gt;</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;Вы действительно хотите удалить &lt;i&gt;%1&lt;/i&gt; из Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Примечание:&lt;/b&gt; файлы остаются на сервере. Изменения, которые ещё не загружены, macOS сохраняет.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Подтвердите удаление подключения синхронизации каталога</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-10"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Вы действительно желаете остановить синхронизацию папки &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Примечание:&lt;/b&gt; Это действие &lt;b&gt;НЕ&lt;/b&gt; удалит ваши файлы.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Удалить подключение синхронизации каталога</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+33"/>
         <source>Choose what to sync</source>
         <translation>Выбрать объекты для синхронизации</translation>
     </message>
@@ -795,7 +801,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>Выйти</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+44"/>
         <source>Confirm Account Removal</source>
         <translation>Подтверждение удаления учетной записи</translation>
     </message>
@@ -1011,7 +1017,13 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>Выбрать место загрузки</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+14"/>
+        <source>Your files appear in the Finder sidebar under &quot;Locations&quot;. They are downloaded when you open them, and you can keep them on this Mac with &quot;Download Now&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Ваши файлы появляются в боковом меню Finder в разделе «Места». Они загружаются при открытии, а с помощью «Загрузить сейчас» их можно оставить на этом Mac.</translation>
+    </message>
+    <message>
+        <location line="+105"/>
         <source>Invalid local download directory %1: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Недопустимый локальный каталог загрузки %1: %2</translation>
@@ -1099,7 +1111,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Логотип приложения %1</translation>
@@ -1322,7 +1334,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+230"/>
         <source>Failed to parse credentials %1</source>
         <translation>Не удалось разобрать учётные данные %1</translation>
     </message>
@@ -1359,14 +1371,14 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="+337"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Учётная запись была удалена до запуска задания PROPFIND</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location line="+112"/>
+        <location line="+117"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>Ошибка сервера: Ответ на PROPFIND не в формате XML!</translation>
     </message>
@@ -1374,7 +1386,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location line="-213"/>
+        <location line="-218"/>
         <source>Error while opening directory %1</source>
         <translation>Ошибка при открытии каталога %1</translation>
     </message>
@@ -1426,7 +1438,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+407"/>
+        <location filename="../src/gui/folder.cpp" line="+427"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>&apos;%1&apos; был удалён.</translation>
@@ -1546,17 +1558,47 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>Журнал синхронизации</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+218"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Переключение режима VFS для папки &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Could not read system exclude file</source>
         <translation>Невозможно прочесть системный файл исключений</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+82"/>
+        <source>Show your files in the Finder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Показать файлы в Finder</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open System Settings</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Открыть Системные настройки</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Позже</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>You are signed out of %1. Sign in again in %1 to use these files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Вы вышли из %1. Войдите снова в %1, чтобы пользоваться этими файлами.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Synchronization is paused in %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Синхронизация приостановлена в %1.</translation>
+    </message>
+    <message>
+        <location line="+168"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Каталог %1 был создан, но ранее исключён из синхронизации. Данные внутри него не буду синхронизироваться.</translation>
     </message>
@@ -1775,13 +1817,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+185"/>
+        <location filename="../src/gui/folderman.cpp" line="+214"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Приложение завершает работу</translation>
     </message>
     <message>
-        <location line="+386"/>
+        <location line="+398"/>
         <source>Could not reset folder state</source>
         <translation>Невозможно сбросить состояние каталога</translation>
     </message>
@@ -1808,7 +1850,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>Синхронизация приостановлена пользователем</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+346"/>
         <source>User triggered force sync</source>
         <translation>Принудительная синхронизация, инициированная пользователем</translation>
     </message>
@@ -1906,7 +1948,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>У вас нет прав на запись в выбранную папку.</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Учётная запись больше не существует.</translation>
@@ -1918,13 +1960,13 @@ This means that the synchronization client might not upload local changes immedi
         <translation>Не удалось настроить локальную папку %1 для синхронизации.</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-308"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Папка &apos;%1&apos; уже используется другой учётной записью.</translation>
     </message>
     <message>
-        <location line="-625"/>
+        <location line="-630"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>В macOS поддерживается только файловая система Apple (APFS).</translation>
@@ -1948,7 +1990,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWatcher</name>
     <message>
-        <location filename="../src/gui/folderwatcher.cpp" line="+123"/>
+        <location filename="../src/gui/folderwatcher.cpp" line="+124"/>
         <source>The watcher did not receive a test notification.</source>
         <translation>Наблюдатель не получил тестовое уведомление.</translation>
     </message>
@@ -2118,9 +2160,15 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+45"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+48"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translation>Используйте виртуальные файлы вместо немедленной загрузки контента</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>With virtual files your files appear in the Finder sidebar under &quot;Locations&quot; and are downloaded when you open them. The local folder chosen before is only used without virtual files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>С виртуальными файлами ваши файлы появляются в боковом меню Finder в разделе «Места» и загружаются при открытии. Выбранная ранее локальная папка используется только без виртуальных файлов.</translation>
     </message>
 </context>
 <context>
@@ -2154,7 +2202,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="+86"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="+96"/>
         <source>Personal</source>
         <translation>Личный</translation>
     </message>
@@ -2957,7 +3005,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-498"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Вход выполнен</translation>
@@ -2969,7 +3017,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>Теперь пользуйтесь %1 на компьютере.</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+123"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Сервер вернул ошибку: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -3199,7 +3247,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+831"/>
         <source>File %1 is currently in use</source>
         <translation>Файл %1 сейчас используется</translation>
     </message>
@@ -3280,14 +3328,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+101"/>
         <location line="+342"/>
-        <location line="+710"/>
+        <location line="+715"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>отсутствует экземпляр VFS. Продолжение невозможно.</translation>
     </message>
     <message>
-        <location line="-1079"/>
+        <location line="-1084"/>
         <source>server reported no %1</source>
         <translation>Сервер вернул отсутствие %1</translation>
     </message>
@@ -3299,7 +3347,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>учётная запись удалена. Продолжение невозможно</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+164"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync: Игнорируется, поскольку путь к нему не выбран</translation>
     </message>
@@ -3331,12 +3379,12 @@ Note that using any logging command line options will override the settings.</so
         <translation>Не разрешается, так как у вас нет полномочий на добавление подпапок в папку.</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>Ошибка при выполнении переименования, необработанный код состояния: %1</translation>
     </message>
     <message>
-        <location line="+574"/>
+        <location line="+579"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>Не разрешается, так как у вас нет полномочий на добавление файлов в эту папку</translation>
     </message>
@@ -3359,7 +3407,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+346"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+347"/>
         <source>Error updating metadata: %1</source>
         <translation>Ошибка обновления метаданных: %1</translation>
     </message>
@@ -3398,7 +3446,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>Файл был удален с сервера</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>Сломанный вебсервер при возобновлении вернул пустую длину содержимого для не-пустого файла</translation>
     </message>
@@ -3423,16 +3471,16 @@ Note that using any logging command line options will override the settings.</so
         <translation>Ошибка обновления метаданных: %1</translation>
     </message>
     <message>
-        <location line="-517"/>
-        <location line="+453"/>
+        <location line="-518"/>
+        <location line="+454"/>
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
         <translation>Файл %1 сейчас занят</translation>
     </message>
     <message>
-        <location line="-639"/>
-        <location line="+596"/>
+        <location line="-640"/>
+        <location line="+597"/>
         <source>File has changed since discovery</source>
         <translation>После обнаружения файл был изменен</translation>
     </message>
@@ -3440,7 +3488,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-961"/>
         <source>; Restoration Failed: %1</source>
         <translation>; Восстановление не удалось: %1</translation>
     </message>
@@ -3588,7 +3636,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1142"/>
         <source>Could not update file : %1</source>
         <translation>Не удалось обновить файл : %1</translation>
     </message>
@@ -3824,7 +3872,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+48"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Логотип приложения %1</translation>
@@ -3882,7 +3930,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>Войти</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+108"/>
         <source>URL copied</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>URL скопирован</translation>
@@ -3933,19 +3981,19 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+22"/>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Currently there are no subfolders on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Сейчас на сервере нет подпапок.</translation>
     </message>
     <message>
-        <location line="-153"/>
+        <location line="-158"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>При загрузке списка подпапок произошла ошибка.</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+369"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ниже показаны ваши файлы. Щёлкните папку правой кнопкой мыши, чтобы изменить её доступность: всегда хранить на этом устройстве или освободить место, оставив её только в сети.</translation>
@@ -4870,7 +4918,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+529"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>Поделиться с %1</translation>
@@ -5167,7 +5215,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="+906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="+912"/>
         <source>Failed to connect database.</source>
         <translation>Не удалось подключиться к базе данных.</translation>
     </message>
@@ -5214,21 +5262,21 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+653"/>
+        <location line="+666"/>
         <source>Offline</source>
         <translation>Оффлайн</translation>
     </message>
     <message>
-        <location line="-671"/>
-        <location line="+678"/>
+        <location line="-684"/>
+        <location line="+691"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Синхронизация</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-689"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Прерывание синхронизации</translation>
@@ -5252,7 +5300,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
@@ -5260,14 +5308,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>Синхронизация приостановлена</translation>
     </message>
     <message>
-        <location line="-652"/>
-        <location line="+658"/>
+        <location line="-665"/>
+        <location line="+671"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Недоступно</translation>
     </message>
     <message numerus="yes">
-        <location line="-546"/>
+        <location line="-559"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -5325,7 +5373,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>Закрыть %1</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+46"/>
         <location line="+95"/>
         <source>Open in browser</source>
         <translation>Открыть в браузере</translation>
@@ -5686,7 +5734,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="+81"/>
+        <location filename="../src/common/vfs.cpp" line="+85"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translation>Возможность Виртуальная файловая система не поддерживает диск в качестве корня синхронизации</translation>
     </message>
@@ -5702,9 +5750,43 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::VfsMac</name>
+    <message>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Файлы пока не отображаются в Finder: macOS нужно ваше разрешение. Откройте Системные настройки &gt; Основные &gt; Объекты входа и расширения, нажмите кнопку информации рядом с %1 в разделе «Расширения» и включите «Поставщики файлов».</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>macOS не находит расширение виртуальных файлов этого приложения. Переместите приложение в папку «Программы» и запустите его снова.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual files require macOS Ventura or newer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Для виртуальных файлов нужна macOS Ventura или новее.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The virtual files folder could not be registered with macOS.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Не удалось зарегистрировать папку виртуальных файлов в macOS.</translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <location line="+3"/>
+        <source>%1 - %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5761,7 +5843,8 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+75"/>
+        <location line="+7"/>
         <source>Failed to retrieve user info</source>
         <translation>Не удалось получить информацию о пользователе</translation>
     </message>
@@ -5822,7 +5905,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="+309"/>
+        <location filename="../src/common/utility.cpp" line="+313"/>
         <source>in the future</source>
         <translation>в будущем</translation>
     </message>

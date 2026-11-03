@@ -180,7 +180,7 @@ Nástroj pro synchronizaci souborů na desktopu.</translation>
         <translation>Nelze přejmenovat %1, soubor se právě používá</translation>
     </message>
     <message>
-        <location filename="../src/libsync/filesystem.cpp" line="+192"/>
+        <location filename="../src/libsync/filesystem.cpp" line="+193"/>
         <source>Could not remove folder</source>
         <translation>Adresář nelze odstranit</translation>
     </message>
@@ -261,7 +261,7 @@ Nástroj pro synchronizaci souborů na desktopu.</translation>
 <context>
     <name>FolderManagementUtils</name>
     <message>
-        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+94"/>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+97"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Cesta &apos;%1&apos; je příliš dlouhá. Zapněte v nastavení Windows podporu dlouhých cest nebo zvolte jinou složku.</translation>
@@ -418,7 +418,7 @@ Nástroj pro synchronizaci souborů na desktopu.</translation>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+264"/>
         <source>Connection timed out</source>
         <translation>Připojení vypršelo</translation>
     </message>
@@ -444,7 +444,7 @@ Nástroj pro synchronizaci souborů na desktopu.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+718"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Váš účet na serveru je deaktivován (%1). Obraťte se na správce systému.</translation>
@@ -478,26 +478,26 @@ Nástroj pro synchronizaci souborů na desktopu.</translation>
     <name>OCC::AccountFoldersController</name>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+129"/>
-        <location line="+105"/>
+        <location line="+113"/>
         <source>Sync now</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Synchronizovat nyní</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-103"/>
         <source>Manage subfolder sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Spravovat synchronizaci podsložek</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+238"/>
+        <location line="+27"/>
+        <location line="+252"/>
         <source>Manage availability</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Spravovat dostupnost</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-240"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as &apos;Remove folder sync&apos; or &apos;Remove Space sync&apos;</extracomment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -528,12 +528,12 @@ Tato akce přeruší momentálně probíhající synchronizaci.</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+135"/>
+        <location line="+147"/>
         <source>Cancel</source>
         <translation>Zrušit</translation>
     </message>
     <message>
-        <location line="-107"/>
+        <location line="-117"/>
         <source>Restart sync</source>
         <translation>Restartovat synchronizaci</translation>
     </message>
@@ -560,7 +560,7 @@ Tato akce přeruší momentálně probíhající synchronizaci.</translation>
         <translation>Zapnout virtuální soubory</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <source>Internet connection is metered</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Připojení k internetu je měřené</translation>
@@ -572,7 +572,7 @@ Tato akce přeruší momentálně probíhající synchronizaci.</translation>
         <translation>Synchronizace je pozastavena, protože připojení k internetu je měřené.&lt;p&gt;Opravdu chcete synchronizaci nyní vynutit?</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Sync Running</source>
         <translation>Synchronizace probíhá</translation>
     </message>
@@ -583,27 +583,33 @@ Tato akce přeruší momentálně probíhající synchronizaci.</translation>
         <translation>Synchronizace právě probíhá.&lt;br/&gt;Chcete ji zastavit?</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Sync paused by user</source>
         <translation>Synchronizace pozastavena uživatelem</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
+        <source>&lt;p&gt;Do you really want to remove &lt;i&gt;%1&lt;/i&gt; from the Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; The files stay on the server. Changes that have not been uploaded yet are kept by macOS.&lt;/p&gt;</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;Opravdu chcete odebrat &lt;i&gt;%1&lt;/i&gt; z Finderu?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Poznámka:&lt;/b&gt; soubory zůstanou na serveru. Změny, které ještě nebyly nahrány, macOS zachová.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Potvrdit odstranění připojení synchronizace adresáře</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-10"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Opravdu chcete zastavit synchronizaci adresáře &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Poznámka:&lt;/b&gt; Toto &lt;b&gt;neodstraní&lt;/b&gt; žádné soubory.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Odstranit připojení synchronizace adresáře</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+33"/>
         <source>Choose what to sync</source>
         <translation>Vybrat co sesynchronizovat</translation>
     </message>
@@ -806,7 +812,7 @@ Vytvořte účet výběrem možnosti „Přidat účet...“ v nabídce tlačít
         <translation>Odhlásit se</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+44"/>
         <source>Confirm Account Removal</source>
         <translation>Potvrdit odstranění účtu</translation>
     </message>
@@ -1022,7 +1028,13 @@ Zkontrolujte dostupnost serveru a spusťte průvodce znovu.</translation>
         <translation>Vybrat umístění pro stahování</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+14"/>
+        <source>Your files appear in the Finder sidebar under &quot;Locations&quot;. They are downloaded when you open them, and you can keep them on this Mac with &quot;Download Now&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Vaše soubory se zobrazují v postranním panelu Finderu v části „Umístění“. Stahují se při otevření a pomocí „Stáhnout nyní“ si je můžete ponechat na tomto Macu.</translation>
+    </message>
+    <message>
+        <location line="+105"/>
         <source>Invalid local download directory %1: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Neplatná místní složka pro stahování %1: %2</translation>
@@ -1113,7 +1125,7 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logo aplikace %1</translation>
@@ -1338,7 +1350,7 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+230"/>
         <source>Failed to parse credentials %1</source>
         <translation>Nezdařená analýza přihlašovacích údajů %1</translation>
     </message>
@@ -1375,14 +1387,14 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="+337"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Účet byl smazán dříve, než mohla být spuštěna úloha PROPFIND</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location line="+112"/>
+        <location line="+117"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>Chyba serveru: PROPFIND není správně formátována jako XML!</translation>
     </message>
@@ -1390,7 +1402,7 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location line="-213"/>
+        <location line="-218"/>
         <source>Error while opening directory %1</source>
         <translation>Chyba při otevírání složky %1</translation>
     </message>
@@ -1442,7 +1454,7 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+407"/>
+        <location filename="../src/gui/folder.cpp" line="+427"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 byl odebrán.</translation>
@@ -1562,18 +1574,48 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
         <translation>Průběh synchronizace</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+218"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Přepínání režimu VFS ve složce &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Could not read system exclude file</source>
         <translation>Nezdařilo se přečtení systémového exclude souboru</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+82"/>
+        <source>Show your files in the Finder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Zobrazit soubory ve Finderu</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open System Settings</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Otevřít Nastavení systému</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Později</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>You are signed out of %1. Sign in again in %1 to use these files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Jste odhlášeni z %1. Přihlaste se znovu v %1, abyste mohli tyto soubory používat.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Synchronization is paused in %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronizace je v %1 pozastavena.</translation>
+    </message>
+    <message>
+        <location line="+168"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Složka %1 byla vytvořena, ale dříve byla vyloučena ze synchronizace. Data v ní nebudou synchronizována.</translation>
@@ -1795,13 +1837,13 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+185"/>
+        <location filename="../src/gui/folderman.cpp" line="+214"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Aplikace se ukončuje</translation>
     </message>
     <message>
-        <location line="+386"/>
+        <location line="+398"/>
         <source>Could not reset folder state</source>
         <translation>Nelze obnovit stav adresáře</translation>
     </message>
@@ -1829,7 +1871,7 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
         <translation>Synchronizace pozastavena uživatelem</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+346"/>
         <source>User triggered force sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Uživatel vynutil synchronizaci</translation>
@@ -1928,7 +1970,7 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
         <translation>Nemáte oprávnění k zápisu do zvolené složky.</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Účet již neexistuje.</translation>
@@ -1940,13 +1982,13 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
         <translation>Místní složku %1 nebylo možné nastavit pro synchronizaci.</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-308"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Složku &apos;%1&apos; již používá jiný účet.</translation>
     </message>
     <message>
-        <location line="-625"/>
+        <location line="-630"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>V systému macOS je podporován pouze souborový systém Apple (APFS).</translation>
@@ -1970,7 +2012,7 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
 <context>
     <name>OCC::FolderWatcher</name>
     <message>
-        <location filename="../src/gui/folderwatcher.cpp" line="+123"/>
+        <location filename="../src/gui/folderwatcher.cpp" line="+124"/>
         <source>The watcher did not receive a test notification.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sledování složek neobdrželo testovací oznámení.</translation>
@@ -2142,10 +2184,16 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
 <context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+45"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+48"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Použít virtuální soubory místo okamžitého stažení obsahu</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>With virtual files your files appear in the Finder sidebar under &quot;Locations&quot; and are downloaded when you open them. The local folder chosen before is only used without virtual files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>S virtuálními soubory se vaše soubory zobrazují v postranním panelu Finderu v části „Umístění“ a stahují se při otevření. Dříve zvolená místní složka se používá jen bez virtuálních souborů.</translation>
     </message>
 </context>
 <context>
@@ -2180,7 +2228,7 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="+86"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="+96"/>
         <source>Personal</source>
         <translation>Osobní</translation>
     </message>
@@ -2987,7 +3035,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-498"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Přihlášení proběhlo úspěšně</translation>
@@ -2999,7 +3047,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Nyní objevujte %1 na svém počítači.</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+123"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Chybná odpověď serveru: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -3232,7 +3280,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+831"/>
         <source>File %1 is currently in use</source>
         <translation>Soubor %1 je právě využíván</translation>
     </message>
@@ -3313,14 +3361,14 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     <message>
         <location line="+101"/>
         <location line="+342"/>
-        <location line="+710"/>
+        <location line="+715"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>chybí instance VFS. Nelze pokračovat.</translation>
     </message>
     <message>
-        <location line="-1079"/>
+        <location line="-1084"/>
         <source>server reported no %1</source>
         <translation>server nenareportoval žádné %1</translation>
     </message>
@@ -3332,7 +3380,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>účet byl smazán. Nelze pokračovat</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+164"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Výběrová synchronizace: ignorováno, protože cesta není vybrána</translation>
@@ -3366,13 +3414,13 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Není povoleno, protože nemáte oprávnění přidávat podadresáře do tohoto adresáře</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Chyba při přejmenování, neošetřený stavový kód: %1</translation>
     </message>
     <message>
-        <location line="+574"/>
+        <location line="+579"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>Není povoleno, protože nemáte oprávnění přidávat soubory do tohoto adresáře</translation>
     </message>
@@ -3396,7 +3444,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+346"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+347"/>
         <source>Error updating metadata: %1</source>
         <translation>Chyba v aktualizaci metdata: %1</translation>
     </message>
@@ -3436,7 +3484,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Soubor byl smazán ze serveru</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Chybný webový server vrátil při obnovení stahování nulovou délku obsahu pro neprázdný soubor</translation>
@@ -3462,16 +3510,16 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Chyba v aktualizaci metdata: %1</translation>
     </message>
     <message>
-        <location line="-517"/>
-        <location line="+453"/>
+        <location line="-518"/>
+        <location line="+454"/>
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
         <translation>Soubor %1 je právě využíván</translation>
     </message>
     <message>
-        <location line="-639"/>
-        <location line="+596"/>
+        <location line="-640"/>
+        <location line="+597"/>
         <source>File has changed since discovery</source>
         <translation>Soubor se mezitím změnil</translation>
     </message>
@@ -3479,7 +3527,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-961"/>
         <source>; Restoration Failed: %1</source>
         <translation>; Obnovení selhalo: %1</translation>
     </message>
@@ -3632,7 +3680,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1142"/>
         <source>Could not update file : %1</source>
         <translation>Nedaří se aktualizovat soubor: %1</translation>
     </message>
@@ -3873,7 +3921,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+48"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logo aplikace %1</translation>
@@ -3933,7 +3981,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Přihlásit se</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+108"/>
         <source>URL copied</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>URL zkopírována</translation>
@@ -3985,19 +4033,19 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     </message>
     <message>
         <location line="+22"/>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Currently there are no subfolders on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Na serveru momentálně nejsou žádné podsložky.</translation>
     </message>
     <message>
-        <location line="-153"/>
+        <location line="-158"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Při načítání seznamu podsložek došlo k chybě.</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+369"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Níže procházejte své soubory. Kliknutím pravým tlačítkem na složku změníte její dostupnost: ponechat ji vždy v tomto zařízení, nebo uvolnit místo tím, že bude dostupná pouze online.</translation>
@@ -4925,7 +4973,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+529"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5224,7 +5272,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="+906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="+912"/>
         <source>Failed to connect database.</source>
         <translation>Nezdařilo se připojit databázi.</translation>
     </message>
@@ -5271,21 +5319,21 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+653"/>
+        <location line="+666"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location line="-671"/>
-        <location line="+678"/>
+        <location line="-684"/>
+        <location line="+691"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Synchronizace</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-689"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Rušení synchronizace</translation>
@@ -5309,7 +5357,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     </message>
     <message>
         <location line="+2"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
@@ -5317,14 +5365,14 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Synchronizace pozastavena</translation>
     </message>
     <message>
-        <location line="-652"/>
-        <location line="+658"/>
+        <location line="-665"/>
+        <location line="+671"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Nedostupné</translation>
     </message>
     <message numerus="yes">
-        <location line="-546"/>
+        <location line="-559"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -5383,7 +5431,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Ukončit %1</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+46"/>
         <location line="+95"/>
         <source>Open in browser</source>
         <translation>Otevřít v prohlížeči</translation>
@@ -5745,7 +5793,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="+81"/>
+        <location filename="../src/common/vfs.cpp" line="+85"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Funkce virtuálního souborového systému nepodporuje jako kořen synchronizace celou jednotku</translation>
@@ -5763,9 +5811,43 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     </message>
 </context>
 <context>
+    <name>OCC::VfsMac</name>
+    <message>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Soubory se ve Finderu zatím nezobrazují: macOS potřebuje vaše svolení. Otevřete Nastavení systému &gt; Obecné &gt; Přihlašovací položky a rozšíření, klikněte na tlačítko informací vedle %1 v části „Rozšíření“ a zapněte „Poskytovatelé souborů“.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>macOS nenachází rozšíření pro virtuální soubory této aplikace. Přesuňte aplikaci do složky Aplikace a spusťte ji znovu.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual files require macOS Ventura or newer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Virtuální soubory vyžadují macOS Ventura nebo novější.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The virtual files folder could not be registered with macOS.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Složku virtuálních souborů se nepodařilo zaregistrovat v macOS.</translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <location line="+3"/>
+        <source>%1 - %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5822,7 +5904,8 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+75"/>
+        <location line="+7"/>
         <source>Failed to retrieve user info</source>
         <translation>Selhalo získávání údajů o uživateli</translation>
     </message>
@@ -5883,7 +5966,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="+309"/>
+        <location filename="../src/common/utility.cpp" line="+313"/>
         <source>in the future</source>
         <translation>v budoucnosti</translation>
     </message>

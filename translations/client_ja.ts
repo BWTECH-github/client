@@ -165,7 +165,7 @@ File synchronization desktop utility.</source>
         <translation>%1 の名前を変更できません、ファイルは現在使用中です</translation>
     </message>
     <message>
-        <location filename="../src/libsync/filesystem.cpp" line="+192"/>
+        <location filename="../src/libsync/filesystem.cpp" line="+193"/>
         <source>Could not remove folder</source>
         <translation>フォルダーを削除できませんでした</translation>
     </message>
@@ -237,7 +237,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderManagementUtils</name>
     <message>
-        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+94"/>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+97"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translation>パス &apos;%1&apos; が長すぎます。Windowsの設定で長いパスを有効にするか、別のフォルダーを選択してください。</translation>
     </message>
@@ -391,7 +391,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+264"/>
         <source>Connection timed out</source>
         <translation>接続タイムアウト</translation>
     </message>
@@ -417,7 +417,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+718"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>サーバー上のアカウントが無効になっています (%1)。システム管理者に問い合わせてください。</translation>
@@ -450,30 +450,30 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+371"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+391"/>
         <source>Choose what to sync</source>
         <translation>同期フォルダーを選択</translation>
     </message>
     <message>
-        <location line="-242"/>
-        <location line="+105"/>
+        <location line="-262"/>
+        <location line="+113"/>
         <source>Sync now</source>
         <translation>今すぐ同期</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-103"/>
         <source>Manage subfolder sync</source>
         <translation>サブフォルダーの同期を管理する</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+238"/>
+        <location line="+27"/>
+        <location line="+252"/>
         <source>Manage availability</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>利用可能状態を管理</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-240"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as &apos;Remove folder sync&apos; or &apos;Remove Space sync&apos;</extracomment>
         <translation>%1 同期を削除</translation>
@@ -502,7 +502,7 @@ This action will abort any currently running synchronization.</source>
         <translation>サポートを無効にする</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+32"/>
         <source>Restart sync</source>
         <translation>同期を再実行</translation>
     </message>
@@ -527,7 +527,7 @@ This action will abort any currently running synchronization.</source>
         <translation>仮想ファイルの有効化</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <source>Internet connection is metered</source>
         <translation>インターネット接続は従量制です</translation>
     </message>
@@ -537,7 +537,7 @@ This action will abort any currently running synchronization.</source>
         <translation>インターネット接続が従量制プランのため、&lt;p&gt;同期は一時停止中です。強制的に同期を開始しますか？</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Sync Running</source>
         <translation>同期を実行中</translation>
     </message>
@@ -547,28 +547,34 @@ This action will abort any currently running synchronization.</source>
         <translation>同期ジョブが実行中です。&lt;br/&gt;停止しますか？</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Sync paused by user</source>
         <translation>ユーザーにより同期が一時停止されました</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
+        <source>&lt;p&gt;Do you really want to remove &lt;i&gt;%1&lt;/i&gt; from the Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; The files stay on the server. Changes that have not been uploaded yet are kept by macOS.&lt;/p&gt;</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;&lt;i&gt;%1&lt;/i&gt; を Finder から削除しますか？&lt;/p&gt;&lt;p&gt;&lt;b&gt;注:&lt;/b&gt; ファイルはサーバーに残ります。まだアップロードされていない変更は macOS が保持します。&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>同期フォルダー接続の削除を確認</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-10"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;フォルダー&lt;i&gt;%1&lt;/i&gt;の同期を本当に止めますか？&lt;/p&gt;&lt;p&gt;&lt;b&gt;注:&lt;/b&gt; これによりファイルが一切削除されることはありません。&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Remove Folder Sync Connection</source>
         <translation>同期フォルダー接続を削除</translation>
     </message>
     <message>
-        <location line="-134"/>
-        <location line="+135"/>
+        <location line="-146"/>
+        <location line="+147"/>
         <source>Cancel</source>
         <translation>キャンセル</translation>
     </message>
@@ -761,7 +767,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>ログアウト</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+44"/>
         <source>Confirm Account Removal</source>
         <translation>アカウント削除確認</translation>
     </message>
@@ -965,7 +971,13 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>ダウンロード場所を参照する</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+14"/>
+        <source>Your files appear in the Finder sidebar under &quot;Locations&quot;. They are downloaded when you open them, and you can keep them on this Mac with &quot;Download Now&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ファイルは Finder のサイドバーの「場所」に表示されます。開いたときにダウンロードされ、「今すぐダウンロード」でこの Mac に保持できます。</translation>
+    </message>
+    <message>
+        <location line="+105"/>
         <source>Invalid local download directory %1: %2</source>
         <translation>無効なローカルダウンロードディレクトリ %1: %2</translation>
     </message>
@@ -1048,7 +1060,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
         <source>Application Name Logo %1</source>
         <translation>アプリケーション名ロゴ %1</translation>
     </message>
@@ -1267,7 +1279,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+230"/>
         <source>Failed to parse credentials %1</source>
         <translation>資格情報 %1 の解析に失敗しました。</translation>
     </message>
@@ -1304,14 +1316,14 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="+337"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>PROPFIND ジョブを開始する前にアカウントが削除されました</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location line="+112"/>
+        <location line="+117"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>サーバーエラー: PROPFIND の応答が XML フォーマットではありません！</translation>
     </message>
@@ -1319,7 +1331,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location line="-213"/>
+        <location line="-218"/>
         <source>Error while opening directory %1</source>
         <translation>ディレクトリ %1 を開くときにエラーが発生しました。</translation>
     </message>
@@ -1371,7 +1383,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+407"/>
+        <location filename="../src/gui/folder.cpp" line="+427"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 は削除されました。</translation>
@@ -1470,17 +1482,47 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
         <translation>同期アクティビティ</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+218"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>フォルダー &apos;%1&apos; の VFS モードを切り替えています</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Could not read system exclude file</source>
         <translation>システム上の除外ファイルを読み込めません</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+82"/>
+        <source>Show your files in the Finder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ファイルを Finder に表示</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open System Settings</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>システム設定を開く</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>あとで</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>You are signed out of %1. Sign in again in %1 to use these files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 からサインアウトしています。これらのファイルを使用するには、%1 で再度サインインしてください。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Synchronization is paused in %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 で同期が一時停止されています。</translation>
+    </message>
+    <message>
+        <location line="+168"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>フォルダ %1 は作成されましたが、以前は同期対象から外れていました。フォルダ内のデータは同期されません。</translation>
     </message>
@@ -1697,7 +1739,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+571"/>
+        <location filename="../src/gui/folderman.cpp" line="+612"/>
         <source>Could not reset folder state</source>
         <translation>フォルダーの状態をリセットできませんでした</translation>
     </message>
@@ -1723,7 +1765,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ユーザーにより同期が一時停止されました</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+346"/>
         <source>User triggered force sync</source>
         <translation>ユーザーによる強制同期のトリガー</translation>
     </message>
@@ -1817,7 +1859,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>選択したフォルダーへの書き込み権限がありません。</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>アカウントはもう存在しません。</translation>
@@ -1829,18 +1871,18 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ローカルフォルダー %1 を同期用に設定できませんでした。</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-308"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>フォルダ &apos;%1&apos; は既に別のアカウントによって使用されています。</translation>
     </message>
     <message>
-        <location line="-1029"/>
+        <location line="-1046"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>アプリケーションを終了しています</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+416"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>macOS では、Apple ファイルシステムのみサポートしています。</translation>
     </message>
@@ -1862,7 +1904,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWatcher</name>
     <message>
-        <location filename="../src/gui/folderwatcher.cpp" line="+123"/>
+        <location filename="../src/gui/folderwatcher.cpp" line="+124"/>
         <source>The watcher did not receive a test notification.</source>
         <translation>ウォッチャーにテスト通知が届かなかった。</translation>
     </message>
@@ -2032,9 +2074,15 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+45"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+48"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translation>コンテンツを直接ダウンロードするのではなく、仮想ファイル機能を利用してアクセスします。</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>With virtual files your files appear in the Finder sidebar under &quot;Locations&quot; and are downloaded when you open them. The local folder chosen before is only used without virtual files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>仮想ファイルを使用すると、ファイルは Finder のサイドバーの「場所」に表示され、開いたときにダウンロードされます。前のページで選択したローカルフォルダーは、仮想ファイルを使用しない場合にのみ使用されます。</translation>
     </message>
 </context>
 <context>
@@ -2068,7 +2116,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="+86"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="+96"/>
         <source>Personal</source>
         <translation>個人</translation>
     </message>
@@ -2857,7 +2905,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-498"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ログインに成功しました</translation>
@@ -2869,7 +2917,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>デスクトップで %1 をお使いください。</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+123"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>サーバからエラーが返されました: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -3097,7 +3145,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+831"/>
         <source>File %1 is currently in use</source>
         <translation>ファイル %1 は現在使用中です</translation>
     </message>
@@ -3178,14 +3226,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+101"/>
         <location line="+342"/>
-        <location line="+710"/>
+        <location line="+715"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>VFS インスタンスがありません。続行できません。</translation>
     </message>
     <message>
-        <location line="-1079"/>
+        <location line="-1084"/>
         <source>server reported no %1</source>
         <translation>サーバは %1 がないことを報告しました</translation>
     </message>
@@ -3197,7 +3245,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>アカウントが削除されました。続行できません</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+164"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync: パスが選択解除されているため無視されます</translation>
     </message>
@@ -3229,12 +3277,12 @@ Note that using any logging command line options will override the settings.</so
         <translation>そのフォルダーにサブフォルダーを追加する権限がありません</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>名前変更処理中にエラーが発生しました。未処理のステータスコードは %1 です。</translation>
     </message>
     <message>
-        <location line="+574"/>
+        <location line="+579"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>そのフォルダーにファイルを追加する権限がありません</translation>
     </message>
@@ -3257,7 +3305,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+346"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+347"/>
         <source>Error updating metadata: %1</source>
         <translation>メタデータの更新エラー: %1</translation>
     </message>
@@ -3296,7 +3344,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ファイルはサーバーから削除されました</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>復元処理中のファイルに対して、不具合なウェブサーバが、空のコンテンツ長を返しました。</translation>
     </message>
@@ -3321,16 +3369,16 @@ Note that using any logging command line options will override the settings.</so
         <translation>メタデータの更新エラー: %1</translation>
     </message>
     <message>
-        <location line="-517"/>
-        <location line="+453"/>
+        <location line="-518"/>
+        <location line="+454"/>
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
         <translation>ファイル %1 は現在使用中です</translation>
     </message>
     <message>
-        <location line="-639"/>
-        <location line="+596"/>
+        <location line="-640"/>
+        <location line="+597"/>
         <source>File has changed since discovery</source>
         <translation>ファイルは発見以降に変更されました</translation>
     </message>
@@ -3338,7 +3386,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-961"/>
         <source>; Restoration Failed: %1</source>
         <translation>; 復元に失敗: %1</translation>
     </message>
@@ -3485,7 +3533,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1142"/>
         <source>Could not update file : %1</source>
         <translation>ファイルを更新できませんでした : %1</translation>
     </message>
@@ -3720,7 +3768,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+48"/>
         <source>Application Name Logo %1</source>
         <translation>アプリケーション名ロゴ %1</translation>
     </message>
@@ -3777,7 +3825,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ログイン</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+108"/>
         <source>URL copied</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>URL をコピーしました</translation>
@@ -3827,17 +3875,17 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+22"/>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Currently there are no subfolders on the server.</source>
         <translation>現在、サーバー上にサブフォルダーはありません。</translation>
     </message>
     <message>
-        <location line="-153"/>
+        <location line="-158"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translation>サーバーからフォルダーの一覧取得時にエラーが発生しました。</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+369"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>以下でファイルを参照できます。フォルダーを右クリックすると利用可能状態を変更できます: このデバイスに常に保持するか、オンラインのみにして空き容量を増やします。</translation>
@@ -4759,7 +4807,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+529"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>%1 と共有</translation>
@@ -5048,7 +5096,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="+906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="+912"/>
         <source>Failed to connect database.</source>
         <translation>データベースへの接続に失敗しました。</translation>
     </message>
@@ -5093,21 +5141,21 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+653"/>
+        <location line="+666"/>
         <source>Offline</source>
         <translation>オフライン</translation>
     </message>
     <message>
-        <location line="-671"/>
-        <location line="+678"/>
+        <location line="-684"/>
+        <location line="+691"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>同期中</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-689"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>同期を中止しています</translation>
@@ -5130,21 +5178,21 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>同期の一時停止</translation>
     </message>
     <message>
-        <location line="-652"/>
-        <location line="+658"/>
+        <location line="-665"/>
+        <location line="+671"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>利用不可</translation>
     </message>
     <message numerus="yes">
-        <location line="-546"/>
+        <location line="-559"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -5200,7 +5248,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1 を終了</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+46"/>
         <location line="+95"/>
         <source>Open in browser</source>
         <translation>ブラウザーで開く</translation>
@@ -5554,7 +5602,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="+81"/>
+        <location filename="../src/common/vfs.cpp" line="+85"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translation>仮想ファイルシステム機能は、同期ルートとしてのドライブをサポートしていません</translation>
     </message>
@@ -5570,9 +5618,43 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::VfsMac</name>
+    <message>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ファイルはまだ Finder に表示されていません: macOS にはあなたの許可が必要です。システム設定 &gt; 一般 &gt; ログイン項目と機能拡張 を開き、「機能拡張」の %1 の横にある情報ボタンをクリックして「ファイルプロバイダ」をオンにしてください。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>macOS がこのアプリの仮想ファイル機能拡張を見つけられません。アプリを「アプリケーション」フォルダーに移動して、もう一度起動してください。</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual files require macOS Ventura or newer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>仮想ファイルには macOS Ventura 以降が必要です。</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The virtual files folder could not be registered with macOS.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>仮想ファイルのフォルダーを macOS に登録できませんでした。</translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <location line="+3"/>
+        <source>%1 - %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5627,7 +5709,8 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+75"/>
+        <location line="+7"/>
         <source>Failed to retrieve user info</source>
         <translation>ユーザー情報の取得に失敗しました</translation>
     </message>
@@ -5688,7 +5771,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="+309"/>
+        <location filename="../src/common/utility.cpp" line="+313"/>
         <source>in the future</source>
         <translation>今後</translation>
     </message>

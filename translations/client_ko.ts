@@ -170,7 +170,7 @@ File synchronization desktop utility.</source>
         <translation>현재 사용되고 있는 파일 명으로 %1 을(를) 개명할 수 없습니다.</translation>
     </message>
     <message>
-        <location filename="../src/libsync/filesystem.cpp" line="+192"/>
+        <location filename="../src/libsync/filesystem.cpp" line="+193"/>
         <source>Could not remove folder</source>
         <translation>폴더를 제거할 수 없음</translation>
     </message>
@@ -251,7 +251,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderManagementUtils</name>
     <message>
-        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+94"/>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+97"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translation>경로 &apos;%1&apos;은 너무 깁니다. Windows 설정에서 긴 경로를 설정을 적용하거나 다른 폴더를 선택해 주세요.</translation>
     </message>
@@ -407,7 +407,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+264"/>
         <source>Connection timed out</source>
         <translation>연결 시간 초과됨</translation>
     </message>
@@ -433,7 +433,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+718"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>서버의 계정이 비활성화되어 있습니다(%1). 시스템 관리자에게 문의하십시오.</translation>
@@ -467,26 +467,26 @@ File synchronization desktop utility.</source>
     <name>OCC::AccountFoldersController</name>
     <message>
         <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+129"/>
-        <location line="+105"/>
+        <location line="+113"/>
         <source>Sync now</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>지금 동기화</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-103"/>
         <source>Manage subfolder sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>하위 폴더 동기화 관리</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+238"/>
+        <location line="+27"/>
+        <location line="+252"/>
         <source>Manage availability</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>사용 가능 상태 관리</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-240"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as &apos;Remove folder sync&apos; or &apos;Remove Space sync&apos;</extracomment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -517,12 +517,12 @@ This action will abort any currently running synchronization.</source>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+135"/>
+        <location line="+147"/>
         <source>Cancel</source>
         <translation>취소</translation>
     </message>
     <message>
-        <location line="-107"/>
+        <location line="-117"/>
         <source>Restart sync</source>
         <translation>동기화 재시작</translation>
     </message>
@@ -549,7 +549,7 @@ This action will abort any currently running synchronization.</source>
         <translation>가상 파일 켜기</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <source>Internet connection is metered</source>
         <translation>인터넷 연결이 데이터 상한선이 존재하는 제한된 연결입니다.</translation>
     </message>
@@ -559,7 +559,7 @@ This action will abort any currently running synchronization.</source>
         <translation>인터넷 연결이 데이터가 제한된 연결이기 때문에 동기화가 중단되었습니다. &lt;p&gt;강제로 동기화하기를 정말로 원하십니까?</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Sync Running</source>
         <translation>동기화 진행 중</translation>
     </message>
@@ -569,27 +569,33 @@ This action will abort any currently running synchronization.</source>
         <translation>동기화가 진행 중입니다.&lt;br/&gt;중지하시겠습니까?</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Sync paused by user</source>
         <translation>사용자에 의해 동기화 일시정지됨</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
+        <source>&lt;p&gt;Do you really want to remove &lt;i&gt;%1&lt;/i&gt; from the Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; The files stay on the server. Changes that have not been uploaded yet are kept by macOS.&lt;/p&gt;</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;Finder에서 &lt;i&gt;%1&lt;/i&gt;을(를) 제거하시겠습니까?&lt;/p&gt;&lt;p&gt;&lt;b&gt;메모:&lt;/b&gt; 파일은 서버에 남아 있습니다. 아직 업로드되지 않은 변경 사항은 macOS가 보관합니다.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>동기화 삭제 확인</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-10"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;폴더 &lt;i&gt;%1&lt;/i&gt;을(를) 동기화하지 않으시겠습니까?&lt;/p&gt;&lt;p&gt;&lt;b&gt;메모:&lt;/b&gt; 이 작업은 파일을 삭제하지 &lt;b&gt;않습니다.&lt;/b&gt;&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Remove Folder Sync Connection</source>
         <translation>폴더를 동기화에서 제거</translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+33"/>
         <source>Choose what to sync</source>
         <translation>동기화할 항목 선택</translation>
     </message>
@@ -793,7 +799,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>로그아웃</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+44"/>
         <source>Confirm Account Removal</source>
         <translation>계정 삭제 확인</translation>
     </message>
@@ -1011,7 +1017,13 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>다운로드 위치 찾아보기</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+14"/>
+        <source>Your files appear in the Finder sidebar under &quot;Locations&quot;. They are downloaded when you open them, and you can keep them on this Mac with &quot;Download Now&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>파일은 Finder 사이드바의 ‘위치’에 표시됩니다. 파일을 열 때 다운로드되며, ‘지금 다운로드’로 이 Mac에 보관할 수 있습니다.</translation>
+    </message>
+    <message>
+        <location line="+105"/>
         <source>Invalid local download directory %1: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>잘못된 로컬 다운로드 디렉터리 %1: %2</translation>
@@ -1101,7 +1113,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>애플리케이션 이름 로고 %1</translation>
@@ -1326,7 +1338,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+230"/>
         <source>Failed to parse credentials %1</source>
         <translation>%1 인증 정보 해석 실패</translation>
     </message>
@@ -1363,14 +1375,14 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="+337"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>PROPFIND 작업을 시작하기 전에 계정이 삭제되었습니다</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location line="+112"/>
+        <location line="+117"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>서버 오류: PROPFIND 응답이 XML 형식이 아닙니다!</translation>
     </message>
@@ -1378,7 +1390,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location line="-213"/>
+        <location line="-218"/>
         <source>Error while opening directory %1</source>
         <translation>디렉토리 %1  열기 오류</translation>
     </message>
@@ -1430,7 +1442,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+407"/>
+        <location filename="../src/gui/folder.cpp" line="+427"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1이(가) 삭제되었습니다.</translation>
@@ -1530,17 +1542,47 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>동기화 활동</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+218"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>&apos;%1&apos; 폴더에 가상파일시스템(VFS) 모드 변경</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Could not read system exclude file</source>
         <translation>시스템 제외 파일을 읽을 수 없음</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+82"/>
+        <source>Show your files in the Finder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Finder에서 파일 보기</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open System Settings</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>시스템 설정 열기</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>나중에</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>You are signed out of %1. Sign in again in %1 to use these files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1에서 로그아웃되었습니다. 이 파일을 사용하려면 %1에서 다시 로그인하십시오.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Synchronization is paused in %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1에서 동기화가 일시 정지되었습니다.</translation>
+    </message>
+    <message>
+        <location line="+168"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>폴더 %1 이(가) 생성되었지만 이전에 동기화에서 제외되었습니다. 이 폴더 내부의 데이터는 동기화되지 않을 것입니다.</translation>
     </message>
@@ -1760,13 +1802,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+185"/>
+        <location filename="../src/gui/folderman.cpp" line="+214"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>애플리케이션 종료 중</translation>
     </message>
     <message>
-        <location line="+386"/>
+        <location line="+398"/>
         <source>Could not reset folder state</source>
         <translation>폴더 상태를 초기화할 수 없음</translation>
     </message>
@@ -1793,7 +1835,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>사용자에 의해 동기화 일시정지됨</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+346"/>
         <source>User triggered force sync</source>
         <translation>사용자가 강제로 동기화 실행함</translation>
     </message>
@@ -1891,7 +1933,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>선택한 폴더에 쓰기 권한이 없습니다.</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>계정이 더 이상 존재하지 않습니다.</translation>
@@ -1903,13 +1945,13 @@ This means that the synchronization client might not upload local changes immedi
         <translation>로컬 폴더 %1을(를) 동기화용으로 설정할 수 없습니다.</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-308"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>폴더 &apos;%1&apos;은(는) 이미 다른 계정에서 사용 중입니다.</translation>
     </message>
     <message>
-        <location line="-625"/>
+        <location line="-630"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>macOS에서는 Apple 파일 시스템(APFS)만 지원됩니다.</translation>
@@ -1933,7 +1975,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWatcher</name>
     <message>
-        <location filename="../src/gui/folderwatcher.cpp" line="+123"/>
+        <location filename="../src/gui/folderwatcher.cpp" line="+124"/>
         <source>The watcher did not receive a test notification.</source>
         <translation>감시자가 시험 알림을 받지 못했습니다.</translation>
     </message>
@@ -2103,10 +2145,16 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+45"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+48"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>내용을 바로 다운로드하는 대신 가상 파일 사용</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>With virtual files your files appear in the Finder sidebar under &quot;Locations&quot; and are downloaded when you open them. The local folder chosen before is only used without virtual files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>가상 파일을 사용하면 파일이 Finder 사이드바의 ‘위치’에 표시되고 열 때 다운로드됩니다. 앞에서 선택한 로컬 폴더는 가상 파일을 사용하지 않을 때만 사용됩니다.</translation>
     </message>
 </context>
 <context>
@@ -2140,7 +2188,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="+86"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="+96"/>
         <source>Personal</source>
         <translation>개인</translation>
     </message>
@@ -2943,7 +2991,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-498"/>
         <source>Successfully signed in</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>로그인했습니다</translation>
@@ -2955,7 +3003,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>이제 데스크톱에서 %1을(를) 사용해 보십시오.</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+123"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>서버에서 오류 반환함: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -3186,7 +3234,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+831"/>
         <source>File %1 is currently in use</source>
         <translation>파일 %1 은(는) 현재 이용 중입니다</translation>
     </message>
@@ -3267,14 +3315,14 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+101"/>
         <location line="+342"/>
-        <location line="+710"/>
+        <location line="+715"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>VFS 인스턴스가 없습니다. 계속할 수 없습니다.</translation>
     </message>
     <message>
-        <location line="-1079"/>
+        <location line="-1084"/>
         <source>server reported no %1</source>
         <translation>서버 응답: %1 없음</translation>
     </message>
@@ -3286,7 +3334,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>계정이 삭제되었습니다. 계속할 수 없습니다</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+164"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>선택적 동기화: 경로가 선택 해제되어 무시됨</translation>
@@ -3319,13 +3367,13 @@ Note that using any logging command line options will override the settings.</so
         <translation>해당 폴더에 하위 폴더를 추가할 권한이 없어서 허용되지 않음</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>이름을 바꾸는 중 오류 발생, 처리되지 않은 상태 코드: %1</translation>
     </message>
     <message>
-        <location line="+574"/>
+        <location line="+579"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>해당 폴더에 파일을 추가할 권한이 없어서 허용되지 않음</translation>
     </message>
@@ -3348,7 +3396,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+346"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+347"/>
         <source>Error updating metadata: %1</source>
         <translation>메타데이터 갱신 오류: %1</translation>
     </message>
@@ -3387,7 +3435,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>서버에서 파일이 삭제됨</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>손상된 웹 서버가 재개 시 비어 있지 않은 파일에 대해 비어 있는 콘텐츠 길이를 반환함</translation>
     </message>
@@ -3412,16 +3460,16 @@ Note that using any logging command line options will override the settings.</so
         <translation>메타데이터 갱신 에러: %1</translation>
     </message>
     <message>
-        <location line="-517"/>
-        <location line="+453"/>
+        <location line="-518"/>
+        <location line="+454"/>
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
         <translation>파일 %1 은(는) 현재 이용 중입니다</translation>
     </message>
     <message>
-        <location line="-639"/>
-        <location line="+596"/>
+        <location line="-640"/>
+        <location line="+597"/>
         <source>File has changed since discovery</source>
         <translation>발견 이후 파일이 변경됨</translation>
     </message>
@@ -3429,7 +3477,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-961"/>
         <source>; Restoration Failed: %1</source>
         <translation>, 복원 실패: %1</translation>
     </message>
@@ -3577,7 +3625,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1142"/>
         <source>Could not update file : %1</source>
         <translation>파일을 갱신할 수 없습니다 : %1</translation>
     </message>
@@ -3814,7 +3862,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+48"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>애플리케이션 이름 로고 %1</translation>
@@ -3874,7 +3922,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>로그인</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+108"/>
         <source>URL copied</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>URL 복사됨</translation>
@@ -3926,19 +3974,19 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+22"/>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Currently there are no subfolders on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>현재 서버에 하위 폴더가 없습니다.</translation>
     </message>
     <message>
-        <location line="-153"/>
+        <location line="-158"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>하위 폴더 목록을 불러오는 중 오류가 발생했습니다.</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+369"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>아래에서 파일을 찾아보십시오. 폴더를 마우스 오른쪽 단추로 클릭하여 사용 가능 상태를 변경할 수 있습니다: 이 장치에 항상 유지하거나, 온라인 전용으로 만들어 공간을 확보하십시오.</translation>
@@ -4865,7 +4913,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+529"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5164,7 +5212,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="+906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="+912"/>
         <source>Failed to connect database.</source>
         <translation>데이터베이스 연결에 실패함</translation>
     </message>
@@ -5209,21 +5257,21 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+653"/>
+        <location line="+666"/>
         <source>Offline</source>
         <translation>오프라인</translation>
     </message>
     <message>
-        <location line="-671"/>
-        <location line="+678"/>
+        <location line="-684"/>
+        <location line="+691"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>동기화 중</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-689"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>동기화 중단 중</translation>
@@ -5247,7 +5295,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
@@ -5255,14 +5303,14 @@ Note that using any logging command line options will override the settings.</so
         <translation>동기화 일시 정지됨</translation>
     </message>
     <message>
-        <location line="-652"/>
-        <location line="+658"/>
+        <location line="-665"/>
+        <location line="+671"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>사용할 수 없음</translation>
     </message>
     <message numerus="yes">
-        <location line="-546"/>
+        <location line="-559"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -5318,7 +5366,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1 끝내기</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+46"/>
         <location line="+95"/>
         <source>Open in browser</source>
         <translation>브라우저에서 열기</translation>
@@ -5679,7 +5727,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="+81"/>
+        <location filename="../src/common/vfs.cpp" line="+85"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translation>이 가상 파일 시스템 기능은 드라이브를 동기화 루트로서 지원하지 않습니다.</translation>
     </message>
@@ -5695,9 +5743,43 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::VfsMac</name>
+    <message>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>파일이 아직 Finder에 표시되지 않습니다: macOS에 사용자의 허락이 필요합니다. 시스템 설정 &gt; 일반 &gt; 로그인 항목 및 확장 프로그램을 열고 ‘확장 프로그램’에서 %1 옆의 정보 버튼을 클릭한 다음 ‘파일 제공자’를 켜십시오.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>macOS가 이 앱의 가상 파일 확장 프로그램을 찾지 못합니다. 앱을 응용 프로그램 폴더로 옮긴 후 다시 실행하십시오.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual files require macOS Ventura or newer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>가상 파일에는 macOS Ventura 이상이 필요합니다.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The virtual files folder could not be registered with macOS.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>가상 파일 폴더를 macOS에 등록할 수 없습니다.</translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <location line="+3"/>
+        <source>%1 - %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5754,7 +5836,8 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+75"/>
+        <location line="+7"/>
         <source>Failed to retrieve user info</source>
         <translation>사용자 정보 검색 실패</translation>
     </message>
@@ -5815,7 +5898,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="+309"/>
+        <location filename="../src/common/utility.cpp" line="+313"/>
         <source>in the future</source>
         <translation>미래에</translation>
     </message>

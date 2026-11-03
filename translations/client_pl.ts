@@ -167,7 +167,7 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
         <translation>Nie można zmienić nazwy %1, plik jest obecnie używany</translation>
     </message>
     <message>
-        <location filename="../src/libsync/filesystem.cpp" line="+192"/>
+        <location filename="../src/libsync/filesystem.cpp" line="+193"/>
         <source>Could not remove folder</source>
         <translation>Nie udało się usunąć folderu</translation>
     </message>
@@ -239,7 +239,7 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
 <context>
     <name>FolderManagementUtils</name>
     <message>
-        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+94"/>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+97"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translation>Ścieżka „%1” jest za długa. Włącz długie ścieżki w ustawieniach systemu Windows lub wybierz inny folder.</translation>
     </message>
@@ -393,7 +393,7 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+264"/>
         <source>Connection timed out</source>
         <translation>Przekroczono czas odpowiedzi</translation>
     </message>
@@ -419,7 +419,7 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+718"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Twoje konto na serwerze jest wyłączone (%1). Skontaktuj się z administratorem systemu.</translation>
@@ -452,30 +452,30 @@ Narzędzie pulpitu do synchronizacji plików.</translation>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+371"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+391"/>
         <source>Choose what to sync</source>
         <translation>Wybierz co synchronizować</translation>
     </message>
     <message>
-        <location line="-242"/>
-        <location line="+105"/>
+        <location line="-262"/>
+        <location line="+113"/>
         <source>Sync now</source>
         <translation>Synchronizuj teraz</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-103"/>
         <source>Manage subfolder sync</source>
         <translation>Zarządzaj synchronizacją podfolderów</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+238"/>
+        <location line="+27"/>
+        <location line="+252"/>
         <source>Manage availability</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Zarządzaj dostępnością</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-240"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as &apos;Remove folder sync&apos; or &apos;Remove Space sync&apos;</extracomment>
         <translation>Usuń synchronizację %1</translation>
@@ -504,7 +504,7 @@ Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.</transl
         <translation>Wyłącz wsparcie</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+32"/>
         <source>Restart sync</source>
         <translation>Uruchom ponownie synchronizację</translation>
     </message>
@@ -530,7 +530,7 @@ Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.</transl
         <translation>Aktywuj pliki wirtualne</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <source>Internet connection is metered</source>
         <translation>Połączenie internetowe jest mierzone</translation>
     </message>
@@ -540,7 +540,7 @@ Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.</transl
         <translation>Synchronizacja jest wstrzymana, ponieważ połączenie internetowe jest połączeniem taryfowym&lt;p&gt;Czy naprawdę chcesz teraz wymusić synchronizację?</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Sync Running</source>
         <translation>Synchronizacja uruchomiona</translation>
     </message>
@@ -550,28 +550,34 @@ Ta czynność spowoduje przerwanie obecnie działającej synchronizacji.</transl
         <translation>Operacja synchronizacji jest uruchomiona.&lt;br/&gt;Czy chcesz ją zatrzymać?</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Sync paused by user</source>
         <translation>Synchronizacja wstrzymana przez użytkownika</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
+        <source>&lt;p&gt;Do you really want to remove &lt;i&gt;%1&lt;/i&gt; from the Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; The files stay on the server. Changes that have not been uploaded yet are kept by macOS.&lt;/p&gt;</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;Czy na pewno chcesz usunąć &lt;i&gt;%1&lt;/i&gt; z Findera?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Uwaga:&lt;/b&gt; pliki pozostają na serwerze. Zmiany, które nie zostały jeszcze wysłane, macOS zachowuje.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>Potwierdź usunięcie połączenia folderów synchronizacji</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-10"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Czy na pewno chcesz zatrzymać synchronizację folderu &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Uwaga:&lt;/b&gt; ta operacja &lt;b&gt;nie&lt;/b&gt; usunie plików z klienta.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Remove Folder Sync Connection</source>
         <translation>Usuń folder połączenia synchronizacji</translation>
     </message>
     <message>
-        <location line="-134"/>
-        <location line="+135"/>
+        <location line="-146"/>
+        <location line="+147"/>
         <source>Cancel</source>
         <translation>Anuluj</translation>
     </message>
@@ -763,7 +769,7 @@ Utwórz konto, wybierając opcję „Dodaj konto...” w menu przycisku Więcej.
         <translation>Wyloguj</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+44"/>
         <source>Confirm Account Removal</source>
         <translation>Potwierdź usunięcie konta</translation>
     </message>
@@ -964,7 +970,13 @@ Sprawdź dostępność serwera, a następnie ponownie uruchom kreatora.</transla
         <translation>Przeglądaj lokalizację pobierania</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+14"/>
+        <source>Your files appear in the Finder sidebar under &quot;Locations&quot;. They are downloaded when you open them, and you can keep them on this Mac with &quot;Download Now&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Twoje pliki pojawiają się na pasku bocznym Findera w sekcji „Miejsca”. Są pobierane przy otwarciu, a opcją „Pobierz teraz” możesz zachować je na tym Macu.</translation>
+    </message>
+    <message>
+        <location line="+105"/>
         <source>Invalid local download directory %1: %2</source>
         <translation>Nieprawidłowy lokalny katalog pobierania %1: %2</translation>
     </message>
@@ -1046,7 +1058,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
         <source>Application Name Logo %1</source>
         <translation>Nazwa aplikacji Logo %1</translation>
     </message>
@@ -1257,7 +1269,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+230"/>
         <source>Failed to parse credentials %1</source>
         <translation>Nie udało się przeanalizować danych uwierzytelniających %1</translation>
     </message>
@@ -1291,13 +1303,13 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="+337"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translation>Konto zostało usunięte zanim mogliśmy rozpocząć zadanie propfind</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location line="+112"/>
+        <location line="+117"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>Błąd serwera: Odpowiedź PROPFIND nie jest sformatowana w formacie XML!</translation>
     </message>
@@ -1305,7 +1317,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location line="-213"/>
+        <location line="-218"/>
         <source>Error while opening directory %1</source>
         <translation>Błąd podczas otwierania katalogu %1</translation>
     </message>
@@ -1354,7 +1366,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+407"/>
+        <location filename="../src/gui/folder.cpp" line="+427"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 został usunięty.</translation>
@@ -1473,17 +1485,47 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
         <translation>Aktywności synchronizacji</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+218"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Przełączanie trybu VFS w folderze &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Could not read system exclude file</source>
         <translation>Nie można przeczytać pliku wyłączeń</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+82"/>
+        <source>Show your files in the Finder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pokaż pliki w Finderze</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open System Settings</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Otwórz Ustawienia systemowe</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Później</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>You are signed out of %1. Sign in again in %1 to use these files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Wylogowano z %1. Zaloguj się ponownie w %1, aby korzystać z tych plików.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Synchronization is paused in %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Synchronizacja w %1 jest wstrzymana.</translation>
+    </message>
+    <message>
+        <location line="+168"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Folder %1 został utworzony ale poprzednio został wykluczony z synchronizacji. Dane wewnątrz folderu nie będą zsynchronizowane.</translation>
     </message>
@@ -1700,7 +1742,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+571"/>
+        <location filename="../src/gui/folderman.cpp" line="+612"/>
         <source>Could not reset folder state</source>
         <translation>Nie udało się zresetować stanu folderu</translation>
     </message>
@@ -1726,7 +1768,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
         <translation>Synchronizacja wstrzymana przez użytkownika</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+346"/>
         <source>User triggered force sync</source>
         <translation>Wymuszona synchronizacja uruchamiana przez użytkownika</translation>
     </message>
@@ -1815,7 +1857,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
         <translation>Nie masz uprawnień do zapisu w wybranym folderze.</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Konto już nie istnieje.</translation>
@@ -1827,18 +1869,18 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
         <translation>Nie można skonfigurować folderu lokalnego %1 do synchronizacji.</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-308"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>Folder &apos;%1&apos; jest już używany przez inne konto.</translation>
     </message>
     <message>
-        <location line="-1029"/>
+        <location line="-1046"/>
         <source>Application shutting down</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Zamykanie aplikacji</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+416"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>W systemie macOS obsługiwany jest tylko system plików Apple.</translation>
     </message>
@@ -1859,7 +1901,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::FolderWatcher</name>
     <message>
-        <location filename="../src/gui/folderwatcher.cpp" line="+123"/>
+        <location filename="../src/gui/folderwatcher.cpp" line="+124"/>
         <source>The watcher did not receive a test notification.</source>
         <translation>Obserwator nie otrzymał powiadomienia testowego.</translation>
     </message>
@@ -2029,9 +2071,15 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+45"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+48"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translation>Zamiast od razu pobierać treści, korzystaj z plików wirtualnych</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>With virtual files your files appear in the Finder sidebar under &quot;Locations&quot; and are downloaded when you open them. The local folder chosen before is only used without virtual files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Z plikami wirtualnymi Twoje pliki pojawiają się na pasku bocznym Findera w sekcji „Miejsca” i są pobierane przy otwarciu. Wybrany wcześniej folder lokalny jest używany tylko bez plików wirtualnych.</translation>
     </message>
 </context>
 <context>
@@ -2065,7 +2113,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="+86"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="+96"/>
         <source>Personal</source>
         <translation>Osobiste</translation>
     </message>
@@ -2851,7 +2899,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-498"/>
         <source>Successfully signed in</source>
         <translation>Pomyślnie zalogowano</translation>
     </message>
@@ -2861,7 +2909,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Teraz poznaj %1 na komputerze.</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+123"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>Błąd zwrócony przez serwer: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -3072,7 +3120,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+831"/>
         <source>File %1 is currently in use</source>
         <translation>Plik %1 jest obecnie używany</translation>
     </message>
@@ -3152,13 +3200,13 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     <message>
         <location line="+101"/>
         <location line="+342"/>
-        <location line="+710"/>
+        <location line="+715"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translation>Brak instancji VFS. Nie można kontynuować.</translation>
     </message>
     <message>
-        <location line="-1079"/>
+        <location line="-1084"/>
         <source>server reported no %1</source>
         <translation>serwer zgłosił brak %1</translation>
     </message>
@@ -3169,7 +3217,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Konto zostało usunięte. Nie można kontynuować.</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+164"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>SelectiveSync: Zignorowano, ponieważ ścieżka nie została zaznaczona</translation>
     </message>
@@ -3199,12 +3247,12 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Niedozwolone, ponieważ nie masz uprawnień do dodawania podkatalogów w tym katalogu</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>Błąd podczas zmiany nazwy, nieobsłużony kod stanu: %1</translation>
     </message>
     <message>
-        <location line="+574"/>
+        <location line="+579"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>Niedozwolone, ponieważ nie masz uprawnień do dodawania plików w tym katalogu</translation>
     </message>
@@ -3227,7 +3275,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+346"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+347"/>
         <source>Error updating metadata: %1</source>
         <translation>Błąd podczas aktualizacji metadanych: %1</translation>
     </message>
@@ -3266,7 +3314,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Plik został usunięty z serwera</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>Zepsuty serwer WWW zwrócił pustą długość zawartości dla niepustego pliku podczas wznawiania</translation>
     </message>
@@ -3291,16 +3339,16 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Błąd podczas aktualizacji metadanych: %1</translation>
     </message>
     <message>
-        <location line="-517"/>
-        <location line="+453"/>
+        <location line="-518"/>
+        <location line="+454"/>
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
         <translation>Plik %1 jest obecnie w użyciu</translation>
     </message>
     <message>
-        <location line="-639"/>
-        <location line="+596"/>
+        <location line="-640"/>
+        <location line="+597"/>
         <source>File has changed since discovery</source>
         <translation>Plik został zmieniony od momentu odkrycia</translation>
     </message>
@@ -3308,7 +3356,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-961"/>
         <source>; Restoration Failed: %1</source>
         <translation>; Przywracanie nie powiodło się: %1</translation>
     </message>
@@ -3455,7 +3503,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1142"/>
         <source>Could not update file : %1</source>
         <translation>Nie można zaktualizować pliku: %1</translation>
     </message>
@@ -3691,7 +3739,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+48"/>
         <source>Application Name Logo %1</source>
         <translation>Nazwa aplikacji Logo %1</translation>
     </message>
@@ -3742,7 +3790,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Zaloguj</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+108"/>
         <source>URL copied</source>
         <translation>Skopiowano adres URL</translation>
     </message>
@@ -3789,17 +3837,17 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
     <message>
         <location line="+22"/>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Currently there are no subfolders on the server.</source>
         <translation>Obecnie na serwerze nie ma żadnych podfolderów.</translation>
     </message>
     <message>
-        <location line="-153"/>
+        <location line="-158"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translation>Wystąpił błąd podczas ładowania listy podfolderów.</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+369"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Przeglądaj swoje pliki poniżej. Kliknij folder prawym przyciskiem myszy, aby zmienić jego dostępność: zawsze przechowuj go na tym urządzeniu albo zwolnij miejsce, udostępniając go tylko online.</translation>
@@ -4721,7 +4769,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+529"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>Współdzielone z %1</translation>
@@ -5003,7 +5051,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="+906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="+912"/>
         <source>Failed to connect database.</source>
         <translation>Nieudane połączenie z bazą danych.</translation>
     </message>
@@ -5048,21 +5096,21 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+653"/>
+        <location line="+666"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location line="-671"/>
-        <location line="+678"/>
+        <location line="-684"/>
+        <location line="+691"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Synchronizowanie</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-689"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Przerywanie synchronizacji</translation>
@@ -5086,21 +5134,21 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
     <message>
         <location line="+2"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>Synchronizacja wstrzymana</translation>
     </message>
     <message>
-        <location line="-652"/>
-        <location line="+658"/>
+        <location line="-665"/>
+        <location line="+671"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Niedostępne</translation>
     </message>
     <message numerus="yes">
-        <location line="-546"/>
+        <location line="-559"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -5157,7 +5205,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Wyjdź %1</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+46"/>
         <location line="+95"/>
         <source>Open in browser</source>
         <translation>Otwórz w przeglądarce</translation>
@@ -5505,7 +5553,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="+81"/>
+        <location filename="../src/common/vfs.cpp" line="+85"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translation>Funkcja wirtualnego systemu plików nie obsługuje dysku jako katalogu głównego synchronizacji</translation>
     </message>
@@ -5521,9 +5569,43 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
 </context>
 <context>
+    <name>OCC::VfsMac</name>
+    <message>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pliki nie są jeszcze widoczne w Finderze: macOS potrzebuje Twojej zgody. Otwórz Ustawienia systemowe &gt; Ogólne &gt; Rzeczy otwierane przy logowaniu i rozszerzenia, kliknij przycisk informacji obok %1 w sekcji „Rozszerzenia” i włącz „Dostawcy plików”.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>macOS nie znajduje rozszerzenia plików wirtualnych tej aplikacji. Przenieś aplikację do folderu Aplikacje i uruchom ją ponownie.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual files require macOS Ventura or newer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Pliki wirtualne wymagają systemu macOS Ventura lub nowszego.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The virtual files folder could not be registered with macOS.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Nie udało się zarejestrować folderu plików wirtualnych w macOS.</translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <location line="+3"/>
+        <source>%1 - %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5572,7 +5654,8 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+75"/>
+        <location line="+7"/>
         <source>Failed to retrieve user info</source>
         <translation>Nie udało się pobrać informacji o użytkowniku</translation>
     </message>
@@ -5632,7 +5715,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="+309"/>
+        <location filename="../src/common/utility.cpp" line="+313"/>
         <source>in the future</source>
         <translation>w przyszłości</translation>
     </message>

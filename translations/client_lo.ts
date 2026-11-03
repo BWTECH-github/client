@@ -167,7 +167,7 @@ File synchronization desktop utility.</source>
         <translation>ບໍ່ສາມາດປ່ຽນຊື່ %1, ໄຟລ໌ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location filename="../src/libsync/filesystem.cpp" line="+192"/>
+        <location filename="../src/libsync/filesystem.cpp" line="+193"/>
         <source>Could not remove folder</source>
         <translation>ບໍ່ສາມາດລຶບໂຟນເດີໄດ້</translation>
     </message>
@@ -239,7 +239,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>FolderManagementUtils</name>
     <message>
-        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+94"/>
+        <location filename="../src/gui/foldermanagement/foldermanagementutils.cpp" line="+97"/>
         <source>The path &apos;%1&apos; is too long. Please enable long paths in the Windows settings or choose a different folder.</source>
         <translation>ເສັ້ນທາງ &apos;%1&apos; ຍາວເກີນໄປ. ກະລຸນາເປີດໃຊ້ເສັ້ນທາງຍາວໃນການຕັ້ງຄ່າຂອງ Windows ຫຼື ເລືອກໂຟນເດີອື່ນ.</translation>
     </message>
@@ -393,7 +393,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AbstractNetworkJob</name>
     <message>
-        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+260"/>
+        <location filename="../src/libsync/abstractnetworkjob.cpp" line="+264"/>
         <source>Connection timed out</source>
         <translation>ການເຊື່ອມຕໍ່ໝົດເວລາ</translation>
     </message>
@@ -419,7 +419,7 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountBasedOAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="+701"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="+718"/>
         <source>Your account on the server is disabled (%1). Please contact your system administrator.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບັນຊີຂອງທ່ານໃນເຊີບເວີຖືກປິດການໃຊ້ງານ (%1). ກະລຸນາຕິດຕໍ່ຜູ້ດູແລລະບົບຂອງທ່ານ.</translation>
@@ -452,30 +452,30 @@ File synchronization desktop utility.</source>
 <context>
     <name>OCC::AccountFoldersController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+371"/>
+        <location filename="../src/gui/FoldersGui/accountfolderscontroller.cpp" line="+391"/>
         <source>Choose what to sync</source>
         <translation>ເລືອກສິ່ງທີ່ຈະຊິງ</translation>
     </message>
     <message>
-        <location line="-242"/>
-        <location line="+105"/>
+        <location line="-262"/>
+        <location line="+113"/>
         <source>Sync now</source>
         <translation>ຊິງດຽວນີ້</translation>
     </message>
     <message>
-        <location line="-95"/>
+        <location line="-103"/>
         <source>Manage subfolder sync</source>
         <translation>ຈັດການການຊິງໂຟນເດີຍ່ອຍ</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+238"/>
+        <location line="+27"/>
+        <location line="+252"/>
         <source>Manage availability</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ຈັດການການມີໃຫ້ໃຊ້</translation>
     </message>
     <message>
-        <location line="-226"/>
+        <location line="-240"/>
         <source>Remove %1 sync</source>
         <extracomment>This shows as &apos;Remove folder sync&apos; or &apos;Remove Space sync&apos;</extracomment>
         <translation>ລຶບການຊິງ %1 ອອກ</translation>
@@ -504,7 +504,7 @@ This action will abort any currently running synchronization.</source>
         <translation>ປິດການຮອງຮັບ</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+32"/>
         <source>Restart sync</source>
         <translation>ເລີ່ມການຊິງໃໝ່</translation>
     </message>
@@ -529,7 +529,7 @@ This action will abort any currently running synchronization.</source>
         <translation>ເປີດໃຊ້ງານໄຟລ໌ສະເໝືອນ</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+41"/>
         <source>Internet connection is metered</source>
         <translation>ການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ</translation>
     </message>
@@ -539,7 +539,7 @@ This action will abort any currently running synchronization.</source>
         <translation>ການຊິງໂຄໄນຖືກຢຸດຊົ່ວຄາວ ເພາະການເຊື່ອມຕໍ່ອິນເຕີເນັດມີການຈຳກັດຂໍ້ມູນ&lt;p&gt;ທ່ານຕ້ອງການບັງຄັບໃຫ້ຊິງໂຄໄນຕອນນີ້ແທ້ບໍ່?</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+24"/>
         <source>Sync Running</source>
         <translation>ກຳລັງຊິງ</translation>
     </message>
@@ -549,28 +549,34 @@ This action will abort any currently running synchronization.</source>
         <translation>ການຊິງກຳລັງດຳເນີນການຢູ່.&lt;br/&gt;ທ່ານຕ້ອງການຢຸດມັນບໍ່?</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Sync paused by user</source>
         <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວໂດຍຜູ້ໃຊ້</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+23"/>
+        <source>&lt;p&gt;Do you really want to remove &lt;i&gt;%1&lt;/i&gt; from the Finder?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; The files stay on the server. Changes that have not been uploaded yet are kept by macOS.&lt;/p&gt;</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>&lt;p&gt;ທ່ານຕ້ອງການລຶບ &lt;i&gt;%1&lt;/i&gt; ອອກຈາກ Finder ແທ້ບໍ່?&lt;/p&gt;&lt;p&gt;&lt;b&gt;ໝາຍເຫດ:&lt;/b&gt; ໄຟລ໌ຍັງຢູ່ໃນເຊີບເວີ. ການປ່ຽນແປງທີ່ຍັງບໍ່ໄດ້ອັບໂຫຼດ macOS ຈະເກັບຮັກສາໄວ້.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Confirm Folder Sync Connection Removal</source>
         <translation>ຢືນຢັນການລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="-10"/>
         <source>&lt;p&gt;Do you really want to stop syncing the folder &lt;i&gt;%1&lt;/i&gt;?&lt;/p&gt;&lt;p&gt;&lt;b&gt;Note:&lt;/b&gt; This will &lt;b&gt;not&lt;/b&gt; delete any files.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ທ່ານຕ້ອງການຢຸດການຊິງໂຟນເດີ &lt;i&gt;%1&lt;/i&gt; ແທ້ບໍ່?&lt;/p&gt;&lt;p&gt;&lt;b&gt;ໝາຍເຫດ:&lt;/b&gt; ການກະທຳນີ້ຈະ&lt;b&gt;ບໍ່&lt;/b&gt;ລຶບໄຟລ໌ໃດໆ.&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+11"/>
         <source>Remove Folder Sync Connection</source>
         <translation>ລຶບການເຊື່ອມຕໍ່ການຊິງໂຟນເດີ</translation>
     </message>
     <message>
-        <location line="-134"/>
-        <location line="+135"/>
+        <location line="-146"/>
+        <location line="+147"/>
         <source>Cancel</source>
         <translation>ຍົກເລີກ</translation>
     </message>
@@ -756,7 +762,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>ອອກຈາກລະບົບ</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+44"/>
         <source>Confirm Account Removal</source>
         <translation>ຢືນຢັນການລຶບບັນຊີ</translation>
     </message>
@@ -951,7 +957,13 @@ Please check the server&apos;s availability then run the wizard again.</source>
         <translation>ຄົ້ນຫາສະຖານທີ່ດາວໂຫຼດ</translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+14"/>
+        <source>Your files appear in the Finder sidebar under &quot;Locations&quot;. They are downloaded when you open them, and you can keep them on this Mac with &quot;Download Now&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໄຟລ໌ຂອງທ່ານຈະສະແດງຢູ່ແຖບດ້ານຂ້າງຂອງ Finder ໃຕ້ &quot;ສະຖານທີ່&quot;. ພວກມັນຈະຖືກດາວໂຫຼດເມື່ອທ່ານເປີດ, ແລະທ່ານສາມາດເກັບໄວ້ໃນ Mac ນີ້ດ້ວຍ &quot;ດາວໂຫຼດດຽວນີ້&quot;.</translation>
+    </message>
+    <message>
+        <location line="+105"/>
         <source>Invalid local download directory %1: %2</source>
         <translation>ໄດເຣັກທໍຣີດາວໂຫຼດໃນເຄື່ອງບໍ່ຖືກຕ້ອງ %1: %2</translation>
     </message>
@@ -1033,7 +1045,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+41"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
         <source>Application Name Logo %1</source>
         <translation>ໂລໂກ້ຊື່ແອັບພລິເຄຊັນ %1</translation>
     </message>
@@ -1246,7 +1258,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::CredentialJob</name>
     <message>
-        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+224"/>
+        <location filename="../src/libsync/creds/credentialmanager.cpp" line="+230"/>
         <source>Failed to parse credentials %1</source>
         <translation>ວິເຄາະຂໍ້ມູນປະຈຳຕົວ %1 ບໍ່ສຳເລັດ</translation>
     </message>
@@ -1280,13 +1292,13 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleDirectoryJob</name>
     <message>
-        <location filename="../src/libsync/discoveryphase.cpp" line="+333"/>
+        <location filename="../src/libsync/discoveryphase.cpp" line="+337"/>
         <source>The account was deleted before we could start the propfind job</source>
         <translation>ບັນຊີຖືກລຶບກ່ອນທີ່ພວກເຮົາຈະເລີ່ມວຽກ propfind</translation>
     </message>
     <message>
         <location line="+33"/>
-        <location line="+112"/>
+        <location line="+117"/>
         <source>Server error: PROPFIND reply is not XML formatted!</source>
         <translation>ເຊີບເວີຜິດພາດ: ຄຳຕອບ PROPFIND ບໍ່ແມ່ນຮູບແບບ XML!</translation>
     </message>
@@ -1294,7 +1306,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::DiscoverySingleLocalDirectoryJob</name>
     <message>
-        <location line="-213"/>
+        <location line="-218"/>
         <source>Error while opening directory %1</source>
         <translation>ຜິດພາດຂະນະເປີດໂຟນເດີ %1</translation>
     </message>
@@ -1343,7 +1355,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+407"/>
+        <location filename="../src/gui/folder.cpp" line="+427"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກລຶບອອກແລ້ວ.</translation>
@@ -1455,17 +1467,47 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ກິດຈະກຳການຊິງ</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+218"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>ກຳລັງປ່ຽນໂໝດ VFS ໃນໂຟນເດີ &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+217"/>
         <source>Could not read system exclude file</source>
         <translation>ບໍ່ສາມາດອ່ານໄຟລ໌ຍົກເວັ້ນຂອງລະບົບ</translation>
     </message>
     <message>
-        <location line="+205"/>
+        <location line="+82"/>
+        <source>Show your files in the Finder</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ສະແດງໄຟລ໌ຂອງທ່ານໃນ Finder</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Open System Settings</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເປີດການຕັ້ງຄ່າລະບົບ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Later</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ພາຍຫຼັງ</translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>You are signed out of %1. Sign in again in %1 to use these files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ທ່ານອອກຈາກລະບົບ %1 ແລ້ວ. ເຂົ້າສູ່ລະບົບ %1 ອີກຄັ້ງເພື່ອໃຊ້ໄຟລ໌ເຫຼົ່ານີ້.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Synchronization is paused in %1.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ການຊິງໃນ %1 ຖືກຢຸດຊົ່ວຄາວ.</translation>
+    </message>
+    <message>
+        <location line="+168"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>ໂຟນເດີ %1 ຖືກສ້າງຂຶ້ນແລ້ວ ແຕ່ຖືກຍົກເວັ້ນຈາກການຊິງໂຄໄນກ່ອນໜ້ານີ້. ຂໍ້ມູນພາຍໃນຈະບໍ່ຖືກຊິງໂຄໄນ.</translation>
     </message>
@@ -1681,7 +1723,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderMan</name>
     <message>
-        <location filename="../src/gui/folderman.cpp" line="+571"/>
+        <location filename="../src/gui/folderman.cpp" line="+612"/>
         <source>Could not reset folder state</source>
         <translation>ບໍ່ສາມາດຣີເຊັດສະຖານະໂຟນເດີໄດ້</translation>
     </message>
@@ -1707,7 +1749,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວໂດຍຜູ້ໃຊ້</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+346"/>
         <source>User triggered force sync</source>
         <translation>ຜູ້ໃຊ້ສັ່ງບັງຄັບຊິງ</translation>
     </message>
@@ -1796,7 +1838,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ທ່ານບໍ່ມີສິດໃນການຂຽນລົງໃນໂຟນເດີທີ່ເລືອກ.</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>The account no longer exists.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບັນຊີບໍ່ມີຢູ່ອີກແລ້ວ.</translation>
@@ -1808,17 +1850,17 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ບໍ່ສາມາດຕັ້ງຄ່າໂຟນເດີໃນເຄື່ອງ %1 ສຳລັບການຊິງໄດ້.</translation>
     </message>
     <message>
-        <location line="-303"/>
+        <location line="-308"/>
         <source>Folder &apos;%1&apos; is already in use by another account.</source>
         <translation>ໂຟນເດີ &apos;%1&apos; ຖືກນຳໃຊ້ໂດຍບັນຊີອື່ນຢູ່ແລ້ວ.</translation>
     </message>
     <message>
-        <location line="-1029"/>
+        <location line="-1046"/>
         <source>Application shutting down</source>
         <translation>ແອັບພລິເຄຊັນກຳລັງປິດລົງ</translation>
     </message>
     <message>
-        <location line="+404"/>
+        <location line="+416"/>
         <source>On macOS, only the Apple File System is supported.</source>
         <translation>ໃນ macOS, ຮອງຮັບສະເພາະ Apple File System ເທົ່ານັ້ນ.</translation>
     </message>
@@ -1839,7 +1881,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWatcher</name>
     <message>
-        <location filename="../src/gui/folderwatcher.cpp" line="+123"/>
+        <location filename="../src/gui/folderwatcher.cpp" line="+124"/>
         <source>The watcher did not receive a test notification.</source>
         <translation>ໂຕຕິດຕາມບໍ່ໄດ້ຮັບການແຈ້ງເຕືອນທົດສອບ.</translation>
     </message>
@@ -2009,9 +2051,15 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderWizardSelectiveSync</name>
     <message>
-        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+45"/>
+        <location filename="../src/gui/folderwizard/folderwizardselectivesync.cpp" line="+48"/>
         <source>Use virtual files instead of downloading content immediately</source>
         <translation>ໃຊ້ໄຟລ໌ສະເໝືອນແທນການດາວໂຫຼດເນື້ອໃນທັນທີ</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>With virtual files your files appear in the Finder sidebar under &quot;Locations&quot; and are downloaded when you open them. The local folder chosen before is only used without virtual files.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ດ້ວຍໄຟລ໌ສະເໝືອນ ໄຟລ໌ຂອງທ່ານຈະສະແດງຢູ່ແຖບດ້ານຂ້າງຂອງ Finder ໃຕ້ &quot;ສະຖານທີ່&quot; ແລະຈະຖືກດາວໂຫຼດເມື່ອທ່ານເປີດ. ໂຟນເດີໃນເຄື່ອງທີ່ເລືອກກ່ອນໜ້ານີ້ຈະໃຊ້ສະເພາະເມື່ອບໍ່ໃຊ້ໄຟລ໌ສະເໝືອນ.</translation>
     </message>
 </context>
 <context>
@@ -2045,7 +2093,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::GraphApi::Space</name>
     <message>
-        <location filename="../src/libsync/graphapi/space.cpp" line="+86"/>
+        <location filename="../src/libsync/graphapi/space.cpp" line="+96"/>
         <source>Personal</source>
         <translation>ສ່ວນບຸກຄົນ</translation>
     </message>
@@ -2826,7 +2874,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OAuth</name>
     <message>
-        <location filename="../src/gui/creds/oauth.cpp" line="-489"/>
+        <location filename="../src/gui/creds/oauth.cpp" line="-498"/>
         <source>Successfully signed in</source>
         <translation>ເຂົ້າສູ່ລະບົບສຳເລັດແລ້ວ</translation>
     </message>
@@ -2836,7 +2884,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ດຽວນີ້, ສຳຫຼວດ %1 ໃນເດັສທັອບ.</translation>
     </message>
     <message>
-        <location line="+118"/>
+        <location line="+123"/>
         <source>Error returned from the server: &lt;em&gt;%1&lt;/em&gt;</source>
         <translation>ຂໍ້ຜິດພາດທີ່ສົ່ງຄືນຈາກເຊີບເວີ: &lt;em&gt;%1&lt;/em&gt;</translation>
     </message>
@@ -3046,7 +3094,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::OwncloudPropagator</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+830"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+831"/>
         <source>File %1 is currently in use</source>
         <translation>ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
@@ -3126,13 +3174,13 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location line="+101"/>
         <location line="+342"/>
-        <location line="+710"/>
+        <location line="+715"/>
         <location line="+57"/>
         <source>the VFS instance is missing. Unable to continue.</source>
         <translation>ອິນສະແຕນສ໌ VFS ຫາຍໄປ. ບໍ່ສາມາດສືບຕໍ່ໄດ້.</translation>
     </message>
     <message>
-        <location line="-1079"/>
+        <location line="-1084"/>
         <source>server reported no %1</source>
         <translation>ເຊີບເວີລາຍງານວ່າບໍ່ມີ %1</translation>
     </message>
@@ -3143,7 +3191,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ບັນຊີຖືກລຶບແລ້ວ. ບໍ່ສາມາດດຳເນີນການຕໍ່ໄດ້</translation>
     </message>
     <message>
-        <location line="+159"/>
+        <location line="+164"/>
         <source>SelectiveSync: Ignored because its path is deselected</source>
         <translation>ການຊິ້ງແບບເລືອກ: ບໍ່ສົນໃຈ ເນື່ອງຈາກເສັ້ນທາງຂອງມັນບໍ່ໄດ້ຖືກເລືອກ</translation>
     </message>
@@ -3173,12 +3221,12 @@ Note that using any logging command line options will override the settings.</so
         <translation>ບໍ່ໄດ້ຮັບອະນຸຍາດ ເພາະທ່ານບໍ່ມີສິດເພີ່ມໂຟເດີຍ່ອຍໃນໂຟເດີນັ້ນ</translation>
     </message>
     <message>
-        <location line="-569"/>
+        <location line="-574"/>
         <source>Error while doing a rename, unhandled status code: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດຂະນະປ່ຽນຊື່, ລະຫັດສະຖານະທີ່ບໍ່ຮອງຮັບ: %1</translation>
     </message>
     <message>
-        <location line="+574"/>
+        <location line="+579"/>
         <source>Not allowed because you don&apos;t have permission to add files in that folder</source>
         <translation>ບໍ່ໄດ້ຮັບອະນຸຍາດ ເພາະທ່ານບໍ່ມີສິດເພີ່ມໄຟລ໌ໃນໂຟເດີນັ້ນ</translation>
     </message>
@@ -3201,7 +3249,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateDirectory</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+346"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+347"/>
         <source>Error updating metadata: %1</source>
         <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
@@ -3240,7 +3288,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ໄຟລ໌ຖືກລຶບອອກຈາກເຊີບເວີແລ້ວ</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+60"/>
         <source>Broken webserver returned empty content length for non-empty file on resume</source>
         <translation>ເວັບເຊີບເວີທີ່ຜິດພາດໄດ້ສົ່ງຄືນຄ່າຄວາມຍາວຂອງເນື້ອຫາເປັນສູນສຳລັບໄຟລ໌ທີ່ບໍ່ວ່າງໃນການດາວໂຫຼດຕໍ່</translation>
     </message>
@@ -3265,16 +3313,16 @@ Note that using any logging command line options will override the settings.</so
         <translation>ເກີດຂໍ້ຜິດພາດໃນການອັບເດດຂໍ້ມູນ Metadata: %1</translation>
     </message>
     <message>
-        <location line="-517"/>
-        <location line="+453"/>
+        <location line="-518"/>
+        <location line="+454"/>
         <location line="+32"/>
         <location line="+35"/>
         <source>The file %1 is currently in use</source>
         <translation>ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location line="-639"/>
-        <location line="+596"/>
+        <location line="-640"/>
+        <location line="+597"/>
         <source>File has changed since discovery</source>
         <translation>ໄຟລ໌ມີການປ່ຽນແປງຕັ້ງແຕ່ການກວດພົບຄັ້ງທຳອິດ</translation>
     </message>
@@ -3282,7 +3330,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateItemJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="-959"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="-961"/>
         <source>; Restoration Failed: %1</source>
         <translation>; ການກູ້ຄືນລົ້ມເຫຼວ: %1</translation>
     </message>
@@ -3429,7 +3477,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::PropagateUpdateMetaDataJob</name>
     <message>
-        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1140"/>
+        <location filename="../src/libsync/owncloudpropagator.cpp" line="+1142"/>
         <source>Could not update file : %1</source>
         <translation>ບໍ່ສາມາດອັບເດດໄຟລ໌: %1</translation>
     </message>
@@ -3661,7 +3709,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::RequestAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+46"/>
+        <location filename="../src/gui/creds/requestauthenticationwidget.cpp" line="+48"/>
         <source>Application Name Logo %1</source>
         <translation>ໂລໂກ້ຊື່ແອັບພລິເຄຊັນ %1</translation>
     </message>
@@ -3712,7 +3760,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ລອງໃໝ່</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+108"/>
         <source>URL copied</source>
         <translation>ສຳເນົາ URL ແລ້ວ</translation>
     </message>
@@ -3759,17 +3807,17 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+22"/>
-        <location line="+155"/>
+        <location line="+160"/>
         <source>Currently there are no subfolders on the server.</source>
         <translation>ຂະນະນີ້ບໍ່ມີໂຟເດີຍ່ອຍເທິງເຊີບເວີ.</translation>
     </message>
     <message>
-        <location line="-153"/>
+        <location line="-158"/>
         <source>An error occurred while loading the list of subfolders.</source>
         <translation>ເກີດຂໍ້ຜິດພາດຂະນະກຳລັງໂຫຼດລາຍການໂຟເດີຍ່ອຍ.</translation>
     </message>
     <message>
-        <location line="+364"/>
+        <location line="+369"/>
         <source>Browse your files below. Right-click a folder to change its availability: keep it always on this device, or free up space by making it online only.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ເບິ່ງໄຟລ໌ຂອງທ່ານຢູ່ລຸ່ມນີ້. ຄລິກຂວາໃສ່ໂຟນເດີເພື່ອປ່ຽນການມີໃຫ້ໃຊ້: ເກັບໄວ້ໃນອຸປະກອນນີ້ສະເໝີ ຫຼື ເພີ່ມພື້ນທີ່ວ່າງໂດຍໃຫ້ເປັນແບບອອນລາຍເທົ່ານັ້ນ.</translation>
@@ -4694,7 +4742,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SocketApi</name>
     <message>
-        <location filename="../src/gui/socketapi/socketapi.cpp" line="+520"/>
+        <location filename="../src/gui/socketapi/socketapi.cpp" line="+529"/>
         <source>Share with %1</source>
         <comment>parameter is the application name</comment>
         <translation>ແຊຣ໌ກັບ %1</translation>
@@ -4976,7 +5024,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SyncJournalDb</name>
     <message>
-        <location filename="../src/common/syncjournaldb.cpp" line="+906"/>
+        <location filename="../src/common/syncjournaldb.cpp" line="+912"/>
         <source>Failed to connect database.</source>
         <translation>ການເຊື່ອມຕໍ່ຖານຂໍ້ມູນລົ້ມເຫຼວ.</translation>
     </message>
@@ -5021,21 +5069,21 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+131"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+653"/>
+        <location line="+666"/>
         <source>Offline</source>
         <translation>ອອບໄລນ໌</translation>
     </message>
     <message>
-        <location line="-671"/>
-        <location line="+678"/>
+        <location line="-684"/>
+        <location line="+691"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ກຳລັງຊິງ</translation>
     </message>
     <message>
-        <location line="-676"/>
+        <location line="-689"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ກຳລັງຍົກເລີກການຊິງ</translation>
@@ -5059,21 +5107,21 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+583"/>
+        <location line="+596"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວ</translation>
     </message>
     <message>
-        <location line="-652"/>
-        <location line="+658"/>
+        <location line="-665"/>
+        <location line="+671"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບໍ່ມີໃຫ້ໃຊ້</translation>
     </message>
     <message numerus="yes">
-        <location line="-546"/>
+        <location line="-559"/>
         <source>%n new notification(s)</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>
@@ -5129,7 +5177,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ອອກຈາກ %1</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+46"/>
         <location line="+95"/>
         <source>Open in browser</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -5478,7 +5526,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::Vfs</name>
     <message>
-        <location filename="../src/common/vfs.cpp" line="+81"/>
+        <location filename="../src/common/vfs.cpp" line="+85"/>
         <source>The Virtual filesystem feature does not support a drive as sync root</source>
         <translation>ຄຸນສົມບັດລະບົບໄຟລ໌ສະເໝືອນບໍ່ຮອງຮັບການໃຊ້ໄດຣຟ໌ເປັນໂຟເດີຫຼັກໃນການຊິ້ງ</translation>
     </message>
@@ -5494,9 +5542,43 @@ Note that using any logging command line options will override the settings.</so
     </message>
 </context>
 <context>
+    <name>OCC::VfsMac</name>
+    <message>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໄຟລ໌ຍັງບໍ່ສະແດງໃນ Finder: macOS ຕ້ອງການການອະນຸຍາດຂອງທ່ານ. ເປີດ ການຕັ້ງຄ່າລະບົບ &gt; ທົ່ວໄປ &gt; ລາຍການເຂົ້າສູ່ລະບົບ ແລະ ສ່ວນຂະຫຍາຍ, ຄລິກປຸ່ມຂໍ້ມູນຂ້າງ %1 ໃຕ້ &quot;ສ່ວນຂະຫຍາຍ&quot; ແລ້ວເປີດ &quot;ຜູ້ໃຫ້ບໍລິການໄຟລ໌&quot;.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>macOS does not find the virtual files extension of this app. Move the app to the Applications folder and start it again.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>macOS ບໍ່ພົບສ່ວນຂະຫຍາຍໄຟລ໌ສະເໝືອນຂອງແອັບນີ້. ຍ້າຍແອັບໄປໃສ່ໂຟນເດີ Applications ແລ້ວເປີດໃໝ່.</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Virtual files require macOS Ventura or newer.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ໄຟລ໌ສະເໝືອນຕ້ອງການ macOS Ventura ຫຼື ໃໝ່ກວ່າ.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The virtual files folder could not be registered with macOS.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ບໍ່ສາມາດລົງທະບຽນໂຟນເດີໄຟລ໌ສະເໝືອນກັບ macOS ໄດ້.</translation>
+    </message>
+    <message>
+        <location line="+169"/>
+        <location line="+3"/>
+        <source>%1 - %2</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>%1 - %2</translation>
+    </message>
+</context>
+<context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+647"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
@@ -5545,7 +5627,8 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WebFingerLookupAdapter</name>
     <message>
-        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+74"/>
+        <location filename="../src/gui/networkadapters/webfingerlookupadapter.cpp" line="+75"/>
+        <location line="+7"/>
         <source>Failed to retrieve user info</source>
         <translation>ບໍ່ສາມາດດຶງຂໍ້ມູນຜູ້ໃຊ້ໄດ້</translation>
     </message>
@@ -5605,7 +5688,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/common/utility.cpp" line="+309"/>
+        <location filename="../src/common/utility.cpp" line="+313"/>
         <source>in the future</source>
         <translation>ໃນອະນາຄົດ</translation>
     </message>
