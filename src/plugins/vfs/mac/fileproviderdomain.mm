@@ -231,9 +231,8 @@ namespace Mac {
             (__bridge id)kSecAttrService : keychainService(),
             (__bridge id)kSecAttrAccount : identifier.toNSString(),
         };
-        // a fresh item each time, so its access list always names the extension that is installed now
-        SecItemDelete((__bridge CFDictionaryRef)query);
-
+        // A fresh item each time, so its access list always names the extension that is installed
+        // now. Everything is prepared first: if that fails, the item the extension uses stays.
         NSMutableArray *trusted = [NSMutableArray array];
         SecTrustedApplicationRef client = nullptr;
         if (SecTrustedApplicationCreateFromPath(nullptr, &client) == errSecSuccess && client) {
@@ -260,6 +259,7 @@ namespace Mac {
         attributes[(__bridge id)kSecValueData] = authorization.toNSData();
         attributes[(__bridge id)kSecAttrAccess] = (__bridge_transfer id)access;
         attributes[(__bridge id)kSecAttrLabel] = label;
+        SecItemDelete((__bridge CFDictionaryRef)query);
         const OSStatus status = SecItemAdd((__bridge CFDictionaryRef)attributes, nullptr);
         if (status != errSecSuccess) {
             qCWarning(lcFileProviderDomain) << "Could not store the File Provider credentials in the keychain:" << status;
