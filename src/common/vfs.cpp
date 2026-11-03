@@ -30,6 +30,10 @@
 #ifdef Q_OS_WIN
 #include <qt_windows.h>
 #endif
+#ifdef Q_OS_MACOS
+#include <QFileInfo>
+#include <QOperatingSystemVersion>
+#endif
 using namespace OCC;
 
 Q_LOGGING_CATEGORY(lcVfs, "sync.vfs", QtInfoMsg)
@@ -237,11 +241,13 @@ Vfs::Mode OCC::VfsPluginManager::bestAvailableVfsMode() const
         return Vfs::WindowsCfApi;
     }
 
-#ifdef Q_OS_MAC
-    // Experimental macOS File Provider backend, opt-in only: until the Finder
-    // integration is complete this mode must never be picked automatically.
+#ifdef Q_OS_MACOS
+    // macOS File Provider: only with the extension embedded in the app bundle (builds without
+    // BUILD_MAC_FILE_PROVIDER have none) and on macOS 13 or newer, which the extension needs.
     // Windows behaviour is unaffected - the CfApi check above stays first.
-    if (qEnvironmentVariableIntValue("OWNCLOUD_ENABLE_MAC_VFS") == 1 && isVfsPluginAvailable(Vfs::MacFileProvider)) {
+    static const bool fileProviderExtension = QOperatingSystemVersion::current() >= QOperatingSystemVersion::MacOSVentura
+        && QFileInfo(QCoreApplication::applicationDirPath() + QStringLiteral("/../PlugIns/FileProviderExt.appex/Contents/Info.plist")).isFile();
+    if (fileProviderExtension && isVfsPluginAvailable(Vfs::MacFileProvider)) {
         return Vfs::MacFileProvider;
     }
 #endif

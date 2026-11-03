@@ -176,6 +176,31 @@ public:
      */
     virtual bool socketApiPinStateActionsShown() const = 0;
 
+#ifdef Q_OS_MACOS
+    /** macOS File Provider (MacFileProvider): the files live in a domain that the File Provider
+     * extension of the app serves and syncs; the sync engine of the folder stays idle. The client
+     * keeps the extension's credentials current and tells it about changes on the server.
+     */
+    /// Ask the extension to look for changes on the server now ("Sync now", scheduler).
+    virtual void fileProviderRefresh() { }
+    /// The account is signed out or the folder paused: macOS disconnects the domain and the Finder
+    /// shows @p reason (@p temporary for a pause); an empty reason connects it again.
+    virtual void fileProviderSetSuspended(const QString &reason, bool temporary)
+    {
+        Q_UNUSED(reason)
+        Q_UNUSED(temporary)
+    }
+    /// What keeps the files from showing up in the Finder (e.g. the extension is switched off in
+    /// System Settings, then @p needsSystemSettings), empty if the domain works.
+    virtual QString fileProviderProblem(bool *needsSystemSettings = nullptr) const
+    {
+        Q_UNUSED(needsSystemSettings)
+        return {};
+    }
+    /// Where the Finder shows the files (~/Library/CloudStorage/…), empty while unknown.
+    virtual QString fileProviderPath() const { return {}; }
+#endif
+
     /// Create a new dehydrated placeholder. Called from PropagateDownload.
     [[nodiscard]] virtual Result<void, QString> createPlaceholder(const SyncFileItem &item) = 0;
 

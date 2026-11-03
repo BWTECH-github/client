@@ -11,28 +11,35 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  */
+
 #pragma once
 
 #include <QObject>
+#include <QTimer>
 
 #include "common/plugin.h"
 #include "common/vfs.h"
+#include "fileproviderdomain.h"
 
 namespace OCC {
 
-/** macOS File Provider based VFS backend (experimental).
+/** macOS File Provider based VFS backend.
  *
- * The heavy lifting on macOS is done by a separate File Provider extension
- * (NSFileProviderReplicatedExtension) that the Finder talks to. This plugin is
- * the thin app-side bridge: it will register/unregister an NSFileProviderDomain
- * per synced folder and translate pin-state/availability queries, while the
- * extension serves enumeration and on-demand content.
- *
- * Current state: scaffolding. The Vfs interface is fully implemented with
- * db-backed pin states, but no File Provider domain is registered yet, so
- * enabling this mode behaves like plain sync. Domain registration and the
- * extension target land next; until then the mode is only reachable through
- * the explicit opt-in in bestAvailableVfsMode().
+ * The Finder talks to the File Provider extension of the app
+ * (NSFileProviderReplicatedExtension, shell_integration/MacOSX/OwnCloudFileProvider):
+ * it lists, downloads and uploads on its own, the sync engine of the folder stays idle.
+ * This plugin is the app side of it:
+ *  - one NSFileProviderDomain per folder, kept across restarts and server moves, removed
+ *    with the folder (or the account),
+ *  - the connection settings for the extension in the shared app group container, the
+ *    Authorization header of the account in the keychain (the client refreshes tokens, the
+ *    extension never does, so they cannot race for a refresh token); an extension that got
+ *    a 401 asks for fresh ones,
+ *  - every remotePollInterval the ETag of the folder on the server; a change, new
+ *    credentials or "Sync now" make the extension look for changes,
+ *  - signed out or paused: the domain is disconnected (the Finder says why), and signed out
+ *    the extension loses its credentials,
+ *  - the state of the domain (switched off in System Settings, …) for the folder status.
  */
 class VfsMac : public Vfs
 {
@@ -48,6 +55,11 @@ public:
     void unregisterFolder() override;
 
     bool socketApiPinStateActionsShown() const override;
+
+    void fileProviderRefresh() override;
+    void fileProviderSetSuspended(const QString &reason, bool temporary) override;
+    QString fileProviderProblem(bool *needsSystemSettings = nullptr) const override;
+    QString fileProviderPath() const override;
 
     Result<void, QString> createPlaceholder(const SyncFileItem &) override;
 
@@ -67,10 +79,31 @@ protected:
     void startImpl(const VfsSetupParams &) override;
 
 private:
+    void poll();
+    void checkDomain();
+    void applySuspension();
+    void mirrorAuthorization(const QByteArray &authorization);
+    void dropAuthorization();
+
     /// Stable identifier of the NSFileProviderDomain backing this folder.
     QString _domainIdentifier;
+    /// macOS answered the registration
+    bool _registered = false;
+    Mac::DomainResult _state = Mac::DomainResult::Ok;
+    QString _userVisiblePath;
+    QTimer _pollTimer;
+    QString _lastEtag;
+    bool _pollRunning = false;
+    bool _lastPollFailed = false;
+    /// what the keychain holds for the extension, empty if nothing
+    QByteArray _mirroredAuthorization;
+    int _pollsWithoutCredentials = 0;
+    /// why the domain is disconnected (signed out, paused), empty while it is connected
+    QString _suspendReason;
+    bool _suspendTemporary = true;
+    bool _suspendApplied = false;
+    int _credentialRequestToken = 0;
 };
-
 
 class MacVfsPluginFactory : public QObject, public DefaultPluginFactory<VfsMac>
 {
