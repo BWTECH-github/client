@@ -1,8 +1,16 @@
 name: macOS-Release nachträglich signieren
 
-# Lädt das dmg eines bestehenden Releases, signiert die App mit der Developer ID,
-# notarisiert das dmg, heftet das Ticket an und ersetzt dmg und SHA256SUMS.txt im
-# Release. Der Update-Feed verweist nur auf die Release-Seite, er bleibt gültig.
+# Lädt das dmg eines bestehenden Releases, bettet die File-Provider-Erweiterung
+# ein (gebaut aus dem getaggten Stand), signiert die App mit der Developer ID
+# (admin/osx/sign-app.sh: Entitlements je Erweiterung), notarisiert das dmg,
+# heftet das Ticket an und ersetzt dmg und SHA256SUMS.txt im Release. Ein dmg,
+# das main.yml schon so fertiggestellt hat, bleibt unverändert. Der Update-Feed
+# verweist nur auf die Release-Seite, er bleibt gültig.
+#
+# Secrets: APPLE_CERT_P12 (Developer ID Application als base64-.p12),
+# APPLE_CERT_PASSWORD, APPLE_TEAM_ID (Team dieser Identität, Präfix der
+# App-Gruppe), APPLE_API_KEY_P8 (Inhalt der .p8), APPLE_API_KEY_ID,
+# APPLE_API_ISSUER_ID.
 
 on:
   workflow_dispatch:
@@ -25,7 +33,11 @@ jobs:
     runs-on: macos-15
     timeout-minutes: 90
     steps:
+      # Erweiterung und Signierskripte aus genau dem Stand des Releases
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+          persist-credentials: false
 
       - name: dmg und Prüfsummen laden
         env:
