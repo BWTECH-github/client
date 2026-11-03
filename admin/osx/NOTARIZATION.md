@@ -3,7 +3,7 @@
 So that owncloud.online — including the File Provider extension — runs on other
 users' Macs, the app must be signed with a **Developer ID Application**
 certificate, hardened-runtime signed and **notarized** by Apple. Team:
-`BW-TECH GmbH … (A7VZ8HFNR4)`.
+`BW-TECH GmbH … (4545KLA52K)`.
 
 `admin/osx/notarize.sh` does the signing + notarization + stapling. It needs two
 one-time setup steps that can only be done with the account holder's Apple
@@ -14,7 +14,7 @@ account:
 Xcode → **Settings… (⌘,)** → **Accounts** → select the Apple Account → pick the
 **BW-TECH GmbH** team → **Manage Certificates…** → **＋** (bottom-left) →
 **Developer ID Application**. It appears in the keychain as
-`Developer ID Application: … (A7VZ8HFNR4)`. Verify:
+`Developer ID Application: … (4545KLA52K)`. Verify:
 
 ```
 security find-identity -v -p codesigning | grep "Developer ID Application"
@@ -33,7 +33,7 @@ reuse the existing one if it already exists.)
   the Developer Program you may see *"Your Apple Account is not set up for
   iTunes Connect"* on appstoreconnect.apple.com — wait until Apple finishes
   provisioning (can take a few hours), and make sure you sign in with the Apple
-  ID that actually holds the paid membership (team A7VZ8HFNR4), not a different
+  ID that actually holds the paid membership (team 4545KLA52K), not a different
   address.
 
 ### codesign keychain access
@@ -67,7 +67,7 @@ Alternative (Apple ID + app-specific password from appleid.apple.com):
 
 ```
 xcrun notarytool store-credentials oc-notary \
-  --apple-id dev@bw.tech --team-id A7VZ8HFNR4 --password <app-specific-password>
+  --apple-id dev@bw.tech --team-id 4545KLA52K --password <app-specific-password>
 ```
 
 ## 3. Run
@@ -92,7 +92,7 @@ secrets are set (`.github/workflows/main.yml`, steps "Apple signing setup" and
 | --- | --- |
 | `APPLE_CERT_P12` | Developer ID Application certificate with private key and the Developer ID G2 intermediate, `.p12`, base64 |
 | `APPLE_CERT_PASSWORD` | password of the `.p12` |
-| `APPLE_TEAM_ID` | `A7VZ8HFNR4` |
+| `APPLE_TEAM_ID` | `4545KLA52K` |
 | `APPLE_API_KEY_P8` | App Store Connect API key (`AuthKey_<id>.p8`, text) for `notarytool` |
 | `APPLE_API_KEY_ID` | key ID of that API key |
 | `APPLE_API_ISSUER_ID` | issuer ID from App Store Connect → Users and Access → Integrations |

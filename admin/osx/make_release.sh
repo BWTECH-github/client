@@ -10,13 +10,15 @@
 # for a fast local build.
 #
 # Env / defaults:
-#   TEAM_ID        A7VZ8HFNR4
+#   TEAM_ID        4545KLA52K (BW-TECH GmbH)
+#   SIGN_IDENTITY  the "Developer ID Application" identity of TEAM_ID; for a local test
+#                  build e.g. "Apple Development: …" (no notarization possible then)
 #   CRAFT_ROOT     ~/craft/CraftMaster/macos-clang-arm64
 #   BASE_APP       $CRAFT_ROOT/Applications/KDE/owncloud.online.app  (craft install)
 #   OUT            /tmp/ocrelease
 set -euo pipefail
 
-TEAM_ID="${TEAM_ID:-A7VZ8HFNR4}"
+TEAM_ID="${TEAM_ID:-4545KLA52K}"
 CRAFT_ROOT="${CRAFT_ROOT:-$HOME/craft/CraftMaster/macos-clang-arm64}"
 BASE_APP="${BASE_APP:-$CRAFT_ROOT/Applications/KDE/owncloud.online.app}"
 OUT="${OUT:-/tmp/ocrelease}"
@@ -24,8 +26,10 @@ REPO="$(cd "$(dirname "$0")/../.." && pwd)"
 TS="--timestamp=none"
 [ "${1:-}" = "--timestamp" ] && TS="--timestamp"
 
-DEVID="$(security find-identity -v -p codesigning | awk -F'"' '/Developer ID Application/{print $2; exit}')"
-[ -n "$DEVID" ] || { echo "Kein 'Developer ID Application' Zertifikat (siehe NOTARIZATION.md)"; exit 1; }
+DEVID="${SIGN_IDENTITY:-$(security find-identity -v -p codesigning | awk -F'"' -v team="($TEAM_ID)" '/Developer ID Application/ && index($0, team) {print $2; exit}')}"
+[ -n "$DEVID" ] || { echo "Kein 'Developer ID Application' Zertifikat für Team $TEAM_ID (siehe NOTARIZATION.md)"; exit 1; }
+# App und Erweiterung teilen die App-Gruppe <TEAM_ID>.online.owncloud.desktopclient (Präfix = signierendes Team)
+APP_ENT="$OUT/app.entitlements"
 APP="$OUT/owncloud.online.app"; FW="$APP/Contents/Frameworks"
 rm -rf "$OUT"; mkdir -p "$OUT"
 
@@ -39,6 +43,8 @@ xcodebuild -project "$REPO/shell_integration/MacOSX/OwnCloudFileProvider/OwnClou
 echo "==> 2) Basis-App kopieren + Appex einbetten"
 cp -R "$BASE_APP" "$APP"
 mkdir -p "$APP/Contents/PlugIns"
+# eine Basis-App mit BUILD_MAC_FILE_PROVIDER bringt die Erweiterung schon mit: ersetzen, nicht hineinkopieren
+rm -rf "$APP/Contents/PlugIns/FileProviderExt.appex"
 cp -R "$OUT/fpbuild/Release/FileProviderExt.appex" "$APP/Contents/PlugIns/FileProviderExt.appex"
 
 echo "==> 3) macdeployqt (Qt einbetten)"
@@ -72,7 +78,8 @@ for ax in FinderSyncExt FileProviderExt; do
   ent="$OUT/$ax.entitlements"; codesign -d --entitlements "$ent" --xml "$d" 2>/dev/null || true
   if [ -s "$ent" ]; then sign --entitlements "$ent" --sign "$DEVID" "$d"; else sign --sign "$DEVID" "$d"; fi
 done
-sign --entitlements "$REPO/admin/osx/app.entitlements" --sign "$DEVID" "$APP"
+sed -E "s/[A-Z0-9]{10}\.online\.owncloud\.desktopclient/$TEAM_ID.online.owncloud.desktopclient/" "$REPO/admin/osx/app.entitlements" > "$APP_ENT"
+sign --entitlements "$APP_ENT" --sign "$DEVID" "$APP"
 
 echo "==> 6) Verifikation + DMG"
 codesign --verify --deep --strict "$APP" && echo "   codesign --deep --strict OK"
