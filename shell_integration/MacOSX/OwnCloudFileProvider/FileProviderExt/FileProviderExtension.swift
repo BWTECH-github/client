@@ -101,7 +101,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
             let path = joinPath(parentPath, conflictName)
             do {
                 try await client.put(path: path, contents: contents, modified: modified, sha1: sha1, ifNoneMatch: "*")
-                log.info("Kept the local version as \(path, privacy: .public)")
+                log.info("Kept the local version as \(path, privacy: .private(mask: .hash))")
                 context.signalWorkingSet()
                 return path
             } catch DavError.precondition {
@@ -166,7 +166,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                 if Task.isCancelled || progress.isCancelled {
                     completionHandler(nil, nil, CocoaError(.userCancelled))
                 } else {
-                    log.error("Download of \(itemIdentifier.rawValue, privacy: .public) failed: \(String(describing: error), privacy: .public)")
+                    log.error("Download of \(itemIdentifier.rawValue, privacy: .private(mask: .hash)) failed: \(logDescription(error), privacy: .public)")
                     completionHandler(nil, nil, WebDavClient.fileProviderError(for: error))
                 }
             }
@@ -205,7 +205,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     let item = try await self.context.item(for: entry, client: client)
                     await self.context.store.register(entries: [entry])
                     await self.context.store.noteChild(entry.identifier, seen: entry.seen, in: item.parentItemIdentifier)
-                    self.log.info("Created \(entry.isFolder ? "folder" : "file", privacy: .public) \(entry.path, privacy: .public)")
+                    self.log.info("Created \(entry.isFolder ? "folder" : "file", privacy: .public) \(entry.path, privacy: .private(mask: .hash))")
                     completionHandler(item, [], fetchContent, nil)
                     self.context.signalWorkingSet()
                 }
@@ -264,7 +264,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     completionHandler(nil, [], false, try await collisionError(at: path, client: client))
                 }
             } catch {
-                log.error("Creating \(name, privacy: .public) failed: \(String(describing: error), privacy: .public)")
+                log.error("Creating \(name, privacy: .private(mask: .hash)) failed: \(logDescription(error), privacy: .public)")
                 completionHandler(nil, [], false, WebDavClient.fileProviderError(for: error))
             }
             progress.completedUnitCount = 1
@@ -357,7 +357,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                         } else {
                             // Changed on the server meanwhile: keep both. The local version goes
                             // up as a conflict copy, the server version comes down here.
-                            log.error("Conflict on \(current.path, privacy: .public): keeping the local version as a conflict copy")
+                            log.error("Conflict on \(current.path, privacy: .private(mask: .hash)): keeping the local version as a conflict copy")
                             _ = try await uploadConflictCopy(of: contents, named: current.name, in: current.parentPath,
                                                              modified: modified, client: client)
                             current = server
@@ -376,7 +376,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                 completionHandler(result, changedFields.subtracting(handled), fetchContent, nil)
                 context.signalWorkingSet()
             } catch {
-                log.error("Modifying \(identifier.rawValue, privacy: .public) failed: \(String(describing: error), privacy: .public)")
+                log.error("Modifying \(identifier.rawValue, privacy: .private(mask: .hash)) failed: \(logDescription(error), privacy: .public)")
                 // noSuchItem (gone on the server): the system removes it, or re-creates
                 // it if it has local changes - local edits survive either way
                 completionHandler(nil, [], false, WebDavClient.fileProviderError(for: error))
@@ -498,7 +498,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                 }
 
                 await context.store.noteRemoval(identifier, from: parent)
-                log.info("Deleted \(entry.path, privacy: .public)")
+                log.info("Deleted \(entry.path, privacy: .private(mask: .hash))")
                 completionHandler(nil)
                 context.signalWorkingSet()
             } catch DavError.http(404) {

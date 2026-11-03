@@ -124,7 +124,7 @@ final class DomainContext {
             self.lock.unlock()
             self.manager?.signalEnumerator(for: .workingSet) { error in
                 if let error = error {
-                    self.log.error("Could not signal the working set: \(error.localizedDescription, privacy: .public)")
+                    self.log.error("Could not signal the working set: \(logDescription(error), privacy: .public)")
                 }
             }
         }

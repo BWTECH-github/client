@@ -91,7 +91,7 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 }
             } catch {
                 self.listing = nil
-                self.log.error("Enumerating \(self.container.rawValue, privacy: .public) failed: \(String(describing: error), privacy: .public)")
+                self.log.error("Enumerating \(self.container.rawValue, privacy: .private(mask: .hash)) failed: \(logDescription(error), privacy: .public)")
                 observer.finishEnumeratingWithError(WebDavClient.fileProviderError(for: error))
             }
         }
@@ -202,7 +202,7 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 }
                 observer.finishEnumeratingChanges(upTo: Self.anchor(next), moreComing: false)
             } catch {
-                self.log.error("Change enumeration failed: \(String(describing: error), privacy: .public)")
+                self.log.error("Change enumeration failed: \(logDescription(error), privacy: .public)")
                 observer.finishEnumeratingWithError(WebDavClient.fileProviderError(for: error))
             }
         }

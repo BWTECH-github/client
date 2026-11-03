@@ -288,6 +288,16 @@ struct DavEntry {
     }
 }
 
+/// An error for the log without the user's data: URL errors carry the request
+/// URL (server, user name, path), so only their domain and code go there.
+func logDescription(_ error: Error) -> String {
+    if let dav = error as? DavError {
+        return String(describing: dav)
+    }
+    let ns = error as NSError
+    return "\(ns.domain) \(ns.code)"
+}
+
 enum DavError: Error {
     /// No (usable) connection settings from the client yet.
     case notConfigured
@@ -666,10 +676,11 @@ final class WebDavClient {
         "\"\(etag.replacingOccurrences(of: "\"", with: ""))\""
     }
 
-    private func expect(_ response: URLResponse, _ codes: Set<Int>, _ what: String) throws {
+    private func expect(_ response: URLResponse, _ codes: Set<Int>, _ method: String, _ path: String) throws {
         guard let http = response as? HTTPURLResponse else { throw DavError.parse }
         guard codes.contains(http.statusCode) else {
-            log.error("\(what, privacy: .public) -> HTTP \(http.statusCode)")
+            // paths are the user's data: hashed in the log, the same path gives the same hash
+            log.error("\(method, privacy: .public) \(path, privacy: .private(mask: .hash)) -> HTTP \(http.statusCode)")
             if http.statusCode == 412 {
                 throw DavError.precondition
             }
@@ -733,7 +744,7 @@ final class WebDavClient {
         request.setValue("application/xml", forHTTPHeaderField: "Content-Type")
         request.httpBody = Self.propfindBody(checksums: checksums)
         let (data, response) = try await perform(request) { try await self.session.data(for: $0) }
-        try expect(response, [207], "PROPFIND \(path)")
+        try expect(response, [207], "PROPFIND", path)
         return try MultistatusParser.parse(data: data, rootPath: config.rootPath)
     }
 
@@ -775,12 +786,12 @@ final class WebDavClient {
             }
         }
         do {
-            try expect(response, [200], "GET \(path)")
+            try expect(response, [200], "GET", path)
             guard let http = response as? HTTPURLResponse else { throw DavError.parse }
             if let announced = http.value(forHTTPHeaderField: "OC-Checksum"), announced.uppercased().hasPrefix("SHA1:") {
                 let expected = String(announced.dropFirst(5)).lowercased()
                 if let actual = sha1Hex(of: tmp), actual != expected {
-                    log.error("GET \(path, privacy: .public): the content does not match the server checksum")
+                    log.error("GET \(path, privacy: .private(mask: .hash)): the content does not match the server checksum")
                     throw DavError.checksumMismatch
                 }
             }
@@ -814,7 +825,7 @@ final class WebDavClient {
             }
             return try await self.session.upload(for: request, from: Data())
         }
-        try expect(response, [200, 201, 204], "PUT \(path)")
+        try expect(response, [200, 201, 204], "PUT", path)
         guard let http = response as? HTTPURLResponse else { throw DavError.parse }
         return http
     }
@@ -827,7 +838,7 @@ final class WebDavClient {
         if let http = response as? HTTPURLResponse, http.statusCode == 405 {
             return false
         }
-        try expect(response, [201], "MKCOL \(path)")
+        try expect(response, [201], "MKCOL", path)
         return true
     }
 
@@ -838,7 +849,7 @@ final class WebDavClient {
         base.setValue(try url(for: newPath).absoluteString, forHTTPHeaderField: "Destination")
         base.setValue("F", forHTTPHeaderField: "Overwrite")
         let (_, response) = try await perform(base) { try await self.session.data(for: $0) }
-        try expect(response, [201, 204], "MOVE \(path) -> \(newPath)")
+        try expect(response, [201, 204], "MOVE", path)
     }
 
     /// Delete; owncloud.online keeps the item in the user's trash bin. `ifMatch`
@@ -847,7 +858,7 @@ final class WebDavClient {
         var base = try request(path: path, method: "DELETE")
         if let etag = ifMatch { base.setValue(quoted(etag), forHTTPHeaderField: "If-Match") }
         let (_, response) = try await perform(base) { try await self.session.data(for: $0) }
-        try expect(response, [204], "DELETE \(path)")
+        try expect(response, [204], "DELETE", path)
     }
 
     /// Map a transport/HTTP error onto the File Provider error the system expects.
@@ -927,7 +938,7 @@ final class DomainBackend {
             return client
         }
         if cached != nil {
-            log.info("Connection settings changed, now \(config.webDavUrl, privacy: .public)")
+            log.info("Connection settings changed, now \(config.webDavUrl, privacy: .private(mask: .hash))")
         }
         cached?.retire()
         let client = WebDavClient(config: config, credentials: credentials)
