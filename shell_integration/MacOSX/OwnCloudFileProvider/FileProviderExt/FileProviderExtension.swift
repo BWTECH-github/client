@@ -227,6 +227,10 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     if let existing = try await client.stat(path: path), !existing.isFolder {
                         try await finish(existing)
                     } else {
+                        // No item and no error is the documented answer here
+                        // (NSFileProviderReplicatedExtension.h, createItemBasedOnTemplate:
+                        // "return a nil item if you are not able to match"): the system
+                        // removes the dataless file, which has no content to lose.
                         completionHandler(nil, [], false, nil)
                     }
                     return
@@ -289,7 +293,11 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
 
         let renamed = changedFields.contains(.filename) || changedFields.contains(.parentItemIdentifier)
         if renamed && SyncRules.isExcluded(item.filename) {
-            // renamed to a name that is never synced: the system removes it from the server
+            // Renamed to a name that is never synced (lock/temp files): the item stays on
+            // this Mac and the system then calls deleteItem for the server copy
+            // (NSFileProviderError.h, excludedFromSync), guarded there by its etag and kept
+            // in the server's trash bin - as the desktop client's sync treats such a
+            // rename. Refusing it instead would break the save-by-rename of applications.
             completionHandler(nil, [], false, NSFileProviderError(.excludedFromSync))
             return Progress()
         }
@@ -298,6 +306,8 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
             do {
                 let client = try context.client()
                 var current = try await context.entry(for: identifier, client: client)
+                // the version the new content builds on; follows the item through a MOVE
+                var putBase = baseEtag
                 let oldParent = try await context.identifier(ofFolder: current.parentPath, client: client)
                 var fetchContent = false
 
@@ -312,9 +322,14 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                             completionHandler(nil, [], false, try await collisionError(at: newPath, client: client))
                             return
                         }
-                        log.info("Moved \(current.path, privacy: .public) -> \(newPath, privacy: .public)")
+                        log.info("Moved \(current.path, privacy: .private(mask: .hash)) -> \(newPath, privacy: .private(mask: .hash))")
                         await context.store.bind(id: identifier, path: newPath)
                         guard let moved = try await client.stat(path: newPath) else { throw DavError.unknownItem }
+                        // Some servers give a moved file a new etag. It was the base version
+                        // before the MOVE, so it still is: the PUT must not see a conflict.
+                        if let base = putBase, base == current.etag, !moved.etag.isEmpty {
+                            putBase = moved.etag
+                        }
                         current = moved
                     }
                 }
@@ -325,13 +340,13 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     let modified = item.contentModificationDate ?? nil
                     let localSha1 = sha1Hex(of: contents)
                     do {
-                        guard let base = baseEtag else {
+                        guard let base = putBase else {
                             throw DavError.precondition // never in sync: no version to build on
                         }
                         let response = try await client.put(path: current.path, contents: contents, modified: modified,
                                                             sha1: localSha1, ifMatch: base)
                         current = try await uploadedEntry(at: current.path, response: response, contents: contents, client: client)
-                        log.info("Uploaded \(current.path, privacy: .public)")
+                        log.info("Uploaded \(current.path, privacy: .private(mask: .hash))")
                     } catch DavError.precondition {
                         guard let server = try await client.stat(path: current.path, checksums: true) else {
                             // deleted on the server meanwhile: the system re-creates it from the local version
@@ -371,6 +386,19 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
         return progress
     }
 
+    /// Right before a folder goes: has it changed since it was checked (another
+    /// client uploaded into it meanwhile)? Then that is not deleted with it. The
+    /// server cannot do this check itself: owncloud.online answers a DELETE on a
+    /// folder with If-Match always with 412, even for its current etag.
+    private func recheckFolder(_ entry: DavEntry, client: WebDavClient) async throws {
+        guard let now = try await client.stat(path: entry.path) else {
+            throw DavError.http(404) // gone meanwhile: nothing to delete
+        }
+        if now.identifier != entry.identifier || now.etag != entry.etag {
+            throw DavError.precondition
+        }
+    }
+
     /// Move to the Trash: delete on the server, where owncloud.online keeps the
     /// item in the user's trash bin (restorable in the web interface), and let
     /// the system remove it from the disk. Something that changed on the server
@@ -387,15 +415,18 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
             let parent = try await context.identifier(ofFolder: entry.parentPath, client: client)
             do {
                 guard let base = baseEtag, base == entry.etag else { throw DavError.precondition }
+                if entry.isFolder {
+                    try await recheckFolder(entry, client: client)
+                }
                 try await client.delete(path: entry.path, ifMatch: entry.isFolder ? nil : base)
             } catch DavError.precondition {
-                log.error("Not trashing \(entry.path, privacy: .public): it changed on the server")
+                log.error("Not trashing \(entry.path, privacy: .private(mask: .hash)): it changed on the server")
                 let current = try await client.stat(path: entry.path) ?? entry
                 context.signalWorkingSet()
                 completionHandler(try await context.item(for: current, client: client), [], false, nil)
                 return
             }
-            log.info("Trashed \(entry.path, privacy: .public) (kept in the server's trash bin)")
+            log.info("Trashed \(entry.path, privacy: .private(mask: .hash)) (kept in the server's trash bin)")
             await context.store.noteRemoval(identifier, from: parent)
             completionHandler(nil, [], false, nil)
             context.signalWorkingSet()
@@ -439,15 +470,22 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     // A recursive delete takes everything below with it: not if the
                     // folder changed on the server since the system last saw it.
                     if hasChildren && baseEtag != entry.etag {
-                        log.error("Not deleting \(entry.path, privacy: .public): it changed on the server")
+                        log.error("Not deleting \(entry.path, privacy: .private(mask: .hash)): it changed on the server")
                         completionHandler(try await rejected())
                         return
                     }
-                    try await client.delete(path: entry.path)
+                    do {
+                        try await recheckFolder(entry, client: client)
+                        try await client.delete(path: entry.path)
+                    } catch DavError.precondition {
+                        log.error("Not deleting \(entry.path, privacy: .private(mask: .hash)): it changed on the server")
+                        completionHandler(try await rejected())
+                        return
+                    }
                 } else {
                     // Files: never delete content the user has not seen.
                     guard let base = baseEtag, base == entry.etag else {
-                        log.error("Not deleting \(entry.path, privacy: .public): it changed on the server")
+                        log.error("Not deleting \(entry.path, privacy: .private(mask: .hash)): it changed on the server")
                         completionHandler(try await rejected())
                         return
                     }
