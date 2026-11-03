@@ -2,7 +2,7 @@ Bugfix: Setup touched the official upstream client and restarted Windows in sile
 
 Two things the Windows setup and the uninstall helper did could hit a machine
 that also has the official upstream client installed: the setup removed
-"C:\Program Files\ownCloud" recursively as soon as it found files there and
+the upstream client's folder under C:\Program Files recursively as soon as it found files there and
 the new client lived elsewhere - without checking what that directory
 contained - and both stopped owncloud.exe, deleted the upstream-named shortcuts and
 the upstream autostart entry "defensively". On a machine with the official

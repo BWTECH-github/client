@@ -4,7 +4,7 @@ The embedded craft installer ignores the /D= install directory switch: its
 MultiUser initialization unconditionally resets the target directory and
 then applies the Install_Dir registry value when one exists. On machines
 upgrading from 7.7.x (and on fresh machines) the client was therefore
-installed into the old "C:\Program Files\ownCloud" directory - after which
+installed into the old default directory (the upstream client's folder under C:\Program Files) - after which
 the setup's migration step removed that directory as a supposed leftover,
 deleting the freshly installed client. The machine ended up with no client,
 dead shortcuts, no Explorer integration and a ghost Apps & Features entry.

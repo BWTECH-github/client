@@ -3,7 +3,7 @@ Enhancement: Installer defaults to C:\Program Files\owncloud.online and brands t
 The Windows setup now installs to "C:\Program Files\owncloud.online" by
 default (a different path can still be chosen on the directory page or
 via /D=...). An existing installation in the old default directory
-"C:\Program Files\ownCloud" is uninstalled first so upgrades move over
+(the upstream client's folder under C:\Program Files) is uninstalled first so upgrades move over
 cleanly - accounts and sync folders live in the user profile and are
 not affected.
 

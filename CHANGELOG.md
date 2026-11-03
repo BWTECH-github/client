@@ -302,7 +302,7 @@ it contains everything from the pre-releases 11.0.0-beta1 to 11.0.0-beta5.
 
    Two things the Windows setup and the uninstall helper did could hit a machine
    that also has the official upstream client installed: the setup removed
-   "C:\Program Files\ownCloud" recursively as soon as it found files there and
+   the upstream client's folder under C:\Program Files recursively as soon as it found files there and
    the new client lived elsewhere - without checking what that directory
    contained - and both stopped owncloud.exe, deleted the upstream-named
    shortcuts and the upstream autostart entry "defensively". On a machine with
@@ -340,7 +340,8 @@ it contains everything from the pre-releases 11.0.0-beta1 to 11.0.0-beta5.
    MultiUser initialization unconditionally resets the target directory and then
    applies the Install_Dir registry value when one exists. On machines upgrading
    from 7.7.x (and on fresh machines) the client was therefore installed into
-   the old "C:\Program Files\ownCloud" directory - after which the setup's
+   the old default directory (the upstream client's folder under C:\Program
+   Files) - after which the setup's
    migration step removed that directory as a supposed leftover, deleting the
    freshly installed client. The machine ended up with no client, dead
    shortcuts, no Explorer integration and a ghost Apps & Features entry.
@@ -848,8 +849,8 @@ it contains everything from the pre-releases 11.0.0-beta1 to 11.0.0-beta5.
 
    The Windows setup now installs to "C:\Program Files\owncloud.online" by
    default (a different path can still be chosen on the directory page or via
-   /D=...). An existing installation in the old default directory "C:\Program
-   Files\ownCloud" is uninstalled first so upgrades move over cleanly - accounts
+   /D=...). An existing installation in the old default directory (the upstream
+   client's folder under C:\Program Files) is uninstalled first so upgrades move over cleanly - accounts
    and sync folders live in the user profile and are not affected.
 
    The entry in Windows' "Apps & Features" is rebranded as well: it now reads

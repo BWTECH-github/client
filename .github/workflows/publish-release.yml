@@ -84,6 +84,15 @@ jobs:
               BETA_FUSS=$'\n**Bekannte Einschränkung**\n- Deinstallations-Helfer: ein kleiner Rest (Helfer-Ordner) wird beim nächsten Neustart entfernt; stille Deinstallation meldet 3010.\n'
               ;;
           esac
+          # Nur der Abschnitt dieser Version (changelog/<Version>_<Datum>), nicht
+          # CHANGELOG.md: dessen ältere Abschnitte stammen aus dem Upstream-Projekt.
+          CL_DIR="$(gh api "repos/$GITHUB_REPOSITORY/contents/changelog?ref=$TARGET" \
+            --jq ".[] | select(.type == \"dir\" and (.name | startswith(\"${VER}_\"))) | .name" | head -n1 || true)"
+          if [ -n "$CL_DIR" ]; then
+            AENDERUNGEN="[changelog/${CL_DIR}](https://github.com/${GITHUB_REPOSITORY}/tree/${TARGET}/changelog/${CL_DIR}) im Repository"
+          else
+            AENDERUNGEN="[changelog/unreleased](https://github.com/${GITHUB_REPOSITORY}/tree/${TARGET}/changelog/unreleased) im Repository"
+          fi
           cat > notes.md <<EOF
           ${BETA_KOPF}Release ${VER} des owncloud.online Desktop-Clients.
 
@@ -94,7 +103,7 @@ jobs:
           - \`owncloud.online-client-${VER}-macos-arm64.dmg\` — macOS (Apple Silicon, ab macOS 13), mit der Developer ID der BW-TECH GmbH signiert und von Apple notarisiert, mit Finder-Integration für virtuelle Dateien
           - \`SHA256SUMS.txt\` — Prüfsummen aller Pakete
 
-          Änderungsdetails: siehe \`CHANGELOG.md\` und \`changelog/\` im Repository. Virtuelle Dateien („nur online“, Abruf bei Bedarf) gibt es unter Windows (Explorer) und macOS (Finder, nach dem Einrichten in den Systemeinstellungen unter „Anmeldeobjekte & Erweiterungen“ einmal den Dateianbieter einschalten); unter Linux synchronisiert der Client im klassischen Modus mit Ordnerauswahl.
+          Änderungsdetails: ${AENDERUNGEN}. Virtuelle Dateien („nur online“, Abruf bei Bedarf) gibt es unter Windows (Explorer) und macOS (Finder, nach dem Einrichten in den Systemeinstellungen unter „Anmeldeobjekte & Erweiterungen“ einmal den Dateianbieter einschalten); unter Linux synchronisiert der Client im klassischen Modus mit Ordnerauswahl.
           ${BETA_FUSS}
           EOF
           gh release create "$TAG" -R "$GITHUB_REPOSITORY" \
