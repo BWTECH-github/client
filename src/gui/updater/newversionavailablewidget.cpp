@@ -31,6 +31,12 @@ NewVersionAvailableWidget::NewVersionAvailableWidget(QWidget *parent, const QStr
     _ui->icon->setPixmap(IconResources::getBrandingIcon(Theme::instance()->applicationIconName()).pixmap(128, 128));
     _ui->label->setText(statusMessage);
 
+#ifdef Q_OS_MACOS
+    // Die Vorlage bringt zusätzlich OK/Abbrechen/Schließen mit; neben den drei eigenen Knöpfen
+    // waren das sechs, und die Beschriftungen wurden abgeschnitten. Unter macOS nur die drei eigenen.
+    _ui->buttonBox->setStandardButtons(QDialogButtonBox::NoButton);
+#endif
+
     QPushButton *skipButton = _ui->buttonBox->addButton(tr("Skip this version"), QDialogButtonBox::ResetRole);
     QPushButton *getUpdateButton = _ui->buttonBox->addButton(tr("Get update"), QDialogButtonBox::AcceptRole);
     QPushButton *rejectButton = _ui->buttonBox->addButton(tr("Skip this time"), QDialogButtonBox::RejectRole);
