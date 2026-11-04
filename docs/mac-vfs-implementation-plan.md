@@ -29,7 +29,8 @@ Implemented; sections 0–6 below are the original plan and kept for reference.
   as `name (conflicted copy <date>).ext`, SHA1 checked on download (`OC-Checksum`) and sent
   on upload. Trash = delete on the server (owncloud.online keeps it in its trash bin).
 - **App side** (`src/plugins/vfs/mac`): domain per folder (id = SHA1 of account uuid + local
-  path), credential mirroring, polling, sign-out → disconnect + drop credentials, pause →
+  path; display name = `user@host`, plus the folder name for a sub folder or space; the Finder
+  shows it as "owncloud.online - user@host"), credential mirroring, polling, sign-out → disconnect + drop credentials, pause →
   temporary disconnect, folder/account removal → domain + settings + keychain item removed,
   stale domains (no settings file) removed at start, System Settings switch off (`FP -2011`)
   shown as folder error plus a one-time hint with "Open System Settings".

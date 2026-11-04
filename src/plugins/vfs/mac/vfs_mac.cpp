@@ -235,11 +235,10 @@ void VfsMac::startImpl(const VfsSetupParams &params)
     _domainIdentifier = QString::fromLatin1(QCryptographicHash::hash(seed, QCryptographicHash::Sha1).toHex());
 
     const QString root = remoteRoot(params);
-    // like the Windows sync root: the app name, with several accounts plus the account
-    QString displayName = params.providerDisplayName.isEmpty() ? QStringLiteral("owncloud.online") : params.providerDisplayName;
-    if (params.multipleAccountsRegistered) {
-        displayName = tr("%1 - %2").arg(displayName, params.account->displayNameWithHost());
-    }
+    // Der Finder stellt den Namen der App selbst voran („owncloud.online - …“). Der Domain-Name nennt
+    // deshalb nur das Konto, wie der offizielle Client (Benutzer@Server), und bei einem Unterordner oder
+    // Space zusätzlich dessen Namen. Mit dem App-Namen hieß der Eintrag „owncloud.online - owncloud.online“.
+    QString displayName = params.account->displayNameWithHost();
     if (!root.isEmpty()) {
         displayName = tr("%1 - %2").arg(displayName, root.section(QLatin1Char('/'), -1));
     }
