@@ -201,10 +201,13 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                 let parentPath = try await context.path(for: itemTemplate.parentItemIdentifier, client: client)
                 let path = joinPath(parentPath, name)
 
-                func finish(_ entry: DavEntry, fetchContent: Bool = false) async throws {
+                // rescan: den gemerkten ETag leeren, damit die nächste Änderungssuche den Ordner einmal
+                // vollständig abgleicht (für einen übernommenen Server-Ordner, dessen Inhalt das System nicht kennt)
+                func finish(_ entry: DavEntry, fetchContent: Bool = false, rescan: Bool = false) async throws {
                     let item = try await self.context.item(for: entry, client: client)
                     await self.context.store.register(entries: [entry])
-                    await self.context.store.noteChild(entry.identifier, seen: entry.seen, in: item.parentItemIdentifier)
+                    let seen = rescan ? Seen(etag: "", name: entry.seen.name) : entry.seen
+                    await self.context.store.noteChild(entry.identifier, seen: seen, in: item.parentItemIdentifier)
                     self.log.info("Created \(entry.isFolder ? "folder" : "file", privacy: .public) \(entry.path, privacy: .private(mask: .hash))")
                     completionHandler(item, [], fetchContent, nil)
                     self.context.signalWorkingSet()
@@ -217,8 +220,12 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                         completionHandler(nil, [], false, try await collisionError(at: path, client: client))
                         return
                     }
+                    // Einen Ordner, den das System selbst anlegt, zählt es nie auf (es kennt seinen Inhalt).
+                    // Ohne Ausgangsstand stiege die Änderungssuche nie in ihn hinein, und Dateien, die auf
+                    // dem Server darin entstehen, kämen auf dem Mac nicht an.
+                    await self.context.store.setBaselineIfUnknown(of: entry.identifier, to: [:])
                     // a folder of that name exists already: adopt it, the system merges both
-                    try await finish(entry)
+                    try await finish(entry, rescan: !created)
                     return
                 }
 

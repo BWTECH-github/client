@@ -570,7 +570,9 @@ void WindowsUpdater::versionInfoArrived(const UpdateInfo &info)
         qCInfo(lcUpdater) << "Client is on latest version!";
         setDownloadState(UpToDate);
     } else {
-        const QString url = info.downloadUrl();
+        // Herunterladen und Installieren gibt es nur unter Windows (Setup); macOS bekommt immer den Hinweis
+        // mit Link zur Download-Seite, auch wenn ein Feed einmal eine <downloadurl> enthielte.
+        const QString url = Utility::isWindows() ? info.downloadUrl() : QString();
         if (url.isEmpty() || !isTrustedDownloadUrl(QUrl(url))) {
             if (!url.isEmpty()) {
                 qCWarning(lcUpdater) << "Untrusted download url, offering manual download only:" << url;

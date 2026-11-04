@@ -34,7 +34,10 @@ Implemented; sections 0–6 below are the original plan and kept for reference.
   stale domains (no settings file) removed at start, System Settings switch off (`FP -2011`)
   shown as folder error plus a one-time hint with "Open System Settings".
 - **GUI**: wizard and folder wizard offer virtual files on macOS 13+ when the extension is
-  embedded (no environment variable). A File Provider folder keeps only its journal in
+  embedded (no environment variable), and **preselect** them: a new account syncs as
+  virtual files ("Sync and download files as you use them"), classic sync is the
+  alternative. Existing folders keep their mode; the folder menu switches them
+  ("Activate virtual files" / "Deactivate virtual files"). A File Provider folder keeps only its journal in
   `~/Library/Application Support/owncloud.online/FileProvider/<uuid>`.
 
 Build / test on this Mac: Craft (`--compile`, `--install --qmerge`) with
@@ -45,9 +48,14 @@ logic can be driven outside the system with a harness that compiles the extensio
 against a WebDAV mock; inside the system with `~/ocvfsprobe` (sandboxed driver app whose
 extension target takes the same sources).
 
-Open: CI builds do not embed the extension yet (CI signing has to keep the extension's
-entitlements); notarized Developer ID build with the extension; Finder UI checks (sidebar,
-context menu "Remove Download", System Settings switch) need an unlocked GUI session.
+Since 11.0.0 the CI dmg embeds the extension, signed with its entitlements and notarized
+(Developer ID of team A7VZ8HFNR4, app group `A7VZ8HFNR4.online.owncloud.desktopclient`).
+
+Fixed in the re-release of 11.0.0 (2026-11-04): a folder created on the Mac was never enumerated by macOS, so it never
+became a "known" folder and server changes inside it did not arrive. `createItem` now gives a
+new folder an empty baseline, and an adopted server folder (same name, `mayAlreadyExist`)
+gets an empty remembered ETag in its parent, so the next change walk compares it once in
+full. Harness: 50 checks (5 new ones fail with the first 11.0.0 build).
 
 Tested on 2026-11-03 against testoo.bw.tech (owncloud.online 11.0.46, OAuth2, account
 qa-test) with a locked GUI session, so the wizard could not be driven: the account was

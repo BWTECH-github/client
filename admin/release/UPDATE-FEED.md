@@ -171,9 +171,15 @@ diese Änderungen bleibt der Feed wirkungslos oder ist auf Windows schädlich.
 6. **Rich-Text.** `ocupdater.cpp:150` und `:158` setzen `<web>` ungeschützt in
    `<a href='%1'>`. Der Generator lehnt dafür gefährliche Zeichen ab; sauberer
    ist `.toHtmlEscaped()` im Client.
-7. **macOS** meldet nur (`updater.cpp:156-162`, `PassiveUpdateNotifier`);
-   Sparkle bräuchte einen eigenen Appcast mit EdDSA-Signatur – nicht Teil
-   dieses Feeds.
+7. **macOS** (ab 11.0.0, Neuauflage vom 2026-11-04): `Updater::create()` nimmt wie unter Windows den
+   `WindowsUpdater`. Der macOS-Feed hat keine `<downloadurl>` (und eine
+   vorhandene wird unter macOS ignoriert), deshalb zeigt der Client den Dialog
+   „Neue Version verfügbar“ (Überspringen / Später / Update holen); „Update
+   holen“ öffnet `<web>`. Installiert wird durch Ersetzen der App in
+   „Programme“ aus dem dmg; Einstellungen, Konten und Finder-Domains bleiben.
+   Die Vorabversionen bis 11.0.0-beta4 fragten Sparkle, das den Feed nicht lesen kann (kein
+   Appcast, EdDSA-Schlüssel im Info.plist vom Upstream-Projekt): Diese Versionen
+   sehen kein Update und brauchen einmalig eine manuelle Installation.
 8. **Linux/AppImage** (`src/gui/updater/appimageupdater.cpp:48`, `:143`) braucht
    eine `.zsync`-Datei als `downloadurl`. `publish-release.yml` erzeugt noch
    keine; bis dahin enthält der Linux-Feed nur den Hinweis mit Link.

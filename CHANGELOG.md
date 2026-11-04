@@ -73,6 +73,8 @@ it contains everything from the pre-releases 11.0.0-beta1 to 11.0.0-beta5.
 * Bugfix - An expired access token no longer ends in a new sign-in
 * Bugfix - No empty policies key left in the registry
 * Bugfix - Large downloads survive interruptions and keep going
+* Bugfix - Server changes in folders created in the Finder reach the Mac
+* Bugfix - macOS shows when a new version is available
 * Bugfix - Changes on owncloud.online servers arrive within 30 seconds
 * Bugfix - Settings/sign-in window could appear in a screen corner
 * Bugfix - The sign-in dialogs in the account view show the complete logo
@@ -448,6 +450,25 @@ it contains everything from the pre-releases 11.0.0-beta1 to 11.0.0-beta5.
    downloads is capped at one minute (instead of growing to 24 hours), so the
    next sync run picks the file up right where it stopped. Net effect: a 10 GB
    download keeps inching forward until it completes.
+
+* Bugfix - Server changes in folders created in the Finder reach the Mac
+
+   Files that were added or changed on the server inside a folder that had been
+   created on the Mac (in the Finder) never appeared there. The File Provider
+   extension only looked for server changes in folders that macOS had listed once,
+   and macOS never lists a folder it created itself. Such folders are now tracked
+   from the moment they are created, and a folder that already existed on the
+   server under the same name is compared once in full, so its files appear too.
+
+* Bugfix - macOS shows when a new version is available
+
+   On macOS the client asked Sparkle for updates, but the update feed of
+   owncloud.online is not a Sparkle appcast, so no update was ever found. Like on
+   Windows, the client now shows that a new version is available, with the choice
+   to skip it or to get it; "Get update" opens the download page. To install,
+   replace the app in Applications with the new one from the disk image; settings,
+   accounts and the Finder integration stay. The pre-releases 11.0.0-beta1 to beta4
+   cannot show this notice and have to be updated by hand once.
 
 * Bugfix - Changes on owncloud.online servers arrive within 30 seconds
 

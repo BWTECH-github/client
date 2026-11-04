@@ -93,9 +93,6 @@ QUrl Updater::updateUrl()
 
     auto urlQuery = getQueryParams();
 
-#if defined(Q_OS_MAC) && defined(HAVE_SPARKLE)
-    urlQuery.addQueryItem(QLatin1String("sparkle"), QLatin1String("true"));
-#endif
 
     updateBaseUrl.setQuery(urlQuery);
 
@@ -189,10 +186,11 @@ Updater *Updater::create()
         return nullptr;
     }
 
-#if defined(Q_OS_MAC) && defined(HAVE_SPARKLE)
-    return new SparkleUpdater(url);
-#elif defined(Q_OS_WIN32)
-    // Also for MSI
+#if defined(Q_OS_WIN32) || defined(Q_OS_MACOS)
+    // Also for MSI.
+    // macOS: Der Feed von owncloud.online ist kein Sparkle-Appcast (keine EdDSA-Signatur, die Schlüssel
+    // im Info.plist stammen vom Upstream-Projekt). Sparkle fand deshalb nie ein Update. Der WindowsUpdater
+    // zeigt ohne <downloadurl> den Dialog „Neue Version verfügbar“ und öffnet die Download-Seite.
     return new WindowsUpdater(url);
 #else
 #ifdef WITH_APPIMAGEUPDATER
