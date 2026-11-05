@@ -985,6 +985,15 @@ private Q_SLOTS:
         QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/empty"))._type, ItemTypeFile);
         QVERIFY(fakeFolder.syncOnce());
         QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/empty"))._type, ItemTypeFile);
+
+        // und freigeben lässt sie sich einmal, nicht bei jedem Lauf von Neuem
+        QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A/empty"), PinState::OnlineOnly));
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/empty"))._type, ItemTypeVirtualFile);
+        QSignalSpy completeSpy(fakeFolder.syncEngine(), &SyncEngine::itemCompleted);
+        QVERIFY(fakeFolder.syncOnce());
+        QVERIFY(!itemInstruction(completeSpy, QStringLiteral("A/empty"), CSYNC_INSTRUCTION_SYNC));
+        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/empty"))._type, ItemTypeVirtualFile);
     }
 
     // owncloud.online: Eine laufende Hydratation hält das Abmelden des Ordners nicht auf
