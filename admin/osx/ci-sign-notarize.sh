@@ -130,7 +130,12 @@ for DMG in "$DIR"/*.dmg; do
       [[ "$try" -eq 6 ]] && exit 1
       sleep $(( try * 20 ))
     done
-    xcrun stapler validate "$OUT"
+    # Auch die Prüfung fragt Apple über das Netz, derselbe Aussetzer darf den Lauf nicht beenden
+    for try in 1 2 3 4 5 6; do
+      if xcrun stapler validate "$OUT"; then break; fi
+      [[ "$try" -eq 6 ]] && exit 1
+      sleep $(( try * 20 ))
+    done
     spctl -a -vvv -t open --context context:primary-signature "$OUT"
   else
     codesign --force --timestamp=none ${SIGN_KEYCHAIN:+--keychain "$SIGN_KEYCHAIN"} --sign "$IDENTITY" "$OUT"
