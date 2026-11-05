@@ -498,9 +498,11 @@ bool PropagateDownloadFile::hydrateInPlace()
     if (_item->_type != ItemTypeVirtualFileDownload || _item->instruction() != CSYNC_INSTRUCTION_SYNC) {
         return false;
     }
-    // die Bandbreitenbegrenzung kennt nur der normale Download
+    // Die Bandbreitenbegrenzung, die Meldung bei zu wenig freiem Speicher und das Fortsetzen einer halb geladenen Datei kennt nur der
+    // normale Download
     const auto bandwidth = propagator()->_bandwidthManager;
-    if (bandwidth && (bandwidth->usingAbsoluteDownloadLimit() || bandwidth->usingRelativeDownloadLimit())) {
+    if ((bandwidth && (bandwidth->usingAbsoluteDownloadLimit() || bandwidth->usingRelativeDownloadLimit()))
+        || propagator()->diskSpaceCheck() != OwncloudPropagator::DiskSpaceOk || propagator()->_journal->getDownloadInfo(_item->_file)._valid) {
         return false;
     }
     Vfs *vfs = propagator()->syncOptions().vfs();
