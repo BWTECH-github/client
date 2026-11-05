@@ -28,7 +28,9 @@
 #include <QMenu>
 #include <QScopeGuard>
 #include <QScopedValueRollback>
+#include <QTimer>
 #include <QTreeWidget>
+#include <QTreeWidgetItemIterator>
 #include <QVBoxLayout>
 
 namespace OCC {
@@ -501,6 +503,21 @@ void SelectiveSyncWidget::setPinStateFolder(Folder *folder)
     _folderTree->headerItem()->setText(1, tr("Availability"));
     _folderTree->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(_folderTree, &QTreeWidget::customContextMenuRequested, this, &SelectiveSyncWidget::slotContextMenu, Qt::UniqueConnection);
+
+    // Die Wahl setzt nur den Pin-Zustand, laden und freigeben tut erst der Sync: den Stand danach zeigen, gesammelt je halbe Sekunde
+    auto *refreshTimer = new QTimer(this);
+    refreshTimer->setSingleShot(true);
+    refreshTimer->setInterval(500);
+    connect(refreshTimer, &QTimer::timeout, this, [this] {
+        for (QTreeWidgetItemIterator it(_folderTree); *it; ++it) {
+            refreshAvailability(*it);
+        }
+    });
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::itemCompleted, this, [this, refreshTimer](Folder *changedFolder, const SyncFileItemPtr &) {
+        if (changedFolder == _pinStateFolder && !refreshTimer->isActive()) {
+            refreshTimer->start();
+        }
+    });
 }
 
 void SelectiveSyncWidget::slotContextMenu(const QPoint &pos)
@@ -535,7 +552,7 @@ void SelectiveSyncWidget::applyPinState(QTreeWidgetItem *item, PinState state)
         return;
     }
     const QString relPath = item->data(0, Qt::UserRole).toString();
-    if (!_pinStateFolder->vfs().setPinState(relPath, state)) {
+    if (!_pinStateFolder->changeAvailability(relPath, state)) {
         qCWarning(lcSelectiveSync) << "Failed to set pin state" << static_cast<int>(state) << "for" << relPath;
         return;
     }

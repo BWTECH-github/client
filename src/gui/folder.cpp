@@ -1150,6 +1150,27 @@ void Folder::schedulePathForLocalDiscovery(const QString &relativePath)
     _localDiscoveryTracker->addTouchedPath(relativePath);
 }
 
+bool Folder::changeAvailability(const QString &relativePath, PinState state)
+{
+    if (!_vfs->setPinState(relativePath, state)) {
+        return false;
+    }
+    // Unter macOS lädt und entfernt die File-Provider-Erweiterung selbst
+    if (_vfs->mode() == Vfs::WindowsCfApi) {
+        // Die Attribute meldet auch der Wächter, aber erst bis zu zehn Sekunden später und bei tausenden Dateien nur als Überlauf.
+        // Der Pfad deckt den Ordner samt Inhalt ab, nur die Wurzel nicht.
+        if (relativePath.isEmpty()) {
+            slotNextSyncFullLocalDiscovery();
+        } else {
+            schedulePathForLocalDiscovery(relativePath);
+        }
+        if (canSync()) {
+            FolderMan::instance()->scheduler()->enqueueFolder(this);
+        }
+    }
+    return true;
+}
+
 void Folder::slotFolderConflicts(Folder *folder, const QStringList &conflictPaths)
 {
     if (folder != this)

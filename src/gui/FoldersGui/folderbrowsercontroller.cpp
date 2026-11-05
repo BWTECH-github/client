@@ -45,6 +45,7 @@
 #include <algorithm>
 #include <functional>
 #include <numeric>
+#include <utility>
 #include <vector>
 
 namespace OCC {
@@ -182,6 +183,12 @@ FolderBrowserController::FolderBrowserController(QStandardItemModel *model, QObj
     connect(_model, &QStandardItemModel::rowsInserted, this, &FolderBrowserController::onRowsInserted);
     connect(_model, &QStandardItemModel::itemChanged, this, &FolderBrowserController::onItemChanged);
     connect(FolderMan::instance(), &FolderMan::folderRemoved, this, &FolderBrowserController::onFolderRemoved);
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::itemCompleted, this, &FolderBrowserController::onItemCompleted);
+
+    // gesammelt: ein Sync schließt tausende Dateien in wenigen Sekunden ab
+    _completedPathsTimer.setSingleShot(true);
+    _completedPathsTimer.setInterval(500);
+    connect(&_completedPathsTimer, &QTimer::timeout, this, &FolderBrowserController::refreshCompletedItems);
 
     ConfigFile::setupDefaultExcludeFilePaths(_excludedFiles);
     _excludedFiles.reloadExcludeFiles();
@@ -259,6 +266,50 @@ void FolderBrowserController::onFolderRemoved(const QUuid &accountId, Folder *fo
         return;
     _syncStates.remove(folderKey(folder));
     recomputePending();
+}
+
+void FolderBrowserController::onItemCompleted(Folder *folder, const SyncFileItemPtr &item)
+{
+    if (!folder || !folder->virtualFilesEnabled() || item->isDirectory()) {
+        return;
+    }
+    auto &paths = _completedPaths[folder];
+    for (QString path = item->destination(); !path.isEmpty(); path = path.left(std::max<qsizetype>(path.lastIndexOf(QLatin1Char('/')), 0))) {
+        paths.insert(path);
+    }
+    if (!_completedPathsTimer.isActive()) {
+        _completedPathsTimer.start();
+    }
+}
+
+void FolderBrowserController::refreshCompletedItems()
+{
+    const auto completed = std::exchange(_completedPaths, {});
+    for (auto it = completed.cbegin(); it != completed.cend(); ++it) {
+        const FolderItem *rootItem = rootItemForFolder(it.key());
+        if (!rootItem) {
+            continue;
+        }
+        QList<QStandardItem *> rows;
+        const auto keepRows = [&](const QList<QStandardItem *> &children) {
+            for (QStandardItem *child : children) {
+                if (it.value().contains(child->data(FolderItemRoles::RemotePathRole).toString())) {
+                    rows.append(child);
+                }
+            }
+        };
+        QList<const QStandardItem *> parents{rootItem};
+        while (!parents.isEmpty()) {
+            const QStandardItem *parent = parents.takeLast();
+            const QList<QStandardItem *> subfolders = browserChildren(parent);
+            keepRows(subfolders);
+            keepRows(childrenOfKind(parent, FolderTreeItemKind::BrowserFile));
+            for (const QStandardItem *subfolder : subfolders) {
+                parents.append(subfolder);
+            }
+        }
+        queueAvailability(rows);
+    }
 }
 
 QList<QStandardItem *> FolderBrowserController::placeholderRow()
@@ -547,7 +598,7 @@ void FolderBrowserController::populateListing(Folder *folder, const QString &par
         applyListing(parentItem, std::move(folderEntries), std::move(fileEntries), vfsMode, syncState.pendingBlackList);
     }
 
-    // die Verfügbarkeit fragt je Zeile das Journal und unter Windows den Explorer, unter macOS das Dateisystem:
+    // die Verfügbarkeit fragt je Zeile das Journal und das Dateisystem:
     // nachgetragen in Zeitscheiben, damit ein großer Ordner das Fenster nicht anhält
     if (vfsMode)
         queueAvailability(browserChildren(parentItem) + childrenOfKind(parentItem, FolderTreeItemKind::BrowserFile));
@@ -982,8 +1033,8 @@ void FolderBrowserController::queueAvailability(const QList<QStandardItem *> &it
 
 void FolderBrowserController::processPendingAvailability()
 {
-    // Je Durchgang höchstens so lange, dann ist die Ereignisschleife wieder dran: Unter Windows fragt jede Zeile den
-    // Eigenschaftsspeicher des Explorers, unter macOS das Dateisystem. Kleine Ordner sind im ersten Durchgang fertig.
+    // Je Durchgang höchstens so lange, dann ist die Ereignisschleife wieder dran: Jede Zeile fragt das Dateisystem, ein ganz
+    // angehefteter Ordner geht durch seinen Inhalt. Kleine Ordner sind im ersten Durchgang fertig.
     constexpr qint64 timeSliceMs = 30;
     QElapsedTimer timer;
     timer.start();
@@ -1082,10 +1133,11 @@ void FolderBrowserController::popAvailabilityMenu(const QModelIndex &index, cons
         return;
 
     const QString relPath = item->data(FolderItemRoles::RemotePathRole).toString();
-    if (!folder->vfs().setPinState(relPath, state)) {
+    if (!folder->changeAvailability(relPath, state)) {
         qCWarning(lcFolderBrowser) << "Failed to set pin state" << static_cast<int>(state) << "for" << relPath;
         return;
     }
+    // den Stand nach dem Laden und Freigeben trägt onItemCompleted() nach
     refreshAvailability(folder, item, true);
 #ifdef Q_OS_MACOS
     // macOS lädt und entfernt im Hintergrund: den Stand kurz darauf noch einmal zeigen

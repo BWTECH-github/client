@@ -19,6 +19,7 @@
 #include "gui/owncloudguilib.h"
 
 #include "accountstate.h"
+#include "common/pinstate.h"
 #include "common/syncjournaldb.h"
 #include "libsync/graphapi/space.h"
 #include "networkjobs.h"
@@ -444,6 +445,12 @@ public Q_SLOTS:
      * discovery.
      */
     void schedulePathForLocalDiscovery(const QString &relativePath);
+
+    /** Setzt die Wahl „immer behalten“ oder „freigeben“ für ein Objekt und alles darin und lässt sie gleich ausführen.
+     *
+     * relativePath ist relativ zum Sync-Ordner. Gibt false zurück, wenn sich die Wahl nicht setzen ließ.
+     */
+    bool changeAvailability(const QString &relativePath, PinState state);
 
     /// Reloads the excludes, used when changing the user-defined excludes after saving them to disk.
     bool reloadExcludes();
