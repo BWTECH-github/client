@@ -94,6 +94,7 @@ private slots:
     void onItemChanged(QStandardItem *item);
     void onFolderRemoved(const QUuid &accountId, OCC::Folder *folder);
     void onItemCompleted(OCC::Folder *folder, const OCC::SyncFileItemPtr &item);
+    void onFilesTouched(OCC::Folder *folder, const QSet<QString> &relativePaths);
 
 private:
     struct FolderSyncState
@@ -127,7 +128,8 @@ private:
     static void setRowDetail(QStandardItem *item, const QString &detail);
     void queueAvailability(const QList<QStandardItem *> &items);
     void processPendingAvailability();
-    void refreshCompletedItems();
+    void noteChangedPath(Folder *folder, QString relativePath);
+    void refreshChangedRows();
 
     static int itemKind(const QStandardItem *item);
     static QList<QStandardItem *> browserChildren(const QStandardItem *parentItem);
@@ -145,9 +147,9 @@ private:
     // Zeilen, deren Verfügbarkeit (virtuelle Dateien) noch aussteht; abgearbeitet in Zeitscheiben
     QList<QPersistentModelIndex> _pendingAvailability;
     bool _availabilityScheduled = false;
-    // Was der Sync seit der letzten Aktualisierung fertig hat, samt Elternordnern: Die Wahl setzt nur den Pin-Zustand, laden und
+    // Was sich seit der letzten Aktualisierung geändert hat, samt Elternordnern: Die Wahl setzt nur den Pin-Zustand, laden und
     // freigeben tut erst der Sync. Der Zeiger dient nur als Schlüssel, der Ordner kann längst weg sein.
-    QHash<Folder *, QSet<QString>> _completedPaths;
-    QTimer _completedPathsTimer;
+    QHash<Folder *, QSet<QString>> _changedPaths;
+    QTimer _changedPathsTimer;
 };
 }

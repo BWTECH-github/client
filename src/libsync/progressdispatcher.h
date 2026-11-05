@@ -18,6 +18,7 @@
 #include "owncloudlib.h"
 #include <QObject>
 #include <QHash>
+#include <QSet>
 #include <QTime>
 #include <QQueue>
 #include <QElapsedTimer>
@@ -309,6 +310,11 @@ Q_SIGNALS:
      * @brief: the item was completed by a job
      */
     void itemCompleted(Folder *folder, const SyncFileItemPtr &item);
+
+    /**
+     * @brief Dateien haben sich geändert, ohne dass ein Sync etwas zu tun hat, etwa „Immer behalten“ an einer schon geladenen Datei.
+     */
+    void filesTouched(Folder *folder, const QSet<QString> &relativePaths);
 
     /**
      * @brief A new folder-wide sync error was seen.

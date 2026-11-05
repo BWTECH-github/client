@@ -528,15 +528,15 @@ bool PropagateDownloadFile::hydrateInPlace()
             startDownload();
             return;
         }
-        // Das Journal hat die Hydratation geschrieben. Sie kann eine neuere Fassung geholt haben als die Discovery kannte.
+        // Journal und Platzhalter hat die Hydratation geschrieben, auch wenn sie eine neuere Fassung geholt hat als die Discovery kannte.
+        // Ein Programm kann die Datei längst offen haben, dann scheiterte updateMetadata() als schwerer Fehler. Nur eine leere Datei
+        // hat nichts zu laden: Da bleibt das Journal zu schreiben.
         SyncJournalFileRecord hydrated;
         if (propagator()->_journal->getFileRecord(_item->_file, &hydrated) && hydrated.isValid() && hydrated._type == ItemTypeFile) {
-            _item->_etag = QString::fromUtf8(hydrated._etag);
-            _item->_modtime = hydrated._modtime;
-            _item->_size = hydrated._fileSize;
-            _item->_checksumHeader = hydrated._checksumHeader;
+            done(SyncFileItem::Success);
+        } else {
+            updateMetadata(false);
         }
-        updateMetadata(false);
     });
     if (!started) {
         propagator()->_activeJobList.removeOne(this);

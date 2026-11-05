@@ -184,11 +184,12 @@ FolderBrowserController::FolderBrowserController(QStandardItemModel *model, QObj
     connect(_model, &QStandardItemModel::itemChanged, this, &FolderBrowserController::onItemChanged);
     connect(FolderMan::instance(), &FolderMan::folderRemoved, this, &FolderBrowserController::onFolderRemoved);
     connect(ProgressDispatcher::instance(), &ProgressDispatcher::itemCompleted, this, &FolderBrowserController::onItemCompleted);
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::filesTouched, this, &FolderBrowserController::onFilesTouched);
 
     // gesammelt: ein Sync schließt tausende Dateien in wenigen Sekunden ab
-    _completedPathsTimer.setSingleShot(true);
-    _completedPathsTimer.setInterval(500);
-    connect(&_completedPathsTimer, &QTimer::timeout, this, &FolderBrowserController::refreshCompletedItems);
+    _changedPathsTimer.setSingleShot(true);
+    _changedPathsTimer.setInterval(500);
+    connect(&_changedPathsTimer, &QTimer::timeout, this, &FolderBrowserController::refreshChangedRows);
 
     ConfigFile::setupDefaultExcludeFilePaths(_excludedFiles);
     _excludedFiles.reloadExcludeFiles();
@@ -270,22 +271,36 @@ void FolderBrowserController::onFolderRemoved(const QUuid &accountId, Folder *fo
 
 void FolderBrowserController::onItemCompleted(Folder *folder, const SyncFileItemPtr &item)
 {
-    if (!folder || !folder->virtualFilesEnabled() || item->isDirectory()) {
-        return;
-    }
-    auto &paths = _completedPaths[folder];
-    for (QString path = item->destination(); !path.isEmpty(); path = path.left(std::max<qsizetype>(path.lastIndexOf(QLatin1Char('/')), 0))) {
-        paths.insert(path);
-    }
-    if (!_completedPathsTimer.isActive()) {
-        _completedPathsTimer.start();
+    if (!item->isDirectory()) {
+        noteChangedPath(folder, item->destination());
     }
 }
 
-void FolderBrowserController::refreshCompletedItems()
+void FolderBrowserController::onFilesTouched(Folder *folder, const QSet<QString> &relativePaths)
 {
-    const auto completed = std::exchange(_completedPaths, {});
-    for (auto it = completed.cbegin(); it != completed.cend(); ++it) {
+    for (const QString &path : relativePaths) {
+        noteChangedPath(folder, path);
+    }
+}
+
+void FolderBrowserController::noteChangedPath(Folder *folder, QString relativePath)
+{
+    if (!folder || !folder->virtualFilesEnabled()) {
+        return;
+    }
+    auto &paths = _changedPaths[folder];
+    for (; !relativePath.isEmpty(); relativePath.truncate(std::max<qsizetype>(relativePath.lastIndexOf(QLatin1Char('/')), 0))) {
+        paths.insert(relativePath);
+    }
+    if (!_changedPathsTimer.isActive()) {
+        _changedPathsTimer.start();
+    }
+}
+
+void FolderBrowserController::refreshChangedRows()
+{
+    const auto changed = std::exchange(_changedPaths, {});
+    for (auto it = changed.cbegin(); it != changed.cend(); ++it) {
         const FolderItem *rootItem = rootItemForFolder(it.key());
         if (!rootItem) {
             continue;
@@ -1137,7 +1152,7 @@ void FolderBrowserController::popAvailabilityMenu(const QModelIndex &index, cons
         qCWarning(lcFolderBrowser) << "Failed to set pin state" << static_cast<int>(state) << "for" << relPath;
         return;
     }
-    // den Stand nach dem Laden und Freigeben trägt onItemCompleted() nach
+    // den Stand nach dem Laden und Freigeben tragen onItemCompleted() und refreshChangedRows() nach
     refreshAvailability(folder, item, true);
 #ifdef Q_OS_MACOS
     // macOS lädt und entfernt im Hintergrund: den Stand kurz darauf noch einmal zeigen

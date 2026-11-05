@@ -582,6 +582,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
         return;
     }
     bool needSync = false;
+    QSet<QString> spuriousPaths;
     for (const auto &path : paths) {
         // Die Pfade melden das Dateisystem und der Sperr-Wächter (Schreibweise, Kurznamen, Verknüpfungen): Fremdes überspringen.
         // Das frühere Q_ASSERT beendete mit FORCE_ASSERTS (Beta) das Programm.
@@ -633,6 +634,7 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
             }
             if (spurious) {
                 qCInfo(lcFolder) << "Ignoring spurious notification for file" << relativePath;
+                spuriousPaths.insert(relativePath);
                 continue; // probably a spurious notification
             }
         }
@@ -644,6 +646,9 @@ void Folder::slotWatchedPathsChanged(const QSet<QString> &paths, ChangeReason re
     }
     if (needSync && canSync()) {
         FolderMan::instance()->scheduler()->enqueueFolder(this);
+    }
+    if (!spuriousPaths.isEmpty()) {
+        Q_EMIT ProgressDispatcher::instance()->filesTouched(this, spuriousPaths);
     }
 }
 

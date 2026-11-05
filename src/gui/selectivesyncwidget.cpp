@@ -513,11 +513,13 @@ void SelectiveSyncWidget::setPinStateFolder(Folder *folder)
             refreshAvailability(*it);
         }
     });
-    connect(ProgressDispatcher::instance(), &ProgressDispatcher::itemCompleted, this, [this, refreshTimer](Folder *changedFolder, const SyncFileItemPtr &) {
+    const auto refreshSoon = [this, refreshTimer](Folder *changedFolder) {
         if (changedFolder == _pinStateFolder && !refreshTimer->isActive()) {
             refreshTimer->start();
         }
-    });
+    };
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::itemCompleted, this, [refreshSoon](Folder *changedFolder, const SyncFileItemPtr &) { refreshSoon(changedFolder); });
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::filesTouched, this, [refreshSoon](Folder *changedFolder, const QSet<QString> &) { refreshSoon(changedFolder); });
 }
 
 void SelectiveSyncWidget::slotContextMenu(const QPoint &pos)
