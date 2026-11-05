@@ -1655,7 +1655,7 @@ Esto significa que el cliente de sincronización podría no subir los cambios lo
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
         <source>Loading …</source>
         <translation>Cargando...</translation>
     </message>

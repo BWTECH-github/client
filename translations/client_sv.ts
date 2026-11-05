@@ -1639,7 +1639,7 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
         <source>Loading …</source>
         <translation>Läser in ...</translation>
     </message>

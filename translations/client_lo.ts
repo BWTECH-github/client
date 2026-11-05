@@ -1647,7 +1647,7 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
         <source>Loading …</source>
         <translation>ກຳລັງໂຫຼດ…</translation>
     </message>

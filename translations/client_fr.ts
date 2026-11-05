@@ -1672,7 +1672,7 @@ Cela veut dire que le client de synchronisation ne peut pas téléverser les cha
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
         <source>Loading …</source>
         <translation>Chargement …</translation>
     </message>

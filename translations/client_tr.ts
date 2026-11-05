@@ -1734,7 +1734,7 @@ Bu yüzden senkronizasyon yerel değişiklikler anlık olarak karşı tarafa yü
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Yükleniyor …</translation>

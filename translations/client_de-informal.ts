@@ -1568,7 +1568,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+1035"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+1054"/>
         <source>Share…</source>
         <translation>Teilen…</translation>
     </message>

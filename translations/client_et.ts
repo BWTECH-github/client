@@ -1697,7 +1697,7 @@ See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe ül
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
         <source>Loading …</source>
         <translation>Laadimine ...</translation>
     </message>

@@ -1666,7 +1666,7 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
         <source>Loading …</source>
         <translation>Wczytuję ...</translation>
     </message>
