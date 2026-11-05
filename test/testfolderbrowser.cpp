@@ -113,7 +113,8 @@ private Q_SLOTS:
         QCoreApplication::processEvents();
         const qint64 elapsed = timer.elapsed();
         qInfo() << "2.000 Ordner und 20.000 Dateien eingefügt in" << applied << "ms, mit Auslegen und Zeichnen" << elapsed << "ms";
-        QVERIFY2(elapsed < 1000, qPrintable(QStringLiteral("%1 ms").arg(elapsed)));
+        // Der Hänger dauerte Minuten. Auf einem belegten macOS-Runner braucht das Einfügen allein auch mal über eine Sekunde (Lauf 42089638314)
+        QVERIFY2(elapsed < 5000, qPrintable(QStringLiteral("%1 ms").arg(elapsed)));
         // Ordner, Dateien und „weitere Dateien“ in einem Stück, nicht eine Einfügung je Zeile
         QCOMPARE(inserted.count(), 1);
 
