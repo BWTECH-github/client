@@ -34,6 +34,25 @@ Implemented; sections 0–6 below are the original plan and kept for reference.
   temporary disconnect, folder/account removal → domain + settings + keychain item removed,
   stale domains (no settings file) removed at start, System Settings switch off (`FP -2011`)
   shown as folder error plus a one-time hint with "Open System Settings".
+- **Keep / free space**: "Always keep on this device", "Free up space (online only)" and "Reset
+  to default" (client folder view) end in `VfsMac::setPinState`: besides the pin database it
+  writes one request file `FileProviderPin-<domain>-<time>-<uuid>.json` (`{path, state}`, state
+  `local`/`online`/`inherited`) to the app group container and signals the working set. The
+  extension takes the requests in `enumerateChanges`, keeps the choice per item id in its store
+  (a choice replaces those of everything below), reports the item with the new `contentPolicy`
+  (`downloadEagerlyAndKeepDownloaded` / `downloadLazily` / `inherited`; the choice is part of the
+  metadata version) and, for `online`, calls `evictItem` (recursive for folders). macOS does the
+  downloading itself. Items carry `allowsEvicting`, without it the Finder has no "Remove
+  Download". `VfsMac::availability` shows the choice, otherwise the real state of the file in
+  the CloudStorage folder (`SF_DATALESS`, read with materialization switched off for the
+  thread, first level only for folders), so choices stored by 11.0.0 cannot show a wrong state;
+  kept items are sent again at every start. The folder view refreshes 3 s and 15 s after a
+  choice. macOS takes new item properties for known items only with a new metadata version and
+  a full enumeration: `FileProviderItem.traitsVersion` is part of the metadata version, and
+  the store answers `syncAnchorExpired` once when it differs from the stored value (bump it
+  when capabilities change). Tested 2026-11-05 on macOS 27.2 with the real client menu and
+  Finder: keep (recursive), server changes in a kept folder arrive by themselves, free up
+  (recursive), reset, "Remove Download" in the Finder also for items known before the update.
 - **GUI**: wizard and folder wizard offer virtual files on macOS 13+ when the extension is
   embedded (no environment variable), and **preselect** them: a new account syncs as
   virtual files ("Sync and download files as you use them"), classic sync is the

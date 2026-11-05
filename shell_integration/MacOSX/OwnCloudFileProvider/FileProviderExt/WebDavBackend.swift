@@ -327,6 +327,13 @@ private func unescapeXML(_ text: String) -> String {
 }
 
 /// What the system was last told about a child of a container.
+/// Wahl des Nutzers für ein Objekt (Client-Menü), wie sie in den Anfragen und im ItemStore steht.
+enum PinChoice {
+    static let keep = "local"
+    static let free = "online"
+    static let reset = "inherited"
+}
+
 struct Seen: Codable, Equatable {
     var etag: String
     var name: String
@@ -349,6 +356,7 @@ actor ItemStore {
         var anchor: Int
         var snapshots: [String: [String: Seen]]
         var removedContainers: [String]
+        var pinsReported: [String]?
     }
 
     private struct State: Codable {
@@ -362,6 +370,13 @@ actor ItemStore {
         /// working set walks the whole tree to rebuild the baselines. Optional, so
         /// store files written before it existed still decode.
         var rebuild: Bool?
+        /// Stand der Objekt-Eigenschaften (FileProviderItem.traitsVersion), den das System zuletzt
+        /// vollständig bekommen hat. Fehlt in Store-Dateien von 11.0.0.
+        var traits: Int?
+        /// Wahl des Nutzers je Objekt (Kennung -> PinChoice), optional wegen älterer Store-Dateien.
+        var pins: [String: String]?
+        /// Objekte, deren geänderte Wahl das System noch nicht abgenommen hat.
+        var pinsToReport: [String]?
     }
 
     private var state = State()
@@ -370,6 +385,8 @@ actor ItemStore {
     /// True when a store file existed but could not be read back - we then lost
     /// our delta baseline and must ask the system to re-enumerate from scratch.
     private(set) var didReset = false
+    /// Einmalig nach einem Update der Erweiterung: das System soll alles neu aufzählen.
+    private(set) var needsFullReport = false
 
     init(domainIdentifier: String) {
         let url = AppGroup.container?.appendingPathComponent("FileProviderStore-\(domainIdentifier).json")
@@ -383,6 +400,9 @@ actor ItemStore {
                 reset = true // corrupt or from an older version - the baseline is gone
             }
         }
+        // Neue Eigenschaften (z. B. „entfernbar“) übernimmt das System nur mit einer neuen Metadaten-Version
+        // und einer vollständigen Aufzählung: der Ausgangsstand bleibt, das System zählt nur alles neu auf.
+        needsFullReport = !reset && loaded.traits != FileProviderItem.traitsVersion
         state = loaded
         didReset = reset
         var reverse: [String: String] = [:]
@@ -413,6 +433,12 @@ actor ItemStore {
     }
 
     /// After a reset the system re-enumerates: start a fresh baseline with a new anchor.
+    func clearFullReport() {
+        needsFullReport = false
+        state.traits = FileProviderItem.traitsVersion
+        save()
+    }
+
     func clearReset() {
         guard didReset else { return }
         startOver()
@@ -507,6 +533,37 @@ actor ItemStore {
         save()
     }
 
+    // MARK: pins
+
+    func pins() -> [String: String] { state.pins ?? [:] }
+
+    func pin(for id: NSFileProviderItemIdentifier) -> String? { state.pins?[id.rawValue] }
+
+    func pinsWaitingForReport() -> [String] { state.pinsToReport ?? [] }
+
+    /// Merkt sich die Wahl für ein Objekt. Sie gilt für alles darunter: frühere Wahl dort entfällt.
+    func setPin(_ choice: String?, for id: NSFileProviderItemIdentifier) {
+        var pins = state.pins ?? [:]
+        if pins[id.rawValue] == choice {
+            return
+        }
+        var report = state.pinsToReport ?? []
+        for child in descendants(of: id) where pins[child] != nil {
+            pins[child] = nil
+            if !report.contains(child) { report.append(child) }
+        }
+        pins[id.rawValue] = choice
+        if !report.contains(id.rawValue) { report.append(id.rawValue) }
+        state.pins = pins
+        state.pinsToReport = report
+        save()
+    }
+
+    func dropPinReport(_ id: String) {
+        state.pinsToReport?.removeAll { $0 == id }
+        save()
+    }
+
     // MARK: baselines
 
     func isKnownContainer(_ container: NSFileProviderItemIdentifier) -> Bool {
@@ -574,6 +631,9 @@ actor ItemStore {
         if let pending = state.pending, pending.anchor == anchor {
             for (container, snapshot) in pending.snapshots { state.known[container] = snapshot }
             for container in pending.removedContainers { state.known.removeValue(forKey: container) }
+            if let reported = pending.pinsReported {
+                state.pinsToReport?.removeAll { reported.contains($0) }
+            }
             state.anchor = pending.anchor
             state.pending = nil
             save()
@@ -590,9 +650,9 @@ actor ItemStore {
     }
 
     /// Stage the result of a change walk; returns the anchor to report.
-    func stage(snapshots: [String: [String: Seen]], removedContainers: [String]) -> Int {
+    func stage(snapshots: [String: [String: Seen]], removedContainers: [String], pinsReported: [String] = []) -> Int {
         let next = state.anchor + 1
-        state.pending = Pending(anchor: next, snapshots: snapshots, removedContainers: removedContainers)
+        state.pending = Pending(anchor: next, snapshots: snapshots, removedContainers: removedContainers, pinsReported: pinsReported)
         save()
         return next
     }

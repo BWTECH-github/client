@@ -127,6 +127,7 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 }
                 let children = entries.filter { $0.path != path && !SyncRules.isExcluded($0.name) }
                 await store.register(entries: children)
+                let pins = await store.pins()
                 var snapshot: [String: Seen] = [:]
                 for child in children {
                     snapshot[child.identifier.rawValue] = child.seen
@@ -135,7 +136,7 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     }
                 }
                 await store.setBaselineIfUnknown(of: known, to: snapshot)
-                items.append(contentsOf: children.map { FileProviderItem(entry: $0, parent: known) })
+                items.append(contentsOf: children.map { FileProviderItem(entry: $0, parent: known, pin: pins[$0.identifier.rawValue]) })
             }
             if rebuild {
                 await store.finishRebuild()
@@ -159,7 +160,8 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             snapshot[child.identifier.rawValue] = child.seen
         }
         await context.store.setBaselineIfUnknown(of: container, to: snapshot)
-        return children.map { FileProviderItem(entry: $0, parent: container) }
+        let pins = await context.store.pins()
+        return children.map { FileProviderItem(entry: $0, parent: container, pin: pins[$0.identifier.rawValue]) }
     }
 
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
@@ -173,6 +175,11 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             let store = self.context.store
             // A lost baseline (corrupt store) cannot answer "changes since N":
             // the system re-enumerates instead.
+            if await store.needsFullReport {
+                await store.clearFullReport()
+                observer.finishEnumeratingWithError(NSFileProviderError(.syncAnchorExpired))
+                return
+            }
             if await store.didReset {
                 await store.clearReset()
                 observer.finishEnumeratingWithError(NSFileProviderError(.syncAnchorExpired))
@@ -184,12 +191,19 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 return
             }
             do {
-                let changes = try await self.context.walkChanges()
+                var changes = try await self.context.walkChanges()
+                let client = try self.context.client()
+                let toEvict = await self.context.takePinRequests(client: client)
+                let pinned = try await self.context.pinUpdates(client: client)
+                let walked = Set(changes.updates.map(\.itemIdentifier))
+                changes.updates.append(contentsOf: pinned.items.filter { !walked.contains($0.itemIdentifier) })
                 if changes.isEmpty {
                     observer.finishEnumeratingChanges(upTo: Self.anchor(await store.currentAnchor()), moreComing: false)
+                    self.context.evict(toEvict)
                     return
                 }
-                let next = await store.stage(snapshots: changes.snapshots, removedContainers: changes.removedContainers)
+                let next = await store.stage(snapshots: changes.snapshots, removedContainers: changes.removedContainers,
+                                             pinsReported: pinned.ids)
                 self.log.info("Reporting \(changes.updates.count) updated and \(changes.deletions.count) deleted items")
                 var start = 0
                 while start < changes.updates.count {
@@ -201,6 +215,7 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     observer.didDeleteItems(withIdentifiers: changes.deletions)
                 }
                 observer.finishEnumeratingChanges(upTo: Self.anchor(next), moreComing: false)
+                self.context.evict(toEvict)
             } catch {
                 self.log.error("Change enumeration failed: \(logDescription(error), privacy: .public)")
                 observer.finishEnumeratingWithError(WebDavClient.fileProviderError(for: error))

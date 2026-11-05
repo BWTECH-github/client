@@ -28,6 +28,7 @@
 
 #include "resources/iconresources.h"
 
+#include <QTimer>
 #include <QApplication>
 #include <QCollator>
 #include <QLoggingCategory>
@@ -892,5 +893,18 @@ void FolderBrowserController::popAvailabilityMenu(const QModelIndex &index, cons
         return;
     }
     refreshAvailability(folder, item, true);
+#ifdef Q_OS_MACOS
+    // macOS lädt und entfernt im Hintergrund: den Stand kurz darauf noch einmal zeigen
+    for (const int delay : {3000, 15000}) {
+        QTimer::singleShot(delay, this, [this, folder, persistentIndex] {
+            if (!folder || !persistentIndex.isValid()) {
+                return;
+            }
+            if (auto *row = _model->itemFromIndex(QModelIndex(persistentIndex))) {
+                refreshAvailability(folder, row, true);
+            }
+        });
+    }
+#endif
 }
 }

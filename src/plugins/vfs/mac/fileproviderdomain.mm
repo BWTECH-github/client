@@ -20,8 +20,13 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QDateTime>
+#include <QDir>
+#include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QSaveFile>
+#include <QUuid>
 #include <QLoggingCategory>
 #include <QMap>
 #include <QOperatingSystemVersion>
@@ -234,6 +239,33 @@ namespace Mac {
                 QFile::remove(path);
             }
         }
+        // Anfragen, die die Erweiterung nicht mehr abgeholt hat
+        const QFileInfo anchor(containerFile(QStringLiteral("FileProviderPin-%1-*").arg(identifier)));
+        const QDir container = anchor.dir();
+        for (const QString &name : container.entryList({anchor.fileName()}, QDir::Files)) {
+            QFile::remove(container.filePath(name));
+        }
+    }
+
+    void requestPinChoice(const QString &identifier, const QString &relativePath, const QString &choice)
+    {
+        // eine Datei je Anfrage, die Zeit im Namen hält die Reihenfolge: Client und Erweiterung
+        // schreiben so nie dieselbe Datei
+        const QString name = QStringLiteral("FileProviderPin-%1-%2-%3.json")
+                                 .arg(identifier)
+                                 .arg(QDateTime::currentMSecsSinceEpoch(), 16, 10, QLatin1Char('0'))
+                                 .arg(QUuid::createUuid().toString(QUuid::WithoutBraces));
+        const QString path = containerFile(name);
+        if (path.isEmpty()) {
+            return;
+        }
+        QSaveFile file(path);
+        const QByteArray data = QJsonDocument(QJsonObject{{QStringLiteral("path"), relativePath}, {QStringLiteral("state"), choice}}).toJson(QJsonDocument::Compact);
+        if (!file.open(QIODevice::WriteOnly) || file.write(data) != data.size() || !file.commit()) {
+            qCWarning(lcFileProviderDomain) << "Could not write the pin request for" << identifier << file.errorString();
+            return;
+        }
+        signalChanges(identifier);
     }
 
 #pragma clang diagnostic push

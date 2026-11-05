@@ -22,10 +22,17 @@ import UniformTypeIdentifiers
 final class FileProviderItem: NSObject, NSFileProviderItem {
     let entry: DavEntry
     private let parentIdentifier: NSFileProviderItemIdentifier
+    /// Hochzählen, wenn sich Eigenschaften ändern, die das System für bekannte Objekte übernehmen soll
+    /// (capabilities usw.): es geht in die Metadaten-Version ein, siehe ItemStore.needsFullReport.
+    static let traitsVersion = 2
 
-    init(entry: DavEntry, parent: NSFileProviderItemIdentifier) {
+    /// Was der Nutzer für dieses Objekt gewählt hat: PinChoice.keep, .free oder nil (Standard).
+    let pin: String?
+
+    init(entry: DavEntry, parent: NSFileProviderItemIdentifier, pin: String? = nil) {
         self.entry = entry
         self.parentIdentifier = entry.path.isEmpty ? .rootContainer : parent
+        self.pin = pin
     }
 
     var itemIdentifier: NSFileProviderItemIdentifier { entry.identifier }
@@ -52,7 +59,8 @@ final class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     var capabilities: NSFileProviderItemCapabilities {
-        var caps: NSFileProviderItemCapabilities = [.allowsReading]
+        // allowsEvicting: ohne sie bietet der Finder „Download entfernen“ nicht an
+        var caps: NSFileProviderItemCapabilities = [.allowsReading, .allowsEvicting]
         if entry.isFolder {
             caps.insert(.allowsContentEnumerating)
             if permitted("CK") { caps.insert(.allowsAddingSubItems) }
@@ -84,6 +92,18 @@ final class FileProviderItem: NSObject, NSFileProviderItem {
         return flags
     }
 
+    /// „Immer auf diesem Gerät behalten“: das System lädt das Objekt samt Inhalt selbst und hält es lokal.
+    var contentPolicy: NSFileProviderContentPolicy {
+        switch pin {
+        case PinChoice.keep:
+            return .downloadEagerlyAndKeepDownloaded
+        case PinChoice.free:
+            return .downloadLazily
+        default:
+            return entry.path.isEmpty ? .downloadLazily : .inherited
+        }
+    }
+
     var documentSize: NSNumber? { entry.isFolder ? nil : NSNumber(value: entry.size) }
     var contentModificationDate: Date? { entry.modified }
 
@@ -92,6 +112,6 @@ final class FileProviderItem: NSObject, NSFileProviderItem {
         // The etag stays the same on a rename on some servers; the path makes
         // sure a metadata change is always a new metadata version.
         return NSFileProviderItemVersion(contentVersion: Data(etag.utf8),
-                                         metadataVersion: Data("\(etag)|\(entry.path)".utf8))
+                                         metadataVersion: Data("\(Self.traitsVersion)|\(etag)|\(entry.path)\(pin.map { "|" + $0 } ?? "")".utf8))
     }
 }

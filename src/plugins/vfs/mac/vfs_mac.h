@@ -80,6 +80,7 @@ protected:
 
 private:
     void poll();
+    void resendKeptItems();
     void checkDomain();
     void applySuspension();
     void mirrorAuthorization(const QByteArray &authorization);

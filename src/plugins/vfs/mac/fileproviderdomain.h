@@ -99,6 +99,10 @@ namespace Mac {
      *  reason connects it again. Does nothing if the domain already is in that state. */
     void setDomainSuspended(const QString &identifier, const QString &reason, bool temporary);
 
+    /** Ask the extension to keep @p relativePath on this Mac ("local"), to free its space ("online")
+     *  or to forget that choice ("inherited"): macOS downloads, keeps or evicts it accordingly. */
+    void requestPinChoice(const QString &identifier, const QString &relativePath, const QString &choice);
+
     /** Tell the extension that something changed on the server. */
     void signalChanges(const QString &identifier);
 

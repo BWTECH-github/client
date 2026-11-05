@@ -24,9 +24,13 @@
 
 #include <QCoreApplication>
 #include <QCryptographicHash>
+#include <QDir>
 #include <QLoggingCategory>
 #include <QNetworkReply>
 #include <QPointer>
+
+#include <sys/resource.h>
+#include <sys/stat.h>
 
 using namespace OCC;
 using namespace std::chrono_literals;
@@ -193,10 +197,53 @@ bool VfsMac::statTypeVirtualFile(csync_file_stat_t *, void *)
     return false;
 }
 
+void VfsMac::resendKeptItems()
+{
+    // Bis 11.0.0 blieb die Wahl in der Datenbank und erreichte die Erweiterung nie.
+    // Bereits bekannte Wahl ändert dort nichts.
+    const auto pins = params().journal->internalPinStates().rawList();
+    if (!pins) {
+        return;
+    }
+    for (const auto &pin : *pins) {
+        if (pin.second == PinState::AlwaysLocal) {
+            Mac::requestPinChoice(_domainIdentifier, QString::fromUtf8(pin.first), QStringLiteral("local"));
+        }
+    }
+}
+
 bool VfsMac::setPinState(const QString &folderPath, PinState state)
 {
     qCDebug(lcVfsMac) << "setPinState" << folderPath << state;
-    return setPinStateInDb(folderPath, state);
+    if (!setPinStateInDb(folderPath, state)) {
+        return false;
+    }
+    // Laden und Freigeben übernimmt macOS: die Wahl geht an die Erweiterung, die Datenbank allein bewirkt nichts
+    QString choice;
+    switch (state) {
+    case PinState::AlwaysLocal:
+        choice = QStringLiteral("local");
+        break;
+    case PinState::OnlineOnly:
+        choice = QStringLiteral("online");
+        break;
+    case PinState::Inherited:
+        choice = QStringLiteral("inherited");
+        break;
+    default:
+        return true;
+    }
+    if (!_domainIdentifier.isEmpty()) {
+        QString path = folderPath;
+        while (path.startsWith(QLatin1Char('/'))) {
+            path.remove(0, 1);
+        }
+        while (path.endsWith(QLatin1Char('/'))) {
+            path.chop(1);
+        }
+        Mac::requestPinChoice(_domainIdentifier, path, choice);
+    }
+    return true;
 }
 
 Optional<PinState> VfsMac::pinState(const QString &folderPath)
@@ -204,9 +251,75 @@ Optional<PinState> VfsMac::pinState(const QString &folderPath)
     return pinStateInDb(folderPath);
 }
 
+namespace {
+    /// Stellt für den aktuellen Thread ein, dass ein Blick auf Dateien nichts vom Server lädt.
+    class NoMaterialization
+    {
+    public:
+        NoMaterialization()
+            : _saved(getiopolicy_np(IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES, IOPOL_SCOPE_THREAD))
+        {
+            setiopolicy_np(IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES, IOPOL_SCOPE_THREAD, IOPOL_MATERIALIZE_DATALESS_FILES_OFF);
+        }
+        ~NoMaterialization()
+        {
+            setiopolicy_np(IOPOL_TYPE_VFS_MATERIALIZE_DATALESS_FILES, IOPOL_SCOPE_THREAD, _saved < 0 ? IOPOL_MATERIALIZE_DATALESS_FILES_DEFAULT : _saved);
+        }
+
+    private:
+        const int _saved;
+    };
+
+    /// Nicht vorhanden oder ohne Inhalt: ein Objekt in einem Ordner, den macOS noch nicht geladen hat, gilt als nur online.
+    bool isOnlineOnly(const QString &path, bool *isFolder = nullptr)
+    {
+        struct stat info;
+        if (lstat(path.toUtf8().constData(), &info) != 0) {
+            return true;
+        }
+        if (isFolder) {
+            *isFolder = S_ISDIR(info.st_mode);
+        }
+        return info.st_flags & SF_DATALESS;
+    }
+}
+
 Vfs::AvailabilityResult VfsMac::availability(const QString &folderPath)
 {
-    return availabilityInDb(folderPath);
+    // Das Journal einer File-Provider-Domain kennt keine Dateien: Es zählt der Stand im Ordner, den der
+    // Finder zeigt. Nur „immer behalten“ kommt aus der Datenbank, das gilt schon während des Ladens.
+    const auto pin = pinStateInDb(folderPath);
+    if (pin && *pin == PinState::AlwaysLocal) {
+        return VfsItemAvailability::AlwaysLocal;
+    }
+    if (_userVisiblePath.isEmpty()) {
+        return AvailabilityError::NoSuchItem;
+    }
+    const NoMaterialization guard;
+    const QString path = QDir(_userVisiblePath).filePath(folderPath);
+    bool isFolder = false;
+    if (isOnlineOnly(path, &isFolder)) {
+        return VfsItemAvailability::AllDehydrated;
+    }
+    if (!isFolder) {
+        return VfsItemAvailability::AllHydrated;
+    }
+    // ein Ordner: nur die erste Ebene, das hält den Blick schnell
+    bool local = false;
+    bool online = false;
+    const QDir folder(path);
+    for (const QString &name : folder.entryList(QDir::AllEntries | QDir::NoDotAndDotDot)) {
+        bool isSubFolder = false;
+        if (isOnlineOnly(folder.filePath(name), &isSubFolder)) {
+            online = true;
+        } else if (!isSubFolder) {
+            local = true; // ein geladener Unterordner sagt nichts über seine Dateien
+        }
+    }
+    if (online) {
+        return local ? VfsItemAvailability::Mixed : VfsItemAvailability::AllDehydrated;
+    }
+    return VfsItemAvailability::AllHydrated;
 }
 
 void VfsMac::onFileStatusChanged(const QString &, SyncFileStatus)
@@ -284,6 +397,7 @@ void VfsMac::startImpl(const VfsSetupParams &params)
         // problem (fileProviderProblem()) until macOS lets the domain work.
         Q_EMIT self->started();
         self->applySuspension();
+        self->resendKeptItems();
         self->_pollTimer.start();
     });
 }

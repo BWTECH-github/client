@@ -102,10 +102,11 @@ final class DomainContext {
     }
 
     func item(for entry: DavEntry, client: WebDavClient) async throws -> FileProviderItem {
+        let pin = await store.pin(for: entry.identifier)
         if entry.path.isEmpty {
-            return FileProviderItem(entry: entry, parent: .rootContainer)
+            return FileProviderItem(entry: entry, parent: .rootContainer, pin: pin)
         }
-        return FileProviderItem(entry: entry, parent: try await identifier(ofFolder: entry.parentPath, client: client))
+        return FileProviderItem(entry: entry, parent: try await identifier(ofFolder: entry.parentPath, client: client), pin: pin)
     }
 
     /// Let the system enumerate the working set's changes soon: after our own
@@ -125,6 +126,83 @@ final class DomainContext {
             self.manager?.signalEnumerator(for: .workingSet) { error in
                 if let error = error {
                     self.log.error("Could not signal the working set: \(logDescription(error), privacy: .public)")
+                }
+            }
+        }
+    }
+}
+
+/// Eine Anfrage des Clients (Menü „Immer auf diesem Gerät behalten“ usw.): eine Datei je Anfrage im
+/// Container der App-Gruppe, damit Client und Erweiterung nie dieselbe Datei gleichzeitig schreiben.
+private struct PinRequest: Decodable {
+    let path: String
+    let state: String
+}
+
+extension DomainContext {
+    /// Übernimmt die Anfragen des Clients in den ItemStore. Liefert die Objekte, deren Speicher
+    /// freigegeben werden soll. Eine Anfrage bleibt liegen, wenn der Server gerade nicht antwortet.
+    func takePinRequests(client: WebDavClient) async -> [NSFileProviderItemIdentifier] {
+        guard let container = AppGroup.container,
+              let files = try? FileManager.default.contentsOfDirectory(at: container, includingPropertiesForKeys: nil) else {
+            return []
+        }
+        let prefix = "FileProviderPin-\(domain.identifier.rawValue)-"
+        var toEvict: [NSFileProviderItemIdentifier] = []
+        for file in files.filter({ $0.lastPathComponent.hasPrefix(prefix) }).sorted(by: { $0.lastPathComponent < $1.lastPathComponent }) {
+            guard let data = try? Data(contentsOf: file), let request = try? JSONDecoder().decode(PinRequest.self, from: data) else {
+                try? FileManager.default.removeItem(at: file)
+                continue
+            }
+            do {
+                if let entry = try await client.stat(path: request.path) {
+                    await store.register(entries: [entry])
+                    await store.setPin(request.state == PinChoice.reset ? nil : request.state, for: entry.identifier)
+                    if request.state == PinChoice.free {
+                        toEvict.append(entry.identifier)
+                    }
+                    log.info("Pin \(request.state, privacy: .public) for \(request.path, privacy: .private(mask: .hash))")
+                }
+                try? FileManager.default.removeItem(at: file)
+            } catch {
+                log.error("Pin request postponed: \(logDescription(error), privacy: .public)")
+            }
+        }
+        return toEvict
+    }
+
+    /// Die Objekte mit geänderter Wahl, damit das System die neue contentPolicy übernimmt.
+    func pinUpdates(client: WebDavClient) async throws -> (items: [FileProviderItem], ids: [String]) {
+        var items: [FileProviderItem] = []
+        var ids: [String] = []
+        for id in await store.pinsWaitingForReport() {
+            let identifier = NSFileProviderItemIdentifier(id)
+            if let entry = try await entryIfExists(for: identifier, client: client) {
+                items.append(try await item(for: entry, client: client))
+                ids.append(id)
+            } else {
+                await store.dropPinReport(id)
+            }
+        }
+        return (items, ids)
+    }
+
+    /// Gibt den Speicher frei, sobald das System die Wahl übernommen hat: bis dahin gilt ein Objekt
+    /// unter „immer behalten“ noch als nicht entfernbar, deshalb einige Versuche.
+    func evict(_ identifiers: [NSFileProviderItemIdentifier], attempt: Int = 1) {
+        guard !identifiers.isEmpty, let manager = manager else { return }
+        DispatchQueue.global().asyncAfter(deadline: .now() + (attempt == 1 ? 1 : 3)) { [weak self] in
+            for identifier in identifiers {
+                manager.evictItem(identifier: identifier) { error in
+                    guard let error = error, let self = self else { return }
+                    let code = (error as NSError).code
+                    let notYet = code == NSFileProviderError.Code.nonEvictable.rawValue
+                        || code == NSFileProviderError.Code.nonEvictableChildren.rawValue
+                    if notYet && attempt < 5 {
+                        self.evict([identifier], attempt: attempt + 1)
+                    } else {
+                        self.log.error("Could not free the space of an item: \(logDescription(error), privacy: .public)")
+                    }
                 }
             }
         }
@@ -156,6 +234,7 @@ extension DomainContext {
             return result
         }
         let client = try client()
+        let pins = await store.pins()
         var queue: [(NSFileProviderItemIdentifier, String)] = [(.rootContainer, "")]
         var visited = Set<String>()
         while !queue.isEmpty {
@@ -175,7 +254,7 @@ extension DomainContext {
                 snapshot[id.rawValue] = child.seen
                 let before = baseline[id.rawValue]
                 if before != child.seen {
-                    result.updates.append(FileProviderItem(entry: child, parent: container))
+                    result.updates.append(FileProviderItem(entry: child, parent: container, pin: pins[id.rawValue]))
                 }
                 if child.isFolder, before?.etag != child.etag || before == nil, await store.isKnownContainer(id) {
                     queue.append((id, child.path))
