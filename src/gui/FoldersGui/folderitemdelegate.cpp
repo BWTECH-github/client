@@ -241,7 +241,7 @@ bool FolderItemDelegate::isBrowserRow(const QModelIndex &index)
 {
     const int kind = index.data(FolderItemRoles::ItemKindRole).toInt();
     return kind == static_cast<int>(FolderTreeItemKind::BrowserFolder) || kind == static_cast<int>(FolderTreeItemKind::BrowserPlaceholder)
-        || kind == static_cast<int>(FolderTreeItemKind::BrowserFile);
+        || kind == static_cast<int>(FolderTreeItemKind::BrowserFile) || kind == static_cast<int>(FolderTreeItemKind::BrowserMoreFiles);
 }
 
 QRect FolderItemDelegate::browserCheckRect(const QStyleOptionViewItem &option) const
@@ -265,7 +265,10 @@ void FolderItemDelegate::paintBrowserRow(QPainter *painter, const QStyleOptionVi
     const int lineHeight = metrics.height();
     int x = option.rect.left() + _browserCellBorder;
 
-    const bool isPlaceholder = index.data(FolderItemRoles::ItemKindRole).toInt() == static_cast<int>(FolderTreeItemKind::BrowserPlaceholder);
+    // „… und N weitere Dateien“ ist wie der Platzhalter ein Hinweis, kein Eintrag
+    const int kind = index.data(FolderItemRoles::ItemKindRole).toInt();
+    const bool isPlaceholder =
+        kind == static_cast<int>(FolderTreeItemKind::BrowserPlaceholder) || kind == static_cast<int>(FolderTreeItemKind::BrowserMoreFiles);
 
     painter->save();
 

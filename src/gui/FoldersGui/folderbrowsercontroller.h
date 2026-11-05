@@ -15,9 +15,12 @@
 #pragma once
 
 #include "csync_exclude.h"
+#include "gui/owncloudguilib.h"
 
 #include <QHash>
+#include <QList>
 #include <QObject>
+#include <QPersistentModelIndex>
 #include <QSet>
 #include <QString>
 #include <QUuid>
@@ -49,11 +52,31 @@ class FolderItem;
  * current availability instead, and a context menu sets the pin state (always keep on
  * this device / free up space), mirroring the Explorer integration.
  */
-class FolderBrowserController : public QObject
+class OWNCLOUDGUI_EXPORT FolderBrowserController : public QObject
 {
     Q_OBJECT
 public:
     explicit FolderBrowserController(QStandardItemModel *model, QObject *parent);
+
+    // ein direkter Eintrag eines Serverordners
+    struct ListingEntry
+    {
+        QString name;
+        QString relPath;
+        qint64 size = -1;
+    };
+
+    // So viele Dateizeilen zeigt ein Ordner höchstens, den Rest fasst die Zeile „… und N weitere Dateien“ zusammen.
+    // Ordnerzeilen werden nie abgeschnitten, an ihnen hängt die Auswahl der selektiven Synchronisierung.
+    static constexpr int maxFileRows = 500;
+
+    /**
+     * Bringt die Zeilen unter parentItem auf den Stand einer Serverauflistung: Ordner vor Dateien, beide nach Namen
+     * sortiert. Vorhandene Zeilen bleiben samt aufgeklapptem Inhalt und Haken, neue kommen in wenigen Stücken hinzu
+     * statt einzeln, Zeilen ohne Eintrag verschwinden. Ohne Bezug zum Sync-Ordner, damit Tests große Auflistungen
+     * direkt einspeisen können; die Verfügbarkeit virtueller Dateien trägt der Controller danach nach.
+     */
+    static void applyListing(QStandardItem *parentItem, QList<ListingEntry> folders, QList<ListingEntry> files, bool vfsMode, const QSet<QString> &blackList);
 
 public slots:
     void onItemExpanded(const QModelIndex &index);
@@ -88,7 +111,8 @@ private:
     FolderItem *rootItemForFolder(Folder *folder) const;
     FolderItem *rootItemForIndex(const QModelIndex &index) const;
     QStandardItem *itemForPath(FolderItem *rootItem, const QString &relPath) const;
-    QStandardItem *placeholderChild(const QStandardItem *parentItem) const;
+    static QStandardItem *placeholderChild(const QStandardItem *parentItem);
+    static QList<QStandardItem *> placeholderRow();
 
     static Qt::CheckState stateForPath(const QSet<QString> &blackList, const QString &pathWithSlash);
     void propagateCheckChange(QStandardItem *item);
@@ -97,7 +121,9 @@ private:
     void refreshCheckStates(QStandardItem *parentItem, const QSet<QString> &blackList);
     void refreshAvailability(Folder *folder, QStandardItem *item, bool recursive);
     QString availabilityText(Folder *folder, const QString &relPath) const;
-    void setBrowserRowDetails(Folder *folder, QStandardItem *item, const QString &relPath, qint64 size, bool vfsMode);
+    static void setRowDetail(QStandardItem *item, const QString &detail);
+    void queueAvailability(const QList<QStandardItem *> &items);
+    void processPendingAvailability();
 
     static int itemKind(const QStandardItem *item);
     static QList<QStandardItem *> browserChildren(const QStandardItem *parentItem);
@@ -112,5 +138,8 @@ private:
     // true while this controller mutates the model, so onItemChanged only reacts to the user
     bool _updatingModel = false;
     ExcludedFiles _excludedFiles;
+    // Zeilen, deren Verfügbarkeit (virtuelle Dateien) noch aussteht; abgearbeitet in Zeitscheiben
+    QList<QPersistentModelIndex> _pendingAvailability;
+    bool _availabilityScheduled = false;
 };
 }

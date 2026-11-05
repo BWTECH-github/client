@@ -74,6 +74,8 @@ endif(UNIX AND NOT APPLE)
 owncloud_add_test(FileSystem)
 
 owncloud_add_test(FolderMan)
+# Ordneransicht: Ordner mit 20.000 Dateien ohne Hänger, Reihenfolge, höchstens 500 Dateizeilen
+owncloud_add_test(FolderBrowser)
 # Ordner-Assistent für ownCloud 10: Serverordner wählen und anlegen, schon gespiegelte Serverordner sperren
 owncloud_add_test(FolderWizard)
 # „Serveradresse ändern…“: status.php-Prüfung, Weiterleitungen, Instanz-Vergleich, Umstellen von Konto und Ordnerpaaren

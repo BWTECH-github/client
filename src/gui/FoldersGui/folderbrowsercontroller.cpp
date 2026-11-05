@@ -31,20 +31,130 @@
 #include <QTimer>
 #include <QApplication>
 #include <QCollator>
+#include <QElapsedTimer>
 #include <QLoggingCategory>
 #include <QMenu>
 #include <QNetworkReply>
 #include <QPersistentModelIndex>
 #include <QPointer>
 #include <QScopedValueRollback>
+#include <QSignalBlocker>
 #include <QStandardItemModel>
 #include <QStyle>
 
+#include <algorithm>
 #include <functional>
 
 namespace OCC {
 
 Q_LOGGING_CATEGORY(lcFolderBrowser, "gui.accountfolders.browser", QtInfoMsg)
+
+namespace {
+    int kindOf(const QStandardItem *item)
+    {
+        return item ? item->data(FolderItemRoles::ItemKindRole).toInt() : 0;
+    }
+
+    // Reihenfolge der Zeilenarten unter einem Ordner: Fehler, Ordner, Dateien, „weitere Dateien“, Platzhalter
+    int blockRank(int kind)
+    {
+        switch (static_cast<FolderTreeItemKind>(kind)) {
+        case FolderTreeItemKind::Error:
+            return 0;
+        case FolderTreeItemKind::BrowserFolder:
+            return 1;
+        case FolderTreeItemKind::BrowserFile:
+            return 2;
+        case FolderTreeItemKind::BrowserMoreFiles:
+            return 3;
+        case FolderTreeItemKind::BrowserPlaceholder:
+            return 4;
+        }
+        return 0;
+    }
+
+    // erste Zeile dieser Art oder einer späteren: dort beginnt der Block der Art
+    int blockStart(const QStandardItem *parentItem, FolderTreeItemKind kind)
+    {
+        const int rank = blockRank(static_cast<int>(kind));
+        for (int row = 0; row < parentItem->rowCount(); ++row) {
+            if (blockRank(kindOf(parentItem->child(row, 0))) >= rank)
+                return row;
+        }
+        return parentItem->rowCount();
+    }
+
+    QStandardItem *firstChildOfKind(const QStandardItem *parentItem, FolderTreeItemKind kind)
+    {
+        for (int row = 0; row < parentItem->rowCount(); ++row) {
+            QStandardItem *child = parentItem->child(row, 0);
+            if (child && kindOf(child) == static_cast<int>(kind))
+                return child;
+        }
+        return nullptr;
+    }
+
+    QStandardItem *newFiller()
+    {
+        QStandardItem *filler = new QStandardItem();
+        // enabled (but nothing else) so keyboard navigation in column 1 can step onto the row
+        filler->setFlags(Qt::ItemIsEnabled);
+        return filler;
+    }
+
+    // Fügt die Zeilen in einem Zug ein: ein rowsInserted für alle statt eines je Zeile. Ist in der Ansicht ein Editor
+    // offen (der Optionen-Knopf der Ordnerzeile), legt sie nach jedem Einfügen den ganzen Baum neu aus; Zeile für Zeile
+    // wurde das bei tausenden Einträgen quadratisch und hielt das Fenster minutenlang an.
+    void insertRun(QStandardItem *parentItem, int row, QList<QStandardItem *> &run)
+    {
+        if (run.isEmpty())
+            return;
+        if (parentItem->columnCount() < 2)
+            parentItem->setColumnCount(2);
+        const qsizetype count = run.size();
+        parentItem->insertRows(row, run);
+        run.clear();
+        // Spalte 1 der neuen Zeilen: setChild meldet je Zelle einen Layoutwechsel. Die Zeilen sind schon gemeldet und
+        // die Zellen waren eben noch leer, die Ansichten brauchen dafür keine Nachricht.
+        const QSignalBlocker blocker(parentItem->model());
+        for (qsizetype i = 0; i < count; ++i)
+            parentItem->setChild(row + static_cast<int>(i), 1, newFiller());
+    }
+
+    // entfernt die Zeilen von unten nach oben in zusammenhängenden Stücken
+    void removeRuns(QStandardItem *parentItem, QList<int> rows)
+    {
+        std::sort(rows.begin(), rows.end());
+        for (qsizetype last = rows.size() - 1; last >= 0;) {
+            qsizetype first = last;
+            while (first > 0 && rows.at(first - 1) == rows.at(first) - 1)
+                --first;
+            parentItem->removeRows(rows.at(first), rows.at(last) - rows.at(first) + 1);
+            last = first - 1;
+        }
+    }
+
+    // Sortiert nach Namen wie Utility::sortFilenames und behält die ersten keep Einträge; Namen, die die Sortierung gleich
+    // einstuft („Bilder“ und „bilder“), nach Zeichencode, damit jede Auflistung dieselbe Reihenfolge ergibt. Bewusst
+    // QCollator::compare und keine Sortierschlüssel: Unter Windows ordnen die Schlüssel Zahlen mit führenden Nullen anders
+    // („00100“ vor „00002“). Rückgabe: Zahl der weggelassenen Einträge
+    qsizetype sortByName(QList<FolderBrowserController::ListingEntry> &entries, const QCollator &collator, qsizetype keep)
+    {
+        const auto lessThan = [&collator](const FolderBrowserController::ListingEntry &a, const FolderBrowserController::ListingEntry &b) {
+            const int result = collator.compare(a.name, b.name);
+            return result != 0 ? result < 0 : a.name < b.name;
+        };
+        qsizetype dropped = 0;
+        // nur die ersten keep: erst auswählen, dann nur diese sortieren
+        if (entries.size() > keep) {
+            std::nth_element(entries.begin(), entries.begin() + keep, entries.end(), lessThan);
+            dropped = entries.size() - keep;
+            entries.resize(keep);
+        }
+        std::sort(entries.begin(), entries.end(), lessThan);
+        return dropped;
+    }
+}
 
 FolderBrowserController::FolderBrowserController(QStandardItemModel *model, QObject *parent)
     : QObject(parent)
@@ -132,30 +242,25 @@ void FolderBrowserController::onFolderRemoved(const QUuid &accountId, Folder *fo
     recomputePending();
 }
 
-void FolderBrowserController::attachPlaceholder(QStandardItem *parentItem)
+QList<QStandardItem *> FolderBrowserController::placeholderRow()
 {
     QStandardItem *placeholder = new QStandardItem(tr("Loading …"));
     placeholder->setFlags(Qt::ItemIsEnabled);
     placeholder->setData(static_cast<int>(FolderTreeItemKind::BrowserPlaceholder), FolderItemRoles::ItemKindRole);
     // keep placeholders below folder rows and error rows when the model gets (re)sorted
     placeholder->setData(-1, FolderItemRoles::SortPriorityRole);
-
-    QStandardItem *filler = new QStandardItem();
-    // enabled (but nothing else) so keyboard navigation in column 1 can step onto the row
-    filler->setFlags(Qt::ItemIsEnabled);
-
-    QScopedValueRollback<bool> guard(_updatingModel, true);
-    parentItem->appendRow({placeholder, filler});
+    return {placeholder, newFiller()};
 }
 
-QStandardItem *FolderBrowserController::placeholderChild(const QStandardItem *parentItem) const
+void FolderBrowserController::attachPlaceholder(QStandardItem *parentItem)
 {
-    for (int row = 0; row < parentItem->rowCount(); ++row) {
-        QStandardItem *child = parentItem->child(row, 0);
-        if (child && itemKind(child) == static_cast<int>(FolderTreeItemKind::BrowserPlaceholder))
-            return child;
-    }
-    return nullptr;
+    QScopedValueRollback<bool> guard(_updatingModel, true);
+    parentItem->appendRow(placeholderRow());
+}
+
+QStandardItem *FolderBrowserController::placeholderChild(const QStandardItem *parentItem)
+{
+    return firstChildOfKind(parentItem, FolderTreeItemKind::BrowserPlaceholder);
 }
 
 FolderItem *FolderBrowserController::rootItemForFolder(Folder *folder) const
@@ -249,12 +354,15 @@ bool FolderBrowserController::maybeRefreshFolderState(Folder *folder, FolderItem
     if (it->vfsAtLoad != folder->virtualFilesEnabled()) {
         {
             QScopedValueRollback<bool> guard(_updatingModel, true);
-            for (int row = rootItem->rowCount() - 1; row >= 0; --row) {
+            QList<int> browserRows;
+            for (int row = 0; row < rootItem->rowCount(); ++row) {
                 const int kind = itemKind(rootItem->child(row, 0));
                 if (kind == static_cast<int>(FolderTreeItemKind::BrowserFolder) || kind == static_cast<int>(FolderTreeItemKind::BrowserPlaceholder)
-                    || kind == static_cast<int>(FolderTreeItemKind::BrowserFile))
-                    rootItem->removeRow(row);
+                    || kind == static_cast<int>(FolderTreeItemKind::BrowserFile) || kind == static_cast<int>(FolderTreeItemKind::BrowserMoreFiles))
+                    browserRows.append(row);
             }
+            // in Stücken statt Zeile für Zeile, aus demselben Grund wie beim Einfügen (insertRun)
+            removeRuns(rootItem, browserRows);
         }
         attachPlaceholder(rootItem);
         _syncStates.remove(key);
@@ -372,13 +480,7 @@ void FolderBrowserController::populateListing(Folder *folder, const QString &par
 
     // collect the direct children of parentRelPath from the PROPFIND result
     const QString parentPrefix = parentRelPath.isEmpty() ? QString() : Utility::ensureTrailingSlash(parentRelPath);
-    struct Entry
-    {
-        QString relPath;
-        qint64 size;
-    };
-    QHash<QString, Entry> entriesByName;
-    QStringList names;
+    QList<ListingEntry> folderEntries;
     for (const QString &absPath : subfolders) {
         if (!absPath.startsWith(rootPath))
             continue;
@@ -390,14 +492,12 @@ void FolderBrowserController::populateListing(Folder *folder, const QString &par
         const QString name = relPath.mid(parentPrefix.size());
         if (name.isEmpty() || name.contains(QLatin1Char('/')))
             continue;
-        entriesByName.insert(name, {relPath, sizes.value(Utility::ensureTrailingSlash(absPath), -1)});
-        names.append(name);
+        folderEntries.append({name, relPath, sizes.value(Utility::ensureTrailingSlash(absPath), -1)});
     }
-    Utility::sortFilenames(names);
 
     // the direct file children, shown as plain informational rows below the folders
-    QHash<QString, Entry> fileEntriesByName;
-    QStringList fileNames;
+    QList<ListingEntry> fileEntries;
+    fileEntries.reserve(files.size());
     for (const QString &absPath : files) {
         if (!absPath.startsWith(rootPath))
             continue;
@@ -409,153 +509,182 @@ void FolderBrowserController::populateListing(Folder *folder, const QString &par
         const QString name = relPath.mid(parentPrefix.size());
         if (name.isEmpty() || name.contains(QLatin1Char('/')))
             continue;
-        fileEntriesByName.insert(name, {relPath, sizes.value(absPath, -1)});
-        fileNames.append(name);
+        fileEntries.append({name, relPath, sizes.value(absPath, -1)});
     }
-    Utility::sortFilenames(fileNames);
 
     // a blacklist of just "/" means "everything deselected"; concretize it to the actual
     // top-level folders as soon as they are known, exactly like the selective sync dialog
     if (parentRelPath.isEmpty() && syncState.journalBlackList.contains(QStringLiteral("/"))) {
         const bool wasClean = syncState.pendingBlackList == syncState.journalBlackList;
         syncState.journalBlackList.clear();
-        for (const QString &name : std::as_const(names))
-            syncState.journalBlackList.insert(Utility::ensureTrailingSlash(entriesByName.value(name).relPath));
+        for (const ListingEntry &entry : std::as_const(folderEntries))
+            syncState.journalBlackList.insert(Utility::ensureTrailingSlash(entry.relPath));
         if (wasClean)
             syncState.pendingBlackList = syncState.journalBlackList;
     }
 
-    QScopedValueRollback<bool> guard(_updatingModel, true);
+    {
+        QScopedValueRollback<bool> guard(_updatingModel, true);
+        applyListing(parentItem, std::move(folderEntries), std::move(fileEntries), vfsMode, syncState.pendingBlackList);
+    }
 
-    // same collation as Utility::sortFilenames, for ordered insertion among existing rows
+    // die Verfügbarkeit fragt je Zeile das Journal und unter Windows den Explorer, unter macOS das Dateisystem:
+    // nachgetragen in Zeitscheiben, damit ein großer Ordner das Fenster nicht anhält
+    if (vfsMode)
+        queueAvailability(browserChildren(parentItem) + childrenOfKind(parentItem, FolderTreeItemKind::BrowserFile));
+}
+
+void FolderBrowserController::applyListing(
+    QStandardItem *parentItem, QList<ListingEntry> folders, QList<ListingEntry> files, bool vfsMode, const QSet<QString> &blackList)
+{
     QCollator collator;
     collator.setNumericMode(true);
     collator.setCaseSensitivity(Qt::CaseInsensitive);
+    sortByName(folders, collator, folders.size());
+    const qsizetype hiddenFiles = sortByName(files, collator, maxFileRows);
 
-    // index what is already in the tree below this parent
-    QHash<QString, QStandardItem *> existing;
-    for (QStandardItem *child : browserChildren(parentItem))
-        existing.insert(child->data(FolderItemRoles::RemotePathRole).toString(), child);
+    // Positionen in der Reihenfolge der Ansicht: Ordner, dann Dateien
+    QHash<QString, qsizetype> folderPositions;
+    folderPositions.reserve(folders.size());
+    for (qsizetype i = 0; i < folders.size(); ++i)
+        folderPositions.insert(folders.at(i).relPath, i);
+    QHash<QString, qsizetype> filePositions;
+    filePositions.reserve(files.size());
+    for (qsizetype i = 0; i < files.size(); ++i)
+        filePositions.insert(files.at(i).relPath, folders.size() + i);
 
-    for (const QString &name : std::as_const(names)) {
-        const Entry entry = entriesByName.value(name);
-        QStandardItem *child = existing.take(entry.relPath);
-        if (!child) {
-            child = new QStandardItem(name);
-            child->setIcon(IconResources::getCoreIcon(QStringLiteral("folder-sync")));
-            child->setToolTip(entry.relPath);
-            child->setData(static_cast<int>(FolderTreeItemKind::BrowserFolder), FolderItemRoles::ItemKindRole);
-            child->setData(entry.relPath, FolderItemRoles::RemotePathRole);
-            child->setData(0, FolderItemRoles::SortPriorityRole);
+    // Vorhandene Zeilen bleiben, wenn die Auflistung sie noch enthält und sie in deren Reihenfolge stehen (außer der Reihe
+    // nur nach geänderter Sortierung: dann entsteht die Zeile an der richtigen Stelle neu). Alles andere geht.
+    QList<QStandardItem *> kept;
+    QList<int> staleRows;
+    QStandardItem *moreRow = nullptr;
+    QStandardItem *placeholder = nullptr;
+    qsizetype lastPosition = -1;
+    for (int row = 0; row < parentItem->rowCount(); ++row) {
+        QStandardItem *child = parentItem->child(row, 0);
+        const int kind = itemKind(child);
+        if (kind == static_cast<int>(FolderTreeItemKind::BrowserFolder) || kind == static_cast<int>(FolderTreeItemKind::BrowserFile)) {
+            const QHash<QString, qsizetype> &positions = kind == static_cast<int>(FolderTreeItemKind::BrowserFolder) ? folderPositions : filePositions;
+            const auto it = positions.constFind(child->data(FolderItemRoles::RemotePathRole).toString());
+            if (it != positions.cend() && *it > lastPosition) {
+                kept.append(child);
+                lastPosition = *it;
+            } else {
+                staleRows.append(row);
+            }
+        } else if (kind == static_cast<int>(FolderTreeItemKind::BrowserMoreFiles)) {
+            if (hiddenFiles > 0 && !moreRow)
+                moreRow = child;
+            else
+                staleRows.append(row);
+        } else if (kind == static_cast<int>(FolderTreeItemKind::BrowserPlaceholder)) {
+            if (folders.isEmpty() && files.isEmpty() && !placeholder)
+                placeholder = child;
+            else
+                staleRows.append(row);
+        }
+    }
+    // Erst entfernen, solange der Baum noch klein ist, dann in so wenigen Stücken wie möglich einfügen: Mit offenem Editor
+    // legt die Ansicht den Baum nach jeder Strukturänderung neu aus, unter macOS samt der Höhe jeder Zeile.
+    removeRuns(parentItem, staleRows);
 
+    const QIcon folderIcon = IconResources::getCoreIcon(QStringLiteral("folder-sync"));
+    // ein Symbol für alle Dateizeilen, nicht je Zeile beim Stil erfragt
+    const QIcon fileIcon = QApplication::style()->standardIcon(QStyle::SP_FileIcon);
+    const auto sizeText = [](qint64 size) { return size >= 0 ? Utility::octetsToString(size) : QString(); };
+
+    // Neue Zeilen entstehen vollständig, bevor sie ins Modell kommen (Daten, Haken, Platzhalter): So lösen sie keine
+    // Signale je Zeile aus.
+    const auto newRow = [&](const ListingEntry &entry, FolderTreeItemKind kind) {
+        QStandardItem *child = new QStandardItem(entry.name);
+        child->setToolTip(entry.relPath);
+        child->setData(static_cast<int>(kind), FolderItemRoles::ItemKindRole);
+        child->setData(entry.relPath, FolderItemRoles::RemotePathRole);
+        child->setData(0, FolderItemRoles::SortPriorityRole);
+        if (kind == FolderTreeItemKind::BrowserFolder) {
+            child->setIcon(folderIcon);
             Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
             if (!vfsMode)
                 flags |= Qt::ItemIsUserCheckable;
             child->setFlags(flags);
             if (!vfsMode)
-                child->setCheckState(stateForPath(syncState.pendingBlackList, Utility::ensureTrailingSlash(entry.relPath)));
-
-            QStandardItem *filler = new QStandardItem();
-            // enabled (but nothing else) so keyboard navigation in column 1 can step onto the row
-            filler->setFlags(Qt::ItemIsEnabled);
-
-            // keep the rows in filename order (same collation as Utility::sortFilenames):
-            // insert before the first browser row that should come later (error rows at
-            // the top stay put; folders sort before files and the placeholder)
-            int insertRow = parentItem->rowCount();
-            for (int row = 0; row < parentItem->rowCount(); ++row) {
-                QStandardItem *sibling = parentItem->child(row, 0);
-                const int kind = itemKind(sibling);
-                if (kind == static_cast<int>(FolderTreeItemKind::BrowserPlaceholder)
-                    || kind == static_cast<int>(FolderTreeItemKind::BrowserFile)
-                    || (kind == static_cast<int>(FolderTreeItemKind::BrowserFolder) && collator.compare(sibling->text(), name) > 0)) {
-                    insertRow = row;
-                    break;
-                }
-            }
-            parentItem->insertRow(insertRow, {child, filler});
+                child->setCheckState(stateForPath(blackList, Utility::ensureTrailingSlash(entry.relPath)));
             // give the new row its own expander; a Depth::One listing cannot tell
             // whether the subfolder has children, so assume it does until expanded
-            attachPlaceholder(child);
-        } else if (child->rowCount() == 0) {
+            child->appendRow(placeholderRow());
+        } else {
+            // file rows are informational only (selective sync stays folder-based)
+            child->setIcon(fileIcon);
+            child->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+        }
+        if (!vfsMode)
+            setRowDetail(child, sizeText(entry.size));
+        return child;
+    };
+    const auto updateRow = [&](QStandardItem *child, const ListingEntry &entry) {
+        if (itemKind(child) == static_cast<int>(FolderTreeItemKind::BrowserFolder) && child->rowCount() == 0) {
             // the row was previously listed as empty and lost its placeholder; restore the
             // expander so content created on the server later remains discoverable
             // (a row with file children keeps its expander naturally)
-            attachPlaceholder(child);
+            child->appendRow(placeholderRow());
         }
-        setBrowserRowDetails(folder, child, entry.relPath, entry.size, vfsMode);
-    }
+        if (!vfsMode)
+            setRowDetail(child, sizeText(entry.size));
+    };
 
-    // prune rows for folders that no longer exist on the server
-    for (QStandardItem *stale : std::as_const(existing))
-        parentItem->removeRow(stale->row());
-
-    // now the file rows: informational only (selective sync stays folder-based),
-    // kept in filename order below the folder rows
-    QHash<QString, QStandardItem *> existingFiles;
-    for (QStandardItem *child : childrenOfKind(parentItem, FolderTreeItemKind::BrowserFile))
-        existingFiles.insert(child->data(FolderItemRoles::RemotePathRole).toString(), child);
-
-    for (const QString &name : std::as_const(fileNames)) {
-        const Entry entry = fileEntriesByName.value(name);
-        QStandardItem *child = existingFiles.take(entry.relPath);
-        if (!child) {
-            child = new QStandardItem(name);
-            child->setIcon(QApplication::style()->standardIcon(QStyle::SP_FileIcon));
-            child->setToolTip(entry.relPath);
-            child->setData(static_cast<int>(FolderTreeItemKind::BrowserFile), FolderItemRoles::ItemKindRole);
-            child->setData(entry.relPath, FolderItemRoles::RemotePathRole);
-            child->setData(0, FolderItemRoles::SortPriorityRole);
-            child->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
-
-            QStandardItem *filler = new QStandardItem();
-            // enabled (but nothing else) so keyboard navigation in column 1 can step onto the row
-            filler->setFlags(Qt::ItemIsEnabled);
-
-            // files go after every folder row and before the placeholder, ordered by name
-            int insertRow = parentItem->rowCount();
-            for (int row = 0; row < parentItem->rowCount(); ++row) {
-                QStandardItem *sibling = parentItem->child(row, 0);
-                const int kind = itemKind(sibling);
-                if (kind == static_cast<int>(FolderTreeItemKind::BrowserPlaceholder)
-                    || (kind == static_cast<int>(FolderTreeItemKind::BrowserFile) && collator.compare(sibling->text(), name) > 0)) {
-                    insertRow = row;
-                    break;
-                }
-            }
-            parentItem->insertRow(insertRow, {child, filler});
+    // Ordner und Dateien in einem Durchgang; neue Zeilen sammeln sich bis zur nächsten bleibenden Zeile
+    int row = blockStart(parentItem, FolderTreeItemKind::BrowserFolder);
+    qsizetype next = 0;
+    QList<QStandardItem *> run;
+    const auto mergeEntry = [&](const ListingEntry &entry, FolderTreeItemKind kind) {
+        QStandardItem *keep = next < kept.size() ? kept.at(next) : nullptr;
+        if (keep && itemKind(keep) == static_cast<int>(kind) && keep->data(FolderItemRoles::RemotePathRole).toString() == entry.relPath) {
+            ++next;
+            insertRun(parentItem, keep->row(), run);
+            updateRow(keep, entry);
+            row = keep->row() + 1;
+        } else {
+            run.append(newRow(entry, kind));
         }
-        setBrowserRowDetails(folder, child, entry.relPath, entry.size, vfsMode);
+    };
+    for (const ListingEntry &entry : std::as_const(folders))
+        mergeEntry(entry, FolderTreeItemKind::BrowserFolder);
+    for (const ListingEntry &entry : std::as_const(files))
+        mergeEntry(entry, FolderTreeItemKind::BrowserFile);
+
+    // „… und N weitere Dateien“ unter den Dateizeilen; alle zeigt der Dateimanager
+    if (hiddenFiles > 0) {
+        //: Last row of a folder with more files than the folder view lists, %n is the number of files not shown
+        const QString text = tr("… and %n more file(s)", nullptr, static_cast<int>(hiddenFiles));
+        if (moreRow) {
+            moreRow->setText(text);
+        } else {
+            moreRow = new QStandardItem(text);
+            moreRow->setFlags(Qt::ItemIsEnabled);
+            moreRow->setData(static_cast<int>(FolderTreeItemKind::BrowserMoreFiles), FolderItemRoles::ItemKindRole);
+            // like the placeholder: stays below the folder and file rows when the model gets (re)sorted
+            moreRow->setData(-1, FolderItemRoles::SortPriorityRole);
+            run.append(moreRow);
+        }
     }
+    insertRun(parentItem, row, run);
 
-    // prune rows for files that no longer exist on the server
-    for (QStandardItem *stale : std::as_const(existingFiles))
-        parentItem->removeRow(stale->row());
-
-    QStandardItem *placeholder = placeholderChild(parentItem);
-    if (names.isEmpty() && fileNames.isEmpty()) {
+    if (folders.isEmpty() && files.isEmpty()) {
         if (!placeholder) {
             // an earlier listing had content and removed the placeholder; re-attach
             // it so the row keeps its expander and can show the empty state
-            attachPlaceholder(parentItem);
+            parentItem->appendRow(placeholderRow());
             placeholder = placeholderChild(parentItem);
         }
         // keep it as an informational row: the expander stays (like in Explorer),
         // collapsing and re-expanding re-checks the server
         if (placeholder)
             placeholder->setText(tr("This folder is empty on the server."));
-    } else if (placeholder) {
-        parentItem->removeRow(placeholder->row());
     }
 }
 
-void FolderBrowserController::setBrowserRowDetails(Folder *folder, QStandardItem *item, const QString &relPath, qint64 size, bool vfsMode)
+void FolderBrowserController::setRowDetail(QStandardItem *item, const QString &detail)
 {
-    QString detail;
-    if (vfsMode)
-        detail = availabilityText(folder, relPath);
-    else if (size >= 0)
-        detail = Utility::octetsToString(size);
     item->setData(detail, FolderItemRoles::DetailStringRole);
 
     QString accessibleFormat;
@@ -805,14 +934,60 @@ void FolderBrowserController::refreshCheckStates(QStandardItem *parentItem, cons
 
 void FolderBrowserController::refreshAvailability(Folder *folder, QStandardItem *item, bool recursive)
 {
-    QScopedValueRollback<bool> guard(_updatingModel, true);
-    const QString relPath = item->data(FolderItemRoles::RemotePathRole).toString();
-    setBrowserRowDetails(folder, item, relPath, -1, true);
-    if (recursive) {
-        for (QStandardItem *child : browserChildren(item))
-            refreshAvailability(folder, child, true);
-        for (QStandardItem *child : childrenOfKind(item, FolderTreeItemKind::BrowserFile))
-            refreshAvailability(folder, child, false);
+    {
+        QScopedValueRollback<bool> guard(_updatingModel, true);
+        setRowDetail(item, availabilityText(folder, item->data(FolderItemRoles::RemotePathRole).toString()));
+    }
+    if (!recursive)
+        return;
+    // die geladenen Zeilen darunter wie nach dem Aufklappen in Zeitscheiben
+    QList<QStandardItem *> rows;
+    QList<const QStandardItem *> parents{item};
+    while (!parents.isEmpty()) {
+        const QStandardItem *parent = parents.takeLast();
+        const QList<QStandardItem *> subfolders = browserChildren(parent);
+        rows += subfolders;
+        rows += childrenOfKind(parent, FolderTreeItemKind::BrowserFile);
+        for (QStandardItem *subfolder : subfolders)
+            parents.append(subfolder);
+    }
+    queueAvailability(rows);
+}
+
+void FolderBrowserController::queueAvailability(const QList<QStandardItem *> &items)
+{
+    for (QStandardItem *item : items)
+        _pendingAvailability.append(QPersistentModelIndex(item->index()));
+    processPendingAvailability();
+}
+
+void FolderBrowserController::processPendingAvailability()
+{
+    // Je Durchgang höchstens so lange, dann ist die Ereignisschleife wieder dran: Unter Windows fragt jede Zeile den
+    // Eigenschaftsspeicher des Explorers, unter macOS das Dateisystem. Kleine Ordner sind im ersten Durchgang fertig.
+    constexpr qint64 timeSliceMs = 30;
+    QElapsedTimer timer;
+    timer.start();
+    {
+        QScopedValueRollback<bool> guard(_updatingModel, true);
+        while (!_pendingAvailability.isEmpty()) {
+            const QPersistentModelIndex index = _pendingAvailability.takeFirst();
+            QStandardItem *item = index.isValid() ? _model->itemFromIndex(index) : nullptr;
+            FolderItem *rootItem = item ? rootItemForIndex(index) : nullptr;
+            Folder *folder = rootItem ? rootItem->folder() : nullptr;
+            // virtuelle Dateien inzwischen aus: die Zeilen entstehen beim nächsten Aufklappen neu
+            if (folder && folder->virtualFilesEnabled())
+                setRowDetail(item, availabilityText(folder, item->data(FolderItemRoles::RemotePathRole).toString()));
+            if (timer.elapsed() >= timeSliceMs)
+                break;
+        }
+    }
+    if (!_pendingAvailability.isEmpty() && !_availabilityScheduled) {
+        _availabilityScheduled = true;
+        QTimer::singleShot(0, this, [this] {
+            _availabilityScheduled = false;
+            processPendingAvailability();
+        });
     }
 }
 
