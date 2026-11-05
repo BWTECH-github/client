@@ -49,8 +49,8 @@ name: Install-Probe
 # Ebenso nur einzeln: grosser-ordner - Ordneransicht mit einem Ordner voller Dateien (Befund 11.0.0: Fenster weiß beim Aufklappen):
 # Konto mit Kennwort an ASSISTENT_OHNE_OAUTH2 (E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2), Ordnerpaar für den Serverordner des Laufs,
 # pausiert, dann 20.000 Dateien und 200 Unterordner per Bulk-Upload in dessen Unterordner "Gross"; in der Ordneransicht "Gross" mit
-# Klick und Pfeil rechts aufklappen. Das Hauptfenster muss durchgehend antworten (WM_NULL), die Zeile "… und 19500 weitere Dateien"
-# erscheinen, kein Absturz. Der Serverordner wird danach gelöscht.
+# Klick und Pfeil rechts aufklappen. Die Auflistung muss ankommen und das Hauptfenster durchgehend antworten (WM_NULL), nach der
+# Taste Ende die Zeile "… und 19500 weitere Dateien" zu sehen sein, kein Absturz. Der Serverordner wird danach gelöscht.
 #
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=assistent
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=assistent-basic

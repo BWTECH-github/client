@@ -190,11 +190,12 @@
                   Ordner pausiert; dann bekommt dessen Unterordner „Gross“
                   20.000 leere Dateien und 200 Unterordner (Bulk-Upload). In
                   der Ordneransicht „Gross“ anklicken und mit Pfeil rechts
-                  aufklappen: Das Hauptfenster muss alle 250 ms innerhalb von
-                  3 s antworten (WM_NULL), die Zeile „… und 19500 weitere
-                  Dateien“ erscheinen, Taste Ende springt ans Ende; kein
-                  Absturz, Ende über --quit mit Exit-Code 0. Der Serverordner
-                  wird danach gelöscht.
+                  aufklappen: Die Auflistung muss ankommen (Protokoll) und das
+                  Hauptfenster bis 20 s danach alle 250 ms innerhalb von 3 s
+                  antworten (WM_NULL); nach der Taste Ende muss die Zeile
+                  „… und 19500 weitere Dateien“ zu sehen sein; kein Absturz,
+                  Ende über --quit mit Exit-Code 0. Der Serverordner wird
+                  danach gelöscht.
 
     Client-Spuren, nachgebildet nach dem Client-Code (Geheimnis = Zufallswert,
     wird nie ausgegeben): Anmeldeinformation <app>_credentials:<host>:<uuid>:
@@ -6819,7 +6820,7 @@ function Invoke-GrosserOrdner {
         }
         if (-not $ok -and -not $state.Stopped) { $state.Stopped = '„Gross“ nicht gefüllt (G4)' }
 
-        $ok = Invoke-DauerStep $state 'G5' ('„Gross“ in der Ordneransicht aufgeklappt (Klick, Pfeil rechts): Hauptfenster antwortet durchgehend (WM_NULL alle 250 ms, höchstens {0} ms), die Zeile „… und {1} weitere Dateien“ erscheint' -f $bigResponseMs, $hidden) {
+        $ok = Invoke-DauerStep $state 'G5' ('„Gross“ in der Ordneransicht aufgeklappt (Klick, Pfeil rechts): Auflistung angekommen, Hauptfenster antwortet durchgehend bis 20 s danach (WM_NULL alle 250 ms, höchstens {0} ms)' -f $bigResponseMs) {
             $rowPattern = '^((Ordner|Folder) )?Gross(,|$)'
             $items = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id -IncludeMain; if (@($i | Where-Object { $_.Visible -and $_.Type -in 'TreeItem', 'DataItem', 'ListItem' -and $_.Name -match $rowPattern }).Count -gt 0) { $i } } 30
             if (-not $items) { Stop-Step 'Zeile „Gross“ in der Ordneransicht nicht gefunden (30 s)' }
@@ -6829,34 +6830,39 @@ function Invoke-GrosserOrdner {
             $state.Tree = $tree.Element
             $state.MaskItems = $items
             $null = Write-QuickShot $ctx 'zugeklappt' 'Ordneransicht, „Gross“ noch zugeklappt' $items
+            $mark = Get-LogMark $ctx
             $how = Invoke-UiClick $ctx $row -NoInvoke
             if (-not $how) { Stop-Step 'Zeile „Gross“ nicht anklickbar' }
             Add-Timeline ('Klick: Zeile "{0}" ({1})' -f $row.Name, $how)
             Start-Sleep -Milliseconds 500
             $null = [OcProbe.Desk]::Press(0x27, $false)
             Add-Timeline 'Taste: Pfeil rechts (aufklappen)'
-            $conditions = [System.Windows.Automation.Condition[]]@(foreach ($name in ('{0} und {1} weitere Dateien' -f [char]0x2026, $hidden), ('{0} and {1} more files' -f [char]0x2026, $hidden)) {
-                    New-Object System.Windows.Automation.PropertyCondition ([System.Windows.Automation.AutomationElement]::NameProperty, $name)
-                })
-            $moreRow = [System.Windows.Automation.OrCondition]::new($conditions)
-            $measure = Measure-Responsiveness $ctx 300 { $state.Tree.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $moreRow) } 15
+            # angekommen ist die Auflistung, wenn der PropfindJob von „Gross“ endet; danach fügt der Client die Zeilen ein
+            # und trägt die Verfügbarkeit nach, darum weitere 20 s messen
+            $listed = 'LSCOL of QUrl\("[^"\r\n]*/' + [regex]::Escape($folder) + '/Gross"\) FINISHED WITH STATUS "OK"'
+            $measure = Measure-Responsiveness $ctx 300 { [regex]::IsMatch((Get-LogSince $ctx $mark), $listed) } 20
             $shot = Write-QuickShot $ctx 'aufgeklappt' '„Gross“ aufgeklappt' $state.MaskItems
             if (-not $measure.Main) { Stop-Step 'Hauptfenster zum Messen nicht gefunden' }
-            $seen = if ($null -ne $measure.FoundAfter) { 'nach {0} s zu sehen (UI Automation)' -f $measure.FoundAfter } else { 'nicht erschienen (300 s)' }
-            $detail = '{0} Stichproben, {1} ohne Antwort innerhalb von {2} ms, längste Antwort {3} ms; Zeile „… und {4} weitere Dateien“ {5}; Foto {6}' -f $measure.Samples, $measure.Failed, $bigResponseMs, $measure.LongestMs, $hidden, $seen, $shot
+            $seen = if ($null -ne $measure.FoundAfter) { 'nach höchstens {0} s angekommen (Protokoll)' -f $measure.FoundAfter } else { 'nicht angekommen (300 s)' }
+            $detail = '{0} Stichproben, {1} ohne Antwort innerhalb von {2} ms, längste Antwort {3} ms; Auflistung von „Gross“ {4}; Foto {5}' -f $measure.Samples, $measure.Failed, $bigResponseMs, $measure.LongestMs, $seen, $shot
             if ($measure.Failed -gt 0 -or $null -eq $measure.FoundAfter) { return @{ Status = 'FEHLER'; Detail = $detail } }
             return $detail
         }
 
-        $null = Invoke-DauerStep $state 'G6' 'Ans Ende der Ordneransicht (Taste Ende): Hauptfenster antwortet' {
+        $null = Invoke-DauerStep $state 'G6' ('Ans Ende der Ordneransicht (Taste Ende): Zeile „… und {0} weitere Dateien“ zu sehen, Hauptfenster antwortet' -f $hidden) {
             if (-not $state.Tree) { Stop-Step 'Ordneransicht nicht aufgeklappt (G5)' }
             $null = [OcProbe.Desk]::Press(0x23, $false)
             Add-Timeline 'Taste: Ende'
-            Start-Sleep -Seconds 1
+            # UI Automation fand die Zeile nur im sichtbaren Bereich (Lauf 42042454720): erst ans Ende, dann suchen
+            $conditions = [System.Windows.Automation.Condition[]]@(foreach ($name in ('{0} und {1} weitere Dateien' -f [char]0x2026, $hidden), ('{0} and {1} more files' -f [char]0x2026, $hidden)) {
+                    New-Object System.Windows.Automation.PropertyCondition ([System.Windows.Automation.AutomationElement]::NameProperty, $name)
+                })
+            $moreRow = [System.Windows.Automation.OrCondition]::new($conditions)
+            $more = Wait-Ui $ctx { $state.Tree.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $moreRow) } 15
             $measure = Measure-Responsiveness $ctx 10
             $shot = Write-QuickShot $ctx 'ende' 'Ende der Ordneransicht (Taste Ende)' $state.MaskItems
-            $detail = '{0} Stichproben, {1} ohne Antwort innerhalb von {2} ms, längste Antwort {3} ms; Foto {4}' -f $measure.Samples, $measure.Failed, $bigResponseMs, $measure.LongestMs, $shot
-            if ($measure.Failed -gt 0) { return @{ Status = 'FEHLER'; Detail = $detail } }
+            $detail = 'Zeile „… und {0} weitere Dateien“ {1}; {2} Stichproben, {3} ohne Antwort innerhalb von {4} ms, längste Antwort {5} ms; Foto {6}' -f $hidden, $(if ($more) { 'zu sehen (UI Automation)' } else { 'nicht gefunden (15 s)' }), $measure.Samples, $measure.Failed, $bigResponseMs, $measure.LongestMs, $shot
+            if (-not $more -or $measure.Failed -gt 0) { return @{ Status = 'FEHLER'; Detail = $detail } }
             return $detail
         }
     } finally {
