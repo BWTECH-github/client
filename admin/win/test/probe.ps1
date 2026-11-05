@@ -183,6 +183,18 @@
                   keine Sync-Schleife, kein ASSERT; Arbeitsspeicher am
                   Anfang und am Ende; kein Speicherabbild, Ende über --quit
                   mit Exit-Code 0.
+      grosser-ordner  Nur auf Anforderung: Ordneransicht mit einem Ordner voller
+                  Dateien (Befund 11.0.0: Fenster weiß beim Aufklappen). Konto
+                  mit Kennwort an -BasicServerUrl (OC_USER_2/OC_PASS_2),
+                  Ordnerpaar nur für den Serverordner des Laufs, erster Sync,
+                  Ordner pausiert; dann bekommt dessen Unterordner „Gross“
+                  20.000 leere Dateien und 200 Unterordner (Bulk-Upload). In
+                  der Ordneransicht „Gross“ anklicken und mit Pfeil rechts
+                  aufklappen: Das Hauptfenster muss alle 250 ms innerhalb von
+                  3 s antworten (WM_NULL), die Zeile „… und 19500 weitere
+                  Dateien“ erscheinen, Taste Ende springt ans Ende; kein
+                  Absturz, Ende über --quit mit Exit-Code 0. Der Serverordner
+                  wird danach gelöscht.
 
     Client-Spuren, nachgebildet nach dem Client-Code (Geheimnis = Zufallswert,
     wird nie ausgegeben): Anmeldeinformation <app>_credentials:<host>:<uuid>:
@@ -207,8 +219,8 @@
 
 .PARAMETER Scenario
     frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2,
-    deinstall-policies, assistent, assistent-basic, dauerlauf oder
-    dauerlauf-lang.
+    deinstall-policies, assistent, assistent-basic, dauerlauf,
+    dauerlauf-lang oder grosser-ordner.
 
 .PARAMETER Setup
     Setup des Prüflings (*-Setup.exe aus dem CI-Artefakt windows-cl-x86_64).
@@ -243,11 +255,11 @@
     Assistenten); auch das Konto des offiziellen Clients zeigt dorthin.
 
 .PARAMETER BasicServerUrl
-    assistent-basic, dauerlauf, dauerlauf-lang: Server ohne die App "OAuth2",
-    an dem sich das Testkonto mit Benutzername und Kennwort anmeldet
-    (assistent-basic: OC_USER/OC_PASS, dauerlauf und dauerlauf-lang:
-    OC_USER_2/OC_PASS_2). Die Adresse aus OC_URL bzw. OC_URL_2 wird nur mit
-    ihr verglichen.
+    assistent-basic, dauerlauf, dauerlauf-lang, grosser-ordner: Server ohne die
+    App "OAuth2", an dem sich das Testkonto mit Benutzername und Kennwort
+    anmeldet (assistent-basic: OC_USER/OC_PASS, dauerlauf, dauerlauf-lang und
+    grosser-ordner: OC_USER_2/OC_PASS_2). Die Adresse aus OC_URL bzw.
+    OC_URL_2 wird nur mit ihr verglichen.
 
 .PARAMETER RunMinutes
     dauerlauf: so viele Minuten läuft der Client nach dem Neustart mindestens
@@ -275,7 +287,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2', 'deinstall-policies', 'assistent', 'assistent-basic', 'dauerlauf', 'dauerlauf-lang')]
+    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2', 'deinstall-policies', 'assistent', 'assistent-basic', 'dauerlauf', 'dauerlauf-lang', 'grosser-ordner')]
     [string] $Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -4622,11 +4634,11 @@ function Wait-FolderSync {
 # WebDAV mit Benutzername und Kennwort, Vorgabe: Server ohne OAuth2 mit dem zweiten Testkonto (-Server/-Token für das erste Testkonto am
 # Server mit OAuth2, sofern der WebDAV mit Kennwort annimmt); Rückgabe: HTTP-Status, 0 ohne Antwort
 function Invoke-Dav {
-    param([string] $Method, [string] $Path, [byte[]] $Body = $null, [string] $Server = $BasicServerUrl, [string] $Token = $loginToken2)
+    param([string] $Method, [string] $Path, [byte[]] $Body = $null, [string] $Server = $BasicServerUrl, [string] $Token = $loginToken2, [int] $TimeoutMs = 60000)
     $segments = @($Path.Trim('/') -split '/' | Where-Object { $_ } | ForEach-Object { [uri]::EscapeDataString($_) })
     $request = [System.Net.HttpWebRequest]::Create(('{0}/remote.php/webdav/{1}' -f $Server.TrimEnd('/'), ($segments -join '/')))
     $request.Method = $Method
-    $request.Timeout = 60000
+    $request.Timeout = $TimeoutMs
     $request.AllowAutoRedirect = $false
     $request.Headers['Authorization'] = 'Basic ' + $Token
     try {
@@ -6606,6 +6618,259 @@ function Invoke-DauerlaufLang {
     Complete-DauerArtifacts $ctx $fatal 'L10.9' 'L13' 'Dauerlauf-lang' 'dauerlauf-lang-ablauf.txt'
 }
 
+# --- Großer Ordner (grosser-ordner) -------------------------------------------
+#
+# Befund 11.0.0 unter Windows: Ein Ordner mit tausenden Dateien ließ beim Aufklappen in der Ordneransicht das Fenster minutenlang
+# hängen (weiß, „Keine Rückmeldung“). Das zweite Testkonto bekommt ein Ordnerpaar nur für den Serverordner dieses Laufs (eine kleine
+# Datei, der leere Unterordner „Gross“); nach dem ersten Sync wird der Ordner pausiert und „Gross“ auf dem Server gefüllt, der Sync
+# lädt also nichts davon. Dann klappt die Probe „Gross“ wie ein Tester auf (Klick, Pfeil rechts) und misst, ob das Hauptfenster
+# durchgehend antwortet.
+
+$bigFileCount = 20000
+$bigFolderCount = 200
+# FolderBrowserController::maxFileRows
+$bigShownFiles = 500
+# so lange darf eine Antwort des Hauptfensters (WM_NULL) höchstens dauern
+$bigResponseMs = 3000
+
+# leere Dateien per Bulk-Upload (POST /remote.php/dav/bulk, multipart/related; je Teil X-File-Path, X-File-Md5, Content-Length) in
+# Stücken anlegen, fehlende Ordner legt der Server an; wirft mit dem Grund
+function Invoke-BulkUpload {
+    param([string[]] $Paths, [int] $BatchSize = 2000)
+    $emptyMd5 = 'd41d8cd98f00b204e9800998ecf8427e'
+    for ($start = 0; $start -lt $Paths.Count; $start += $BatchSize) {
+        $batch = @($Paths[$start..([Math]::Min($start + $BatchSize, $Paths.Count) - 1)])
+        $boundary = 'oco-probe-' + [guid]::NewGuid().ToString('N')
+        $text = New-Object System.Text.StringBuilder
+        foreach ($path in $batch) {
+            $null = $text.Append("--$boundary`r`nX-File-Path: $path`r`nX-File-Md5: $emptyMd5`r`nContent-Length: 0`r`n`r`n`r`n")
+        }
+        $null = $text.Append("--$boundary--`r`n")
+        $body = [Text.Encoding]::UTF8.GetBytes($text.ToString())
+        $request = [System.Net.HttpWebRequest]::Create(('{0}/remote.php/dav/bulk' -f $BasicServerUrl.TrimEnd('/')))
+        $request.Method = 'POST'
+        $request.Timeout = 900000
+        $request.ReadWriteTimeout = 900000
+        $request.AllowAutoRedirect = $false
+        $request.Headers['Authorization'] = 'Basic ' + $loginToken2
+        $request.ContentType = 'multipart/related; boundary=' + $boundary
+        $request.ContentLength = $body.Length
+        $stream = $request.GetRequestStream()
+        try { $stream.Write($body, 0, $body.Length) } finally { $stream.Dispose() }
+        $response = $null
+        try {
+            $response = $request.GetResponse()
+        } catch {
+            $webError = $_.Exception
+            while ($webError -and -not ($webError -is [System.Net.WebException])) { $webError = $webError.InnerException }
+            if (-not $webError -or -not $webError.Response) { throw ('Bulk-Upload ab Datei {0}: keine Antwort ({1})' -f ($start + 1), $_.Exception.Message) }
+            $response = $webError.Response
+        }
+        try {
+            $status = [int]$response.StatusCode
+            $answer = (New-Object IO.StreamReader($response.GetResponseStream(), [Text.Encoding]::UTF8)).ReadToEnd()
+        } finally {
+            $response.Dispose()
+        }
+        if ($status -ne 200) { throw ('Bulk-Upload ab Datei {0}: HTTP {1} ({2})' -f ($start + 1), $status, (Limit-Text $answer 200)) }
+        $entries = @(($answer | ConvertFrom-Json).PSObject.Properties)
+        $failed = @($entries | Where-Object { $_.Value.error })
+        if ($failed.Count -gt 0 -or $entries.Count -ne $batch.Count) {
+            $first = if ($failed.Count -gt 0) { '{0}: {1}' -f $failed[0].Name, $failed[0].Value.message } else { '-' }
+            throw ('Bulk-Upload ab Datei {0}: {1} von {2} angelegt, zuerst gescheitert: {3}' -f ($start + 1), ($entries.Count - $failed.Count), $batch.Count, (Limit-Text $first 200))
+        }
+    }
+}
+
+# Bildschirmfoto ohne erneute Abfrage aller Elemente: Mit tausenden Zeilen in der Ordneransicht dauerte sie Minuten und hielte den
+# Client selbst beschäftigt. Geschwärzt wird nach Elementen von vorher, das Fenster bleibt dabei an seinem Platz.
+function Write-QuickShot {
+    param($Ctx, [string] $Step, [string] $Label, $MaskItems)
+    $Ctx.Step++
+    $shot = Save-BasicShot ('{0}-{1:D2}-{2}' -f $Ctx.Name, $Ctx.Step, $Step) $MaskItems
+    $Ctx.Shots.Add($shot)
+    Add-Timeline ('{0} [{1}] {2} | Prozess: {3} | Foto: {4}' -f $Ctx.Name, $Step, $Label, (Get-ProcessNote $Ctx.Process), $shot)
+    return $shot
+}
+
+# Antwortet das Hauptfenster? Alle 250 ms WM_NULL mit $bigResponseMs Frist, höchstens $Seconds s lang. Mit -Until (alle 10 s geprüft)
+# endet die Messung $Settle s nach dem ersten Treffer. Rückgabe: Stichproben, Ausfälle, längste Antwort, Sekunden bis zum Treffer
+function Measure-Responsiveness {
+    param($Ctx, [int] $Seconds, [scriptblock] $Until = $null, [int] $Settle = 15)
+    $main = @([OcProbe.Ui]::TopWindows($Ctx.Process.Id) | Where-Object { $_.Text -eq $appName }) | Select-Object -First 1
+    $result = @{ Samples = 0; Failed = 0; LongestMs = 0; FoundAfter = $null; Main = [bool]$main }
+    if (-not $main) { return $result }
+    $start = Get-Date
+    $nextCheck = $start.AddSeconds(5)
+    while (((Get-Date) - $start).TotalSeconds -lt $Seconds -and -not $Ctx.Process.HasExited) {
+        $asked = Get-Date
+        $answered = [OcProbe.Ui]::Responds($main.Handle, [uint32]$bigResponseMs)
+        $ms = [int]((Get-Date) - $asked).TotalMilliseconds
+        $result.Samples++
+        if ($ms -gt $result.LongestMs) { $result.LongestMs = $ms }
+        if (-not $answered) {
+            $result.Failed++
+            Add-Timeline ('Hauptfenster antwortete nicht innerhalb von {0} ms ({1:N1} s nach Beginn der Messung)' -f $bigResponseMs, ((Get-Date) - $start).TotalSeconds)
+        }
+        if ($Until -and $null -eq $result.FoundAfter -and (Get-Date) -ge $nextCheck) {
+            $hit = $null
+            try { $hit = & $Until } catch { $hit = $null }
+            if ($hit) { $result.FoundAfter = [Math]::Round(((Get-Date) - $start).TotalSeconds, 1) }
+            $nextCheck = (Get-Date).AddSeconds(10)
+        }
+        if ($null -ne $result.FoundAfter -and ((Get-Date) - $start).TotalSeconds -ge $result.FoundAfter + $Settle) { break }
+        Start-Sleep -Milliseconds 250
+    }
+    return $result
+}
+
+function Invoke-GrosserOrdner {
+    Initialize-Desktop
+    if (-not ('OcProbe.Mouse' -as [type])) { Add-Type -TypeDefinition $mouseSource -Language CSharp }
+    Add-Type -AssemblyName WindowsBase
+    $physical = [OcProbe.Mouse]::UsePhysicalPixels()
+    New-Item -ItemType Directory -Force -Path $rawRoot, $dumpDir | Out-Null
+    [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+    Add-Check 'A0' 'Speicherabbilder bei Absturz (WER LocalDumps)' 'INFO' (Enable-LocalDumps) ''
+    $bounds = [System.Windows.Forms.SystemInformation]::VirtualScreen
+    # die Adresse aus dem Secret selbst erscheint nirgends, nur ob sie zum Server der Probe passt
+    $sameHost = 'fehlt'
+    $parsed = $null
+    if ($loginServer2 -and [uri]::TryCreate($loginServer2, [UriKind]::Absolute, [ref] $parsed)) {
+        $sameHost = if ($parsed.Host -eq ([uri]$BasicServerUrl).Host) { 'ja' } else { 'nein' }
+    }
+    $ciRun = '-'
+    $runFile = Join-Path $OutDir 'client-lauf.json'
+    if (Test-Path -LiteralPath $runFile -PathType Leaf) {
+        try {
+            $ciInfo = [IO.File]::ReadAllText($runFile) | ConvertFrom-Json
+            $ciRun = '{0} ({1}, {2})' -f $ciInfo.databaseId, $ciInfo.headBranch, $ciInfo.headSha
+        } catch { }
+    }
+    Add-Check 'A1' 'Umgebung' $(if ($sameHost -eq 'nein') { 'WARNUNG' } else { 'INFO' }) ('Bildschirm {0}x{1} (Bildpunkte ohne Skalierung: {2}); Testkonto 2 (E2E_ONLINE_USER_2/_PASS_2, Kennwort): {3}, Adresse aus E2E_ONLINE_URL_2 mit dem Host von {4}: {5}; CI-Lauf {6}' -f $bounds.Width, $bounds.Height, $physical,
+        $(if ($loginUser2 -and $loginPass2) { 'vorhanden' } else { 'fehlt' }), $BasicServerUrl, $sameHost, $ciRun) ''
+    if (-not ($loginUser2 -and $loginPass2)) { throw 'Zugang des zweiten Testkontos fehlt (Secrets E2E_ONLINE_USER_2/_PASS_2)' }
+
+    Install-Candidate 'A3'
+    $exe = Find-ClientExe
+    if (-not $exe) { throw 'Programmdatei des Prüflings nicht gefunden' }
+    Add-Check 'A4' 'Prüfling' 'INFO' ('{0}, Version {1}, Signatur {2}' -f $exe, (Get-VersionWithBuild $exe), (Get-SignatureNote $exe)) ''
+    Stop-Client
+
+    $folder = Get-RunPrefix
+    $hidden = $bigFileCount - $bigShownFiles
+    $ctx = New-DauerContext 'g1'
+    $state = @{ Ctx = $ctx; Stopped = ''; Tree = $null; MaskItems = $null }
+    $title = 'Ordneransicht mit {0} Dateien und {1} Unterordnern in „Gross“ (Serverordner {2} an {3}, Kennwort): aufklappen mit Klick und Pfeil rechts, Hauptfenster antwortet, kein Absturz' -f $bigFileCount, $bigFolderCount, $folder, $BasicServerUrl
+    Write-Host "== Großer Ordner: $title"
+    Write-Annotation 'notice' "Großer Ordner: $title"
+    Add-Timeline "== Großer Ordner: $title"
+    try {
+        $ok = Invoke-DauerStep $state 'G1' ('Serverordner {0} mit „Gross“ (leer) und einer kleinen Datei per WebDAV angelegt (Testkonto 2)' -f $folder) {
+            $codes = @(foreach ($path in $folder, "$folder/Gross") { '{0}: HTTP {1}' -f $path, (Invoke-Dav 'MKCOL' $path) })
+            $codes += '{0}/klein.txt: HTTP {1}' -f $folder, (Invoke-Dav 'PUT' "$folder/klein.txt" ([Text.Encoding]::UTF8.GetBytes("owncloud.online Probe`r`n")))
+            if (@($codes | Where-Object { $_ -notmatch 'HTTP (201|204)$' }).Count -gt 0) { Stop-Step ($codes -join '; ') }
+            return ($codes -join '; ')
+        }
+        if (-not $ok) { $state.Stopped = 'Serverordner nicht angelegt (G1)' }
+
+        Reset-ClientState
+        Stop-OfficialClient
+        Write-ClientConfig 'de'
+        Set-LegacyConfig $false
+        $ctx.Since = Get-Date
+        if (-not $state.Stopped) { Start-DauerClient $ctx $exe 'g1-client.log' }
+
+        $ok = Invoke-DauerStep $state 'G2' ('Assistent: {0} mit Kennwort, „Erweitert“ → „Ordner manuell synchronisieren“, Ordner-Assistent mit {1}, erster Sync' -f $BasicServerUrl, $folder) {
+            $found = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id; if ((Get-BasicWizardState $i) -eq 'adresse') { @{ Items = $i } } } 90
+            if (-not $found) { Stop-Step 'Adressseite des Assistenten erschien nicht innerhalb von 90 s' }
+            $reboot = Close-RebootPrompt $ctx
+            $null = Write-BasicStep $ctx 'assistent' 'Assistent, Adressseite'
+            $mark = Complete-BasicWizardManual $ctx
+            if (-not (Wait-LogSince $ctx (Get-ConnectedPattern $BasicServerUrl) $mark 120)) { Stop-Step ('Konto an {0} nach "Abschließen" nicht verbunden (120 s)' -f $BasicServerUrl) }
+            # "Ordner manuell": NewAccountBuilder öffnet den Ordner-Assistenten in der Kontoansicht
+            $wizard = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id -IncludeMain; if (@($i | Where-Object { $_.Visible -and $_.Id -like '*AddFolderSyncWizard*' }).Count -gt 0) { $true } } 60
+            if (-not $wizard) { Stop-Step 'Ordner-Assistent öffnete sich nach "Abschließen" nicht (60 s)' }
+            $mark = Get-LogMark $ctx
+            $pair = Complete-FolderWizard $ctx $folder
+            $sync = Wait-FolderSync $ctx $mark $pair.Local
+            Start-Sleep -Seconds 2
+            $shot = Write-BasicStep $ctx 'ordner' 'Konto verbunden, Ordnerpaar eingerichtet, erster Sync fertig'
+            return ('verbunden; Ordner {0} (virtuelle Dateien: {1}), erster Sync: {2}; {3}Foto {4}' -f $pair.Local, $(if ($pair.Vfs) { 'an' } else { 'aus' }), $sync.Status, $(if ($reboot) { "$reboot; " } else { '' }), $shot)
+        }
+        if (-not $ok -and -not $state.Stopped) { $state.Stopped = 'Konto oder Ordnerpaar nicht eingerichtet (G2)' }
+
+        # sonst lüde der Sync die Dateien von „Gross“ (als Platzhalter) während der Messung
+        $ok = Invoke-DauerStep $state 'G3' ('Ordner {0} pausiert (Rechtsklick in der Kontoansicht → „Synchronisation pausieren“)' -f $folder) {
+            Open-FolderMenu $ctx $folder
+            $entry = Invoke-MenuEntry $ctx $folderPausePattern '' 'im Menü des Ordners'
+            Start-Sleep -Seconds 2
+            return ('„{0}“ gewählt' -f $entry.Name)
+        }
+        if (-not $ok -and -not $state.Stopped) { $state.Stopped = 'Ordner nicht pausiert (G3)' }
+
+        $ok = Invoke-DauerStep $state 'G4' ('„Gross“ auf dem Server gefüllt: {0} leere Dateien und {1} Unterordner mit je einer Datei (Bulk-Upload)' -f $bigFileCount, $bigFolderCount) {
+            $paths = New-Object 'System.Collections.Generic.List[string]'
+            for ($i = 1; $i -le $bigFileCount; $i++) { $paths.Add(('/{0}/Gross/Rechnung-{1:D5}.pdf' -f $folder, $i)) }
+            for ($i = 1; $i -le $bigFolderCount; $i++) { $paths.Add(('/{0}/Gross/Ordner-{1:D3}/leer.txt' -f $folder, $i)) }
+            $start = Get-Date
+            Invoke-BulkUpload $paths.ToArray()
+            return ('{0} Dateien in {1:N0} s angelegt' -f $paths.Count, ((Get-Date) - $start).TotalSeconds)
+        }
+        if (-not $ok -and -not $state.Stopped) { $state.Stopped = '„Gross“ nicht gefüllt (G4)' }
+
+        $ok = Invoke-DauerStep $state 'G5' ('„Gross“ in der Ordneransicht aufgeklappt (Klick, Pfeil rechts): Hauptfenster antwortet durchgehend (WM_NULL alle 250 ms, höchstens {0} ms), die Zeile „… und {1} weitere Dateien“ erscheint' -f $bigResponseMs, $hidden) {
+            $rowPattern = '^((Ordner|Folder) )?Gross(,|$)'
+            $items = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id -IncludeMain; if (@($i | Where-Object { $_.Visible -and $_.Type -in 'TreeItem', 'DataItem', 'ListItem' -and $_.Name -match $rowPattern }).Count -gt 0) { $i } } 30
+            if (-not $items) { Stop-Step 'Zeile „Gross“ in der Ordneransicht nicht gefunden (30 s)' }
+            $row = @($items | Where-Object { $_.Visible -and $_.Type -in 'TreeItem', 'DataItem', 'ListItem' -and $_.Name -match $rowPattern }) | Select-Object -First 1
+            $tree = @($items | Where-Object { $_.Id -like '*accountFoldersTreeView' }) | Select-Object -First 1
+            if (-not $tree) { Stop-Step 'Baum der Ordneransicht (accountFoldersTreeView) nicht gefunden' }
+            $state.Tree = $tree.Element
+            $state.MaskItems = $items
+            $null = Write-QuickShot $ctx 'zugeklappt' 'Ordneransicht, „Gross“ noch zugeklappt' $items
+            $how = Invoke-UiClick $ctx $row -NoInvoke
+            if (-not $how) { Stop-Step 'Zeile „Gross“ nicht anklickbar' }
+            Add-Timeline ('Klick: Zeile "{0}" ({1})' -f $row.Name, $how)
+            Start-Sleep -Milliseconds 500
+            $null = [OcProbe.Desk]::Press(0x27, $false)
+            Add-Timeline 'Taste: Pfeil rechts (aufklappen)'
+            $conditions = [System.Windows.Automation.Condition[]]@(foreach ($name in ('{0} und {1} weitere Dateien' -f [char]0x2026, $hidden), ('{0} and {1} more files' -f [char]0x2026, $hidden)) {
+                    New-Object System.Windows.Automation.PropertyCondition ([System.Windows.Automation.AutomationElement]::NameProperty, $name)
+                })
+            $moreRow = [System.Windows.Automation.OrCondition]::new($conditions)
+            $measure = Measure-Responsiveness $ctx 300 { $state.Tree.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $moreRow) } 15
+            $shot = Write-QuickShot $ctx 'aufgeklappt' '„Gross“ aufgeklappt' $state.MaskItems
+            if (-not $measure.Main) { Stop-Step 'Hauptfenster zum Messen nicht gefunden' }
+            $seen = if ($null -ne $measure.FoundAfter) { 'nach {0} s zu sehen (UI Automation)' -f $measure.FoundAfter } else { 'nicht erschienen (300 s)' }
+            $detail = '{0} Stichproben, {1} ohne Antwort innerhalb von {2} ms, längste Antwort {3} ms; Zeile „… und {4} weitere Dateien“ {5}; Foto {6}' -f $measure.Samples, $measure.Failed, $bigResponseMs, $measure.LongestMs, $hidden, $seen, $shot
+            if ($measure.Failed -gt 0 -or $null -eq $measure.FoundAfter) { return @{ Status = 'FEHLER'; Detail = $detail } }
+            return $detail
+        }
+
+        $null = Invoke-DauerStep $state 'G6' 'Ans Ende der Ordneransicht (Taste Ende): Hauptfenster antwortet' {
+            if (-not $state.Tree) { Stop-Step 'Ordneransicht nicht aufgeklappt (G5)' }
+            $null = [OcProbe.Desk]::Press(0x23, $false)
+            Add-Timeline 'Taste: Ende'
+            Start-Sleep -Seconds 1
+            $measure = Measure-Responsiveness $ctx 10
+            $shot = Write-QuickShot $ctx 'ende' 'Ende der Ordneransicht (Taste Ende)' $state.MaskItems
+            $detail = '{0} Stichproben, {1} ohne Antwort innerhalb von {2} ms, längste Antwort {3} ms; Foto {4}' -f $measure.Samples, $measure.Failed, $bigResponseMs, $measure.LongestMs, $shot
+            if ($measure.Failed -gt 0) { return @{ Status = 'FEHLER'; Detail = $detail } }
+            return $detail
+        }
+    } finally {
+        Stop-DauerClient $ctx $exe 'grosser-ordner'
+        $fatal = Get-FatalLines $ctx
+        Add-NoCrashCheck $ctx 'G7' $fatal
+        Add-LogSecretsCheck $ctx 'G8'
+        # der Server legt den Ordner samt 20.000 Dateien in den Papierkorb, das dauert
+        $code = Invoke-Dav 'DELETE' $folder -TimeoutMs 300000
+        Add-Check 'G9' 'Serverordner der Probe gelöscht (WebDAV)' $(if ($code -in 204, 404) { 'INFO' } else { 'WARNUNG' }) ('{0}: HTTP {1}' -f $folder, $code) ''
+        Complete-DauerArtifacts $ctx $fatal 'G7.9' 'G10' 'Großer Ordner' 'grosser-ordner-ablauf.txt'
+    }
+}
+
 # ---------------------------------------------------------------------------
 # Bericht
 # ---------------------------------------------------------------------------
@@ -6659,6 +6924,10 @@ function Write-Report {
     if ($Scenario -eq 'dauerlauf-lang') {
         $head.Add(('- Server: `{0}` (Browser-Anmeldung, E2E_ONLINE_USER_1/E2E_ONLINE_PASS_1) und `{1}` (Kennwort, E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2) im selben Profil; {2} min Betrieb nach dem Einrichten, Stichprobe alle 5 min, Dateien in beide Richtungen nach {3} min' -f $ServerUrl, $BasicServerUrl, $RunMinutes, [Math]::Max(0, $RunMinutes - 5)))
         $head.Add('- Bildschirmfotos (foto-*.png, Anmeldenamen geschwärzt), Ablauf (dauerlauf-lang-ablauf.txt) und Protokoll des Clients (l1-client.log, ohne Zugangsdaten) liegen im Artefakt; Speicherabbilder nicht, nur ihre Auswertung mit cdb')
+    }
+    if ($Scenario -eq 'grosser-ordner') {
+        $head.Add(('- Server: `{0}` (Kennwort, E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2); Unterordner „Gross“ mit {1} Dateien und {2} Unterordnern im Serverordner des Laufs, Ordnerpaar pausiert' -f $BasicServerUrl, $bigFileCount, $bigFolderCount))
+        $head.Add('- Bildschirmfotos (foto-*.png, Anmeldename geschwärzt), Ablauf (grosser-ordner-ablauf.txt) und Protokoll des Clients (g1-client.log, ohne Zugangsdaten) liegen im Artefakt; Speicherabbilder nicht, nur ihre Auswertung mit cdb')
     }
     $head.Add(('- Rechner: {0}, Windows PowerShell {1}' -f $os, $PSVersionTable.PSVersion))
     $head.Add(('- Ergebnis: **{0}**, {1} Warnungen' -f $verdict, $warned))
@@ -6732,6 +7001,7 @@ try {
         'assistent-basic' { Invoke-AssistentBasic }
         'dauerlauf' { Invoke-Dauerlauf }
         'dauerlauf-lang' { Invoke-DauerlaufLang }
+        'grosser-ordner' { Invoke-GrosserOrdner }
     }
 } catch {
     $abort = '{0} (Zeile {1})' -f $_.Exception.Message, $_.InvocationInfo.ScriptLineNumber
