@@ -52,6 +52,11 @@ name: Install-Probe
 # Klick und Pfeil rechts aufklappen. Die Auflistung muss ankommen und das Hauptfenster durchgehend antworten (WM_NULL), nach der
 # Taste Ende die Zeile "… und 19500 weitere Dateien" zu sehen sein, kein Absturz. Der Serverordner wird danach gelöscht.
 #
+# Ebenso nur einzeln: platzhalter - virtuelle Dateien (Befund Testversion 11.0.1): Konto wie bei grosser-ordner, Serverordner mit
+# Unterordnern; eine Datei auf "Immer behalten", ihren Ordner freigeben, den Ordner behalten und wieder freigeben, erst im Kontextmenü
+# des Explorers, dann per Rechtsklick in der Ordneransicht. Die Wahl am Ordner gilt für alles darin, die Zeilen zeigen den neuen Stand
+# von selbst. Im Ordner wird nichts gelöscht, angelegt oder umbenannt, im offenen Explorer-Fenster verschwindet keine Zeile.
+#
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=assistent
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=assistent-basic
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=dauerlauf
