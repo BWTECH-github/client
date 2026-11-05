@@ -7066,7 +7066,7 @@ function Invoke-ExplorerVerb {
 function Get-PinViolations {
     $events = @([OcProbe.PinWatch]::Take())
     foreach ($entry in $events) { Add-Timeline $entry }
-    return @($events | Where-Object { $_ -match ' (DATEI|ANSICHT) ' -and $_ -notmatch 'ANSICHT beginnt' })
+    return @($events | Where-Object { $_ -cmatch ' (DATEI|ANSICHT) ' -and $_ -cnotmatch 'ANSICHT beginnt' })
 }
 
 # Ergebnis eines Schritts: FEHLER, wenn etwas fehlte oder Einträge im Ordner oder Fenster verschwanden
