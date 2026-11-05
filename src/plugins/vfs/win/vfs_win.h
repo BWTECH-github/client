@@ -40,6 +40,7 @@ public:
     [[nodiscard]] bool needsMetadataUpdate(const SyncFileItem &item) override;
 
     [[nodiscard]] bool isDehydratedPlaceholder(const QString &filePath) override;
+    [[nodiscard]] bool hydrateInPlace(const QString &relFilePath, QObject *receiver, std::function<void(const QString &error)> done) override;
     [[nodiscard]] bool statTypeVirtualFile(csync_file_stat_t *stat, void *stat_data) override;
 
     // Pin states exist as file attributes on disk

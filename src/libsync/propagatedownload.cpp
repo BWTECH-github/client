@@ -456,6 +456,10 @@ void PropagateDownloadFile::start()
         return;
     }
 
+    if (hydrateInPlace()) {
+        return;
+    }
+
     // If we have a conflict where size of the file is unchanged,
     // compare the remote checksum to the local one.
     // Maybe it's not a real conflict and no download is necessary!
@@ -487,6 +491,57 @@ void PropagateDownloadFile::start()
     }
 
     startDownload();
+}
+
+bool PropagateDownloadFile::hydrateInPlace()
+{
+    if (_item->_type != ItemTypeVirtualFileDownload || _item->instruction() != CSYNC_INSTRUCTION_SYNC) {
+        return false;
+    }
+    // die Bandbreitenbegrenzung kennt nur der normale Download
+    const auto bandwidth = propagator()->_bandwidthManager;
+    if (bandwidth && (bandwidth->usingAbsoluteDownloadLimit() || bandwidth->usingRelativeDownloadLimit())) {
+        return false;
+    }
+    Vfs *vfs = propagator()->syncOptions().vfs();
+    if (!vfs->isDehydratedPlaceholder(propagator()->fullLocalPath(_item->_file))) {
+        return false;
+    }
+    // Hat sich die Datei auf dem Server geändert, passen Größe und Zeit des Platzhalters nicht mehr zu ihr. Der normale Download
+    // bringt alles auf einmal auf den neuen Stand, der Eintrag ersetzt sich dabei wie bei jeder geänderten Datei.
+    SyncJournalFileRecord record;
+    if (!propagator()->_journal->getFileRecord(_item->_file, &record) || !record.isValid() || record._etag != _item->_etag.toUtf8()
+        || record._fileSize != _item->_size) {
+        return false;
+    }
+
+    propagator()->reportProgress(*_item, 0);
+    propagator()->_activeJobList.append(this);
+    const bool started = vfs->hydrateInPlace(_item->_file, this, [this](const QString &error) {
+        propagator()->_activeJobList.removeOne(this);
+        if (_abortRequested || propagator()->_abortRequested) {
+            return;
+        }
+        if (!error.isEmpty()) {
+            // Der normale Download kennt alle Fehlerfälle (Datei gelöscht, Server im Wartungsmodus, Abbruch mitten in der Datei)
+            qCWarning(lcPropagateDownload) << "Could not hydrate" << _item->_file << "in place, downloading it instead:" << error;
+            startDownload();
+            return;
+        }
+        // Das Journal hat die Hydratation geschrieben. Sie kann eine neuere Fassung geholt haben als die Discovery kannte.
+        SyncJournalFileRecord hydrated;
+        if (propagator()->_journal->getFileRecord(_item->_file, &hydrated) && hydrated.isValid() && hydrated._type == ItemTypeFile) {
+            _item->_etag = QString::fromUtf8(hydrated._etag);
+            _item->_modtime = hydrated._modtime;
+            _item->_size = hydrated._fileSize;
+            _item->_checksumHeader = hydrated._checksumHeader;
+        }
+        updateMetadata(false);
+    });
+    if (!started) {
+        propagator()->_activeJobList.removeOne(this);
+    }
+    return started;
 }
 
 void PropagateDownloadFile::conflictChecksumComputed(CheckSums::Algorithm checksumType, const QByteArray &checksum)

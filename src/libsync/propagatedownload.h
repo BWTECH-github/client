@@ -106,6 +106,9 @@ protected:
     +
     | deleteExistingFolder() if enabled
     |
+    +--> pinned placeholder? hydrateInPlace() --------------> updateMetadata()
+    |                        (on failure: startDownload())
+    |
     +--> mtime and size identical?
     |    then compute the local checksum
     |                               done?+> conflictChecksumComputed()
@@ -191,6 +194,8 @@ private Q_SLOTS:
 
 private:
     void deleteExistingFolder();
+    /// Lädt einen angehefteten Platzhalter an Ort und Stelle; false, wenn das hier nicht geht und der Download dran ist
+    bool hydrateInPlace();
 
     qint64 _resumeStart;
     qint64 _downloadProgress;

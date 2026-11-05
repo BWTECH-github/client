@@ -37,8 +37,6 @@
 #include <winrt/Windows.Storage.Provider.h>
 #include <ppltasks.h>
 #include <winerror.h>
-#include <ShObjIdl_core.h>
-#include <propsys.h>
 #include <shlobj_core.h> // SHChangeNotify
 
 #include "utility.h"
@@ -131,6 +129,40 @@ void removeWow64NavPaneEntry(const std::wstring &clsid)
     } else if (status != ERROR_FILE_NOT_FOUND) {
         qCWarning(lcVfs) << "Could not remove the 32-bit navigation pane entry" << QString::fromStdWString(clsid) << Utility::formatWinError(status);
     }
+}
+
+// owncloud.online: Der Explorer liest den Zustand einer Datei nicht von selbst neu, wenn der Inhalt freigegeben oder geladen wurde:
+// Eine offene Ansicht zeigte weiter „Synchronisierung ausstehend“ oder die alte Verfügbarkeit, bis jemand sie neu lud.
+void notifyShellItemChanged(const QString &path)
+{
+    const std::wstring nativePath = QDir::toNativeSeparators(path).toStdWString();
+    SHChangeNotify(SHCNE_UPDATEITEM, SHCNF_PATHW, nativePath.c_str(), nullptr);
+}
+
+// Steht alles unter dem Ordner auf „immer behalten“? Dateien außerhalb der Synchronisierung sind keine Platzhalter und zählen nicht.
+bool isPinnedRecursively(const QString &folder)
+{
+    const std::wstring pattern = FileSystem::longWinPath(folder + QStringLiteral("/*")).toStdWString();
+    WIN32_FIND_DATAW entry;
+    const HANDLE search = FindFirstFileExW(pattern.c_str(), FindExInfoBasic, &entry, FindExSearchNameMatch, nullptr, FIND_FIRST_EX_LARGE_FETCH);
+    if (search == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+    const auto closeSearch = qScopeGuard([search] { FindClose(search); });
+    do {
+        const QString name = QString::fromWCharArray(entry.cFileName);
+        if (name == QLatin1String(".") || name == QLatin1String("..")
+            || !(CfGetPlaceholderStateFromFindData(reinterpret_cast<WIN32_FIND_DATA *>(&entry)) & CF_PLACEHOLDER_STATE_PLACEHOLDER)) {
+            continue;
+        }
+        if (!(entry.dwFileAttributes & FILE_ATTRIBUTE_PINNED)) {
+            return false;
+        }
+        if ((entry.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && !isPinnedRecursively(folder + QLatin1Char('/') + name)) {
+            return false;
+        }
+    } while (FindNextFileW(search, &entry));
+    return true;
 }
 
 // Tell windows that the hydration needs to be restarted, possibly with a new size
@@ -551,6 +583,7 @@ void HydrationContext::validateTransmissionChecksum(quint64 fileSize)
             journal->setFileRecord(record);
 
         pluginInstance()->onFileStatusChanged(filesystemPath, SyncFileStatus::StatusUpToDate);
+        notifyShellItemChanged(filesystemPath);
         delete this;
     });
     QObject::connect(validator, &ValidateChecksumHeader::validationFailed, this, [this, opInfo, opParams](const QString &msg) mutable {
@@ -580,6 +613,9 @@ VfsWin::~VfsWin()
     if (d_ptr->addToSearchIndexerThread) {
         d_ptr->addToSearchIndexerThread->wait();
     }
+    // Laufende Hydratationen brauchen die Rückrufe im GUI-Thread, der hier wartet: erst vom Sync-Root trennen, das bricht sie ab
+    VfsWin::stop();
+    d_ptr->hydrationPool.waitForDone();
 }
 
 Vfs::Mode VfsWin::mode() const
@@ -693,17 +729,6 @@ void VfsWinPrivate::registerFolder(const VfsSetupParams &params)
     // up nested underneath. With grouping off each sync root shows as its own top-level
     // entry (named via DisplayNameResource, pointing at the sync folder) like OneDrive.
     providerInfo.ShowSiblingsAsGroup(false);
-
-    // Prepage the key from the shell property store we'll use to determine
-    // availability.
-    PROPERTYKEY key;
-    auto hr = PSGetPropertyKeyFromName(L"System.StorageProviderState", &key);
-    if (FAILED(hr)) {
-        Q_EMIT q->error(tr("Could not find StorageProviderState property %1").arg(Utility::formatWinError(hr)));
-        return;
-    } else {
-        storageProviderStateKey = std::make_unique<PROPERTYKEY>(key);
-    }
 
     using namespace winrt::Windows::Foundation;
     auto getfolderop = StorageFolder::GetFolderFromPathAsync(syncRootW);
@@ -992,6 +1017,9 @@ OCC::Result<OCC::Vfs::ConvertToPlaceholderResult, QString> VfsWin::updateMetadat
         qCWarning(lcVfs) << Q_FUNC_INFO << filePath << error;
         return error;
     }
+    if (flags & CF_UPDATE_FLAG_DEHYDRATE) {
+        notifyShellItemChanged(filePath);
+    }
     return ConvertToPlaceholderResult::Ok;
 }
 
@@ -1080,6 +1108,38 @@ bool VfsWin::isDehydratedPlaceholder(const QString &filePath)
     }
     // no partial data, for us that's a download in progress
     return state & (CF_PLACEHOLDER_STATE_PARTIAL | CF_PLACEHOLDER_STATE_PARTIALLY_ON_DISK);
+}
+
+bool VfsWin::hydrateInPlace(const QString &relFilePath, QObject *receiver, std::function<void(const QString &error)> done)
+{
+    Q_D(VfsWin);
+
+    if (!d->_connected) {
+        return false;
+    }
+    d->hydrationPool.start([d, fsPath = params().filesystemPath + relFilePath, receiver = QPointer<QObject>(receiver), done = std::move(done)] {
+        QString error;
+        // Wie beim Öffnen der Datei holen die Rückrufe (startFetchData und startValidateData) die Daten. Sie tragen auch das Journal nach.
+        const auto handle = getFileHandle(fsPath, 0);
+        if (handle) {
+            LARGE_INTEGER start = {};
+            LARGE_INTEGER length;
+            length.QuadPart = MAXLONGLONG;
+            const HRESULT ok = CfHydratePlaceholder(*handle, start, length, CF_HYDRATE_FLAG_NONE, nullptr);
+            if (FAILED(ok)) {
+                error = Utility::formatWinError(ok);
+            }
+        } else {
+            error = Utility::formatWinError(handle.error());
+        }
+        // über d, das bis nach diesem Thread lebt; receiver kann schon weg sein
+        QMetaObject::invokeMethod(d, [receiver, done, error] {
+            if (receiver) {
+                done(error);
+            }
+        }, Qt::QueuedConnection);
+    });
+    return true;
 }
 
 bool VfsWin::statTypeVirtualFile(csync_file_stat_t *stat, void *stat_data)
@@ -1174,8 +1234,6 @@ Optional<PinState> VfsWin::pinState(const QString &relFilePath)
 
 Vfs::AvailabilityResult VfsWin::availability(const QString &folderPath)
 {
-    Q_D(VfsWin);
-
     auto hydrationStatus = params().journal->hasHydratedOrDehydratedFiles(folderPath.toUtf8());
     if (!hydrationStatus)
         return AvailabilityError::DbError;
@@ -1190,53 +1248,15 @@ Vfs::AvailabilityResult VfsWin::availability(const QString &folderPath)
     if (!hydrationStatus->hasHydrated)
         return AvailabilityError::NoSuchItem;
 
-    // Determine whether it's recursively pinned or not.
-    // To do that, we query the shell property system, which has an indexer to determine
-    // that fact for the icons that the Explorer shows.
-
-    if (!d->storageProviderStateKey) {
-        // If the key couldn't be retrieved there already was a warning during setup.
+    // owncloud.online: Ob alles angeheftet ist, steht in den Attributen. Die Eigenschaft System.StorageProviderState des Explorers
+    // kommt aus dem Suchindex und zeigte eine an Ort und Stelle geladene Datei noch als nicht angeheftet.
+    const auto pin = pinState(folderPath);
+    if (!pin || *pin != PinState::AlwaysLocal) {
         return VfsItemAvailability::AllHydrated;
     }
-
-    QString fsPath = params().filesystemPath + folderPath;
-    // WARNING: The property system doesn't like the new paths that
-    // FileSystem::longWinPath() would generate
-    auto nFsPath = QDir::toNativeSeparators(fsPath).toStdWString();
-
-    // Read the combined availability property from the shell property model
-    // First, get a property store for the item
-    IPropertyStore *pps = nullptr;
-    auto hr = SHGetPropertyStoreFromParsingName(
-        nFsPath.c_str(), NULL, GPS_BESTEFFORT | GPS_DELAYCREATION, IID_PPV_ARGS(&pps));
-    if (FAILED(hr)) {
-        qCWarning(lcVfs) << "Could not create property store for item"
-                         << fsPath << Utility::formatWinError(hr);
-        return VfsItemAvailability::AllHydrated;
-    }
-    auto releasePps = qScopeGuard([&] { pps->Release(); });
-
-    // And then read and interpret the relevant property
-    PROPVARIANT value = {};
-    hr = pps->GetValue(*d->storageProviderStateKey, &value);
-    if (FAILED(hr)) {
-        qCWarning(lcVfs) << "Could not access StorageProviderState property"
-                         << fsPath << Utility::formatWinError(hr);
-        return VfsItemAvailability::AllHydrated;
-    }
-    if (value.vt == VT_UI4) {
-        enum WinShellAvailabilities : unsigned short {
-            WinShellAvailableLocally = 2,
-            WinShellAlwaysAvailableLocally = 3,
-        };
-
-        if (value.uiVal == WinShellAlwaysAvailableLocally)
-            return VfsItemAvailability::AlwaysLocal;
-    } else if (value.vt != VT_EMPTY) {
-        qCWarning(lcVfs) << "Unexpected StorageProviderState property type"
-                         << fsPath << value.vt;
-    }
-    return VfsItemAvailability::AllHydrated;
+    const QString fsPath = params().filesystemPath + folderPath;
+    const bool wholeFolder = !QFileInfo(fsPath).isDir() || isPinnedRecursively(fsPath);
+    return wholeFolder ? VfsItemAvailability::AlwaysLocal : VfsItemAvailability::AllHydrated;
 }
 
 static Result<CF_PLACEHOLDER_BASIC_INFO, HRESULT> getBasicPlaceholderInfo(const QString &systemFileName)
@@ -1334,6 +1354,8 @@ void VfsWin::onFileStatusChanged(const QString &systemFileName, SyncFileStatus s
     const HRESULT res = CfSetInSyncState(*handle, newSyncState, CF_SET_IN_SYNC_FLAG_NONE, nullptr);
     if (FAILED(res)) {
         qCCritical(lcVfs) << "Error setting file in-sync state for" << systemFileName << ":" << Utility::formatWinError(res);
+    } else if (isInSync) {
+        notifyShellItemChanged(systemFileName);
     }
 }
 

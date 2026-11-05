@@ -873,6 +873,152 @@ private Q_SLOTS:
         QVERIFY2(!currentUserKeyExists(entry), qPrintable(entry));
         QVERIFY2(!currentUserKeyExists(wow64Entry), qPrintable(wow64Entry));
     }
+
+    // owncloud.online: Die Wahl am Ordner gilt für alles darin, auch über die Wahl an einer einzelnen Datei. Laden und Freigeben
+    // ändern nur den Inhalt, ein offenes Explorer-Fenster sieht keinen Eintrag verschwinden: Die Dateien bleiben dieselben.
+    void testFolderChoiceCoversEverythingInside()
+    {
+        FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
+        // wie beim echten Client ohne Wahl an der Wurzel
+        QVERIFY(fakeFolder.vfs()->setPinState(QString(), PinState::Unspecified));
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("A"));
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("A/B"));
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/a1"), 2_MiB, 'A');
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/a2"), 3_MiB, 'A');
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/B/b1"), 1_MiB, 'A');
+        QVERIFY(fakeFolder.syncOnce());
+
+        const QStringList files = {QStringLiteral("A/a1"), QStringLiteral("A/a2"), QStringLiteral("A/B/b1")};
+        const auto local = [&](const QString &path) { return QString(fakeFolder.localPath() + path); };
+        const auto fileIndex = [&](const QString &path) {
+            quint64 inode = 0;
+            OC_ENFORCE(FileSystem::getInode(local(path), &inode));
+            return inode;
+        };
+        // wie der echte Client: Der Lauf schaut nur auf das, was die Wahl betrifft, nicht auf den ganzen Ordner
+        const auto syncPath = [&](const QString &path) {
+            fakeFolder.syncEngine()->setLocalDiscoveryOptions(LocalDiscoveryStyle::DatabaseAndFilesystem, {path});
+            return fakeFolder.syncOnce();
+        };
+        const auto isHydrated = [&](const QString &path) {
+            return !fakeFolder.vfs()->isDehydratedPlaceholder(local(path)) && dbRecord(fakeFolder, path)._type == ItemTypeFile;
+        };
+        const auto isDehydrated = [&](const QString &path) {
+            return fakeFolder.vfs()->isDehydratedPlaceholder(local(path)) && dbRecord(fakeFolder, path)._type == ItemTypeVirtualFile;
+        };
+
+        QMap<QString, quint64> indexes;
+        for (const auto &file : files) {
+            QVERIFY(isDehydrated(file));
+            indexes[file] = fileIndex(file);
+        }
+
+        // „Immer behalten“ an einer Datei
+        QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A/a1"), PinState::AlwaysLocal));
+        QVERIFY(syncPath(QStringLiteral("A/a1")));
+        QVERIFY(isHydrated(QStringLiteral("A/a1")));
+        QVERIFY(isDehydrated(QStringLiteral("A/a2")));
+        QCOMPARE(fileIndex(QStringLiteral("A/a1")), indexes[QStringLiteral("A/a1")]);
+
+        // „Freigeben“ am Ordner gilt auch für die angeheftete Datei
+        QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A"), PinState::OnlineOnly));
+        QCOMPARE(fakeFolder.vfs()->pinState(QStringLiteral("A/a1")).get(), PinState::OnlineOnly);
+        QVERIFY(syncPath(QStringLiteral("A")));
+        for (const auto &file : files) {
+            QVERIFY2(isDehydrated(file), qPrintable(file));
+            QCOMPARE(fakeFolder.vfs()->pinState(file).get(), PinState::OnlineOnly);
+            QCOMPARE(fileIndex(file), indexes[file]);
+        }
+
+        // „Immer behalten“ am Ordner lädt alles darin, auch in Unterordnern
+        QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A"), PinState::AlwaysLocal));
+        QVERIFY(syncPath(QStringLiteral("A")));
+        for (const auto &file : files) {
+            QVERIFY2(isHydrated(file), qPrintable(file));
+            QCOMPARE(fakeFolder.vfs()->pinState(file).get(), PinState::AlwaysLocal);
+            QCOMPARE(fileIndex(file), indexes[file]);
+        }
+        QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
+
+        // eine freigegebene Datei im behaltenen Ordner, dann wieder die Wahl am Ordner
+        QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A/a2"), PinState::OnlineOnly));
+        QVERIFY(syncPath(QStringLiteral("A/a2")));
+        QVERIFY(isDehydrated(QStringLiteral("A/a2")));
+        QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A"), PinState::AlwaysLocal));
+        QVERIFY(syncPath(QStringLiteral("A")));
+        QVERIFY(isHydrated(QStringLiteral("A/a2")));
+        QCOMPARE(fileIndex(QStringLiteral("A/a2")), indexes[QStringLiteral("A/a2")]);
+    }
+
+    // owncloud.online: Geht das Laden an Ort und Stelle nicht, bleibt der normale Download
+    void testHydrateInPlaceFallsBackToDownload()
+    {
+        FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("A"));
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/changed"));
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/failing"));
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/empty"), 0_B);
+        QVERIFY(fakeFolder.syncOnce());
+
+        // auf dem Server geändert: Größe und Zeit des Platzhalters stimmen nicht mehr
+        fakeFolder.remoteModifier().appendByte(QStringLiteral("A/changed"));
+        QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A/changed"), PinState::AlwaysLocal));
+        QVERIFY(fakeFolder.syncOnce());
+        QVERIFY(!fakeFolder.vfs()->isDehydratedPlaceholder(fakeFolder.localPath() + QStringLiteral("A/changed")));
+        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/changed"))._type, ItemTypeFile);
+        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/changed"))._fileSize, fakeFolder.currentRemoteState().find(QStringLiteral("A/changed"))->contentSize);
+
+        // der Server liefert nicht: ein Fehler am Eintrag, beim nächsten Lauf klappt es
+        QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A/failing"), PinState::AlwaysLocal));
+        fakeFolder.serverErrorPaths().append(QStringLiteral("A/failing"));
+        QVERIFY(!fakeFolder.syncOnce());
+        QVERIFY(fakeFolder.vfs()->isDehydratedPlaceholder(fakeFolder.localPath() + QStringLiteral("A/failing")));
+        fakeFolder.serverErrorPaths().clear();
+        fakeFolder.syncJournal()->wipeErrorBlacklist();
+        QVERIFY(fakeFolder.syncOnce());
+        QVERIFY(!fakeFolder.vfs()->isDehydratedPlaceholder(fakeFolder.localPath() + QStringLiteral("A/failing")));
+        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/failing"))._type, ItemTypeFile);
+
+        // eine leere Datei hat nichts zu laden, das Journal muss trotzdem stimmen
+        QVERIFY(fakeFolder.vfs()->setPinState(QStringLiteral("A/empty"), PinState::AlwaysLocal));
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/empty"))._type, ItemTypeFile);
+        QVERIFY(fakeFolder.syncOnce());
+        QCOMPARE(dbRecord(fakeFolder, QStringLiteral("A/empty"))._type, ItemTypeFile);
+    }
+
+    // owncloud.online: Eine laufende Hydratation hält das Abmelden des Ordners nicht auf
+    void testHydrateInPlaceEndsOnStop()
+    {
+        FakeFolder fakeFolder { FileInfo(), Vfs::WindowsCfApi, true };
+        fakeFolder.remoteModifier().mkdir(QStringLiteral("A"));
+        fakeFolder.remoteModifier().insert(QStringLiteral("A/a1"));
+        QVERIFY(fakeFolder.syncOnce());
+
+        bool requested = false;
+        QObject parent;
+        fakeFolder.setServerOverride([&](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            if (op == QNetworkAccessManager::GetOperation) {
+                requested = true;
+                return new FakeHangingReply(op, request, &parent);
+            }
+            return nullptr;
+        });
+
+        bool finished = false;
+        QString error;
+        QObject receiver;
+        QVERIFY(fakeFolder.vfs()->hydrateInPlace(QStringLiteral("A/a1"), &receiver, [&](const QString &result) {
+            finished = true;
+            error = result;
+        }));
+        QTRY_VERIFY(requested);
+        QVERIFY(!finished);
+
+        fakeFolder.vfs()->stop();
+        QTRY_VERIFY(finished);
+        QVERIFY(!error.isEmpty());
+    }
 };
 
 QTEST_GUILESS_MAIN(TestWinVfs)

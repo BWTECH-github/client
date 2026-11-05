@@ -29,6 +29,7 @@
 #include <QUrl>
 #include <QVersionNumber>
 
+#include <functional>
 #include <memory>
 
 
@@ -213,6 +214,24 @@ public:
 
     /// Determine whether the file at the given absolute path is a dehydrated placeholder.
     [[nodiscard]] virtual bool isDehydratedPlaceholder(const QString &filePath) = 0;
+
+    /** Lädt den Inhalt eines Platzhalters an Ort und Stelle.
+     *
+     * Die Datei bleibt dieselbe. Der normale Download legt eine neue Datei über den Platzhalter: Für ein offenes Fenster im
+     * Dateimanager ist das ein Löschen und Neuanlegen, der Eintrag verschwindet kurz.
+     *
+     * Läuft im Hintergrund. done() kommt im GUI-Thread, mit dem Fehlertext oder einem leeren Text, und nicht mehr, wenn receiver
+     * inzwischen weg ist. relFilePath ist relativ zum Sync-Ordner.
+     *
+     * Gibt false zurück, wenn diese vfs das nicht kann; dann lädt der Aufrufer die Datei wie gewohnt.
+     */
+    [[nodiscard]] virtual bool hydrateInPlace(const QString &relFilePath, QObject *receiver, std::function<void(const QString &error)> done)
+    {
+        Q_UNUSED(relFilePath)
+        Q_UNUSED(receiver)
+        Q_UNUSED(done)
+        return false;
+    }
 
     /** Similar to isDehydratedPlaceholder() but used from sync discovery.
      *

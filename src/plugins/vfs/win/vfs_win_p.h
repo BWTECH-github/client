@@ -15,6 +15,7 @@
 #include "common/syncjournalfilerecord.h"
 
 #include <QThread>
+#include <QThreadPool>
 
 namespace OCC {
 
@@ -94,12 +95,13 @@ public:
     bool _connected = false;
     static QMutex registrationMutex;
 
-    // System.StorageProviderState key
-    std::unique_ptr<PROPERTYKEY> storageProviderStateKey;
-
     std::wstring _registrationId;
 
     QScopedPointer<QThread> addToSearchIndexerThread;
+
+    // CfHydratePlaceholder kehrt erst zurück, wenn die Datei geladen und geprüft ist. Eigene Threads: Die Prüfsumme dieser Prüfung
+    // rechnet im globalen Pool, blockierte Hydratationen darin warteten auf sich selbst.
+    QThreadPool hydrationPool;
 
     HydrationContext *hydrationContext(const TransferKey key)
     {
