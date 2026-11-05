@@ -72,6 +72,8 @@ WatcherThread::WatchChanges WatcherThread::watchChanges(size_t fileNotifyBufferS
             const DWORD errorCode = GetLastError();
             if (errorCode == ERROR_NOTIFY_ENUM_DIR) {
                 qCDebug(lcFolderWatcher) << "The buffer for changes overflowed! Triggering a generic change and resizing";
+                // ohne lostChanges() schaute der nächste Sync nur in die Wurzel: Die Wahl am Ordner mit tausenden Dateien ging verloren
+                Q_EMIT lostChanges();
                 Q_EMIT changed({_path});
                 return WatchChanges::NeedBiggerBuffer;
             } else {
@@ -111,6 +113,14 @@ WatcherThread::WatchChanges WatcherThread::watchChanges(size_t fileNotifyBufferS
                 reportError(QStringLiteral("GetOverlappedResult error %1").arg(Utility::formatWinError(errorCode)));
                 return WatchChanges::Error;
             }
+        }
+
+        // auch so meldet Windows einen Überlauf; im Puffer stünde sonst noch die vorige Runde
+        if (dwBytesReturned == 0) {
+            qCDebug(lcFolderWatcher) << "The buffer for changes overflowed! Triggering a generic change and resizing";
+            Q_EMIT lostChanges();
+            Q_EMIT changed({_path});
+            return WatchChanges::NeedBiggerBuffer;
         }
 
         processEntries(pFileNotifyBuffer);
