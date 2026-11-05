@@ -58,5 +58,10 @@ namespace Utility {
     OWNCLOUDGUI_EXPORT void markDirectoryAsSyncRoot(const QString &path, const QUuid &accountUuid);
     std::pair<QString, QUuid> getDirectorySyncRootMarkings(const QString &path);
     void unmarkDirectoryAsSyncRoot(const QString &path);
+
+#ifdef Q_OS_MACOS
+    /** Makes opening the menu of the menu bar icon safe on macOS 27, see the implementation. */
+    void protectStatusItemClicks();
+#endif
 } // namespace Utility
 } // namespace OCC

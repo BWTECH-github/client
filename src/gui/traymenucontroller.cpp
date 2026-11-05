@@ -202,6 +202,9 @@ TrayMenuController::TrayMenuController(QObject *parent)
     _menu = new QMenu(ocApp()->mainWindow());
     _menu->setTitle(Theme::instance()->appNameGUI());
     _menu->setToolTipsVisible(true);
+#ifdef Q_OS_MACOS
+    Utility::protectStatusItemClicks();
+#endif
     _tray->setContextMenu(_menu);
     connect(_menu, &QMenu::aboutToShow, this, [this] {
         checkPauseEnd();

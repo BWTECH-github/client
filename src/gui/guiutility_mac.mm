@@ -20,7 +20,35 @@
 
 #include <QProcess>
 
+#import <AppKit/NSEvent.h>
 #import <Foundation/NSBundle.h>
+#import <objc/runtime.h>
+
+namespace {
+
+IMP originalClickCount = nullptr;
+IMP originalButtonNumber = nullptr;
+
+// Kein Mausereignis: AppKit wirft eine Ausnahme, das Programm endet. Der Tray nutzt den Wert auf dem Mac nicht.
+NSInteger clickCountWithoutException(id self, SEL command)
+{
+    @try {
+        return reinterpret_cast<NSInteger (*)(id, SEL)>(originalClickCount)(self, command);
+    } @catch (NSException *) {
+        return 0;
+    }
+}
+
+NSInteger buttonNumberWithoutException(id self, SEL command)
+{
+    @try {
+        return reinterpret_cast<NSInteger (*)(id, SEL)>(originalButtonNumber)(self, command);
+    } @catch (NSException *) {
+        return 0;
+    }
+}
+
+} // namespace
 
 namespace OCC {
 
@@ -56,6 +84,18 @@ QString Utility::socketApiSocketPath()
     // Example for developer builds (with ad-hoc signing identity): "" "com.owncloud.desktopclient" ".socketApi"
     // Example for official signed packages: "9B5WD74GWJ." "com.owncloud.desktopclient" ".socketApi"
     return QStringLiteral("%1%2.socketApi").arg(QStringLiteral(SOCKETAPI_TEAM_IDENTIFIER_PREFIX), Theme::instance()->orgDomainName());
+}
+
+void Utility::protectStatusItemClicks()
+{
+    // Qt 6.8 liest beim Öffnen des Menüleisten-Menüs clickCount und buttonNumber von NSApp.currentEvent.
+    // macOS 27 öffnet das Menü verzögert, das aktuelle Ereignis ist dann nicht immer ein Mausereignis.
+    // Kann entfallen, sobald Qt das selbst prüft.
+    if (originalClickCount) {
+        return;
+    }
+    originalClickCount = method_setImplementation(class_getInstanceMethod(NSEvent.class, @selector(clickCount)), reinterpret_cast<IMP>(clickCountWithoutException));
+    originalButtonNumber = method_setImplementation(class_getInstanceMethod(NSEvent.class, @selector(buttonNumber)), reinterpret_cast<IMP>(buttonNumberWithoutException));
 }
 
 } // namespace OCC
