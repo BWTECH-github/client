@@ -494,6 +494,7 @@ actor ItemStore {
     /// Forget the binding of an item and everything below it; returns the ids
     /// that were dropped (the item first).
     private func dropBinding(_ id: String) -> [String] {
+        state.pins?.removeValue(forKey: id)
         guard let path = state.pathById.removeValue(forKey: id) else { return [id] }
         if idByPath[path] == id { idByPath.removeValue(forKey: path) }
         var dropped = [id]
@@ -501,6 +502,7 @@ actor ItemStore {
         for (other, p) in state.pathById where p.hasPrefix(prefix) {
             state.pathById.removeValue(forKey: other)
             if idByPath[p] == other { idByPath.removeValue(forKey: p) }
+            state.pins?.removeValue(forKey: other)
             dropped.append(other)
         }
         return dropped
@@ -544,16 +546,20 @@ actor ItemStore {
     /// Merkt sich die Wahl für ein Objekt. Sie gilt für alles darunter: frühere Wahl dort entfällt.
     func setPin(_ choice: String?, for id: NSFileProviderItemIdentifier) {
         var pins = state.pins ?? [:]
-        if pins[id.rawValue] == choice {
-            return
-        }
         var report = state.pinsToReport ?? []
+        var changed = false
+        // auch wenn die Wahl am Objekt selbst schon so stand: darunter kann eine andere gelten
         for child in descendants(of: id) where pins[child] != nil {
             pins[child] = nil
             if !report.contains(child) { report.append(child) }
+            changed = true
         }
-        pins[id.rawValue] = choice
-        if !report.contains(id.rawValue) { report.append(id.rawValue) }
+        if pins[id.rawValue] != choice {
+            pins[id.rawValue] = choice
+            if !report.contains(id.rawValue) { report.append(id.rawValue) }
+            changed = true
+        }
+        guard changed else { return }
         state.pins = pins
         state.pinsToReport = report
         save()

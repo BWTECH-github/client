@@ -41,8 +41,10 @@ Implemented; sections 0–6 below are the original plan and kept for reference.
   extension takes the requests in `enumerateChanges`, keeps the choice per item id in its store
   (a choice replaces those of everything below), reports the item with the new `contentPolicy`
   (`downloadEagerlyAndKeepDownloaded` / `downloadLazily` / `inherited`; the choice is part of the
-  metadata version) and, for `online`, calls `evictItem` (recursive for folders). macOS does the
-  downloading itself. Items carry `allowsEvicting`, without it the Finder has no "Remove
+  metadata version) and, for `online`, calls `evictItem` (recursive for folders). Eviction is
+  retried for 20 s on any error: until macOS has taken the new policy a child that was kept
+  fails with `-2008` (surfaced as NSCocoaErrorDomain 256) and stops the folder's eviction. macOS
+  does the downloading itself. Items carry `allowsEvicting`, without it the Finder has no "Remove
   Download". `VfsMac::availability` shows the choice, otherwise the real state of the file in
   the CloudStorage folder (`SF_DATALESS`, read with materialization switched off for the
   thread, first level only for folders), so choices stored by 11.0.0 cannot show a wrong state;
@@ -52,7 +54,8 @@ Implemented; sections 0–6 below are the original plan and kept for reference.
   the store answers `syncAnchorExpired` once when it differs from the stored value (bump it
   when capabilities change). Tested 2026-11-05 on macOS 27.2 with the real client menu and
   Finder: keep (recursive), server changes in a kept folder arrive by themselves, free up
-  (recursive), reset, "Remove Download" in the Finder also for items known before the update.
+  (recursive), reset, "Remove Download" in the Finder also for items known before the update, a
+  folder choice over a different choice below it, in both directions.
 - **GUI**: wizard and folder wizard offer virtual files on macOS 13+ when the extension is
   embedded (no environment variable), and **preselect** them: a new account syncs as
   virtual files ("Sync and download files as you use them"), classic sync is the

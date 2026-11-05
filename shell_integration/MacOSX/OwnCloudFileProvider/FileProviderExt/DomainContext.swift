@@ -187,21 +187,24 @@ extension DomainContext {
         return (items, ids)
     }
 
-    /// Gibt den Speicher frei, sobald das System die Wahl übernommen hat: bis dahin gilt ein Objekt
-    /// unter „immer behalten“ noch als nicht entfernbar, deshalb einige Versuche.
+    /// Gibt den Speicher frei, sobald das System die Wahl übernommen hat. Bis dahin gilt ein Objekt unter
+    /// „immer behalten“ noch als nicht entfernbar, und die Freigabe eines Ordners bricht an ihm ab, mit
+    /// wechselnden Fehlern (auch NSCocoaErrorDomain 256). Deshalb bei jedem Fehler einige Versuche.
     func evict(_ identifiers: [NSFileProviderItemIdentifier], attempt: Int = 1) {
         guard !identifiers.isEmpty, let manager = manager else { return }
-        DispatchQueue.global().asyncAfter(deadline: .now() + (attempt == 1 ? 1 : 3)) { [weak self] in
+        DispatchQueue.global().asyncAfter(deadline: .now() + (attempt == 1 ? 1 : 2)) { [weak self] in
             for identifier in identifiers {
                 manager.evictItem(identifier: identifier) { error in
-                    guard let error = error, let self = self else { return }
-                    let code = (error as NSError).code
-                    let notYet = code == NSFileProviderError.Code.nonEvictable.rawValue
-                        || code == NSFileProviderError.Code.nonEvictableChildren.rawValue
-                    if notYet && attempt < 5 {
+                    guard let self = self else { return }
+                    guard let error = error else {
+                        self.log.info("Space freed after \(attempt, privacy: .public) attempt(s)")
+                        return
+                    }
+                    if attempt < 10 {
                         self.evict([identifier], attempt: attempt + 1)
                     } else {
-                        self.log.error("Could not free the space of an item: \(logDescription(error), privacy: .public)")
+                        let reason = (error as NSError).userInfo[NSUnderlyingErrorKey] as? Error
+                        self.log.error("Could not free the space of an item: \(logDescription(error), privacy: .public) \(reason.map(logDescription) ?? "", privacy: .public)")
                     }
                 }
             }
