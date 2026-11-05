@@ -565,6 +565,14 @@ actor ItemStore {
         save()
     }
 
+    /// Was beim Freigeben entfernt wird: die Dateien. Ein Ordner, den macOS schon geladen hat, bleibt stehen.
+    /// Entfernt man ihn mit, ist er leer, bis ihn jemand neu öffnet: ein offenes Finder-Fenster zeigt dann
+    /// keine Dateien mehr. Ein Ordner, den macOS nie geladen hat, ist ohnehin frei.
+    func evictionTargets(of id: NSFileProviderItemIdentifier) -> [NSFileProviderItemIdentifier] {
+        guard isKnownContainer(id) else { return [id] }
+        return descendants(of: id).filter { state.known[$0] == nil }.map { NSFileProviderItemIdentifier($0) }
+    }
+
     func dropPinReport(_ id: String) {
         state.pinsToReport?.removeAll { $0 == id }
         save()

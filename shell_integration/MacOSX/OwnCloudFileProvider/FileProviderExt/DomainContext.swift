@@ -159,7 +159,7 @@ extension DomainContext {
                     await store.register(entries: [entry])
                     await store.setPin(request.state == PinChoice.reset ? nil : request.state, for: entry.identifier)
                     if request.state == PinChoice.free {
-                        toEvict.append(entry.identifier)
+                        toEvict.append(contentsOf: await store.evictionTargets(of: entry.identifier))
                     }
                     log.info("Pin \(request.state, privacy: .public) for \(request.path, privacy: .private(mask: .hash))")
                 }

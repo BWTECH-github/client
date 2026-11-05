@@ -41,10 +41,11 @@ Implemented; sections 0–6 below are the original plan and kept for reference.
   extension takes the requests in `enumerateChanges`, keeps the choice per item id in its store
   (a choice replaces those of everything below), reports the item with the new `contentPolicy`
   (`downloadEagerlyAndKeepDownloaded` / `downloadLazily` / `inherited`; the choice is part of the
-  metadata version) and, for `online`, calls `evictItem` (recursive for folders). Eviction is
-  retried for 20 s on any error: until macOS has taken the new policy a child that was kept
-  fails with `-2008` (surfaced as NSCocoaErrorDomain 256) and stops the folder's eviction. macOS
-  does the downloading itself. Items carry `allowsEvicting`, without it the Finder has no "Remove
+  metadata version) and, for `online`, calls `evictItem` for every file below it. Folders macOS
+  has loaded stay: evicting one makes it dataless, and an open Finder window then shows it
+  empty until it is opened again. Eviction is retried for 20 s on any error: until macOS has
+  taken the new policy a file that was kept fails with `-2008` (surfaced as NSCocoaErrorDomain
+  256). macOS does the downloading itself. Items carry `allowsEvicting`, without it the Finder has no "Remove
   Download". `VfsMac::availability` shows the choice, otherwise the real state of the file in
   the CloudStorage folder (`SF_DATALESS`, read with materialization switched off for the
   thread, first level only for folders), so choices stored by 11.0.0 cannot show a wrong state;
