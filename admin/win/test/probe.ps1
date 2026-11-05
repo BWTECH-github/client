@@ -6853,15 +6853,18 @@ function Invoke-GrosserOrdner {
             if (-not $state.Tree) { Stop-Step 'Ordneransicht nicht aufgeklappt (G5)' }
             $null = [OcProbe.Desk]::Press(0x23, $false)
             Add-Timeline 'Taste: Ende'
-            # UI Automation fand die Zeile nur im sichtbaren Bereich (Lauf 42042454720): erst ans Ende, dann suchen
-            $conditions = [System.Windows.Automation.Condition[]]@(foreach ($name in ('{0} und {1} weitere Dateien' -f [char]0x2026, $hidden), ('{0} and {1} more files' -f [char]0x2026, $hidden)) {
-                    New-Object System.Windows.Automation.PropertyCondition ([System.Windows.Automation.AutomationElement]::NameProperty, $name)
-                })
-            $moreRow = [System.Windows.Automation.OrCondition]::new($conditions)
-            $more = Wait-Ui $ctx { $state.Tree.FindFirst([System.Windows.Automation.TreeScope]::Descendants, $moreRow) } 15
+            Start-Sleep -Seconds 1
+            # Qt reicht über UI Automation nur Zellen im sichtbaren Bereich heraus, die übrigen gelten als unsichtbar (Läufe
+            # 42042454720, 42048180142: per Namenssuche nicht gefunden). Nach dem Sprung ans Ende sind es wenige: alle
+            # Elemente lesen und den Namen mit einem Muster vergleichen, der Auszug landet im Artefakt.
+            $moreRowPattern = '^' + [char]0x2026 + '\s+(und|and)\s+' + $hidden + '\s+(weitere Dateien|more files)$'
+            $found = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id -IncludeMain; $m = @($i | Where-Object { $_.Name -match $moreRowPattern }) | Select-Object -First 1; if ($m) { @{ Items = $i; Row = $m } } } 15
+            $items = if ($found) { $found.Items } else { Get-UiItems $ctx.Process.Id -IncludeMain }
+            Save-UiTree $ctx $items 'ende'
+            $more = if ($found) { $found.Row } else { $null }
             $measure = Measure-Responsiveness $ctx 10
             $shot = Write-QuickShot $ctx 'ende' 'Ende der Ordneransicht (Taste Ende)' $state.MaskItems
-            $detail = 'Zeile „… und {0} weitere Dateien“ {1}; {2} Stichproben, {3} ohne Antwort innerhalb von {4} ms, längste Antwort {5} ms; Foto {6}' -f $hidden, $(if ($more) { 'zu sehen (UI Automation)' } else { 'nicht gefunden (15 s)' }), $measure.Samples, $measure.Failed, $bigResponseMs, $measure.LongestMs, $shot
+            $detail = 'Zeile „… und {0} weitere Dateien“ {1}; {2} Stichproben, {3} ohne Antwort innerhalb von {4} ms, längste Antwort {5} ms; Foto {6}' -f $hidden, $(if ($more) { 'zu sehen ({0}, UI Automation)' -f $more.Type } else { 'nicht gefunden (15 s, Elemente in g1-ui-ende.txt)' }), $measure.Samples, $measure.Failed, $bigResponseMs, $measure.LongestMs, $shot
             if (-not $more -or $measure.Failed -gt 0) { return @{ Status = 'FEHLER'; Detail = $detail } }
             return $detail
         }
