@@ -1734,13 +1734,13 @@ Bu yüzden senkronizasyon yerel değişiklikler anlık olarak karşı tarafa yü
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+136"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Yükleniyor …</translation>
     </message>
     <message>
-        <location line="+206"/>
+        <location line="+204"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Bu klasör artık sunucuda yok.</translation>
@@ -1751,14 +1751,23 @@ Bu yüzden senkronizasyon yerel değişiklikler anlık olarak karşı tarafa yü
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Klasör içeriği yüklenirken bir hata oluştu.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+206"/>
+        <source>… and %n more file(s)</source>
+        <extracomment>Last row of a folder with more files than the folder view lists, %n is the number of files not shown</extracomment>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>… ve %n dosya daha</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+202"/>
+        <location line="+24"/>
         <source>This folder is empty on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Bu klasör sunucuda boş.</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+11"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -1772,7 +1781,7 @@ Bu yüzden senkronizasyon yerel değişiklikler anlık olarak karşı tarafa yü
         <translation>Klasör %1, %2</translation>
     </message>
     <message>
-        <location line="+284"/>
+        <location line="+330"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Her zaman bu cihazda tut</translation>
@@ -2989,7 +2998,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::NewVersionAvailableWidget</name>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="+34"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="+40"/>
         <source>Skip this version</source>
         <translation>Bu sürümü atla</translation>
     </message>
@@ -5275,19 +5284,19 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
     <message>
         <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+666"/>
+        <location line="+669"/>
         <source>Offline</source>
         <translation>Çevrimdışı</translation>
     </message>
     <message>
-        <location line="-684"/>
-        <location line="+691"/>
+        <location line="-687"/>
+        <location line="+694"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Eşitleniyor</translation>
     </message>
     <message>
-        <location line="-689"/>
+        <location line="-692"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Eşitleme iptal ediliyor</translation>
@@ -5311,7 +5320,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
     </message>
     <message>
         <location line="+2"/>
-        <location line="+596"/>
+        <location line="+599"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
@@ -5319,8 +5328,8 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Eşitleme duraklatıldı</translation>
     </message>
     <message>
-        <location line="-665"/>
-        <location line="+671"/>
+        <location line="-668"/>
+        <location line="+674"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kullanılamıyor</translation>
@@ -5761,7 +5770,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::VfsMac</name>
     <message>
-        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+66"/>
         <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Dosyalar henüz Finder’da gösterilmiyor: macOS’in izninize ihtiyacı var. Sistem Ayarları &gt; Genel &gt; Giriş Öğeleri ve Uzantılar’ı açın, “Uzantılar” altında %1 yanındaki bilgi düğmesine tıklayın ve “Dosya Sağlayıcıları”nı açın.</translation>
@@ -5785,8 +5794,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
         <translation>Sanal dosyalar klasörü macOS’e kaydedilemedi.</translation>
     </message>
     <message>
-        <location line="+169"/>
-        <location line="+3"/>
+        <location line="+280"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5867,7 +5875,7 @@ Günlüğe kaydetme komut satırı seçeneklerinin kullanılmasının bu ayarlar
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+552"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;%1 İstemcisi yeni sürümü mevcut.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; artık indirilebilir. Kurulu sürüm %3.&lt;/p&gt;</translation>
     </message>

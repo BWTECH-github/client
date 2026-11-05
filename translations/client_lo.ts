@@ -1647,12 +1647,12 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+136"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
         <source>Loading …</source>
         <translation>ກຳລັງໂຫຼດ…</translation>
     </message>
     <message>
-        <location line="+206"/>
+        <location line="+204"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ໂຟນເດີນີ້ບໍ່ມີຢູ່ໃນເຊີບເວີອີກຕໍ່ໄປ.</translation>
@@ -1663,14 +1663,24 @@ This means that the synchronization client might not upload local changes immedi
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ເກີດຂໍ້ຜິດພາດໃນຂະນະໂຫຼດເນື້ອຫາຂອງໂຟນເດີ.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+206"/>
+        <source>… and %n more file(s)</source>
+        <extracomment>Last row of a folder with more files than the folder view lists, %n is the number of files not shown</extracomment>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>… ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌</numerusform>
+            <numerusform>… ແລະ ໄຟລ໌ອື່ນອີກ %n ໄຟລ໌</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+202"/>
+        <location line="+24"/>
         <source>This folder is empty on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ໂຟນເດີນີ້ຫວ່າງເປົ່າຢູ່ໃນເຊີບເວີ.</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+11"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -1684,7 +1694,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>ໂຟນເດີ %1, %2</translation>
     </message>
     <message>
-        <location line="+284"/>
+        <location line="+330"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ເກັບໄວ້ໃນອຸປະກອນນີ້ສະເໝີ</translation>
@@ -2856,7 +2866,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewVersionAvailableWidget</name>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="+34"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="+40"/>
         <source>Skip this version</source>
         <translation>ຂ້າມເວີຊັນນີ້</translation>
     </message>
@@ -5071,19 +5081,19 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+666"/>
+        <location line="+669"/>
         <source>Offline</source>
         <translation>ອອບໄລນ໌</translation>
     </message>
     <message>
-        <location line="-684"/>
-        <location line="+691"/>
+        <location line="-687"/>
+        <location line="+694"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ກຳລັງຊິງ</translation>
     </message>
     <message>
-        <location line="-689"/>
+        <location line="-692"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ກຳລັງຍົກເລີກການຊິງ</translation>
@@ -5107,15 +5117,15 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+596"/>
+        <location line="+599"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>ການຊິງຖືກຢຸດຊົ່ວຄາວ</translation>
     </message>
     <message>
-        <location line="-665"/>
-        <location line="+671"/>
+        <location line="-668"/>
+        <location line="+674"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບໍ່ມີໃຫ້ໃຊ້</translation>
@@ -5544,7 +5554,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsMac</name>
     <message>
-        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+66"/>
         <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ໄຟລ໌ຍັງບໍ່ສະແດງໃນ Finder: macOS ຕ້ອງການການອະນຸຍາດຂອງທ່ານ. ເປີດ ການຕັ້ງຄ່າລະບົບ &gt; ທົ່ວໄປ &gt; ລາຍການເຂົ້າສູ່ລະບົບ ແລະ ສ່ວນຂະຫຍາຍ, ຄລິກປຸ່ມຂໍ້ມູນຂ້າງ %1 ໃຕ້ &quot;ສ່ວນຂະຫຍາຍ&quot; ແລ້ວເປີດ &quot;ຜູ້ໃຫ້ບໍລິການໄຟລ໌&quot;.</translation>
@@ -5568,8 +5578,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ບໍ່ສາມາດລົງທະບຽນໂຟນເດີໄຟລ໌ສະເໝືອນກັບ macOS ໄດ້.</translation>
     </message>
     <message>
-        <location line="+169"/>
-        <location line="+3"/>
+        <location line="+280"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5641,7 +5650,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+552"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;ມີໂປຣແກຣມ %1 Client ເວີຊັນໃໝ່ໃຫ້ອັບເດດ.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; ສາມາດດາວໂຫຼດໄດ້ແລ້ວ. ເວີຊັນທີ່ຕິດຕັ້ງຢູ່ແມ່ນ %3.&lt;/p&gt;</translation>
     </message>

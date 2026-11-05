@@ -1649,12 +1649,12 @@ Ciò significa che il client di sincronizzazione potrebbe non inviare le modific
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+136"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
         <source>Loading …</source>
         <translation>Caricamento in corso...</translation>
     </message>
     <message>
-        <location line="+206"/>
+        <location line="+204"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Questa cartella non esiste più sul server.</translation>
@@ -1665,14 +1665,24 @@ Ciò significa che il client di sincronizzazione potrebbe non inviare le modific
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Si è verificato un errore durante il caricamento del contenuto della cartella.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+206"/>
+        <source>… and %n more file(s)</source>
+        <extracomment>Last row of a folder with more files than the folder view lists, %n is the number of files not shown</extracomment>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>… e %n altro file</numerusform>
+            <numerusform>… e altri %n file</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+202"/>
+        <location line="+24"/>
         <source>This folder is empty on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Questa cartella è vuota sul server.</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+11"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -1686,7 +1696,7 @@ Ciò significa che il client di sincronizzazione potrebbe non inviare le modific
         <translation>Cartella %1, %2</translation>
     </message>
     <message>
-        <location line="+284"/>
+        <location line="+330"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Mantieni sempre su questo dispositivo</translation>
@@ -2880,7 +2890,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::NewVersionAvailableWidget</name>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="+34"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="+40"/>
         <source>Skip this version</source>
         <translation>Salta questa versione</translation>
     </message>
@@ -5135,19 +5145,19 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
     <message>
         <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+666"/>
+        <location line="+669"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location line="-684"/>
-        <location line="+691"/>
+        <location line="-687"/>
+        <location line="+694"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sincronizzazione in corso</translation>
     </message>
     <message>
-        <location line="-689"/>
+        <location line="-692"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Interruzione della sincronizzazione</translation>
@@ -5171,15 +5181,15 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
     </message>
     <message>
         <location line="+2"/>
-        <location line="+596"/>
+        <location line="+599"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>Sincronizzazione in pausa</translation>
     </message>
     <message>
-        <location line="-665"/>
-        <location line="+671"/>
+        <location line="-668"/>
+        <location line="+674"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Non disponibile</translation>
@@ -5614,7 +5624,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::VfsMac</name>
     <message>
-        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+66"/>
         <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>I file non sono ancora visibili nel Finder: macOS ha bisogno del tuo permesso. Apri Impostazioni di Sistema &gt; Generali &gt; Elementi login ed estensioni, fai clic sul pulsante informazioni accanto a %1 in «Estensioni» e attiva «Fornitori di file».</translation>
@@ -5638,8 +5648,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
         <translation>Impossibile registrare in macOS la cartella dei file virtuali.</translation>
     </message>
     <message>
-        <location line="+169"/>
-        <location line="+3"/>
+        <location line="+280"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5720,7 +5729,7 @@ Tieni presente che l&apos;utilizzo di qualsiasi opzione della riga di comando di
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+552"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Una nuova versione del client %1 è disponibile.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; è disponibile per lo scaricamento. La versione installata è %3.&lt;/p&gt;</translation>
     </message>

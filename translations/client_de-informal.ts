@@ -1568,17 +1568,17 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+859"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+1035"/>
         <source>Share…</source>
         <translation>Teilen…</translation>
     </message>
     <message>
-        <location line="-723"/>
+        <location line="-788"/>
         <source>Loading …</source>
         <translation>Wird geladen …</translation>
     </message>
     <message>
-        <location line="+206"/>
+        <location line="+204"/>
         <source>This folder no longer exists on the server.</source>
         <translation>Dieser Ordner existiert auf dem Server nicht mehr.</translation>
     </message>
@@ -1587,13 +1587,22 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <source>An error occurred while loading the folder contents.</source>
         <translation>Beim Laden des Ordnerinhalts ist ein Fehler aufgetreten.</translation>
     </message>
+    <message numerus="yes">
+        <location line="+206"/>
+        <source>… and %n more file(s)</source>
+        <extracomment>Last row of a folder with more files than the folder view lists, %n is the number of files not shown</extracomment>
+        <translation>
+            <numerusform>… und %n weitere Datei</numerusform>
+            <numerusform>… und %n weitere Dateien</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+202"/>
+        <location line="+24"/>
         <source>This folder is empty on the server.</source>
         <translation>Dieser Ordner ist auf dem Server leer.</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+11"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
         <translation>Datei %1, %2</translation>
@@ -1605,7 +1614,7 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
         <translation>Ordner %1, %2</translation>
     </message>
     <message>
-        <location line="+284"/>
+        <location line="+330"/>
         <source>Always keep on this device</source>
         <translation>Immer auf diesem Gerät behalten</translation>
     </message>
@@ -2693,7 +2702,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::NewVersionAvailableWidget</name>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="+34"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="+40"/>
         <source>Skip this version</source>
         <translation>Diese Version überspringen</translation>
     </message>
@@ -4765,7 +4774,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::TrayMenuController</name>
     <message>
-        <location filename="../src/gui/traymenucontroller.cpp" line="+305"/>
+        <location filename="../src/gui/traymenucontroller.cpp" line="+308"/>
         <source>Unsupported Server Version</source>
         <translation>Nicht unterstützte Server Version</translation>
     </message>
@@ -4822,20 +4831,20 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Synchronisation fortsetzen (pausiert bis %1)</translation>
     </message>
     <message>
-        <location line="-538"/>
+        <location line="-541"/>
         <location line="+22"/>
-        <location line="+666"/>
+        <location line="+669"/>
         <source>Offline</source>
         <translation>Offline</translation>
     </message>
     <message>
-        <location line="-684"/>
-        <location line="+691"/>
+        <location line="-687"/>
+        <location line="+694"/>
         <source>Syncing</source>
         <translation>Synchronisation läuft</translation>
     </message>
     <message>
-        <location line="-689"/>
+        <location line="-692"/>
         <source>Aborting sync</source>
         <translation>Synchronisation wird abgebrochen</translation>
     </message>
@@ -4856,15 +4865,15 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
     </message>
     <message>
         <location line="+2"/>
-        <location line="+596"/>
+        <location line="+599"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
         <translation>Synchronisation pausiert</translation>
     </message>
     <message>
-        <location line="-665"/>
-        <location line="+671"/>
+        <location line="-668"/>
+        <location line="+674"/>
         <source>Unavailable</source>
         <translation>Nicht verfügbar</translation>
     </message>
@@ -5203,7 +5212,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::VfsMac</name>
     <message>
-        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+66"/>
         <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
         <translation>Die Dateien erscheinen noch nicht im Finder: macOS braucht deine Erlaubnis. Öffne Systemeinstellungen &gt; Allgemein &gt; Anmeldeobjekte &amp; Erweiterungen, klicke unter „Erweiterungen“ neben %1 auf die Info-Taste und schalte „Dateianbieter“ ein.</translation>
     </message>
@@ -5223,8 +5232,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
         <translation>Der Ordner für virtuelle Dateien konnte bei macOS nicht registriert werden.</translation>
     </message>
     <message>
-        <location line="+169"/>
-        <location line="+3"/>
+        <location line="+280"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
@@ -5295,7 +5303,7 @@ Beachte, dass Kommandozeilenoptionen zum Logging diese Einstellungen überschrei
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+552"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;Eine neue Version des %1 Clients ist verfügbar.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; steht zum Herunterladen bereit. Die installierte Version ist %3.&lt;/p&gt;</translation>
     </message>

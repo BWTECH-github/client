@@ -1750,13 +1750,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+136"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+247"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在載入…</translation>
     </message>
     <message>
-        <location line="+206"/>
+        <location line="+204"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>此資料夾在伺服器上已不存在。</translation>
@@ -1767,14 +1767,23 @@ This means that the synchronization client might not upload local changes immedi
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>載入資料夾內容時發生錯誤。</translation>
     </message>
+    <message numerus="yes">
+        <location line="+206"/>
+        <source>… and %n more file(s)</source>
+        <extracomment>Last row of a folder with more files than the folder view lists, %n is the number of files not shown</extracomment>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>
+            <numerusform>… 以及另外 %n 個檔案</numerusform>
+        </translation>
+    </message>
     <message>
-        <location line="+202"/>
+        <location line="+24"/>
         <source>This folder is empty on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>此資料夾在伺服器上是空的。</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+11"/>
         <source>File %1, %2</source>
         <extracomment>Accessible (screen reader) text for a remote file row, %1 is the file name, %2 its size or availability</extracomment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -1788,7 +1797,7 @@ This means that the synchronization client might not upload local changes immedi
         <translation>資料夾 %1，%2</translation>
     </message>
     <message>
-        <location line="+284"/>
+        <location line="+330"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>一律保留在此裝置上</translation>
@@ -3012,7 +3021,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::NewVersionAvailableWidget</name>
     <message>
-        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="+34"/>
+        <location filename="../src/gui/updater/newversionavailablewidget.cpp" line="+40"/>
         <source>Skip this version</source>
         <translation>跳過這個版本</translation>
     </message>
@@ -5347,19 +5356,19 @@ Note that using any logging command line options will override the settings.</so
     <message>
         <location filename="../src/gui/traymenucontroller.cpp" line="+134"/>
         <location line="+22"/>
-        <location line="+666"/>
+        <location line="+669"/>
         <source>Offline</source>
         <translation>下線</translation>
     </message>
     <message>
-        <location line="-684"/>
-        <location line="+691"/>
+        <location line="-687"/>
+        <location line="+694"/>
         <source>Syncing</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在同步</translation>
     </message>
     <message>
-        <location line="-689"/>
+        <location line="-692"/>
         <source>Aborting sync</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在中止同步</translation>
@@ -5383,7 +5392,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+2"/>
-        <location line="+596"/>
+        <location line="+599"/>
         <location line="+57"/>
         <location line="+17"/>
         <source>Sync paused</source>
@@ -5391,8 +5400,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>同步已暫停</translation>
     </message>
     <message>
-        <location line="-665"/>
-        <location line="+671"/>
+        <location line="-668"/>
+        <location line="+674"/>
         <source>Unavailable</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無法使用</translation>
@@ -5840,7 +5849,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsMac</name>
     <message>
-        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+62"/>
+        <location filename="../src/plugins/vfs/mac/vfs_mac.cpp" line="+66"/>
         <source>The files are not shown in the Finder yet: macOS needs your permission. Open System Settings &gt; General &gt; Login Items &amp; Extensions, click the info button next to %1 under &quot;Extensions&quot; and switch on &quot;File Providers&quot;.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>檔案尚未顯示在 Finder 中：macOS 需要您的許可。請打開 系統設定 &gt; 一般 &gt; 登入項目與延伸功能，在「延伸功能」下按一下 %1 旁的資訊按鈕，然後開啟「檔案提供者」。</translation>
@@ -5864,8 +5873,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>無法在 macOS 中註冊虛擬檔案資料夾。</translation>
     </message>
     <message>
-        <location line="+169"/>
-        <location line="+3"/>
+        <location line="+280"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5946,7 +5954,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::WindowsUpdater</name>
     <message>
-        <location filename="../src/gui/updater/ocupdater.cpp" line="+550"/>
+        <location filename="../src/gui/updater/ocupdater.cpp" line="+552"/>
         <source>&lt;p&gt;A new version of the %1 Client is available.&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; is available for download. The installed version is %3.&lt;/p&gt;</source>
         <translation>&lt;p&gt;%1  客戶端有新版本了。&lt;/p&gt;&lt;p&gt;&lt;b&gt;%2&lt;/b&gt; 可供下載， 目前安裝的版本是 %3.&lt;/p&gt;</translation>
     </message>
