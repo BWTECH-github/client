@@ -57,6 +57,7 @@ name: Install-Probe
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=dauerlauf
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=dauerlauf-lang
 #   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=grosser-ordner
+#   gh workflow run install-probe.yml --ref <zweig> -f run_id=<CI-Lauf> -f szenario=platzhalter
 
 on:
   workflow_dispatch:
@@ -65,9 +66,9 @@ on:
         description: "ID des CI-Laufs (ownCloud CI), dessen Artefakt windows-cl-x86_64 geprüft wird"
         required: true
       szenario:
-        description: "frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic, dauerlauf, dauerlauf-lang, grosser-ordner (die fünf nur einzeln) oder alle (je Szenario ein eigener Runner)"
+        description: "frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic, dauerlauf, dauerlauf-lang, grosser-ordner, platzhalter (die sechs nur einzeln) oder alle (je Szenario ein eigener Runner)"
         type: choice
-        options: [alle, frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic, dauerlauf, dauerlauf-lang, grosser-ordner]
+        options: [alle, frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2, deinstall-policies, assistent, assistent-basic, dauerlauf, dauerlauf-lang, grosser-ordner, platzhalter]
         default: alle
   # GitHub nimmt workflow_dispatch für einen Workflow, der nicht auf dem Standardzweig
   # liegt, erst nach einem ersten Lauf an. Dieser Auslöser registriert ihn nur; der Job
@@ -111,7 +112,7 @@ jobs:
       # assistent, dauerlauf: Server mit der App "OAuth2" (Browser-Anmeldung) und ohne sie (Kennwortseite, Konto des
       # offiziellen Clients)
       ASSISTENT_SERVER: https://testoo.bw.tech
-      # assistent-basic, dauerlauf, dauerlauf-lang, grosser-ordner: dort meldet sich das Testkonto mit Benutzername und Kennwort an
+      # assistent-basic, dauerlauf, dauerlauf-lang, grosser-ordner, platzhalter: dort meldet sich das Testkonto mit Benutzername und Kennwort an
       ASSISTENT_OHNE_OAUTH2: https://testool.bw.tech
       # dauerlauf: dieselbe Instanz wie ASSISTENT_SERVER unter anderem Namen (gleiche Adresse, gleiches Zertifikat), Ziel von
       # "Serveradresse ändern…"
@@ -212,13 +213,13 @@ jobs:
           # assistent-basic: Testkonto wie online-2 (Server ohne OAuth2); die Probe gibt das Kennwort nur über die
           # Oberfläche an den Client
           # dauerlauf, dauerlauf-lang: beide - online-1 für die Browser-Anmeldung (OC_*), online-2 mit Kennwort (OC_*_2)
-          # grosser-ordner: nur online-2 mit Kennwort (OC_*_2)
+          # grosser-ordner, platzhalter: nur online-2 mit Kennwort (OC_*_2)
           OC_URL: ${{ (matrix.szenario == 'assistent' || startsWith(matrix.szenario, 'dauerlauf')) && secrets.E2E_ONLINE_URL_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_URL_2 || '' }}
           OC_USER: ${{ (matrix.szenario == 'assistent' || startsWith(matrix.szenario, 'dauerlauf')) && secrets.E2E_ONLINE_USER_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_USER_2 || '' }}
           OC_PASS: ${{ (matrix.szenario == 'assistent' || startsWith(matrix.szenario, 'dauerlauf')) && secrets.E2E_ONLINE_PASS_1 || matrix.szenario == 'assistent-basic' && secrets.E2E_ONLINE_PASS_2 || '' }}
-          OC_URL_2: ${{ (startsWith(matrix.szenario, 'dauerlauf') || matrix.szenario == 'grosser-ordner') && secrets.E2E_ONLINE_URL_2 || '' }}
-          OC_USER_2: ${{ (startsWith(matrix.szenario, 'dauerlauf') || matrix.szenario == 'grosser-ordner') && secrets.E2E_ONLINE_USER_2 || '' }}
-          OC_PASS_2: ${{ (startsWith(matrix.szenario, 'dauerlauf') || matrix.szenario == 'grosser-ordner') && secrets.E2E_ONLINE_PASS_2 || '' }}
+          OC_URL_2: ${{ (startsWith(matrix.szenario, 'dauerlauf') || matrix.szenario == 'grosser-ordner' || matrix.szenario == 'platzhalter') && secrets.E2E_ONLINE_URL_2 || '' }}
+          OC_USER_2: ${{ (startsWith(matrix.szenario, 'dauerlauf') || matrix.szenario == 'grosser-ordner' || matrix.szenario == 'platzhalter') && secrets.E2E_ONLINE_USER_2 || '' }}
+          OC_PASS_2: ${{ (startsWith(matrix.szenario, 'dauerlauf') || matrix.szenario == 'grosser-ordner' || matrix.szenario == 'platzhalter') && secrets.E2E_ONLINE_PASS_2 || '' }}
         run: |
           $parameters = @{ Scenario = $env:SZENARIO; Setup = $env:PROBE_SETUP; OutDir = $env:PROBE_OUT }
           if ($env:PROBE_VERSION) { $parameters.ExpectedVersion = $env:PROBE_VERSION }
@@ -240,7 +241,7 @@ jobs:
             $parameters.BasicServerUrl = $env:ASSISTENT_OHNE_OAUTH2
           }
           if ($env:SZENARIO -eq 'dauerlauf') { $parameters.MoveServerUrl = $env:ASSISTENT_UMZUG }
-          if ($env:SZENARIO -eq 'grosser-ordner') { $parameters.BasicServerUrl = $env:ASSISTENT_OHNE_OAUTH2 }
+          if ($env:SZENARIO -in 'grosser-ordner', 'platzhalter') { $parameters.BasicServerUrl = $env:ASSISTENT_OHNE_OAUTH2 }
           if ($env:SZENARIO -eq 'dauerlauf-lang') { $parameters.RunMinutes = 70 }
           & .\admin\win\test\probe.ps1 @parameters
           exit $LASTEXITCODE

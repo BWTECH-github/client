@@ -183,6 +183,16 @@
                   keine Sync-Schleife, kein ASSERT; Arbeitsspeicher am
                   Anfang und am Ende; kein Speicherabbild, Ende über --quit
                   mit Exit-Code 0.
+      platzhalter Nur auf Anforderung: virtuelle Dateien mit Wahl im Explorer und
+                  in der Ordneransicht. Konto mit Kennwort an -BasicServerUrl
+                  (OC_USER_2/OC_PASS_2), Ordnerpaar nur für den Serverordner des
+                  Laufs. Eine Datei auf „Immer behalten“, den Ordner freigeben
+                  (die Wahl gilt für alles darin), den Ordner auf „Immer
+                  behalten“ (alles lädt), wieder freigeben, dann dasselbe per
+                  Rechtsklick in der Ordneransicht: Die Zeilen müssen den neuen
+                  Stand von selbst zeigen. Nichts im Ordner darf gelöscht,
+                  angelegt oder umbenannt werden, keine Zeile eines offenen
+                  Explorer-Fensters darf verschwinden. Kein Absturz.
       grosser-ordner  Nur auf Anforderung: Ordneransicht mit einem Ordner voller
                   Dateien (Befund 11.0.0: Fenster weiß beim Aufklappen). Konto
                   mit Kennwort an -BasicServerUrl (OC_USER_2/OC_PASS_2),
@@ -221,7 +231,7 @@
 .PARAMETER Scenario
     frisch, koexistenz, upgrade, upgrade-beta1, upgrade-beta2,
     deinstall-policies, assistent, assistent-basic, dauerlauf,
-    dauerlauf-lang oder grosser-ordner.
+    dauerlauf-lang, grosser-ordner oder platzhalter.
 
 .PARAMETER Setup
     Setup des Prüflings (*-Setup.exe aus dem CI-Artefakt windows-cl-x86_64).
@@ -256,10 +266,11 @@
     Assistenten); auch das Konto des offiziellen Clients zeigt dorthin.
 
 .PARAMETER BasicServerUrl
-    assistent-basic, dauerlauf, dauerlauf-lang, grosser-ordner: Server ohne die
-    App "OAuth2", an dem sich das Testkonto mit Benutzername und Kennwort
-    anmeldet (assistent-basic: OC_USER/OC_PASS, dauerlauf, dauerlauf-lang und
-    grosser-ordner: OC_USER_2/OC_PASS_2). Die Adresse aus OC_URL bzw.
+    assistent-basic, dauerlauf, dauerlauf-lang, grosser-ordner, platzhalter:
+    Server ohne die App "OAuth2", an dem sich das Testkonto mit Benutzername und
+    Kennwort anmeldet (assistent-basic: OC_USER/OC_PASS, dauerlauf,
+    dauerlauf-lang, grosser-ordner und platzhalter: OC_USER_2/OC_PASS_2). Die
+    Adresse aus OC_URL bzw.
     OC_URL_2 wird nur mit ihr verglichen.
 
 .PARAMETER RunMinutes
@@ -288,7 +299,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2', 'deinstall-policies', 'assistent', 'assistent-basic', 'dauerlauf', 'dauerlauf-lang', 'grosser-ordner')]
+    [ValidateSet('frisch', 'koexistenz', 'upgrade', 'upgrade-beta1', 'upgrade-beta2', 'deinstall-policies', 'assistent', 'assistent-basic', 'dauerlauf', 'dauerlauf-lang', 'grosser-ordner', 'platzhalter')]
     [string] $Scenario,
 
     [Parameter(Mandatory = $true)]
@@ -6725,7 +6736,30 @@ function Measure-Responsiveness {
     return $result
 }
 
-function Invoke-GrosserOrdner {
+# Assistent: Konto 2 mit Kennwort, „Ordner manuell synchronisieren“, Ordnerpaar nur für den Serverordner $Folder, erster Sync.
+# Rückgabe: Ordnerpaar und Detail
+function Add-BasicAccountWithFolder {
+    param($Ctx, [string] $Folder)
+    $found = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id; if ((Get-BasicWizardState $i) -eq 'adresse') { @{ Items = $i } } } 90
+    if (-not $found) { Stop-Step 'Adressseite des Assistenten erschien nicht innerhalb von 90 s' }
+    $reboot = Close-RebootPrompt $Ctx
+    $null = Write-BasicStep $Ctx 'assistent' 'Assistent, Adressseite'
+    $mark = Complete-BasicWizardManual $Ctx
+    if (-not (Wait-LogSince $Ctx (Get-ConnectedPattern $BasicServerUrl) $mark 120)) { Stop-Step ('Konto an {0} nach "Abschließen" nicht verbunden (120 s)' -f $BasicServerUrl) }
+    # "Ordner manuell": NewAccountBuilder öffnet den Ordner-Assistenten in der Kontoansicht
+    $wizard = Wait-Ui $Ctx { $i = Get-UiItems $Ctx.Process.Id -IncludeMain; if (@($i | Where-Object { $_.Visible -and $_.Id -like '*AddFolderSyncWizard*' }).Count -gt 0) { $true } } 60
+    if (-not $wizard) { Stop-Step 'Ordner-Assistent öffnete sich nach "Abschließen" nicht (60 s)' }
+    $mark = Get-LogMark $Ctx
+    $pair = Complete-FolderWizard $Ctx $Folder
+    $sync = Wait-FolderSync $Ctx $mark $pair.Local
+    Start-Sleep -Seconds 2
+    $shot = Write-BasicStep $Ctx 'ordner' 'Konto verbunden, Ordnerpaar eingerichtet, erster Sync fertig'
+    return @{ Pair = $pair; Detail = ('verbunden; Ordner {0} (virtuelle Dateien: {1}), erster Sync: {2}; {3}Foto {4}' -f $pair.Local, $(if ($pair.Vfs) { 'an' } else { 'aus' }), $sync.Status, $(if ($reboot) { "$reboot; " } else { '' }), $shot) }
+}
+
+# gemeinsamer Anfang von grosser-ordner und platzhalter: Oberfläche, WER, Umgebung (A0, A1), Prüfling still installieren (A3, A4).
+# Rückgabe: Programmdatei des Prüflings
+function Initialize-BasicRun {
     Initialize-Desktop
     if (-not ('OcProbe.Mouse' -as [type])) { Add-Type -TypeDefinition $mouseSource -Language CSharp }
     Add-Type -AssemblyName WindowsBase
@@ -6757,6 +6791,11 @@ function Invoke-GrosserOrdner {
     if (-not $exe) { throw 'Programmdatei des Prüflings nicht gefunden' }
     Add-Check 'A4' 'Prüfling' 'INFO' ('{0}, Version {1}, Signatur {2}' -f $exe, (Get-VersionWithBuild $exe), (Get-SignatureNote $exe)) ''
     Stop-Client
+    return $exe
+}
+
+function Invoke-GrosserOrdner {
+    $exe = Initialize-BasicRun
 
     $folder = Get-RunPrefix
     $hidden = $bigFileCount - $bigShownFiles
@@ -6783,21 +6822,7 @@ function Invoke-GrosserOrdner {
         if (-not $state.Stopped) { Start-DauerClient $ctx $exe 'g1-client.log' }
 
         $ok = Invoke-DauerStep $state 'G2' ('Assistent: {0} mit Kennwort, „Erweitert“ → „Ordner manuell synchronisieren“, Ordner-Assistent mit {1}, erster Sync' -f $BasicServerUrl, $folder) {
-            $found = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id; if ((Get-BasicWizardState $i) -eq 'adresse') { @{ Items = $i } } } 90
-            if (-not $found) { Stop-Step 'Adressseite des Assistenten erschien nicht innerhalb von 90 s' }
-            $reboot = Close-RebootPrompt $ctx
-            $null = Write-BasicStep $ctx 'assistent' 'Assistent, Adressseite'
-            $mark = Complete-BasicWizardManual $ctx
-            if (-not (Wait-LogSince $ctx (Get-ConnectedPattern $BasicServerUrl) $mark 120)) { Stop-Step ('Konto an {0} nach "Abschließen" nicht verbunden (120 s)' -f $BasicServerUrl) }
-            # "Ordner manuell": NewAccountBuilder öffnet den Ordner-Assistenten in der Kontoansicht
-            $wizard = Wait-Ui $ctx { $i = Get-UiItems $ctx.Process.Id -IncludeMain; if (@($i | Where-Object { $_.Visible -and $_.Id -like '*AddFolderSyncWizard*' }).Count -gt 0) { $true } } 60
-            if (-not $wizard) { Stop-Step 'Ordner-Assistent öffnete sich nach "Abschließen" nicht (60 s)' }
-            $mark = Get-LogMark $ctx
-            $pair = Complete-FolderWizard $ctx $folder
-            $sync = Wait-FolderSync $ctx $mark $pair.Local
-            Start-Sleep -Seconds 2
-            $shot = Write-BasicStep $ctx 'ordner' 'Konto verbunden, Ordnerpaar eingerichtet, erster Sync fertig'
-            return ('verbunden; Ordner {0} (virtuelle Dateien: {1}), erster Sync: {2}; {3}Foto {4}' -f $pair.Local, $(if ($pair.Vfs) { 'an' } else { 'aus' }), $sync.Status, $(if ($reboot) { "$reboot; " } else { '' }), $shot)
+            return (Add-BasicAccountWithFolder $ctx $folder).Detail
         }
         if (-not $ok -and -not $state.Stopped) { $state.Stopped = 'Konto oder Ordnerpaar nicht eingerichtet (G2)' }
 
@@ -6880,6 +6905,334 @@ function Invoke-GrosserOrdner {
     }
 }
 
+# --- Platzhalter (platzhalter) ------------------------------------------------
+#
+# Befund in der Testversion von 11.0.1 unter Windows 11: Eine Datei auf „Immer behalten“, dann ihren Ordner freigeben: Die Zeile der
+# Datei im Client blieb auf „Aktuell lokal verfügbar“. Beim Laden verschwand der Eintrag kurz aus dem offenen Explorer-Fenster, die
+# Datei wurde ersetzt. Die Probe wählt wie ein Tester, im Kontextmenü des Explorers und im Menü der Ordneransicht, und schaut dabei
+# auf den Ordner (nichts darf gelöscht, angelegt oder umbenannt werden) und in ein offenes Explorer-Fenster.
+
+$pinFileCount = 40
+# Kontextmenü des Explorers und Menü der Ordneransicht
+$pinKeepPattern = 'Immer auf diesem Ger.t (be)?(i)?behalten|Always keep on this device'
+$pinFreePattern = 'Speicherplatz freigeben|Speicher freigeben|Free up space'
+# Text der Verfügbarkeit in den Zeilen der Ordneransicht
+$pinRowKeptPattern = 'Immer lokal verf.gbar|Always available locally'
+$pinRowOnlinePattern = 'Nur Online verf.gbar|Available online only'
+
+$pinWatchSource = @'
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Collections.Generic;
+using System.Windows.Automation;
+
+namespace OcProbe {
+public static class PinWatch {
+    static readonly List<string> Events = new List<string>();
+    static FileSystemWatcher watcher;
+    static Thread viewThread;
+    static volatile bool stop;
+
+    static void Add(string text) { lock (Events) { Events.Add(DateTime.Now.ToString("HH:mm:ss.fff") + " " + text); } }
+
+    public static string[] Take() { lock (Events) { var all = Events.ToArray(); Events.Clear(); return all; } }
+
+    // Dateien des Clients, die beim Sync entstehen und gehen dürfen
+    static bool Ignored(string name) {
+        var leaf = Path.GetFileName(name);
+        return leaf.Contains(".~") || leaf.StartsWith(".sync_") || leaf.StartsWith(".owncloudsync");
+    }
+
+    public static void StartFiles(string root) {
+        watcher = new FileSystemWatcher(root);
+        watcher.IncludeSubdirectories = true;
+        watcher.InternalBufferSize = 65536;
+        watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName;
+        watcher.Created += (s, e) => { if (!Ignored(e.Name)) Add("DATEI neu " + e.Name); };
+        watcher.Deleted += (s, e) => { if (!Ignored(e.Name)) Add("DATEI weg " + e.Name); };
+        watcher.Renamed += (s, e) => { if (!Ignored(e.Name)) Add("DATEI umbenannt " + e.OldName + " -> " + e.Name); };
+        watcher.Error += (s, e) => Add("DATEI Fehler " + e.GetException().Message);
+        watcher.EnableRaisingEvents = true;
+    }
+
+    static Dictionary<string, string> Rows(AutomationElement window) {
+        var rows = new Dictionary<string, string>();
+        var list = window.FindFirst(TreeScope.Descendants, new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.List));
+        if (list == null) {
+            return rows;
+        }
+        var items = list.FindAll(TreeScope.Children, new OrCondition(
+            new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.ListItem),
+            new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.DataItem)));
+        foreach (AutomationElement item in items) {
+            var status = "";
+            foreach (AutomationElement cell in item.FindAll(TreeScope.Children, Condition.TrueCondition)) {
+                var name = cell.Current.Name ?? "";
+                object pattern;
+                if ((name.Contains("Status") || name.Contains("status")) && cell.TryGetCurrentPattern(ValuePattern.Pattern, out pattern)) {
+                    status = ((ValuePattern)pattern).Current.Value;
+                }
+            }
+            rows[item.Current.Name] = status;
+        }
+        return rows;
+    }
+
+    // liest laufend die sichtbaren Zeilen eines Explorer-Fensters: Eine Zeile, die geht und wiederkommt, sah der Nutzer verschwinden
+    public static void StartView(long handle) {
+        var window = AutomationElement.FromHandle(new IntPtr(handle));
+        stop = false;
+        viewThread = new Thread(() => {
+            Dictionary<string, string> last = null;
+            while (!stop) {
+                try {
+                    var rows = Rows(window);
+                    if (last == null) {
+                        Add("ANSICHT beginnt mit " + rows.Count + " Zeilen");
+                    } else if (rows.Count > 0) {
+                        foreach (var name in last.Keys.Except(rows.Keys)) Add("ANSICHT weg " + name);
+                        foreach (var name in rows.Keys.Except(last.Keys)) Add("ANSICHT neu " + name);
+                        foreach (var name in rows.Keys.Intersect(last.Keys)) {
+                            if (rows[name] != last[name]) Add("STATUS " + name + ": " + last[name] + " -> " + rows[name]);
+                        }
+                    }
+                    if (rows.Count > 0 || last == null) last = rows;
+                } catch (Exception e) {
+                    Add("STATUS Ansicht nicht lesbar: " + e.GetType().Name);
+                }
+                Thread.Sleep(100);
+            }
+        });
+        viewThread.IsBackground = true;
+        viewThread.Start();
+    }
+
+    public static void Stop() {
+        stop = true;
+        if (viewThread != null) viewThread.Join(3000);
+        if (watcher != null) watcher.Dispose();
+    }
+}
+}
+'@
+
+function Get-PinAttributes {
+    param([string] $Path)
+    $attributes = [int64][IO.File]::GetAttributes($Path)
+    return @{
+        Pinned = [bool]($attributes -band 0x80000)
+        Unpinned = [bool]($attributes -band 0x100000)
+        # FILE_ATTRIBUTE_RECALL_ON_DATA_ACCESS: der Inhalt liegt nicht auf der Platte
+        Online = [bool]($attributes -band 0x400000)
+    }
+}
+
+# Datei unter dem Stand? -Online: freigegeben, sonst geladen; -Pin: AlwaysLocal, OnlineOnly oder leer für beliebig
+function Test-PinFiles {
+    param([string[]] $Files, [switch] $Online, [string] $Pin = '')
+    foreach ($file in $Files) {
+        $state = Get-PinAttributes $file
+        if ($state.Online -ne [bool]$Online) { return $false }
+        if ($Pin -eq 'AlwaysLocal' -and -not $state.Pinned) { return $false }
+        if ($Pin -eq 'OnlineOnly' -and -not $state.Unpinned) { return $false }
+    }
+    return $true
+}
+
+function Format-PinFiles {
+    param([string[]] $Files)
+    $online = @($Files | Where-Object { (Get-PinAttributes $_).Online }).Count
+    $pinned = @($Files | Where-Object { (Get-PinAttributes $_).Pinned }).Count
+    $unpinned = @($Files | Where-Object { (Get-PinAttributes $_).Unpinned }).Count
+    return ('{0} Dateien: {1} ohne Inhalt, {2} angeheftet, {3} nur online' -f $Files.Count, $online, $pinned, $unpinned)
+}
+
+# wie ein Rechtsklick im Explorer: derselbe Eintrag des Kontextmenüs. Rückgabe: Name des Eintrags
+function Invoke-ExplorerVerb {
+    param([string] $Path, [string] $Pattern)
+    $shell = New-Object -ComObject Shell.Application
+    $item = $shell.Namespace((Split-Path -Parent $Path)).ParseName((Split-Path -Leaf $Path))
+    $verbs = @($item.Verbs())
+    $verb = @($verbs | Where-Object { $_.Name -match $Pattern }) | Select-Object -First 1
+    if (-not $verb) { Stop-Step ('Kontextmenü von {0} ohne Eintrag {1}, angeboten: {2}' -f (Split-Path -Leaf $Path), $Pattern, (Limit-Text (($verbs | ForEach-Object { $_.Name }) -join '; ') 300)) }
+    Add-Timeline ('Explorer: "{0}" an {1}' -f $verb.Name, $Path)
+    $verb.DoIt()
+    return $verb.Name
+}
+
+# Ereignisse seit dem letzten Aufruf: alle in den Ablauf; Rückgabe: was es beim Laden und Freigeben nicht geben darf
+function Get-PinViolations {
+    $events = @([OcProbe.PinWatch]::Take())
+    foreach ($entry in $events) { Add-Timeline $entry }
+    return @($events | Where-Object { $_ -match ' (DATEI|ANSICHT) ' -and $_ -notmatch 'ANSICHT beginnt' })
+}
+
+# Ergebnis eines Schritts: FEHLER, wenn etwas fehlte oder Einträge im Ordner oder Fenster verschwanden
+function Get-PinResult {
+    param([bool] $Reached, [string] $What, [string[]] $Files, [string] $Shot)
+    Start-Sleep -Seconds 2
+    $violations = @(Get-PinViolations)
+    $detail = '{0}: {1}; {2}; Foto {3}' -f $What, $(if ($Reached) { 'erreicht' } else { 'NICHT erreicht' }), (Format-PinFiles $Files), $Shot
+    if ($violations.Count -gt 0) { $detail += ('; Einträge verändert ({0}): {1}' -f $violations.Count, (Limit-Text (($violations | Select-Object -First 4) -join ' | ') 400)) }
+    if (-not $Reached -or $violations.Count -gt 0) { return @{ Status = 'FEHLER'; Detail = $detail } }
+    return $detail
+}
+
+function Find-PinRow {
+    param($Ctx, [string] $Name)
+    return @((Get-UiItems $Ctx.Process.Id -IncludeMain) | Where-Object { $_.Visible -and $_.Type -in 'TreeItem', 'DataItem', 'ListItem' -and $_.Name -and $_.Name.Contains($Name) }) | Select-Object -First 1
+}
+
+# Zeile der Ordneransicht zeigt die Verfügbarkeit, ohne dass jemand neu aufklappt. Rückgabe: Text der Zeile oder $null
+function Wait-PinRow {
+    param($Ctx, [string] $Name, [string] $Pattern, [int] $Seconds)
+    return (Wait-Ui $Ctx { $row = Find-PinRow $Ctx $Name; if ($row -and $row.Name -match $Pattern) { $row.Name } } $Seconds)
+}
+
+function Invoke-Platzhalter {
+    $exe = Initialize-BasicRun
+    if (-not ('OcProbe.PinWatch' -as [type])) { Add-Type -TypeDefinition $pinWatchSource -Language CSharp -ReferencedAssemblies UIAutomationClient, UIAutomationTypes, WindowsBase, System.Core }
+
+    $folder = Get-RunPrefix
+    $ctx = New-DauerContext 'p1'
+    $state = @{ Ctx = $ctx; Stopped = '' }
+    $title = 'Virtuelle Dateien: Wahl an Datei und Ordner im Explorer und in der Ordneransicht (Serverordner {0} an {1}, Kennwort): laden und freigeben an Ort und Stelle, die Wahl am Ordner gilt für alles darin, kein Absturz' -f $folder, $BasicServerUrl
+    Write-Host "== Platzhalter: $title"
+    Write-Annotation 'notice' "Platzhalter: $title"
+    Add-Timeline "== Platzhalter: $title"
+    $explorer = $null
+    $docs = ''
+    $files = @()
+    try {
+        $ok = Invoke-DauerStep $state 'P1' ('Serverordner {0} mit „Dokumente“ ({1} Dateien) und „Dokumente/Unter/Tief“ per WebDAV angelegt (Testkonto 2)' -f $folder, $pinFileCount) {
+            $codes = @(foreach ($path in $folder, "$folder/Dokumente", "$folder/Dokumente/Unter", "$folder/Dokumente/Unter/Tief") { '{0}: HTTP {1}' -f $path, (Invoke-Dav 'MKCOL' $path) })
+            $body = [Text.Encoding]::UTF8.GetBytes(('owncloud.online Probe' * 200))
+            $codes += @(for ($i = 1; $i -le $pinFileCount; $i++) { $path = '{0}/Dokumente/datei-{1:D2}.txt' -f $folder, $i; '{0}: HTTP {1}' -f $path, (Invoke-Dav 'PUT' $path $body) })
+            $codes += @(foreach ($path in "$folder/Dokumente/Unter/unter.txt", "$folder/Dokumente/Unter/Tief/tief.txt") { '{0}: HTTP {1}' -f $path, (Invoke-Dav 'PUT' $path $body) })
+            $bad = @($codes | Where-Object { $_ -notmatch 'HTTP (201|204)$' })
+            if ($bad.Count -gt 0) { Stop-Step ($bad -join '; ') }
+            return ('{0} Einträge angelegt' -f $codes.Count)
+        }
+        if (-not $ok) { $state.Stopped = 'Serverordner nicht angelegt (P1)' }
+
+        Reset-ClientState
+        Stop-OfficialClient
+        Write-ClientConfig 'de'
+        Set-LegacyConfig $false
+        $ctx.Since = Get-Date
+        if (-not $state.Stopped) { Start-DauerClient $ctx $exe 'p1-client.log' }
+
+        $pair = $null
+        $ok = Invoke-DauerStep $state 'P2' ('Assistent: {0} mit Kennwort, „Erweitert“ → „Ordner manuell synchronisieren“, Ordner-Assistent mit {1}, erster Sync' -f $BasicServerUrl, $folder) {
+            $added = Add-BasicAccountWithFolder $ctx $folder
+            $script:pinPair = $added.Pair
+            return $added.Detail
+        }
+        if ($ok) { $pair = $script:pinPair }
+        if (-not $ok -and -not $state.Stopped) { $state.Stopped = 'Konto oder Ordnerpaar nicht eingerichtet (P2)' }
+
+        $ok = Invoke-DauerStep $state 'P3' 'Alle Dateien sind Platzhalter ohne Inhalt, Explorer-Fenster im Ordner „Dokumente“ offen' {
+            if (-not $pair.Vfs) { Stop-Step 'Ordnerpaar ohne virtuelle Dateien eingerichtet' }
+            $root = ConvertTo-LocalPath $pair.Local
+            $script:pinDocs = Join-Path $root 'Dokumente'
+            $list = @(for ($i = 1; $i -le $pinFileCount; $i++) { Join-Path $script:pinDocs ('datei-{0:D2}.txt' -f $i) })
+            $list += Join-Path $script:pinDocs 'Unter\unter.txt'
+            $list += Join-Path $script:pinDocs 'Unter\Tief\tief.txt'
+            $script:pinFiles = $list
+            if (-not (Wait-Ui $ctx { @($list | Where-Object { -not (Test-Path -LiteralPath $_) }).Count -eq 0 } 60)) { Stop-Step ('Platzhalter fehlen: {0}' -f (Limit-Text ((@($list | Where-Object { -not (Test-Path -LiteralPath $_) }) | ForEach-Object { Split-Path -Leaf $_ }) -join ', ') 300)) }
+            if (-not (Test-PinFiles $list -Online)) { Stop-Step ('nicht alle Dateien ohne Inhalt: {0}' -f (Format-PinFiles $list)) }
+            [OcProbe.PinWatch]::StartFiles($root)
+            $shell = New-Object -ComObject Shell.Application
+            $shell.Open($script:pinDocs)
+            $window = Wait-Ui $ctx { foreach ($w in $shell.Windows()) { try { if ($w.Document.Folder.Self.Path -eq $script:pinDocs) { $w } } catch { } } } 20
+            $note = 'kein Explorer-Fenster (20 s), geprüft wird nur der Ordner'
+            if ($window) {
+                $script:pinExplorer = @($window) | Select-Object -First 1
+                Start-Sleep -Seconds 3
+                [OcProbe.PinWatch]::StartView([long]$script:pinExplorer.HWND)
+                $note = 'Explorer-Fenster offen'
+            }
+            $shot = Write-BasicStep $ctx 'explorer' 'Explorer-Fenster im Ordner „Dokumente“'
+            return ('{0}; {1}; Foto {2}' -f (Format-PinFiles $list), $note, $shot)
+        }
+        if ($ok) { $docs = $script:pinDocs; $files = $script:pinFiles; $explorer = $script:pinExplorer }
+        if (-not $ok -and -not $state.Stopped) { $state.Stopped = 'Platzhalter nicht da (P3)' }
+
+        $null = Invoke-DauerStep $state 'P4' 'Explorer: „Immer behalten“ an einer Datei: Sie wird an Ort und Stelle geladen, der Eintrag bleibt' {
+            $null = Invoke-ExplorerVerb $files[0] $pinKeepPattern
+            $reached = [bool](Wait-Ui $ctx { Test-PinFiles @($files[0]) -Pin 'AlwaysLocal' } 90)
+            return (Get-PinResult $reached 'Datei geladen und angeheftet' $files (Write-BasicStep $ctx 'datei-behalten' 'Explorer: Datei auf „Immer behalten“'))
+        }
+
+        $null = Invoke-DauerStep $state 'P5' 'Explorer: „Speicherplatz freigeben“ am Ordner: gilt auch für die angeheftete Datei und in Unterordnern, die Einträge bleiben' {
+            $null = Invoke-ExplorerVerb $docs $pinFreePattern
+            $reached = [bool](Wait-Ui $ctx { Test-PinFiles $files -Online -Pin 'OnlineOnly' } 90)
+            return (Get-PinResult $reached 'alles freigegeben' $files (Write-BasicStep $ctx 'ordner-freigeben' 'Explorer: Ordner freigegeben'))
+        }
+
+        $null = Invoke-DauerStep $state 'P6' 'Explorer: „Immer behalten“ am Ordner: lädt alles darin an Ort und Stelle, die Einträge bleiben' {
+            $null = Invoke-ExplorerVerb $docs $pinKeepPattern
+            $reached = [bool](Wait-Ui $ctx { Test-PinFiles $files -Pin 'AlwaysLocal' } 240)
+            return (Get-PinResult $reached 'alles geladen und angeheftet' $files (Write-BasicStep $ctx 'ordner-behalten' 'Explorer: Ordner auf „Immer behalten“'))
+        }
+
+        $null = Invoke-DauerStep $state 'P7' 'Explorer: „Speicherplatz freigeben“ am Ordner mit lauter geladenen Dateien' {
+            $null = Invoke-ExplorerVerb $docs $pinFreePattern
+            $reached = [bool](Wait-Ui $ctx { Test-PinFiles $files -Online -Pin 'OnlineOnly' } 120)
+            return (Get-PinResult $reached 'alles freigegeben' $files (Write-BasicStep $ctx 'ordner-freigeben-2' 'Explorer: Ordner freigegeben, alle Dateien waren geladen'))
+        }
+
+        # wie der Tester: im Client-Fenster, die Datei über die Wahl am Ordner
+        $null = Invoke-DauerStep $state 'P8' 'Ordneransicht: „Dokumente“ aufklappen, Datei per Rechtsklick auf „Immer behalten“: geladen, die Zeile zeigt es ohne neues Aufklappen' {
+            $row = Wait-Ui $ctx { Find-PinRow $ctx 'Dokumente' } 30
+            if (-not $row) { Stop-Step 'Zeile „Dokumente“ in der Ordneransicht nicht gefunden (30 s)' }
+            $how = Invoke-UiClick $ctx $row -NoInvoke
+            if (-not $how) { Stop-Step 'Zeile „Dokumente“ nicht anklickbar' }
+            Start-Sleep -Milliseconds 500
+            $null = [OcProbe.Desk]::Press(0x27, $false)
+            Add-Timeline 'Taste: Pfeil rechts (aufklappen)'
+            if (-not (Wait-Ui $ctx { Find-PinRow $ctx 'datei-01.txt' } 30)) { Stop-Step 'Zeile der Datei datei-01.txt nach dem Aufklappen nicht gefunden (30 s)' }
+            Open-FolderMenu $ctx 'datei-01.txt'
+            $entry = Invoke-MenuEntry $ctx $pinKeepPattern '' 'im Menü der Datei'
+            $reached = [bool](Wait-Ui $ctx { Test-PinFiles @($files[0]) -Pin 'AlwaysLocal' } 60)
+            $text = Wait-PinRow $ctx 'datei-01.txt' $pinRowKeptPattern 30
+            $result = Get-PinResult ($reached -and [bool]$text) ('„{0}“, Zeile: {1}' -f $entry.Name, $(if ($text) { $text } else { (Find-PinRow $ctx 'datei-01.txt').Name })) $files (Write-BasicStep $ctx 'client-datei' 'Ordneransicht: Datei auf „Immer behalten“')
+            return $result
+        }
+
+        $null = Invoke-DauerStep $state 'P9' 'Ordneransicht: „Speicherplatz freigeben“ am Ordner: die Zeile der angehefteten Datei wechselt von selbst auf nur online' {
+            Open-FolderMenu $ctx 'Dokumente'
+            $entry = Invoke-MenuEntry $ctx $pinFreePattern '' 'im Menü des Ordners'
+            $reached = [bool](Wait-Ui $ctx { Test-PinFiles $files -Online -Pin 'OnlineOnly' } 60)
+            $text = Wait-PinRow $ctx 'datei-01.txt' $pinRowOnlinePattern 30
+            $result = Get-PinResult ($reached -and [bool]$text) ('„{0}“, Zeile: {1}' -f $entry.Name, $(if ($text) { $text } else { (Find-PinRow $ctx 'datei-01.txt').Name })) $files (Write-BasicStep $ctx 'client-ordner-frei' 'Ordneransicht: Ordner freigegeben')
+            return $result
+        }
+
+        $null = Invoke-DauerStep $state 'P10' 'Ordneransicht: „Immer behalten“ am Ordner: alles geladen, die Zeilen zeigen es von selbst' {
+            Open-FolderMenu $ctx 'Dokumente'
+            $entry = Invoke-MenuEntry $ctx $pinKeepPattern '' 'im Menü des Ordners'
+            $reached = [bool](Wait-Ui $ctx { Test-PinFiles $files -Pin 'AlwaysLocal' } 240)
+            $text = Wait-PinRow $ctx 'datei-01.txt' $pinRowKeptPattern 30
+            $folderText = Wait-PinRow $ctx 'Dokumente' $pinRowKeptPattern 30
+            $result = Get-PinResult ($reached -and [bool]$text -and [bool]$folderText) ('„{0}“, Zeilen: {1} / {2}' -f $entry.Name, $text, $folderText) $files (Write-BasicStep $ctx 'client-ordner-behalten' 'Ordneransicht: Ordner auf „Immer behalten“')
+            return $result
+        }
+    } finally {
+        try { [OcProbe.PinWatch]::Stop() } catch { }
+        if ($explorer) { try { $explorer.Quit() } catch { } }
+        Stop-DauerClient $ctx $exe 'platzhalter'
+        $fatal = Get-FatalLines $ctx
+        Add-NoCrashCheck $ctx 'P11' $fatal
+        Add-LogSecretsCheck $ctx 'P12'
+        $code = Invoke-Dav 'DELETE' $folder -TimeoutMs 120000
+        Add-Check 'P13' 'Serverordner der Probe gelöscht (WebDAV)' $(if ($code -in 204, 404) { 'INFO' } else { 'WARNUNG' }) ('{0}: HTTP {1}' -f $folder, $code) ''
+        Complete-DauerArtifacts $ctx $fatal 'P11.9' 'P14' 'Platzhalter' 'platzhalter-ablauf.txt'
+    }
+}
+
 # ---------------------------------------------------------------------------
 # Bericht
 # ---------------------------------------------------------------------------
@@ -6933,6 +7286,10 @@ function Write-Report {
     if ($Scenario -eq 'dauerlauf-lang') {
         $head.Add(('- Server: `{0}` (Browser-Anmeldung, E2E_ONLINE_USER_1/E2E_ONLINE_PASS_1) und `{1}` (Kennwort, E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2) im selben Profil; {2} min Betrieb nach dem Einrichten, Stichprobe alle 5 min, Dateien in beide Richtungen nach {3} min' -f $ServerUrl, $BasicServerUrl, $RunMinutes, [Math]::Max(0, $RunMinutes - 5)))
         $head.Add('- Bildschirmfotos (foto-*.png, Anmeldenamen geschwärzt), Ablauf (dauerlauf-lang-ablauf.txt) und Protokoll des Clients (l1-client.log, ohne Zugangsdaten) liegen im Artefakt; Speicherabbilder nicht, nur ihre Auswertung mit cdb')
+    }
+    if ($Scenario -eq 'platzhalter') {
+        $head.Add(('- Server: `{0}` (Kennwort, E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2); Ordner „Dokumente“ mit {1} Dateien und Unterordnern im Serverordner des Laufs' -f $BasicServerUrl, $pinFileCount))
+        $head.Add('- Bildschirmfotos (foto-*.png, Anmeldename geschwärzt), Ablauf (platzhalter-ablauf.txt, mit allen Änderungen an Einträgen und im Explorer-Fenster) und Protokoll des Clients (p1-client.log, ohne Zugangsdaten) liegen im Artefakt; Speicherabbilder nicht, nur ihre Auswertung mit cdb')
     }
     if ($Scenario -eq 'grosser-ordner') {
         $head.Add(('- Server: `{0}` (Kennwort, E2E_ONLINE_USER_2/E2E_ONLINE_PASS_2); Unterordner „Gross“ mit {1} Dateien und {2} Unterordnern im Serverordner des Laufs, Ordnerpaar pausiert' -f $BasicServerUrl, $bigFileCount, $bigFolderCount))
@@ -7011,6 +7368,7 @@ try {
         'dauerlauf' { Invoke-Dauerlauf }
         'dauerlauf-lang' { Invoke-DauerlaufLang }
         'grosser-ordner' { Invoke-GrosserOrdner }
+        'platzhalter' { Invoke-Platzhalter }
     }
 } catch {
     $abort = '{0} (Zeile {1})' -f $_.Exception.Message, $_.InvocationInfo.ScriptLineNumber
