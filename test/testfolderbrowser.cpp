@@ -102,14 +102,17 @@ private Q_SLOTS:
         const QList<Entry> folders = entries(QStringLiteral("Ordner %1"), 1, 2000);
         const QList<Entry> files = entries(QStringLiteral("Rechnung %1.pdf"), 1, 20000);
 
+        QList<Entry> listedFolders = shuffled(folders);
+        QList<Entry> listedFiles = shuffled(files);
         QSignalSpy inserted(&model, &QAbstractItemModel::rowsInserted);
         QElapsedTimer timer;
         timer.start();
-        FolderBrowserController::applyListing(root, shuffled(folders), shuffled(files), false, {});
+        FolderBrowserController::applyListing(root, std::move(listedFolders), std::move(listedFiles), false, {});
+        const qint64 applied = timer.elapsed();
         // Auslegen und Zeichnen gehören dazu: Erst danach reagiert das Fenster wieder
         QCoreApplication::processEvents();
         const qint64 elapsed = timer.elapsed();
-        qInfo() << "2.000 Ordner und 20.000 Dateien eingefügt in" << elapsed << "ms";
+        qInfo() << "2.000 Ordner und 20.000 Dateien eingefügt in" << applied << "ms, mit Auslegen und Zeichnen" << elapsed << "ms";
         QVERIFY2(elapsed < 1000, qPrintable(QStringLiteral("%1 ms").arg(elapsed)));
         // Ordner, Dateien und „weitere Dateien“ in einem Stück, nicht eine Einfügung je Zeile
         QCOMPARE(inserted.count(), 1);

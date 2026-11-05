@@ -44,6 +44,8 @@
 
 #include <algorithm>
 #include <functional>
+#include <numeric>
+#include <vector>
 
 namespace OCC {
 
@@ -135,23 +137,40 @@ namespace {
     }
 
     // Sortiert nach Namen wie Utility::sortFilenames und behält die ersten keep Einträge; Namen, die die Sortierung gleich
-    // einstuft („Bilder“ und „bilder“), nach Zeichencode, damit jede Auflistung dieselbe Reihenfolge ergibt. Bewusst
-    // QCollator::compare und keine Sortierschlüssel: Unter Windows ordnen die Schlüssel Zahlen mit führenden Nullen anders
-    // („00100“ vor „00002“). Rückgabe: Zahl der weggelassenen Einträge
+    // einstuft („Bilder“ und „bilder“), nach Zeichencode, damit jede Auflistung dieselbe Reihenfolge ergibt.
+    // Rückgabe: Zahl der weggelassenen Einträge
     qsizetype sortByName(QList<FolderBrowserController::ListingEntry> &entries, const QCollator &collator, qsizetype keep)
     {
-        const auto lessThan = [&collator](const FolderBrowserController::ListingEntry &a, const FolderBrowserController::ListingEntry &b) {
-            const int result = collator.compare(a.name, b.name);
-            return result != 0 ? result < 0 : a.name < b.name;
+#ifdef Q_OS_MACOS
+        // Unter macOS kostet QCollator::compare (UCCompareText) so viel, dass 20.000 Namen eine Sekunde brauchten; ein
+        // Schlüssel je Name (UCGetCollationKey) ordnet gleich und vergleicht sich billig. Nicht unter Windows: Dort ordnen
+        // die Schlüssel Zahlen mit führenden Nullen anders als compare („00100“ vor „00002“).
+        std::vector<QCollatorSortKey> keys;
+        keys.reserve(entries.size());
+        for (const FolderBrowserController::ListingEntry &entry : std::as_const(entries))
+            keys.push_back(collator.sortKey(entry.name));
+        const auto order = [&keys](qsizetype a, qsizetype b) { return keys[a].compare(keys[b]); };
+#else
+        const auto order = [&collator, &entries](qsizetype a, qsizetype b) { return collator.compare(entries.at(a).name, entries.at(b).name); };
+#endif
+        const auto lessThan = [&order, &entries](qsizetype a, qsizetype b) {
+            const int result = order(a, b);
+            return result != 0 ? result < 0 : entries.at(a).name < entries.at(b).name;
         };
-        qsizetype dropped = 0;
+        std::vector<qsizetype> indexes(entries.size());
+        std::iota(indexes.begin(), indexes.end(), qsizetype(0));
         // nur die ersten keep: erst auswählen, dann nur diese sortieren
-        if (entries.size() > keep) {
-            std::nth_element(entries.begin(), entries.begin() + keep, entries.end(), lessThan);
-            dropped = entries.size() - keep;
-            entries.resize(keep);
+        if (static_cast<qsizetype>(indexes.size()) > keep) {
+            std::nth_element(indexes.begin(), indexes.begin() + keep, indexes.end(), lessThan);
+            indexes.resize(keep);
         }
-        std::sort(entries.begin(), entries.end(), lessThan);
+        std::sort(indexes.begin(), indexes.end(), lessThan);
+        QList<FolderBrowserController::ListingEntry> sorted;
+        sorted.reserve(static_cast<qsizetype>(indexes.size()));
+        for (const qsizetype index : indexes)
+            sorted.append(entries.at(index));
+        const qsizetype dropped = entries.size() - sorted.size();
+        entries = std::move(sorted);
         return dropped;
     }
 }
