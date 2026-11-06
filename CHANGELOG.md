@@ -1,5 +1,6 @@
 # Table of Contents
 
+* [Changelog for 11.0.1](#changelog-for-owncloudonline-desktop-client-1101-2026-11-06)
 * [Changelog for 11.0.0](#changelog-for-owncloudonline-desktop-client-1100-2026-11-04)
 * [Changelog for 7.1.1](#changelog-for-owncloud-desktop-client-711-2026-08-27)
 * [Changelog for 7.1.0](#changelog-for-owncloud-desktop-client-710-2026-06-08)
@@ -43,6 +44,72 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
+# Changelog for owncloud.online Desktop Client [11.0.1] (2026-11-06)
+
+The following sections list the changes in owncloud.online Desktop Client 11.0.1 relevant to
+owncloud.online admins and users.
+
+[11.0.1]: https://github.com/BWTECH-github/client/compare/v11.0.0...v11.0.1
+
+## Summary
+
+* Bugfix - Expanding a folder with thousands of files no longer freezes the window
+* Bugfix - Files stay in place when you keep them or free up space under Windows
+* Bugfix - Keep files on the Mac or free their space, in the client and in the Finder
+* Bugfix - Large folders open much faster in the Finder
+* Bugfix - The client no longer crashes when the menu bar icon is clicked on macOS 27
+
+## Details
+
+* Bugfix - Expanding a folder with thousands of files no longer freezes the window
+
+   Expanding a folder with thousands of files in the folder view made the window
+   stop responding for minutes, on Windows it turned white. Every row was inserted
+   on its own and the view laid out the whole tree again after each of them. The
+   rows of a folder are now inserted in a few batches, the availability of virtual
+   files is filled in step by step without blocking the window, and a folder shows
+   at most 500 file rows followed by a row "… and N more files". Folder rows are
+   never cut, so every subfolder can still be selected for synchronization.
+
+* Bugfix - Files stay in place when you keep them or free up space under Windows
+
+   "Always keep on this device" downloaded a file by replacing it, so the entry
+   disappeared for a moment from an open Explorer window. Files are now downloaded
+   in place, the entry stays the same file. Explorer shows the new state right after
+   a file was downloaded or its space was freed instead of "Sync pending". The folder
+   view of the client updates when the sync is done: it kept showing "Currently
+   available locally" for a file that was already online only. A choice made in the
+   client runs at once, a choice for a folder with thousands of files in Explorer no
+   longer gets lost when the change notifications overflow, and "Always available
+   locally" no longer depends on the search index.
+
+* Bugfix - Keep files on the Mac or free their space, in the client and in the Finder
+
+   On macOS the menu entries "Always keep on this device", "Free up space (online
+   only)" and "Reset to default" in the folder view of the client had no effect:
+   the choice was only stored in the client's database. It now reaches the File
+   Provider extension. macOS downloads the file or folder including everything in
+   it and keeps it up to date, or frees its space. A choice for a folder applies to
+   everything in it and replaces choices made for items inside. The Finder now offers "Remove
+   Download" for downloaded items, which was missing because the extension did not
+   declare items as evictable. The folder view of the client shows the real state
+   of each item instead of nothing, also for folders that only contain subfolders
+   and for the folders above an item whose state was changed.
+
+* Bugfix - Large folders open much faster in the Finder
+
+   macOS lists a folder page by page and asked the File Provider extension for each
+   page separately. The extension fetched the whole folder from the server again for
+   every page, so opening a folder with 20,000 files took more than a quarter of an
+   hour with one processor core busy. The listing is now kept for the following pages.
+
+* Bugfix - The client no longer crashes when the menu bar icon is clicked on macOS 27
+
+   On macOS 27 the client could end when its menu bar menu was opened: the menu
+   opens with a delay there, and Qt asked the current event for its click count
+   even if it was not a mouse event, which AppKit answers with an exception. The two
+   affected queries now return 0 in that case.
+
 # Changelog for owncloud.online Desktop Client [11.0.0] (2026-11-04)
 
 The following sections list the changes in owncloud.online Desktop Client 11.0.0 relevant to
