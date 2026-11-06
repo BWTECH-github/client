@@ -25,6 +25,11 @@ final class DomainContext {
     private let manager: NSFileProviderManager?
     private let lock = NSLock()
     private var signalScheduled = false
+    /// Die Liste eines Ordners für die folgenden Seiten einer Auflistung. Das System legt je Seite einen
+    /// neuen Enumerator an: Hielte der die Liste, holte jede Seite den ganzen Ordner neu vom Server und
+    /// schriebe den Zustand neu. Bei 20.000 Dateien wären das 100 Durchgänge über alle Einträge.
+    private var listings: [NSFileProviderItemIdentifier: (items: [FileProviderItem], used: Date)] = [:]
+    private static let listingLifetime: TimeInterval = 120
     private let log = Logger(subsystem: logSubsystem, category: "fileprovider")
 
     init(domain: NSFileProviderDomain) {
@@ -107,6 +112,31 @@ final class DomainContext {
             return FileProviderItem(entry: entry, parent: .rootContainer, pin: pin)
         }
         return FileProviderItem(entry: entry, parent: try await identifier(ofFolder: entry.parentPath, client: client), pin: pin)
+    }
+
+    func keepListing(_ items: [FileProviderItem], of container: NSFileProviderItemIdentifier) {
+        lock.lock()
+        defer { lock.unlock() }
+        // was eine abgebrochene Auflistung liegen ließ
+        listings = listings.filter { Date().timeIntervalSince($0.value.used) < Self.listingLifetime }
+        listings[container] = (items, Date())
+    }
+
+    func keptListing(of container: NSFileProviderItemIdentifier) -> [FileProviderItem]? {
+        lock.lock()
+        defer { lock.unlock() }
+        guard let kept = listings[container], Date().timeIntervalSince(kept.used) < Self.listingLifetime else {
+            listings[container] = nil
+            return nil
+        }
+        listings[container] = (kept.items, Date())
+        return kept.items
+    }
+
+    func dropListing(of container: NSFileProviderItemIdentifier) {
+        lock.lock()
+        defer { lock.unlock() }
+        listings[container] = nil
     }
 
     /// Let the system enumerate the working set's changes soon: after our own

@@ -27,8 +27,6 @@ import os.log
 final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     private let container: NSFileProviderItemIdentifier
     private let context: DomainContext
-    /// The listing of the container, kept for the following pages.
-    private var listing: [FileProviderItem]?
     private let log = Logger(subsystem: logSubsystem, category: "enumeration")
 
     init(container: NSFileProviderItemIdentifier, context: DomainContext) {
@@ -38,7 +36,7 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func invalidate() {
-        listing = nil
+        // die Liste für die folgenden Seiten gehört dem Kontext: Das System beendet Enumeratoren auch mitten in einer Auflistung
     }
 
     // MARK: pages
@@ -74,10 +72,13 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         let pageSize = max(observer.suggestedPageSize ?? 200, 100)
         Task {
             do {
-                if offset == 0 || self.listing == nil {
-                    self.listing = try await self.load()
+                var kept = offset == 0 ? nil : self.context.keptListing(of: self.container)
+                if kept == nil {
+                    let loaded = try await self.load()
+                    self.context.keepListing(loaded, of: self.container)
+                    kept = loaded
                 }
-                let items = self.listing ?? []
+                let items = kept ?? []
                 let start = min(offset, items.count)
                 let end = min(start + pageSize, items.count)
                 if start < end {
@@ -86,11 +87,11 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 if end < items.count {
                     observer.finishEnumerating(upTo: Self.page(at: end))
                 } else {
-                    self.listing = nil
+                    self.context.dropListing(of: self.container)
                     observer.finishEnumerating(upTo: nil)
                 }
             } catch {
-                self.listing = nil
+                self.context.dropListing(of: self.container)
                 self.log.error("Enumerating \(self.container.rawValue, privacy: .private(mask: .hash)) failed: \(logDescription(error), privacy: .public)")
                 observer.finishEnumeratingWithError(WebDavClient.fileProviderError(for: error))
             }
