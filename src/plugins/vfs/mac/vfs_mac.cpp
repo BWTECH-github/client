@@ -282,6 +282,37 @@ namespace {
         }
         return info.st_flags & SF_DATALESS;
     }
+
+    /// Sucht unter einem Ordner geladene und nur online liegende Dateien. Ein Unterordner ohne Inhalt zählt als nur online, in
+    /// geladene Unterordner geht es hinein: Sie bleiben nach dem Freigeben geladen, nur ihre Dateien nicht. Läuft im Fenster-Thread,
+    /// deshalb Schluss, sobald beides gefunden ist, und tiefer nur bis zur Grenze von budget Einträgen.
+    void inspectFolder(const QString &path, bool &local, bool &online, qsizetype &budget)
+    {
+        const QDir folder(path);
+        const QStringList names = folder.entryList(QDir::AllEntries | QDir::NoDotAndDotDot, QDir::Unsorted);
+        budget -= names.size();
+        QStringList subFolders;
+        for (const QString &name : names) {
+            const QString child = folder.filePath(name);
+            bool isSubFolder = false;
+            if (isOnlineOnly(child, &isSubFolder)) {
+                online = true;
+            } else if (isSubFolder) {
+                subFolders.append(child);
+            } else {
+                local = true;
+            }
+            if (local && online) {
+                return;
+            }
+        }
+        for (const QString &subFolder : std::as_const(subFolders)) {
+            if (budget <= 0 || (local && online)) {
+                return;
+            }
+            inspectFolder(subFolder, local, online, budget);
+        }
+    }
 }
 
 Vfs::AvailabilityResult VfsMac::availability(const QString &folderPath)
@@ -304,18 +335,10 @@ Vfs::AvailabilityResult VfsMac::availability(const QString &folderPath)
     if (!isFolder) {
         return VfsItemAvailability::AllHydrated;
     }
-    // ein Ordner: nur die erste Ebene, das hält den Blick schnell
     bool local = false;
     bool online = false;
-    const QDir folder(path);
-    for (const QString &name : folder.entryList(QDir::AllEntries | QDir::NoDotAndDotDot)) {
-        bool isSubFolder = false;
-        if (isOnlineOnly(folder.filePath(name), &isSubFolder)) {
-            online = true;
-        } else if (!isSubFolder) {
-            local = true; // ein geladener Unterordner sagt nichts über seine Dateien
-        }
-    }
+    qsizetype budget = 20000;
+    inspectFolder(path, local, online, budget);
     if (online) {
         return local ? VfsItemAvailability::Mixed : VfsItemAvailability::AllDehydrated;
     }

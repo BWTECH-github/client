@@ -48,15 +48,30 @@ Implemented; sections 0–6 below are the original plan and kept for reference.
   256). macOS does the downloading itself. Items carry `allowsEvicting`, without it the Finder has no "Remove
   Download". `VfsMac::availability` shows the choice, otherwise the real state of the file in
   the CloudStorage folder (`SF_DATALESS`, read with materialization switched off for the
-  thread, first level only for folders), so choices stored by 11.0.0 cannot show a wrong state;
-  kept items are sent again at every start. The folder view refreshes 3 s and 15 s after a
-  choice. macOS takes new item properties for known items only with a new metadata version and
+  thread; for folders down through loaded subfolders, which stay loaded after freeing, until
+  both states were seen or 20,000 entries were read), so choices stored by 11.0.0 cannot show a
+  wrong state; kept items are sent again at every start. The folder view refreshes the row, its
+  loaded rows and the folders above it 3 s, 15 s, 1, 3, 10 and 30 min after a choice, and
+  shows at most 500 file rows per folder. macOS takes new item properties for known items only with a new metadata version and
   a full enumeration: `FileProviderItem.traitsVersion` is part of the metadata version, and
   the store answers `syncAnchorExpired` once when it differs from the stored value (bump it
   when capabilities change). Tested 2026-11-05 on macOS 27.2 with the real client menu and
   Finder: keep (recursive), server changes in a kept folder arrive by themselves, free up
   (recursive), reset, "Remove Download" in the Finder also for items known before the update, a
   folder choice over a different choice below it, in both directions.
+- **Large folders**: macOS creates a new enumerator for every page of an enumeration, so the
+  listing for the following pages lives in `DomainContext` (`keepListing`, 120 s since its last
+  use), not in the enumerator; otherwise every page fetches the whole folder again and rewrites
+  the state. Measured 2026-11-06 on macOS 27.2 with 20,000 files in one folder: first listing
+  40 s (before 16 min 40 s), extension at most 72 MB; "Always keep" 17.5 min, "Free up space"
+  1.5 min. While `fileproviderd` takes in such a folder or applies a choice to it, other
+  changes in the domain wait for a few minutes, nothing is lost. Not tested: a file deleted on
+  the server between two pages of a first listing, if a change walk runs in between, could come
+  back from the kept listing until it is opened.
+- **Recursive delete right after a change**: a recursive delete is rejected when the folder
+  changed on the server since macOS last saw it, so nothing unseen goes with it, and the folder
+  comes back. This also hits a change of one's own within the last seconds, until the change
+  enumeration has reported the new etag. Deleting again works, nothing is lost.
 - **GUI**: wizard and folder wizard offer virtual files on macOS 13+ when the extension is
   embedded (no environment variable), and **preselect** them: a new account syncs as
   virtual files ("Sync and download files as you use them"), classic sync is the

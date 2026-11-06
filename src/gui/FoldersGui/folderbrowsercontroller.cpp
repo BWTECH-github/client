@@ -146,11 +146,17 @@ namespace {
         // Unter macOS kostet QCollator::compare (UCCompareText) so viel, dass 20.000 Namen eine Sekunde brauchten; ein
         // Schlüssel je Name (UCGetCollationKey) ordnet gleich und vergleicht sich billig. Nicht unter Windows: Dort ordnen
         // die Schlüssel Zahlen mit führenden Nullen anders als compare („00100“ vor „00002“).
+        // Der Schlüssel eines Namens aus einem Zeichen bleibt unvollständig: Qt reserviert dafür zu wenig Platz und erkennt die
+        // Meldung von macOS 27 nicht. Neben längeren Namen ergibt der Vergleich dann 0 („1“, „10“, „2“ statt „1“, „2“, „10“),
+        // und ohne compare wäre die Ordnung nicht einmal mehr transitiv.
         std::vector<QCollatorSortKey> keys;
         keys.reserve(entries.size());
         for (const FolderBrowserController::ListingEntry &entry : std::as_const(entries))
             keys.push_back(collator.sortKey(entry.name));
-        const auto order = [&keys](qsizetype a, qsizetype b) { return keys[a].compare(keys[b]); };
+        const auto order = [&keys, &collator, &entries](qsizetype a, qsizetype b) {
+            const int result = keys[a].compare(keys[b]);
+            return result != 0 ? result : collator.compare(entries.at(a).name, entries.at(b).name);
+        };
 #else
         const auto order = [&collator, &entries](qsizetype a, qsizetype b) { return collator.compare(entries.at(a).name, entries.at(b).name); };
 #endif
@@ -1155,14 +1161,19 @@ void FolderBrowserController::popAvailabilityMenu(const QModelIndex &index, cons
     // den Stand nach dem Laden und Freigeben tragen onItemCompleted() und refreshChangedRows() nach
     refreshAvailability(folder, item, true);
 #ifdef Q_OS_MACOS
-    // macOS lädt und entfernt im Hintergrund: den Stand kurz darauf noch einmal zeigen
-    for (const int delay : {3000, 15000}) {
+    // macOS lädt und entfernt im Hintergrund, 20.000 Dateien zu laden dauert eine Viertelstunde: den Stand danach noch einmal zeigen,
+    // auch in den Ordnern darüber, deren Anzeige von dieser Wahl abhängt. Mehr als 500 Dateizeilen sind es je Ordner nicht.
+    for (const int delay : {3000, 15000, 60000, 180000, 600000, 1800000}) {
         QTimer::singleShot(delay, this, [this, folder, persistentIndex] {
             if (!folder || !persistentIndex.isValid()) {
                 return;
             }
             if (auto *row = _model->itemFromIndex(QModelIndex(persistentIndex))) {
                 refreshAvailability(folder, row, true);
+                for (QStandardItem *parent = row->parent(); parent && itemKind(parent) == static_cast<int>(FolderTreeItemKind::BrowserFolder);
+                     parent = parent->parent()) {
+                    refreshAvailability(folder, parent, false);
+                }
             }
         });
     }

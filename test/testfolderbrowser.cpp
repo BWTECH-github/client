@@ -5,6 +5,7 @@
  *
  */
 
+#include <QCollator>
 #include <QElapsedTimer>
 #include <QRandomGenerator>
 #include <QSignalSpy>
@@ -214,6 +215,42 @@ private Q_SLOTS:
         QCOMPARE(root->rowCount(), 2);
         QCOMPARE(root->child(0, 0), error);
         QCOMPARE(kind(root->child(1, 0)), static_cast<int>(FolderTreeItemKind::BrowserPlaceholder));
+    }
+
+    // Namen aus einem Zeichen neben längeren: Unter macOS sind ihre Sortierschlüssel unvollständig
+    void testShortNames()
+    {
+        // eine feste Sprache: In der Locale „C“ gibt es keine Sortierschlüssel, dort wäre der Fehler unsichtbar
+        const QLocale previous;
+        QLocale::setDefault(QLocale(QLocale::German, QLocale::Germany));
+        const auto restore = qScopeGuard([&previous] { QLocale::setDefault(previous); });
+
+        QCollator collator;
+        collator.setNumericMode(true);
+        collator.setCaseSensitivity(Qt::CaseInsensitive);
+        const auto listing = [](const QStringList &list) {
+            QList<Entry> result;
+            for (const QString &name : list)
+                result.append({name, name});
+            return shuffled(result);
+        };
+        const auto sorted = [&collator](QStringList list) {
+            std::sort(list.begin(), list.end(), [&collator](const QString &a, const QString &b) { return collator.compare(a, b) < 0; });
+            return list;
+        };
+
+        QStringList months;
+        for (int i = 1; i <= 12; ++i)
+            months.append(QString::number(i));
+        const QStringList words{QStringLiteral("A"), QStringLiteral("Archiv"), QStringLiteral("B"), QStringLiteral("C"), QStringLiteral("alt"),
+            QStringLiteral("bilder"), QStringLiteral("dokumente"), QStringLiteral("Zeug"), QStringLiteral("x")};
+
+        QStandardItemModel model;
+        model.setColumnCount(2);
+        QStandardItem *root = addFolderRow(model);
+        FolderBrowserController::applyListing(root, listing(months), listing(words), true, {});
+        QCOMPARE(texts(root, FolderTreeItemKind::BrowserFolder), sorted(months));
+        QCOMPARE(texts(root, FolderTreeItemKind::BrowserFile), sorted(words));
     }
 };
 

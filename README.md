@@ -9,8 +9,8 @@ abgeglichen — für Windows, macOS und Linux.
 
 * **Abgleich in beide Richtungen** für ausgewählte Ordner
 * **Selektiver Abgleich** — nur die Ordner holen, die man wirklich braucht
-* **Virtuelle Dateien** unter Windows: Der Explorer zeigt alle Dateien, geladen
-  wird erst beim Öffnen
+* **Virtuelle Dateien** unter Windows und macOS: Explorer und Finder zeigen alle
+  Dateien, geladen wird erst beim Öffnen
 * **Große Dateien** werden in Stücken übertragen und lassen sich nach einem
   Abbruch fortsetzen
 * **Viele kleine Dateien** gehen gebündelt in einer Anfrage über die Leitung

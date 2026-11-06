@@ -8,4 +8,5 @@ it and keeps it up to date, or frees its space. A choice for a folder applies to
 everything in it and replaces choices made for items inside. The Finder now offers "Remove
 Download" for downloaded items, which was missing because the extension did not
 declare items as evictable. The folder view of the client shows the real state
-of each item instead of nothing.
+of each item instead of nothing, also for folders that only contain subfolders
+and for the folders above an item whose state was changed.
