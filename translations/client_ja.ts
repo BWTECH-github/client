@@ -1383,7 +1383,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 は削除されました。</translation>
@@ -1482,7 +1482,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
         <translation>同期アクティビティ</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>フォルダー &apos;%1&apos; の VFS モードを切り替えています</translation>
     </message>
@@ -1492,7 +1492,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
         <translation>システム上の除外ファイルを読み込めません</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ファイルを Finder に表示</translation>
@@ -1522,7 +1522,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
         <translation>%1 で同期が一時停止されています。</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>フォルダ %1 は作成されましたが、以前は同期対象から外れていました。フォルダ内のデータは同期されません。</translation>
     </message>
@@ -1662,12 +1662,12 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translation>読込中...</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>このフォルダーはサーバー上にもう存在しません。</translation>
@@ -2138,7 +2138,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>サーバーはこのアカウントに2要素認証を要求しており、パスワードだけでは受け付けなくなりました。Webインターフェースの「設定」→「セキュリティ」でアプリパスワードを作成してここに入力するか、アカウントを削除して追加し直し、ブラウザでログインしてください。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ユーザー名またはパスワードが正しくありません。</translation>
@@ -3333,7 +3339,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>ファイル %1 は、ローカルファイル名 %2 と衝突しているため、ダウンロードできません！</translation>
     </message>
@@ -3386,8 +3392,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>ファイル %1 は現在使用中です</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>ファイルは発見以降に変更されました</translation>
     </message>
@@ -3863,7 +3869,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translation>読込中...</translation>
     </message>
@@ -3906,7 +3912,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>利用可能状態</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>このデバイスに常に保持する</translation>
@@ -5653,7 +5659,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>仮想ファイルのフォルダーを macOS に登録できませんでした。</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5662,19 +5668,13 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>StorageProviderState プロパティ %1 が見つかりませんでした</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 の StorageFolder が見つかりませんでした。エラー: %2</translation>

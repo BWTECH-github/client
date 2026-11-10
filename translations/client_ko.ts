@@ -1442,7 +1442,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1이(가) 삭제되었습니다.</translation>
@@ -1542,7 +1542,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>동기화 활동</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>&apos;%1&apos; 폴더에 가상파일시스템(VFS) 모드 변경</translation>
     </message>
@@ -1552,7 +1552,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>시스템 제외 파일을 읽을 수 없음</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Finder에서 파일 보기</translation>
@@ -1582,7 +1582,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>%1에서 동기화가 일시 정지되었습니다.</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>폴더 %1 이(가) 생성되었지만 이전에 동기화에서 제외되었습니다. 이 폴더 내부의 데이터는 동기화되지 않을 것입니다.</translation>
     </message>
@@ -1722,13 +1722,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>불러오는 중 …</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>이 폴더는 서버에 더 이상 없습니다.</translation>
@@ -2210,7 +2210,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>서버가 이 계정에 2단계 인증을 요구하므로 암호만으로는 더 이상 로그인할 수 없습니다. 웹 인터페이스의 설정 → 보안에서 앱 암호를 만들어 여기에 입력하거나, 계정을 삭제한 후 다시 추가하여 브라우저에서 로그인하십시오.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>사용자 이름 또는 암호가 올바르지 않습니다.</translation>
@@ -3424,7 +3430,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>%1 파일이 %2 로컬 파일 파일 이름과 충돌하여 다운로드할 수 없습니다!</translation>
     </message>
@@ -3477,8 +3483,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>파일 %1 은(는) 현재 이용 중입니다</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>발견 이후 파일이 변경됨</translation>
     </message>
@@ -3961,7 +3967,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>불러오는 중 …</translation>
@@ -4007,7 +4013,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>사용 가능 상태</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>이 장치에 항상 유지</translation>
@@ -5778,7 +5784,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>가상 파일 폴더를 macOS에 등록할 수 없습니다.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5787,19 +5793,13 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>StorageProviderState 속성 %1을(를) 찾을 수 없습니다</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1의 StorageFolder를 찾을 수 없습니다. 오류: %2</translation>

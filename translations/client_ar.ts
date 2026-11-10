@@ -1485,7 +1485,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 تمت إزالته.</translation>
@@ -1620,7 +1620,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>نشاط المزامنة</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>جارٍ تبديل وضع VFS في المجلد &apos;%1&apos;</translation>
@@ -1631,7 +1631,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>تعذّرت قراءة ملف استبعاد النظام</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>عرض ملفاتك في Finder</translation>
@@ -1661,7 +1661,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>المزامنة متوقفة مؤقتًا في %1.</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>تم إنشاء المجلد %1 لكن تم استبعاده من المزامنة مسبقًا. لن تتم مزامنة البيانات الموجودة بداخله.</translation>
     </message>
@@ -1801,13 +1801,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>جارٍ التحميل …</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>لم يعد هذا المجلد موجودًا على الخادم.</translation>
@@ -2299,7 +2299,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>يتطلب الخادم المصادقة الثنائية لهذا الحساب ولم يعد يقبل كلمة المرور وحدها. أنشئ كلمة مرور للتطبيق في واجهة الويب ضمن الإعدادات ← الأمان وأدخلها هنا، أو أزل الحساب وأضفه مجددًا لتسجيل الدخول في المتصفح.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>اسم المستخدم أو كلمة المرور غير صحيحة.</translation>
@@ -3535,7 +3541,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>لا يمكن تنزيل الملف %1 بسبب تعارض في اسم ملف محلي مع %2!</translation>
@@ -3593,8 +3599,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>الملف %1 قيد الاستخدام حاليًا</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>تم تغيير الملف منذ الاكتشاف</translation>
     </message>
@@ -4102,7 +4108,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>جارٍ التحميل …</translation>
@@ -4148,7 +4154,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>التوفر</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>الاحتفاظ دائمًا على هذا الجهاز</translation>
@@ -5951,7 +5957,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>تعذّر تسجيل مجلد الملفات الافتراضية لدى macOS.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5960,19 +5966,13 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>تعذّر العثور على الخاصية StorageProviderState %1</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>تعذّر العثور على StorageFolder لـ %1، الخطأ: %2</translation>

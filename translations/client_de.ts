@@ -1307,7 +1307,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 wurde gelöscht.</translation>
@@ -1412,7 +1412,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <translation>Synchronisierungsaktivität</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Wechseln des VFS-Modus im Ordner &apos;%1&apos;</translation>
     </message>
@@ -1422,7 +1422,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <translation>Die systemeigene Ausschlussdatei kann nicht gelesen werden.</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translation>Dateien im Finder anzeigen</translation>
     </message>
@@ -1447,7 +1447,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
         <translation>Die Synchronisation ist in %1 angehalten.</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Der Ordner %1 wurde erzeugt, aber von der Synchronisation ausgeschlossen. Daten im Ordner werden nicht synchronisiert.</translation>
     </message>
@@ -1568,17 +1568,17 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+1054"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+1191"/>
         <source>Share…</source>
         <translation>Teilen…</translation>
     </message>
     <message>
-        <location line="-788"/>
+        <location line="-824"/>
         <source>Loading …</source>
         <translation>Wird geladen …</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translation>Dieser Ordner existiert auf dem Server nicht mehr.</translation>
     </message>
@@ -2002,7 +2002,12 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translation>Der Server verlangt für dieses Konto die Zwei-Faktor-Anmeldung und nimmt das Kennwort allein nicht mehr an. Erstellen Sie in der Web-Oberfläche unter Einstellungen → Sicherheit ein App-Passwort und geben Sie es hier ein, oder entfernen Sie das Konto und fügen Sie es neu hinzu, um sich im Browser anzumelden.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translation>Benutzername oder Kennwort falsch.</translation>
     </message>
@@ -3111,7 +3116,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>Datei %1 kann nicht heruntergeladen werden, da der lokale Dateiname mit %2 kollidiert.</translation>
     </message>
@@ -3164,8 +3169,8 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Die Datei %1 wird gerade benutzt.</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>Datei ist seit der Entdeckung geändert worden.</translation>
     </message>
@@ -3622,7 +3627,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translation>Laden…</translation>
     </message>
@@ -3663,7 +3668,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Verfügbarkeit</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translation>Immer auf diesem Gerät behalten</translation>
     </message>
@@ -5232,7 +5237,7 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Der Ordner für virtuelle Dateien konnte bei macOS nicht registriert werden.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
@@ -5240,18 +5245,13 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translation>Die StorageProviderState-Eigenschaft %1 konnte nicht gefunden werden.</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translation>Speicherordner für %1 konnte nicht gefunden werden: %2</translation>
     </message>

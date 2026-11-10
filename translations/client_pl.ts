@@ -1366,7 +1366,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 został usunięty.</translation>
@@ -1485,7 +1485,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
         <translation>Aktywności synchronizacji</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Przełączanie trybu VFS w folderze &apos;%1&apos;</translation>
     </message>
@@ -1495,7 +1495,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
         <translation>Nie można przeczytać pliku wyłączeń</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Pokaż pliki w Finderze</translation>
@@ -1525,7 +1525,7 @@ Aktualizacja zostanie przeprowadzona w tle i zastąpi bieżący plik AppImage. A
         <translation>Synchronizacja w %1 jest wstrzymana.</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Folder %1 został utworzony ale poprzednio został wykluczony z synchronizacji. Dane wewnątrz folderu nie będą zsynchronizowane.</translation>
     </message>
@@ -1666,12 +1666,12 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translation>Wczytuję ...</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Ten folder już nie istnieje na serwerze.</translation>
@@ -2137,7 +2137,13 @@ Oznacza to, że klient synchronizacji może nie wysyłać zmian lokalnych od raz
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Serwer wymaga uwierzytelniania dwuskładnikowego dla tego konta i nie akceptuje już samego hasła. Utwórz hasło aplikacji w interfejsie internetowym w sekcji Ustawienia → Bezpieczeństwo i wpisz je tutaj albo usuń konto i dodaj je ponownie, aby zalogować się w przeglądarce.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Nazwa użytkownika lub hasło jest nieprawidłowe.</translation>
@@ -3305,7 +3311,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>Nie można pobrać pliku %1 z powodu konfliktu nazw plików lokalnych z %2!</translation>
     </message>
@@ -3358,8 +3364,8 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Plik %1 jest obecnie w użyciu</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>Plik został zmieniony od momentu odkrycia</translation>
     </message>
@@ -3827,7 +3833,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translation>Wczytuję ...</translation>
     </message>
@@ -3870,7 +3876,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Dostępność</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Zawsze przechowuj na tym urządzeniu</translation>
@@ -5606,7 +5612,7 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
         <translation>Nie udało się zarejestrować folderu plików wirtualnych w macOS.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5615,18 +5621,13 @@ Należy pamiętać, że użycie opcji wiersza poleceń rejestrowania spowoduje z
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translation>Nie można znaleźć właściwości StorageProviderState %1</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translation>Nie można znaleźć folderu StorageFolder dla błędu %1: %2</translation>
     </message>

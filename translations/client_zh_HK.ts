@@ -1476,7 +1476,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 已被移除。</translation>
@@ -1582,7 +1582,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>同步活動</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在切換資料夾「%1」的 VFS 模式</translation>
@@ -1593,7 +1593,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>無法讀取系統的排除檔案</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>在 Finder 中顯示您的檔案</translation>
@@ -1623,7 +1623,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>%1 中的同步已暫停。</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>資料夾 %1 已建立，但先前已被排除在同步之外，其中的資料不會同步。</translation>
@@ -1766,13 +1766,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在載入…</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>此資料夾在伺服器上已不存在。</translation>
@@ -2266,7 +2266,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>伺服器要求此帳號使用雙重認證，不再只接受密碼。請在網頁介面的「設定」→「安全」中建立應用程式密碼並在此輸入，或刪除此帳號後重新加入，以便在瀏覽器中登入。</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>使用者名稱或密碼不正確。</translation>
@@ -3524,7 +3530,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>由於本機檔案名稱與 %2 衝突，無法下載檔案 %1！</translation>
@@ -3585,8 +3591,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>檔案 %1 目前正在使用中</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translatorcomment>aus zh_TW übernommen, ungeprüft</translatorcomment>
         <translation>尋找的過程中檔案已經被更改</translation>
@@ -4103,7 +4109,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在載入…</translation>
@@ -4149,7 +4155,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>可用性</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>一律保留在此裝置上</translation>
@@ -5954,7 +5960,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>無法在 macOS 中註冊虛擬檔案資料夾。</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5963,19 +5969,13 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>找不到 StorageProviderState 屬性 %1</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>找不到 %1 的 StorageFolder，錯誤：%2</translation>

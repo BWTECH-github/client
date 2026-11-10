@@ -1355,7 +1355,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 ຖືກລຶບອອກແລ້ວ.</translation>
@@ -1467,7 +1467,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ກິດຈະກຳການຊິງ</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>ກຳລັງປ່ຽນໂໝດ VFS ໃນໂຟນເດີ &apos;%1&apos;</translation>
     </message>
@@ -1477,7 +1477,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ບໍ່ສາມາດອ່ານໄຟລ໌ຍົກເວັ້ນຂອງລະບົບ</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ສະແດງໄຟລ໌ຂອງທ່ານໃນ Finder</translation>
@@ -1507,7 +1507,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ການຊິງໃນ %1 ຖືກຢຸດຊົ່ວຄາວ.</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>ໂຟນເດີ %1 ຖືກສ້າງຂຶ້ນແລ້ວ ແຕ່ຖືກຍົກເວັ້ນຈາກການຊິງໂຄໄນກ່ອນໜ້ານີ້. ຂໍ້ມູນພາຍໃນຈະບໍ່ຖືກຊິງໂຄໄນ.</translation>
     </message>
@@ -1647,12 +1647,12 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translation>ກຳລັງໂຫຼດ…</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ໂຟນເດີນີ້ບໍ່ມີຢູ່ໃນເຊີບເວີອີກຕໍ່ໄປ.</translation>
@@ -2116,7 +2116,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>ເຊີບເວີຕ້ອງການການຢືນຢັນຕົວຕົນສອງຂັ້ນຕອນສຳລັບບັນຊີນີ້ ແລະ ບໍ່ຮັບລະຫັດຜ່ານຢ່າງດຽວອີກແລ້ວ. ສ້າງລະຫັດຜ່ານແອັບໃນໜ້າເວັບ ທີ່ ການຕັ້ງຄ່າ → ຄວາມປອດໄພ ແລ້ວປ້ອນມັນຢູ່ບ່ອນນີ້, ຫຼື ລຶບບັນຊີອອກ ແລ້ວເພີ່ມໃໝ່ເພື່ອເຂົ້າສູ່ລະບົບໃນເວັບເບຣົາເຊີ.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ຊື່ຜູ້ໃຊ້ ຫຼື ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ.</translation>
@@ -3278,7 +3284,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ %1 ໄດ້ ເນື່ອງຈາກຊື່ໄຟລ໌ຊ້ຳກັບ %2 ທີ່ມີຢູ່ໃນເຄື່ອງ!</translation>
     </message>
@@ -3331,8 +3337,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>ໄຟລ໌ %1 ກຳລັງຖືກນຳໃຊ້ຢູ່</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>ໄຟລ໌ມີການປ່ຽນແປງຕັ້ງແຕ່ການກວດພົບຄັ້ງທຳອິດ</translation>
     </message>
@@ -3796,7 +3802,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translation>ກຳລັງໂຫຼດ…</translation>
     </message>
@@ -3839,7 +3845,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ການມີໃຫ້ໃຊ້</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ເກັບໄວ້ໃນອຸປະກອນນີ້ສະເໝີ</translation>
@@ -5578,7 +5584,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ບໍ່ສາມາດລົງທະບຽນໂຟນເດີໄຟລ໌ສະເໝືອນກັບ macOS ໄດ້.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5587,18 +5593,13 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translation>ບໍ່ພົບຄຸນສົມບັດ StorageProviderState %1</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translation>ບໍ່ພົບ StorageFolder ສຳລັບ %1 ຂໍ້ຜິດພາດ: %2</translation>
     </message>

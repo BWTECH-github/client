@@ -1362,7 +1362,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 is verwijderd.</translation>
@@ -1474,7 +1474,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <translation>Synchronisatie-activiteit</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>VFS-modus inschakelen in map &apos;%1&apos;</translation>
     </message>
@@ -1484,7 +1484,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <translation>Kon het systeem-uitsluitingsbestand niet lezen</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Uw bestanden in de Finder tonen</translation>
@@ -1514,7 +1514,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
         <translation>De synchronisatie is gepauzeerd in %1.</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>De map %1 werd aangemaakt maar eerder ook uitgesloten van synchronisatie. Data erin zullen niet worden gesynchroniseerd.</translation>
     </message>
@@ -1654,12 +1654,12 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translation>Laden...</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Deze map bestaat niet meer op de server.</translation>
@@ -2124,7 +2124,13 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>De server vereist tweestapsverificatie voor dit account en accepteert het wachtwoord alleen niet meer. Maak in de webinterface onder Instellingen → Beveiliging een app-wachtwoord aan en voer het hier in, of verwijder het account en voeg het opnieuw toe om in de browser in te loggen.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>De gebruikersnaam of het wachtwoord is onjuist.</translation>
@@ -3303,7 +3309,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>Kon bestand %1 niet downloaden vanwege een lokaal bestandsnaam conflict met %2!</translation>
     </message>
@@ -3356,8 +3362,8 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Bestand %1 is in gebruik</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>Het bestand is gewijzigd sinds het is gevonden</translation>
     </message>
@@ -3828,7 +3834,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translation>Laden...</translation>
     </message>
@@ -3873,7 +3879,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>Beschikbaarheid</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Altijd op dit apparaat bewaren</translation>
@@ -5618,7 +5624,7 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
         <translation>De map voor virtuele bestanden kon niet bij macOS worden geregistreerd.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5627,19 +5633,13 @@ Let op dat het gebruik van command line logopties deze instelling zullen oversch
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Kan de StorageProviderState-eigenschap %1 niet vinden</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translation>StorageFolder voor %1 kan niet gevonden worden: %2</translation>
     </message>

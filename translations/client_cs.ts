@@ -1454,7 +1454,7 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 byl odebrán.</translation>
@@ -1574,7 +1574,7 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
         <translation>Průběh synchronizace</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Přepínání režimu VFS ve složce &apos;%1&apos;</translation>
@@ -1585,7 +1585,7 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
         <translation>Nezdařilo se přečtení systémového exclude souboru</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Zobrazit soubory ve Finderu</translation>
@@ -1615,7 +1615,7 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
         <translation>Synchronizace je v %1 pozastavena.</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Složka %1 byla vytvořena, ale dříve byla vyloučena ze synchronizace. Data v ní nebudou synchronizována.</translation>
@@ -1757,13 +1757,13 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Načítání …</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Tato složka již na serveru neexistuje.</translation>
@@ -2252,7 +2252,13 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Server pro tento účet vyžaduje dvoufázové ověření a už nepřijímá samotné heslo. Ve webovém rozhraní v části Nastavení → Zabezpečení vytvořte heslo aplikace a zadejte ho sem, nebo účet odeberte a znovu přidejte, abyste se přihlásili v prohlížeči.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Uživatelské jméno nebo heslo není správné.</translation>
@@ -3474,7 +3480,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Soubor %1 nelze stáhnout, protože jeho název koliduje s místním souborem %2!</translation>
@@ -3529,8 +3535,8 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Soubor %1 je právě využíván</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>Soubor se mezitím změnil</translation>
     </message>
@@ -4022,7 +4028,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Načítání …</translation>
@@ -4068,7 +4074,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Dostupnost</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Vždy ponechat v tomto zařízení</translation>
@@ -5848,7 +5854,7 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
         <translation>Složku virtuálních souborů se nepodařilo zaregistrovat v macOS.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5857,19 +5863,13 @@ Poznámka: Spouštění aplikace s parametrem přepíše toto nastavení.</trans
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Vlastnost StorageProviderState %1 nebyla nalezena</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>StorageFolder pro %1 nebyl nalezen, chyba: %2</translation>

@@ -1363,7 +1363,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 foi removido.</translation>
@@ -1468,7 +1468,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
         <translation>Atividade de Sincronização</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Alternando o modo VFS na pasta &apos;%1&apos;</translation>
     </message>
@@ -1478,7 +1478,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
         <translation>Não foi possível ler o sistema de arquivo de exclusão</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Mostrar seus arquivos no Finder</translation>
@@ -1508,7 +1508,7 @@ A atualização será executada em segundo plano e substituirá o arquivo AppIma
         <translation>A sincronização está pausada em %1.</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>A pasta %1 foi criada, mas foi excluída da sincronização anteriormente. Os dados dentro dela não serão sincronizados.</translation>
     </message>
@@ -1648,12 +1648,12 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translation>Carregando ...</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Esta pasta não existe mais no servidor.</translation>
@@ -2118,7 +2118,13 @@ Isso significa que o cliente de sincronização pode não fazer envios de altera
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>O servidor exige autenticação de dois fatores para esta conta e não aceita mais apenas a senha. Crie uma senha de aplicativo na interface web em Configurações → Segurança e digite-a aqui, ou remova a conta e adicione-a novamente para entrar pelo navegador.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>O nome de usuário ou a senha estão incorretos.</translation>
@@ -3282,7 +3288,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>O arquivo %1 não pode ser baixado por causa de um conflito de nome de arquivo local com %2!</translation>
     </message>
@@ -3335,8 +3341,8 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
         <translation>O arquivo %1 está atualmente em uso</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>Arquivo foi alterado desde a descoberta</translation>
     </message>
@@ -3804,7 +3810,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translation>Carregando ...</translation>
     </message>
@@ -3847,7 +3853,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
         <translation>Disponibilidade</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sempre manter neste dispositivo</translation>
@@ -5581,7 +5587,7 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
         <translation>Não foi possível registrar a pasta de arquivos virtuais no macOS.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5590,18 +5596,13 @@ Observe que o uso de qualquer opção de linha de comando de registro substituir
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translation>Não foi possível encontrar a propriedade StorageProviderState %1</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translation>Não foi possível encontrar a pasta de armazenamento para %1 erro: %2</translation>
     </message>

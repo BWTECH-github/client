@@ -1462,7 +1462,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
@@ -1582,7 +1582,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ماسقەدەملەش پائالىيىتى</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>&apos;%1&apos; قىسقۇچىدا VFS ھالىتى ئالماشتۇرۇلۇۋاتىدۇ</translation>
@@ -1593,7 +1593,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>ھۆججەتنى چىقىرىۋېتىش سىستېمىسىنى ئوقۇيالمىدى</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھۆججەتلىرىڭىزنى Finder دا كۆرسىتىش</translation>
@@ -1623,7 +1623,7 @@ The update will be performed in the background, and overwrite the current AppIma
         <translation>%1 دىكى ماس قەدەملەش ۋاقىتلىق توختىتىلدى.</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 قىسقۇچى قۇرۇلدى، ئەمما ئىلگىرى ماس قەدەملەشتىن چىقىرىۋېتىلگەن. ئۇنىڭ ئىچىدىكى سانلىق مەلۇماتلار ماس قەدەملەنمەيدۇ.</translation>
@@ -1766,13 +1766,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>يۈكلەۋاتىدۇ …</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>بۇ قىسقۇچ مۇلازىمېتىردا ئەمدى مەۋجۇت ئەمەس.</translation>
@@ -2255,7 +2255,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>مۇلازىمېتىر بۇ ھېساباتقا ئىككى باسقۇچلۇق دەلىللەشنى تەلەپ قىلىدۇ، يالغۇز ئىمنى ئەمدى قوبۇل قىلمايدۇ. تور كۆرۈنمە يۈزىدىكى تەڭشەكلەر ← بىخەتەرلىك دېگەن يەردە ئەپ ئىمى قۇرۇپ بۇ يەرگە كىرگۈزۈڭ، ياكى ھېساباتنى چىقىرىۋېتىپ قايتا قوشۇپ، توركۆرگۈدە كىرىڭ.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ئىشلەتكۈچى ئاتى ياكى ئىم خاتا.</translation>
@@ -3485,7 +3491,7 @@ Note that using any logging command line options will override the settings.</so
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 ھۆججىتىنى چۈشۈرگىلى بولمايدۇ، چۈنكى يەرلىك ھۆججەت نامى %2 بىلەن توقۇنۇشىدۇ!</translation>
@@ -3544,8 +3550,8 @@ Note that using any logging command line options will override the settings.</so
         <translation>%1 ھۆججىتى ھازىر ئىشلىتىلىۋاتىدۇ</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>ھۆججەت بايقالغاندىن بۇيان ئۆزگەردى</translation>
     </message>
@@ -4053,7 +4059,7 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>يۈكلەۋاتىدۇ …</translation>
@@ -4097,7 +4103,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>ئىشلەتكىلى بولۇشچانلىقى</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ھەمىشە بۇ ئۈسكۈنىدە ساقلاش</translation>
@@ -5885,7 +5891,7 @@ Note that using any logging command line options will override the settings.</so
         <translation>مەۋھۇم ھۆججەت قىسقۇچىنى macOS قا تىزىملىغىلى بولمىدى.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5894,20 +5900,14 @@ Note that using any logging command line options will override the settings.</so
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>StorageProviderState خاسلىقى %1 تېپىلمىدى</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 نىڭ StorageFolder ى تېپىلمىدى، خاتالىق: %2</translation>

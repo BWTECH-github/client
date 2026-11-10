@@ -1354,7 +1354,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::Folder</name>
     <message>
-        <location filename="../src/gui/folder.cpp" line="+427"/>
+        <location filename="../src/gui/folder.cpp" line="+428"/>
         <source>%1 has been removed.</source>
         <comment>%1 names a file.</comment>
         <translation>%1 har tagits bort.</translation>
@@ -1459,7 +1459,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
         <translation>Synk aktivitet</translation>
     </message>
     <message>
-        <location line="+218"/>
+        <location line="+223"/>
         <source>Switching VFS mode on folder &apos;%1&apos;</source>
         <translation>Växlar VFS-läge för mappen &apos;%1&apos;</translation>
     </message>
@@ -1469,7 +1469,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
         <translation>Kunde inte läsa systemets exkluderings-fil</translation>
     </message>
     <message>
-        <location line="+82"/>
+        <location line="+96"/>
         <source>Show your files in the Finder</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Visa dina filer i Finder</translation>
@@ -1499,7 +1499,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
         <translation>Synkroniseringen är pausad i %1.</translation>
     </message>
     <message>
-        <location line="+168"/>
+        <location line="+189"/>
         <source>The folder %1 was created but was excluded from synchronization previously. Data inside it will not be synchronized.</source>
         <translation>Mappen %1 skapades men var tidigare exkluderad från synkronisering. Data i den synkroniseras inte.</translation>
     </message>
@@ -1639,12 +1639,12 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+266"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
         <source>Loading …</source>
         <translation>Läser in ...</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+240"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Den här mappen finns inte längre på servern.</translation>
@@ -2109,7 +2109,13 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+64"/>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
+        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
+        <translation>Servern kräver tvåfaktorsautentisering för det här kontot och godtar inte längre enbart lösenordet. Skapa ett applösenord i webbgränssnittet under Inställningar → Säkerhet och ange det här, eller ta bort kontot och lägg till det igen för att logga in i webbläsaren.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>The user name or password is not correct.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Användarnamnet eller lösenordet är fel.</translation>
@@ -3271,7 +3277,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
     </message>
     <message>
         <location line="+25"/>
-        <location line="+81"/>
+        <location line="+138"/>
         <source>File %1 can not be downloaded because of a local file name clash with %2!</source>
         <translation>Filen %1 kan inte hämtas på grund av en lokal filnamnskonflikt med %2!</translation>
     </message>
@@ -3324,8 +3330,8 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Filen %1 används för närvarande</translation>
     </message>
     <message>
-        <location line="-640"/>
-        <location line="+597"/>
+        <location line="-697"/>
+        <location line="+654"/>
         <source>File has changed since discovery</source>
         <translation>Filen har ändrats sedan upptäckten</translation>
     </message>
@@ -3789,7 +3795,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::SelectiveSyncWidget</name>
     <message>
-        <location filename="../src/gui/selectivesyncwidget.cpp" line="+83"/>
+        <location filename="../src/gui/selectivesyncwidget.cpp" line="+85"/>
         <source>Loading …</source>
         <translation>Läser in ...</translation>
     </message>
@@ -3832,7 +3838,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Tillgänglighet</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+33"/>
         <source>Always keep on this device</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Behåll alltid på den här enheten</translation>
@@ -5571,7 +5577,7 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
         <translation>Mappen för virtuella filer kunde inte registreras i macOS.</translation>
     </message>
     <message>
-        <location line="+280"/>
+        <location line="+303"/>
         <source>%1 - %2</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>%1 - %2</translation>
@@ -5580,18 +5586,13 @@ Observera att kommandoradsalternativ för loggning åsidosätter inställningarn
 <context>
     <name>OCC::VfsWinPrivate</name>
     <message>
-        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+658"/>
+        <location filename="../src/plugins/vfs/win/vfs_win.cpp" line="+694"/>
         <location line="+3"/>
         <source>%1 - %2</source>
         <translation>%1 - %2</translation>
     </message>
     <message>
-        <location line="+41"/>
-        <source>Could not find StorageProviderState property %1</source>
-        <translation>Det gick inte att hitta egenskapen StorageProviderState %1</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+44"/>
         <source>Could not find StorageFolder for %1 error: %2</source>
         <translation>Det gick inte att hitta StorageFolder för %1, fel: %2</translation>
     </message>
