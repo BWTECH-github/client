@@ -258,9 +258,8 @@ private Q_SLOTS:
     {
         QFETCH(bool, beforeShow);
         const QString message = QStringLiteral(
-            "The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app "
-            "password in the web interface under Settings → Security and enter it here, or remove the account and add it again to "
-            "sign in in the browser.");
+            "The server no longer accepts the password alone for this account, for example because two-factor authentication is "
+            "enabled. Create an app password in the web interface under Settings → Security and enter it here.");
         QWidget accountView;
         accountView.setMinimumSize(708, 300);
         accountView.resize(708, 300);
@@ -366,11 +365,15 @@ private Q_SLOTS:
         credentials->invalidateToken();
         QVERIFY(!credentials->ready());
         QVERIFY(credentials->stillValid(withCurrent.get()));
+        // und keine Anfrage trägt ein Kennwort, auch keine Wiederholung mit dem Kopf ihrer letzten
+        QVERIFY(!credentials->withAuthorization(withCurrent->request()).hasRawHeader(QByteArrayLiteral("Authorization")));
+        QVERIFY(!credentials->withAuthorization(previous).hasRawHeader(QByteArrayLiteral("Authorization")));
     }
 
     // Kundenfall auf Auftragsebene: Die Anfrage geht ohne Kennwort hinaus, das Kennwort kommt aus dem Schlüsselbund, während
     // sie unterwegs ist. Das Konto erfährt nichts von ihrem 401, die Wiederholung trägt das Kennwort und geht durch. Lehnt der
-    // Server dagegen das aktuelle Kennwort ab, erfährt es das Konto, für jede solche Antwort.
+    // Server dagegen das aktuelle Kennwort ab, erfährt es das Konto einmal und verwirft es; die Wiederholungen tragen es nicht
+    // mehr (ein abgelehntes Kennwort darf nicht noch einmal an den Server: Brute-Force-Schutz, LDAP-Sperre).
     void testRejectionBeforePasswordKeepsIt()
     {
         auto accountState = createDummyAccount();
@@ -396,6 +399,9 @@ private Q_SLOTS:
         QVERIFY(!modal);
         QCOMPARE(*credentials->authorizations, (QList<QByteArray>{QByteArray(), secret}));
 
+        // wie AccountState::slotInvalidCredentials(): das abgelehnte Kennwort verwerfen (das Konto des Tests tut es nicht, es
+        // wartet noch auf das erste Lesen des Schlüsselbunds)
+        connect(account, &Account::invalidCredentials, credentials, [credentials] { credentials->invalidateToken(); });
         credentials->authorizations->clear();
         credentials->setStoredPassword(QStringLiteral("wrong"));
         auto *rejected = new PropfindJob(account, account->url(), QStringLiteral("remote.php/webdav/"), PropfindJob::Depth::Zero, this);
@@ -403,11 +409,10 @@ private Q_SLOTS:
         QSignalSpy rejectedDone(rejected, &PropfindJob::finishedWithError);
         rejected->start();
         QTRY_COMPARE(rejectedDone.size(), 1);
-        // jede Ablehnung des aktuellen Kennworts erfährt das Konto (im Programm verwirft es das Kennwort schon nach der ersten,
-        // die Wiederholungen gehen dann ohne und melden nichts mehr)
-        const QByteArray wrong = basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("wrong"));
-        QCOMPARE(credentials->authorizations->first(), wrong);
-        QCOMPARE(invalid.size(), std::count(credentials->authorizations->cbegin(), credentials->authorizations->cend(), wrong));
+        QCOMPARE(credentials->authorizations->first(), basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("wrong")));
+        QVERIFY(credentials->authorizations->size() > 1);
+        QVERIFY(std::all_of(credentials->authorizations->cbegin() + 1, credentials->authorizations->cend(), [](const QByteArray &h) { return h.isEmpty(); }));
+        QCOMPARE(invalid.size(), 1);
         modal.reset();
     }
 

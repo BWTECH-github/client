@@ -94,10 +94,17 @@ AccessManager *HttpCredentials::createAccessManager() const
 
 QNetworkRequest HttpCredentials::withAuthorization(const QNetworkRequest &request) const
 {
-    if (request.attribute(DontAddCredentialsAttribute).toBool() || _password.isEmpty()) {
+    if (request.attribute(DontAddCredentialsAttribute).toBool()) {
         return request;
     }
     QNetworkRequest authorized(request);
+    if (_password.isEmpty()) {
+        // Eine Wiederholung trägt den Kopf ihrer letzten Anfrage (AbstractNetworkJob::adoptRequest()). Nach einer Ablehnung ist
+        // das Kennwort verworfen; der abgelehnte Kopf darf nicht noch einmal hinaus, sonst ginge er je Auftrag bis zu fünfmal an
+        // den Server (Sperre durch Brute-Force-Schutz oder LDAP). Ein leerer Wert entfernt den Kopf.
+        authorized.setRawHeader(QByteArrayLiteral("Authorization"), QByteArray());
+        return authorized;
+    }
     authorized.setRawHeader(QByteArrayLiteral("Authorization"), basicAuthorizationHeader(_loginUser, _password));
     return authorized;
 }

@@ -43,11 +43,13 @@ namespace OCC {
  * 401 (etwa ein LDAP-Aussetzer) es nicht löscht. Es gibt nichts zu erneuern: refreshAccessToken() ist immer false.
  * Nur die Ablehnung einer Anfrage mit dem aktuellen Kennwort zählt (sentWithCurrentPassword()): Eine Anfrage, die vor
  * dem Lesen des Schlüsselbunds (beim Start) oder mit einem älteren Kennwort ging, wiederholt ihr Auftrag mit dem aktuellen.
+ * Ohne Kennwort geht keine Anfrage mit einem Authorization-Kopf hinaus, auch keine Wiederholung eines abgelehnten.
  *
- * Verlangt der Server für das Konto die Zwei-Faktor-Anmeldung, lehnt er jedes Kennwort ab, auch das richtige; an WebDAV
- * sagt er es (401 mit dem Hinweis „password login forbidden“). passwordLoginForbidden() merkt sich das bis zur nächsten
- * angenommenen Anfrage, damit der Dialog nicht „Kennwort falsch“ meldet, sondern die Auswege nennt: ein App-Passwort aus
- * der Web-Oberfläche, oder das Konto neu hinzufügen, dann meldet es sich im Browser an.
+ * Verlangt der Server für das Konto die Zwei-Faktor-Anmeldung (oder allgemein App-Passwörter, token_auth_enforced), lehnt
+ * er jedes Kennwort ab, auch das richtige; an WebDAV sagt er es (401 mit dem Hinweis „password login forbidden“).
+ * passwordLoginForbidden() merkt sich das bis zur nächsten angenommenen Anfrage, damit der Dialog nicht „Kennwort falsch“
+ * meldet, sondern auf ein App-Passwort aus der Web-Oberfläche verweist. Das hilft immer; die Anmeldung im Browser nicht:
+ * Ein Konto mit Kennwort gibt es nur bei Servern, die sie nicht anboten.
  *
  * Beim Start wird der Schlüsselbund wie bei OAuth2 mehrmals gelesen, wenn er noch nicht bereit ist (Autostart,
  * gesperrt), bevor eine neue Anmeldung verlangt wird. Ein Fehlschlag beim Speichern wird wiederholt und über
@@ -84,8 +86,9 @@ public:
     bool passwordLoginForbidden() const { return _passwordLoginForbidden; }
 
     /**
-     * Die Anfrage mit dem Authorization-Kopf dieser Zugangsdaten, außer bei DontAddCredentialsAttribute oder ohne
-     * Kennwort; so sendet der Netzwerkzugang des Kontos (createAccessManager()) jede Anfrage.
+     * Die Anfrage mit dem Authorization-Kopf dieser Zugangsdaten, außer bei DontAddCredentialsAttribute; ohne Kennwort
+     * ohne Authorization-Kopf (auch ein mitgebrachter fällt weg). So sendet der Netzwerkzugang des Kontos
+     * (createAccessManager()) jede Anfrage.
      */
     QNetworkRequest withAuthorization(const QNetworkRequest &request) const;
 

@@ -17,8 +17,10 @@
 #include "common/pinstate.h"
 #include "common/utility.h"
 #include "common/vfs.h"
+#include "account.h"
 #include "accountstate.h"
 #include "application.h"
+#include "creds/abstractcredentials.h"
 #include "configfile.h"
 #include "folder.h"
 #include "folderitem.h"
@@ -520,6 +522,9 @@ void FolderBrowserController::deferListing(Folder *folder, const QString &relPat
         if (state == AccountState::Connected)
             runDeferredListings(accountState);
     });
+    // Mit pausierter Synchronisation bei getakteter Verbindung oder hinter einem Captive Portal meldet das Konto nie
+    // „verbunden“ (AccountState::setState()); die Abfrage braucht nur die Zugangsdaten
+    connect(accountState->account(), &Account::credentialsFetched, this, [this, accountState] { runDeferredListings(accountState); });
     connect(accountState, &QObject::destroyed, this, [this, accountState] { _watchedAccountStates.remove(accountState); });
 }
 
@@ -544,8 +549,10 @@ void FolderBrowserController::requestListing(Folder *folder, const QString &relP
         return;
 
     // Beim Start liest der Client das Kennwort erst aus dem Schlüsselbund. Eine Abfrage davor ginge ohne Anmeldung hinaus,
-    // der Server antwortete mit 401. Bis das Konto verbunden ist, wird die Abfrage nur vorgemerkt.
-    if (!folder->accountState()->isConnected()) {
+    // der Server antwortete mit 401. Bis das Konto verbunden ist oder seine Zugangsdaten bereit sind, wird die Abfrage nur
+    // vorgemerkt.
+    const AbstractCredentials *credentials = folder->accountState()->account()->credentials();
+    if (!folder->accountState()->isConnected() && !(credentials && credentials->ready())) {
         deferListing(folder, relPath);
         return;
     }

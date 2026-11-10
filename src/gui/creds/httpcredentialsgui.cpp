@@ -60,11 +60,13 @@ void HttpCredentialsGui::showDialog()
     // das Widget wandert in die Modal-Hülle, die Kontoansicht löscht beide nach dem Ende
     _widget = new BasicAuthenticationWidget(_account->url(), loginUser(), nullptr);
     if (passwordLoginForbidden()) {
-        // auch das richtige Kennwort hilft nicht: der Server verlangt die Zwei-Faktor-Anmeldung
+        // Auch das richtige Kennwort hilft nicht: Der Server verlangt ein App-Passwort (Zwei-Faktor-Anmeldung oder
+        // token_auth_enforced). Die Anmeldung im Browser nennt der Dialog nicht: Ein Konto mit Kennwort gibt es nur bei
+        // Servern, die sie nicht anboten; ein neu hinzugefügtes Konto landete wieder hier.
         _widget->setErrorMessage(
-            tr("The server requires two-factor authentication for this account and no longer accepts the password alone. "
-               "Create an app password in the web interface under Settings → Security and enter it here, or remove the "
-               "account and add it again to sign in in the browser."));
+            tr("The server no longer accepts the password alone for this account, for example because two-factor "
+               "authentication is enabled. Create an app password in the web interface under Settings → Security and enter "
+               "it here."));
     } else if (_passwordEntered) {
         // das Konto fragt gleich wieder: der Server hat das eingegebene Kennwort abgelehnt
         _widget->setErrorMessage(tr("The user name or password is not correct."));

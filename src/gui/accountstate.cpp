@@ -494,6 +494,8 @@ void AccountState::resetConnectionValidator()
         // we should look at this to be really sure deleteLater is required.
         ConnectionValidator *soonToDie = _connectionValidator;
         _connectionValidator = nullptr;
+        // ihr Ergebnis gilt nicht mehr, auch wenn es noch vor dem Löschen kommt (es setzte sonst die nächste Prüfung zurück)
+        disconnect(soonToDie, nullptr, this, nullptr);
         soonToDie->deleteLater();
     }
 }
@@ -728,6 +730,9 @@ void AccountState::slotCredentialsFetched()
     // Ablehnung, ohne dass das Konto darauf wartete) braucht das nicht und soll das Synchronisieren nicht anhalten
     if (_waitingForNewCredentials) {
         _needsServerSettingsRefresh = true;
+        // Eine Verbindungsprüfung, die noch mit den abgelehnten Zugangsdaten läuft, gilt nicht mehr: Ihr 401 käme als
+        // „Zugangsdaten falsch“ an und verwürfe die eben eingegebenen.
+        resetConnectionValidator();
     }
     _waitingForNewCredentials = false;
     checkConnectivity();
