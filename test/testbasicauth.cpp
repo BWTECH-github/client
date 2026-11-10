@@ -10,10 +10,12 @@
 
 #include <QtTest/QtTest>
 
+#include "accessmanager.h"
 #include "accountsgui/accountmodalwidget.h"
 #include "creds/basicauthenticationwidget.h"
 #include "creds/credentialssupport.h"
 #include "creds/httpcredentialsgui.h"
+#include "networkjobs.h"
 #include "newaccountwizard/basiccredentialspagecontroller.h"
 #include "testutils/syncenginetestutils.h"
 
@@ -26,6 +28,7 @@
 #include <QWizard>
 #include <QWizardPage>
 
+#include <algorithm>
 #include <memory>
 
 using namespace OCC;
@@ -111,6 +114,41 @@ protected:
         done(true, {});
     }
     void removePassword() override { }
+};
+
+// Konto mit Kennwort gegen einen Server, der nur anna mit „secret“ annimmt; die Anfragen tragen wie im Programm den Kopf aus
+// withAuthorization(), und zwar zum Zeitpunkt des Sendens. setStoredPassword() spielt das Lesen des Schlüsselbunds nach.
+class ServerHttpCredentials : public MemoryHttpCredentialsGui
+{
+public:
+    using MemoryHttpCredentialsGui::MemoryHttpCredentialsGui;
+
+    void setStoredPassword(const QString &password)
+    {
+        _password = password;
+        _storedPassword = password;
+        _ready = true;
+    }
+
+    OCC::AccessManager *createAccessManager() const override
+    {
+        // wie das echte: das Konto löscht es mit den Zugangsdaten
+        auto *am = new FakeAM(FileInfo::A12_B12_C12_S12(), const_cast<ServerHttpCredentials *>(this));
+        const auto seen = authorizations;
+        am->setOverride([this, seen, am](QNetworkAccessManager::Operation op, const QNetworkRequest &request, QIODevice *) -> QNetworkReply * {
+            const QNetworkRequest authorized = withAuthorization(request);
+            seen->append(authorized.rawHeader("Authorization"));
+            if (authorized.rawHeader("Authorization") != basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("secret"))) {
+                return new FakeErrorReply(op, authorized, am, 401);
+            }
+            // der Dateibaum antwortet
+            return nullptr;
+        });
+        return am;
+    }
+
+    // die Authorization-Köpfe der Anfragen in der Reihenfolge des Sendens
+    std::shared_ptr<QList<QByteArray>> authorizations = std::make_shared<QList<QByteArray>>();
 };
 }
 
@@ -285,6 +323,118 @@ private Q_SLOTS:
         credentials->invalidateToken();
         QVERIFY(!credentials->ready());
         QVERIFY(credentials->stillValid(withCurrent.get()));
+    }
+
+    // Kundenfall auf Auftragsebene: Die Anfrage geht ohne Kennwort hinaus, das Kennwort kommt aus dem Schlüsselbund, während
+    // sie unterwegs ist. Das Konto erfährt nichts von ihrem 401, die Wiederholung trägt das Kennwort und geht durch. Lehnt der
+    // Server dagegen das aktuelle Kennwort ab, erfährt es das Konto, für jede solche Antwort.
+    void testRejectionBeforePasswordKeepsIt()
+    {
+        auto accountState = createDummyAccount();
+        Account *account = accountState->account();
+        auto *credentials = new ServerHttpCredentials(account, QStringLiteral("anna"), QString());
+        account->setCredentials(credentials);
+        QVERIFY(!credentials->ready());
+        std::unique_ptr<AccountModalWidget> modal;
+        connect(credentials, &AbstractCredentials::requestAccountModal, this, [&modal](AccountModalWidget *widget) { modal.reset(widget); });
+        QSignalSpy invalid(account, &Account::invalidCredentials);
+        const QByteArray secret = basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("secret"));
+
+        auto *early = new PropfindJob(account, account->url(), QStringLiteral("remote.php/webdav/"), PropfindJob::Depth::Zero, this);
+        early->setProperties({QByteArrayLiteral("getlastmodified")});
+        QSignalSpy earlyDone(early, &PropfindJob::finishedWithoutError);
+        early->start();
+        // das Kennwort kommt aus dem Schlüsselbund, während die erste Anfrage unterwegs ist
+        credentials->setStoredPassword(QStringLiteral("secret"));
+        QTRY_COMPARE(earlyDone.size(), 1);
+        QCOMPARE(invalid.size(), 0);
+        QVERIFY(credentials->ready());
+        QTest::qWait(20);
+        QVERIFY(!modal);
+        QCOMPARE(*credentials->authorizations, (QList<QByteArray>{QByteArray(), secret}));
+
+        credentials->authorizations->clear();
+        credentials->setStoredPassword(QStringLiteral("wrong"));
+        auto *rejected = new PropfindJob(account, account->url(), QStringLiteral("remote.php/webdav/"), PropfindJob::Depth::Zero, this);
+        rejected->setProperties({QByteArrayLiteral("getlastmodified")});
+        QSignalSpy rejectedDone(rejected, &PropfindJob::finishedWithError);
+        rejected->start();
+        QTRY_COMPARE(rejectedDone.size(), 1);
+        // jede Ablehnung des aktuellen Kennworts erfährt das Konto (im Programm verwirft es das Kennwort schon nach der ersten,
+        // die Wiederholungen gehen dann ohne und melden nichts mehr)
+        const QByteArray wrong = basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("wrong"));
+        QCOMPARE(credentials->authorizations->first(), wrong);
+        QCOMPARE(invalid.size(), std::count(credentials->authorizations->cbegin(), credentials->authorizations->cend(), wrong));
+        modal.reset();
+    }
+
+    // Zwei-Faktor-Anmeldung: Der Server lehnt auch das richtige Kennwort ab (WebDAV: 401 „password login forbidden“). Der
+    // Dialog meldet dann kein falsches Kennwort, sondern nennt die Auswege; eine Ablehnung ohne den Hinweis (OCS) ändert
+    // daran nichts, eine angenommene Anfrage mit dem aktuellen Kennwort oder das Abmelden schon
+    void testReauthDialogExplainsTwoFactor()
+    {
+        auto accountState = createDummyAccount();
+        auto *credentials = new MemoryHttpCredentialsGui(accountState->account(), QStringLiteral("anna"), QStringLiteral("secret"));
+        std::unique_ptr<AccountModalWidget> modal;
+        connect(credentials, &AbstractCredentials::requestAccountModal, this, [&modal](AccountModalWidget *widget) { modal.reset(widget); });
+        const auto errorText = [&modal] {
+            return modal->findChild<BasicAuthenticationWidget *>()->findChild<QLabel *>(QStringLiteral("ErrorLabel"))->text();
+        };
+        const auto dav = [](const QString &password) {
+            QNetworkRequest request(QUrl(QStringLiteral("https://cloud.example.org/owncloud/remote.php/webdav/")));
+            request.setRawHeader("Authorization", basicAuthorizationHeader(QStringLiteral("anna"), password));
+            return request;
+        };
+
+        // so antwortet owncloud.online 11.0.49 mit erzwungener Zwei-Faktor-Anmeldung
+        const QByteArray forbiddenBody = QByteArrayLiteral(
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+            "<d:error xmlns:d=\"DAV:\" xmlns:s=\"http://sabredav.org/ns\" xmlns:o=\"http://owncloud.org/ns\">\n"
+            "  <s:exception>OCA\\DAV\\Connector\\Sabre\\Exception\\PasswordLoginForbidden</s:exception>\n"
+            "  <s:message/>\n"
+            "  <o:hint xmlns:o=\"o:\">password login forbidden</o:hint>\n"
+            "</d:error>\n");
+        FakeErrorReply forbidden(QNetworkAccessManager::CustomOperation, dav(QStringLiteral("secret")), nullptr, 401, forbiddenBody);
+        QVERIFY(!credentials->passwordLoginForbidden());
+        QVERIFY(!credentials->stillValid(&forbidden));
+        QVERIFY(credentials->passwordLoginForbidden());
+        // der Auftrag liest die Antwort noch
+        QCOMPARE(forbidden.readAll(), forbiddenBody);
+
+        QNetworkRequest ocs(QUrl(QStringLiteral("https://cloud.example.org/owncloud/ocs/v2.php/cloud/user")));
+        ocs.setRawHeader("Authorization", basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("secret")));
+        FakeErrorReply ocsRejected(QNetworkAccessManager::GetOperation, ocs, nullptr, 401,
+            QByteArrayLiteral("{\"ocs\":{\"meta\":{\"status\":\"failure\",\"statuscode\":997,\"message\":\"Unauthorised\"}}}"));
+        QVERIFY(!credentials->stillValid(&ocsRejected));
+        QVERIFY(credentials->passwordLoginForbidden());
+
+        credentials->askFromUser();
+        QTRY_VERIFY(modal);
+        QVERIFY(errorText().contains(QLatin1String("two-factor authentication")));
+        QVERIFY(errorText().contains(QLatin1String("app password")));
+        QVERIFY(!errorText().contains(QLatin1String("not correct")));
+        // ein App-Passwort geht durch: Fragt das Konto später wieder, steht keine alte Meldung im Dialog
+        modal->findChild<QLineEdit *>(QStringLiteral("PasswordLineEdit"))->setText(QStringLiteral("app-password"));
+        QTest::keyClick(modal->findChild<QLineEdit *>(QStringLiteral("PasswordLineEdit")), Qt::Key_Return);
+        modal.reset();
+        // eine Antwort auf das alte Kennwort zählt nicht, weder als Ablehnung noch als Annahme
+        FakeErrorReply old(QNetworkAccessManager::CustomOperation, dav(QStringLiteral("secret")), nullptr, 401, forbiddenBody);
+        QVERIFY(credentials->stillValid(&old));
+        QVERIFY(credentials->passwordLoginForbidden());
+        FakePayloadReply accepted(QNetworkAccessManager::CustomOperation, dav(QStringLiteral("app-password")), QByteArrayLiteral("<d:multistatus xmlns:d=\"DAV:\"/>"), nullptr);
+        QVERIFY(credentials->stillValid(&accepted));
+        QVERIFY(!credentials->passwordLoginForbidden());
+        credentials->askFromUser();
+        QTRY_VERIFY(modal);
+        QVERIFY(errorText().isEmpty());
+        modal.reset();
+
+        // Abmelden vergisst den Grund
+        FakeErrorReply again(QNetworkAccessManager::CustomOperation, dav(QStringLiteral("app-password")), nullptr, 401, forbiddenBody);
+        QVERIFY(!credentials->stillValid(&again));
+        QVERIFY(credentials->passwordLoginForbidden());
+        credentials->forgetSensitiveData();
+        QVERIFY(!credentials->passwordLoginForbidden());
     }
 };
 

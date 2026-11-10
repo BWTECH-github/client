@@ -8,4 +8,7 @@ password had been read from the keychain. That request went out without
 credentials, the server answered 401, and the client took this as a rejection
 of the stored password. The folder view now waits until the account is
 connected, and an answer to a request that did not carry the current password
-no longer counts as a rejected password.
+no longer counts as a rejected password. When the client does ask for the
+password, it no longer waits up to a minute after it was entered before it
+connects: discarding a rejected password stopped requests that were still
+running until they timed out.

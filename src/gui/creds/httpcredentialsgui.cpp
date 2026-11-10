@@ -43,8 +43,8 @@ HttpCredentialsGui::~HttpCredentialsGui()
 
 void HttpCredentialsGui::askFromUser()
 {
-    // AccountState::slotInvalidCredentials() hat eben (über invalidateToken()) das Leeren des QNAM-Caches angestoßen; erst
-    // danach darf wieder etwas über das Konto laufen
+    // aus der Ereignisschleife: Der Aufruf kann (mittelbar) aus QNetworkAccessManagerPrivate::authenticationRequired
+    // kommen, einer blockierenden Verbindung aus dem HTTP-Thread
     QTimer::singleShot(0, this, &HttpCredentialsGui::showDialog);
 }
 
@@ -59,7 +59,13 @@ void HttpCredentialsGui::showDialog()
     }
     // das Widget wandert in die Modal-Hülle, die Kontoansicht löscht beide nach dem Ende
     _widget = new BasicAuthenticationWidget(_account->url(), loginUser(), nullptr);
-    if (_passwordEntered) {
+    if (passwordLoginForbidden()) {
+        // auch das richtige Kennwort hilft nicht: der Server verlangt die Zwei-Faktor-Anmeldung
+        _widget->setErrorMessage(
+            tr("The server requires two-factor authentication for this account and no longer accepts the password alone. "
+               "Create an app password in the web interface under Settings → Security and enter it here, or remove the "
+               "account and add it again to sign in in the browser."));
+    } else if (_passwordEntered) {
         // das Konto fragt gleich wieder: der Server hat das eingegebene Kennwort abgelehnt
         _widget->setErrorMessage(tr("The user name or password is not correct."));
     }

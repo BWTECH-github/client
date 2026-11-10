@@ -44,6 +44,14 @@ QString passwordKeyC()
 {
     return QStringLiteral("http/password");
 }
+
+// Ein Server mit Zwei-Faktor-Anmeldung (oder token_auth_enforced) nimmt an WebDAV nur App-Passwörter und Token an; seine
+// Ablehnung nennt die Ausnahme und den Hinweis. Gelesen wird, ohne die Antwort zu verbrauchen: der Auftrag liest sie noch.
+bool isPasswordLoginForbidden(QNetworkReply *reply)
+{
+    const QByteArray body = reply->peek(16 * 1024);
+    return body.contains("password login forbidden") || body.contains("PasswordLoginForbidden");
+}
 }
 
 namespace OCC {
@@ -202,9 +210,20 @@ bool HttpCredentials::stillValid(QNetworkReply *reply)
     if (!sentWithCurrentPassword(reply)) {
         return true;
     }
-    return reply->error() != QNetworkReply::AuthenticationRequiredError
+    const bool valid = reply->error() != QNetworkReply::AuthenticationRequiredError
         // QNAM bricht die Anfrage ab, wenn slotAuthentication() keine Zugangsdaten nachreicht
         && (reply->error() != QNetworkReply::OperationCanceledError || !reply->property(authenticationFailedC).toBool());
+    if (valid) {
+        if (reply->error() == QNetworkReply::NoError) {
+            // der Server nimmt das aktuelle Kennwort an
+            _passwordLoginForbidden = false;
+        }
+    } else if (!_passwordLoginForbidden && isPasswordLoginForbidden(reply)) {
+        // Den Grund nennt nur WebDAV; eine Ablehnung ohne ihn (OCS: 997) hebt ihn deshalb nicht auf
+        qCWarning(lcHttpCredentials) << "The server accepts no password for" << _loginUser << "(two-factor authentication), only an app password";
+        _passwordLoginForbidden = true;
+    }
+    return valid;
 }
 
 void HttpCredentials::slotAuthentication(QNetworkReply *reply, QAuthenticator *authenticator)
@@ -310,9 +329,9 @@ void HttpCredentials::invalidateToken()
     }
     // die Sitzung des Servers (Cookie) gilt ohne Kennwort nicht weiter
     _account->clearCookieJar();
-    // QNAM soll die abgelehnten Zugangsdaten vergessen; später in der Ereignisschleife, weil der Aufruf (mittelbar) aus
-    // QNetworkAccessManagerPrivate::authenticationRequired kommen kann, einer blockierenden Verbindung aus dem HTTP-Thread
-    QTimer::singleShot(0, _account, &Account::clearAMCache);
+    // Den Zugangs-Cache von QNAM nicht leeren: Er kennt das Kennwort nicht (den Kopf setzt withAuthorization(),
+    // slotAuthentication() reicht nichts nach), und clearAccessCache() beendet den HTTP-Thread. Laufende Anfragen hingen
+    // dann bis zur Zeitüberschreitung, die Verbindungsprüfung nach der Eingabe des Kennworts fast eine Minute.
 }
 
 void HttpCredentials::forgetSensitiveData()
@@ -320,6 +339,8 @@ void HttpCredentials::forgetSensitiveData()
     cancelAskFromUser();
     invalidateToken();
     _storeFailures = 0;
+    // nach dem Abmelden zählt erst die nächste Antwort des Servers
+    _passwordLoginForbidden = false;
     setKeychainError({});
     if (_account && !_storeRunning) {
         removePassword();
