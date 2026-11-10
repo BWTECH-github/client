@@ -705,7 +705,7 @@ Loo konto, valides nupu Rohkem menüüst valiku „Lisa konto...“.</translatio
         <translation>Kasutaja seadeid ja serveri võimekust ei õnnestunud pärida.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Sisselogimist ei õnnestunud süsteemi võtmehoidjasse salvestada (%1). Sünkroniseerimine jätkub, kuid pärast taaskäivitamist võib olla vaja uuesti sisse logida.</translation>
@@ -1095,7 +1095,7 @@ Uuendus toimub taustal ja kirjutab praeguse AppImage&apos;i faili üle. Uuendami
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translation>Rakendus Nimi Logo %1</translation>
     </message>
@@ -1697,12 +1697,12 @@ See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe ül
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translation>Laadimine ...</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Seda kausta pole serveris enam olemas.</translation>
@@ -2180,10 +2180,10 @@ See tähendab, et sünkroniseerimisklient ei pruugi kohalikke muudatusi kohe ül
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Server nõuab selle konto jaoks kaheastmelist autentimist ega võta enam vastu ainult parooli. Loo veebiliideses jaotises Seaded → Turvalisus rakenduse parool ja sisesta see siia või eemalda konto ja lisa see uuesti, et brauseris sisse logida.</translation>
+        <translation>Server ei võta selle konto puhul enam vastu ainult parooli, näiteks seetõttu, et kaheastmeline autentimine on sisse lülitatud. Loo veebiliideses jaotises Seaded → Turvalisus rakenduse parool ja sisesta see siia.</translation>
     </message>
     <message>
         <location line="+5"/>

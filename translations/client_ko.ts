@@ -712,7 +712,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>사용자 설정과 서버 기능을 가져올 수 없습니다.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>로그인 정보를 시스템 키체인에 저장할 수 없습니다(%1). 동기화는 계속되지만 다시 시작한 후 다시 로그인해야 할 수 있습니다.</translation>
@@ -1113,7 +1113,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>애플리케이션 이름 로고 %1</translation>
@@ -1722,13 +1722,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>불러오는 중 …</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>이 폴더는 서버에 더 이상 없습니다.</translation>
@@ -2210,10 +2210,10 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>서버가 이 계정에 2단계 인증을 요구하므로 암호만으로는 더 이상 로그인할 수 없습니다. 웹 인터페이스의 설정 → 보안에서 앱 암호를 만들어 여기에 입력하거나, 계정을 삭제한 후 다시 추가하여 브라우저에서 로그인하십시오.</translation>
+        <translation>이 계정에 대해 서버가 더 이상 암호만으로는 로그인을 허용하지 않습니다(예: 2단계 인증이 켜져 있는 경우). 웹 인터페이스의 설정 → 보안에서 앱 암호를 만들어 여기에 입력하십시오.</translation>
     </message>
     <message>
         <location line="+5"/>

@@ -659,7 +659,7 @@ Bitte lege ein Konto an, indem du im Menü der Schaltfläche „Mehr“ die Opti
         <translation>Benutzereinstellungen und Serverfunktionen konnten nicht abgerufen werden.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translation>Die Anmeldung konnte nicht im Schlüsselbund des Systems gespeichert werden (%1). Die Synchronisation läuft weiter, nach einem Neustart musst du dich aber womöglich neu anmelden.</translation>
     </message>
@@ -1015,7 +1015,7 @@ Die Aktualisierung wird im Hintergrund durchgeführt und überschreibt die aktue
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translation>Anwendungsname Logo %1</translation>
     </message>
@@ -1568,17 +1568,17 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+1191"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+1198"/>
         <source>Share…</source>
         <translation>Teilen…</translation>
     </message>
     <message>
-        <location line="-824"/>
+        <location line="-829"/>
         <source>Loading …</source>
         <translation>Wird geladen …</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translation>Dieser Ordner existiert auf dem Server nicht mehr.</translation>
     </message>
@@ -2002,9 +2002,9 @@ Dies bedeutet, dass der Synchronisationsclient lokale Änderungen möglicherweis
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
-        <translation>Der Server verlangt für dieses Konto die Zwei-Faktor-Anmeldung und nimmt das Kennwort allein nicht mehr an. Erstelle in der Web-Oberfläche unter Einstellungen → Sicherheit ein App-Passwort und gib es hier ein, oder entferne das Konto und füge es neu hinzu, um dich im Browser anzumelden.</translation>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
+        <translation>Der Server nimmt für dieses Konto das Kennwort allein nicht mehr an, etwa weil die Zwei-Faktor-Anmeldung eingeschaltet ist. Erstelle in der Web-Oberfläche unter Einstellungen → Sicherheit ein App-Passwort und gib es hier ein.</translation>
     </message>
     <message>
         <location line="+5"/>

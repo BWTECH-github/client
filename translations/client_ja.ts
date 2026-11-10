@@ -684,7 +684,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>ユーザー設定とサーバー機能を取得できません。</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ログイン情報をシステムのキーチェーンに保存できませんでした (%1)。同期は続行されますが、再起動後に再度ログインが必要になる場合があります。</translation>
@@ -1060,7 +1060,7 @@ AppImage の更新はバックグラウンドプロセスで実行され、現�
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translation>アプリケーション名ロゴ %1</translation>
     </message>
@@ -1662,12 +1662,12 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translation>読込中...</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>このフォルダーはサーバー上にもう存在しません。</translation>
@@ -2138,10 +2138,10 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>サーバーはこのアカウントに2要素認証を要求しており、パスワードだけでは受け付けなくなりました。Webインターフェースの「設定」→「セキュリティ」でアプリパスワードを作成してここに入力するか、アカウントを削除して追加し直し、ブラウザでログインしてください。</translation>
+        <translation>このアカウントでは、サーバーはパスワードだけでは受け付けなくなりました（2要素認証が有効になっている場合など）。Webインターフェースの「設定」→「セキュリティ」でアプリパスワードを作成し、ここに入力してください。</translation>
     </message>
     <message>
         <location line="+5"/>

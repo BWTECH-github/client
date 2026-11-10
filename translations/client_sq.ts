@@ -682,7 +682,7 @@ Ju lutemi, krijoni një llogari duke përzgjedhur mundësinë “Shtoni llogari�
         <translation>S’arrihet të merren rregullimet e përdoruesit dhe aftësitë e shërbyesit.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Hyrja s’u ruajt dot te vargu i kyçeve të sistemit (%1). Njëkohësimi vazhdon, por pas rinisjes mund t’ju duhet të hyni sërish.</translation>
@@ -1050,7 +1050,7 @@ Përditësimi do të kryhet në prapaskenë dhe do të mbishkruajë kartelën e 
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translation>Stemë Emri Aplikacioni %1</translation>
     </message>
@@ -1643,12 +1643,12 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translation>Po ngarkohet…</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Kjo dosje s’ekziston më te shërbyesi.</translation>
@@ -2114,10 +2114,10 @@ Kjo do të thotë që klienti i njëkohësimeve mund të mos ngarkojë menjëher
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Serveri kërkon mirëfilltësim me dy faktorë për këtë llogari dhe nuk e pranon më vetëm fjalëkalimin. Krijoni një fjalëkalim aplikacioni te ndërfaqja web, te Rregullime → Siguri, dhe jepeni këtu, ose hiqeni llogarinë dhe shtojeni sërish, që të hyni nëpërmjet shfletuesit.</translation>
+        <translation>Serveri nuk e pranon më vetëm fjalëkalimin për këtë llogari, për shembull sepse është aktivizuar mirëfilltësimi me dy faktorë. Krijoni një fjalëkalim aplikacioni te ndërfaqja web, te Rregullime → Siguri, dhe jepeni këtu.</translation>
     </message>
     <message>
         <location line="+5"/>

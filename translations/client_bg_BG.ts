@@ -717,7 +717,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>Потребителските настройки и възможностите на сървъра не могат да бъдат извлечени.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Данните за влизане не можаха да бъдат запазени в системния ключодържател (%1). Синхронизирането продължава, но след рестартиране може да се наложи да влезете отново.</translation>
@@ -1120,7 +1120,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Лого на приложението %1</translation>
@@ -1737,13 +1737,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Зареждане …</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Тази папка вече не съществува на сървъра.</translation>
@@ -2230,10 +2230,10 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Сървърът изисква двуфакторно удостоверяване за този профил и вече не приема само паролата. Създайте парола за приложение в уеб интерфейса в Настройки → Сигурност и я въведете тук или премахнете профила и го добавете отново, за да влезете през браузъра.</translation>
+        <translation>Сървърът вече не приема само паролата за този профил, например защото е включено двуфакторно удостоверяване. Създайте парола за приложение в уеб интерфейса в Настройки → Сигурност и я въведете тук.</translation>
     </message>
     <message>
         <location line="+5"/>

@@ -726,7 +726,7 @@ Vytvořte účet výběrem možnosti „Přidat účet...“ v nabídce tlačít
         <translation>Nelze načíst uživatelské nastavení a možnosti serveru.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Přihlášení se nepodařilo uložit do systémové klíčenky (%1). Synchronizace pokračuje, ale po restartu se možná budete muset znovu přihlásit.</translation>
@@ -1125,7 +1125,7 @@ Aktualizace proběhne na pozadí a přepíše aktuální soubor AppImage. Pro do
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logo aplikace %1</translation>
@@ -1757,13 +1757,13 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Načítání …</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Tato složka již na serveru neexistuje.</translation>
@@ -2252,10 +2252,10 @@ To znamená, že synchronizační klient nemusí místní změny nahrávat okam�
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Server pro tento účet vyžaduje dvoufázové ověření a už nepřijímá samotné heslo. Ve webovém rozhraní v části Nastavení → Zabezpečení vytvořte heslo aplikace a zadejte ho sem, nebo účet odeberte a znovu přidejte, abyste se přihlásili v prohlížeči.</translation>
+        <translation>Server pro tento účet už nepřijímá samotné heslo, například proto, že je zapnuté dvoufázové ověření. Ve webovém rozhraní v části Nastavení → Zabezpečení vytvořte heslo aplikace a zadejte ho sem.</translation>
     </message>
     <message>
         <location line="+5"/>

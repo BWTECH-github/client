@@ -680,7 +680,7 @@ Crea un account selezionando l&apos;opzione &quot;Aggiungi account...&quot; nel 
         <translation>Impossibile recuperare le impostazioni utente e le funzionalità del server.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Non è stato possibile salvare l&apos;accesso nel portachiavi di sistema (%1). La sincronizzazione continua, ma dopo un riavvio potrebbe essere necessario accedere di nuovo.</translation>
@@ -1045,7 +1045,7 @@ L&apos;aggiornamento verrà eseguito in background e sovrascriverà il file AppI
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translation>Logo del nome dell&apos;applicazione %1</translation>
     </message>
@@ -1649,12 +1649,12 @@ Ciò significa che il client di sincronizzazione potrebbe non inviare le modific
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translation>Caricamento in corso...</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Questa cartella non esiste più sul server.</translation>
@@ -2131,10 +2131,10 @@ Ciò significa che il client di sincronizzazione potrebbe non inviare le modific
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Il server richiede l'autenticazione a due fattori per questo account e non accetta più la sola password. Crea una password per app nell'interfaccia web in Impostazioni → Sicurezza e inseriscila qui, oppure rimuovi l'account e aggiungilo di nuovo per accedere nel browser.</translation>
+        <translation>Il server non accetta più la sola password per questo account, ad esempio perché è attiva l'autenticazione a due fattori. Crea una password per app nell'interfaccia web in Impostazioni → Sicurezza e inseriscila qui.</translation>
     </message>
     <message>
         <location line="+5"/>

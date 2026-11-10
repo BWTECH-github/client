@@ -714,7 +714,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>Не удалось получить настройки пользователя и возможности сервера.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Не удалось сохранить данные входа в системной связке ключей (%1). Синхронизация продолжается, но после перезапуска может потребоваться войти снова.</translation>
@@ -1111,7 +1111,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Логотип приложения %1</translation>
@@ -1738,12 +1738,12 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translation>Идёт загрузка ...</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Эта папка больше не существует на сервере.</translation>
@@ -2226,10 +2226,10 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Сервер требует двухфакторную аутентификацию для этой учётной записи и больше не принимает только пароль. Создайте пароль приложения в веб-интерфейсе в разделе «Настройки → Безопасность» и введите его здесь или удалите учётную запись и добавьте её снова, чтобы войти через браузер.</translation>
+        <translation>Сервер больше не принимает для этой учётной записи только пароль — например, потому что включена двухфакторная аутентификация. Создайте пароль приложения в веб-интерфейсе в разделе «Настройки → Безопасность» и введите его здесь.</translation>
     </message>
     <message>
         <location line="+5"/>

@@ -680,7 +680,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>ບໍ່ສາມາດດຶງຂໍ້ມູນການຕັ້ງຄ່າຜູ້ໃຊ້ ແລະ ຄວາມສາມາດຂອງເຊີບເວີໄດ້.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ບໍ່ສາມາດບັນທຶກການເຂົ້າສູ່ລະບົບໄວ້ໃນພວງກະແຈຂອງລະບົບໄດ້ (%1). ການຊິງຄ໌ຍັງດຳເນີນຕໍ່ໄປ, ແຕ່ຫຼັງຈາກເລີ່ມໃໝ່ ທ່ານອາດຕ້ອງເຂົ້າສູ່ລະບົບອີກຄັ້ງ.</translation>
@@ -1045,7 +1045,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translation>ໂລໂກ້ຊື່ແອັບພລິເຄຊັນ %1</translation>
     </message>
@@ -1647,12 +1647,12 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translation>ກຳລັງໂຫຼດ…</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>ໂຟນເດີນີ້ບໍ່ມີຢູ່ໃນເຊີບເວີອີກຕໍ່ໄປ.</translation>
@@ -2116,10 +2116,10 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>ເຊີບເວີຕ້ອງການການຢືນຢັນຕົວຕົນສອງຂັ້ນຕອນສຳລັບບັນຊີນີ້ ແລະ ບໍ່ຮັບລະຫັດຜ່ານຢ່າງດຽວອີກແລ້ວ. ສ້າງລະຫັດຜ່ານແອັບໃນໜ້າເວັບ ທີ່ ການຕັ້ງຄ່າ → ຄວາມປອດໄພ ແລ້ວປ້ອນມັນຢູ່ບ່ອນນີ້, ຫຼື ລຶບບັນຊີອອກ ແລ້ວເພີ່ມໃໝ່ເພື່ອເຂົ້າສູ່ລະບົບໃນເວັບເບຣົາເຊີ.</translation>
+        <translation>ເຊີບເວີບໍ່ຮັບລະຫັດຜ່ານຢ່າງດຽວສຳລັບບັນຊີນີ້ອີກແລ້ວ, ເຊັ່ນ ເພາະວ່າເປີດການຢືນຢັນຕົວຕົນສອງຂັ້ນຕອນຢູ່. ສ້າງລະຫັດຜ່ານແອັບໃນໜ້າເວັບ ທີ່ ການຕັ້ງຄ່າ → ຄວາມປອດໄພ ແລ້ວປ້ອນມັນຢູ່ບ່ອນນີ້.</translation>
     </message>
     <message>
         <location line="+5"/>

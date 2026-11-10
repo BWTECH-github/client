@@ -681,7 +681,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>Kan de gebruikersinstellingen en de servermogelijkheden niet ophalen.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>De aanmelding kon niet in de sleutelbos van het systeem worden opgeslagen (%1). De synchronisatie gaat door, maar na een herstart moet u zich mogelijk opnieuw aanmelden.</translation>
@@ -1051,7 +1051,7 @@ De update wordt uitgevoerd op de achtergrond en zal het bestaande AppImage besta
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Logo van de applicatie %1</translation>
@@ -1654,12 +1654,12 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translation>Laden...</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Deze map bestaat niet meer op de server.</translation>
@@ -2124,10 +2124,10 @@ Dit betekent dat de synchronisatie-applicatie lokale wijzigingen mogelijk niet d
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>De server vereist tweestapsverificatie voor dit account en accepteert het wachtwoord alleen niet meer. Maak in de webinterface onder Instellingen → Beveiliging een app-wachtwoord aan en voer het hier in, of verwijder het account en voeg het opnieuw toe om in de browser in te loggen.</translation>
+        <translation>De server accepteert voor dit account niet langer alleen een wachtwoord, bijvoorbeeld omdat tweestapsverificatie is ingeschakeld. Maak in de webinterface onder Instellingen → Beveiliging een app-wachtwoord aan en voer het hier in.</translation>
     </message>
     <message>
         <location line="+5"/>

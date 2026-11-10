@@ -725,7 +725,7 @@ Please create an account by selecting the &quot;Add account...&quot; option on t
         <translation>無法取得使用者設定與伺服器功能。</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>無法將登入資訊儲存到系統鑰匙圈（%1）。同步將繼續進行，但重新啟動後您可能需要重新登入。</translation>
@@ -1128,7 +1128,7 @@ The update will be performed in the background, and overwrite the current AppIma
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>應用程式名稱標誌 %1</translation>
@@ -1750,13 +1750,13 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>正在載入…</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>此資料夾在伺服器上已不存在。</translation>
@@ -2242,10 +2242,10 @@ This means that the synchronization client might not upload local changes immedi
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>伺服器要求此帳號使用雙重驗證，不再只接受密碼。請在網頁介面的「設定」→「安全性」中建立應用程式密碼並在此輸入，或移除此帳號後重新加入，以便在瀏覽器中登入。</translation>
+        <translation>伺服器不再只憑密碼接受此帳號的登入，例如因為已啟用雙重驗證。請在網頁介面的「設定」→「安全性」中建立應用程式密碼並在此輸入。</translation>
     </message>
     <message>
         <location line="+5"/>

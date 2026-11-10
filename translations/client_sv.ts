@@ -680,7 +680,7 @@ Skapa ett konto genom att välja alternativet &quot;Lägg till konto...&quot; i 
         <translation>Kan inte hämta användarinställningar och serverfunktioner.</translation>
     </message>
     <message>
-        <location line="+408"/>
+        <location line="+410"/>
         <source>The sign-in could not be saved in the system keychain (%1). Synchronization continues, but after a restart you may have to sign in again.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Inloggningen kunde inte sparas i systemets nyckelring (%1). Synkroniseringen fortsätter, men efter en omstart kan du behöva logga in igen.</translation>
@@ -1046,7 +1046,7 @@ Uppdateringen utförs i bakgrunden och skriver över den aktuella AppImage-filen
 <context>
     <name>OCC::BasicAuthenticationWidget</name>
     <message>
-        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+43"/>
+        <location filename="../src/gui/creds/basicauthenticationwidget.cpp" line="+45"/>
         <source>Application Name Logo %1</source>
         <translation>Programlogotyp %1</translation>
     </message>
@@ -1639,12 +1639,12 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
 <context>
     <name>OCC::FolderBrowserController</name>
     <message>
-        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+367"/>
+        <location filename="../src/gui/FoldersGui/folderbrowsercontroller.cpp" line="+369"/>
         <source>Loading …</source>
         <translation>Läser in ...</translation>
     </message>
     <message>
-        <location line="+240"/>
+        <location line="+245"/>
         <source>This folder no longer exists on the server.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
         <translation>Den här mappen finns inte längre på servern.</translation>
@@ -2109,10 +2109,10 @@ Det innebär att synkroniseringsklienten kanske inte laddar upp lokala ändringa
 <context>
     <name>OCC::HttpCredentialsGui</name>
     <message>
-        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+65"/>
-        <source>The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app password in the web interface under Settings → Security and enter it here, or remove the account and add it again to sign in in the browser.</source>
+        <location filename="../src/gui/creds/httpcredentialsgui.cpp" line="+67"/>
+        <source>The server no longer accepts the password alone for this account, for example because two-factor authentication is enabled. Create an app password in the web interface under Settings → Security and enter it here.</source>
         <translatorcomment>maschinell übersetzt, ungeprüft</translatorcomment>
-        <translation>Servern kräver tvåfaktorsautentisering för det här kontot och godtar inte längre enbart lösenordet. Skapa ett applösenord i webbgränssnittet under Inställningar → Säkerhet och ange det här, eller ta bort kontot och lägg till det igen för att logga in i webbläsaren.</translation>
+        <translation>Servern godtar inte längre enbart lösenordet för det här kontot, till exempel för att tvåfaktorsautentisering är aktiverad. Skapa ett applösenord i webbgränssnittet under Inställningar → Säkerhet och ange det här.</translation>
     </message>
     <message>
         <location line="+5"/>
