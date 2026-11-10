@@ -245,6 +245,49 @@ private Q_SLOTS:
         QVERIFY(widget->rect().contains(signIn->geometry()));
     }
 
+    // Eine lange Meldung (der Hinweis zur Zwei-Faktor-Anmeldung) in einer niedrigen Kontoansicht: Der Dialog rollt zu ihr, sie
+    // steht ganz im sichtbaren Bereich, das Kennwortfeld darüber auch; ebenso, wenn sie erst im offenen Dialog erscheint
+    void testReauthDialogShowsLongMessage_data()
+    {
+        QTest::addColumn<bool>("beforeShow");
+        QTest::newRow("vor dem Anzeigen") << true;
+        QTest::newRow("im offenen Dialog") << false;
+    }
+
+    void testReauthDialogShowsLongMessage()
+    {
+        QFETCH(bool, beforeShow);
+        const QString message = QStringLiteral(
+            "The server requires two-factor authentication for this account and no longer accepts the password alone. Create an app "
+            "password in the web interface under Settings → Security and enter it here, or remove the account and add it again to "
+            "sign in in the browser.");
+        QWidget accountView;
+        accountView.setMinimumSize(708, 300);
+        accountView.resize(708, 300);
+        auto *viewLayout = new QVBoxLayout(&accountView);
+        viewLayout->setContentsMargins(0, 0, 0, 0);
+        auto *widget = new BasicAuthenticationWidget(serverUrl, QStringLiteral("anna"), &accountView);
+        if (beforeShow) {
+            widget->setErrorMessage(message);
+        }
+        viewLayout->addWidget(widget);
+        accountView.show();
+        QVERIFY(QTest::qWaitForWindowExposed(&accountView));
+        if (!beforeShow) {
+            widget->setErrorMessage(message);
+        }
+
+        auto *scrollArea = widget->findChild<QScrollArea *>();
+        QVERIFY(scrollArea);
+        const auto inView = [scrollArea](QWidget *child) {
+            return scrollArea->viewport()->rect().contains(QRect(child->mapTo(scrollArea->viewport(), QPoint(0, 0)), child->size()));
+        };
+        auto *error = widget->findChild<QLabel *>(QStringLiteral("ErrorLabel"));
+        QTRY_VERIFY(scrollArea->verticalScrollBar()->maximum() > 0);
+        QTRY_VERIFY(inView(error));
+        QVERIFY(inView(widget->findChild<QLineEdit *>(QStringLiteral("PasswordLineEdit"))));
+    }
+
     // Kontoansicht: Dialog mit maskiertem Kennwort, Enter meldet an; fragt das Konto danach erneut (Server lehnte ab),
     // nennt der Dialog den Grund; „Abgemeldet bleiben“ meldet das Konto ab
     void testReauthDialog()

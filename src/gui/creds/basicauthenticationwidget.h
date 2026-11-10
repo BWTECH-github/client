@@ -21,13 +21,16 @@
 class QLabel;
 class QLineEdit;
 class QPushButton;
+class QScrollArea;
+class QShowEvent;
 
 namespace OCC {
 
 /**
  * Dialog „Anmeldung erforderlich“ in der Kontoansicht für ein Konto mit Benutzername und Kennwort: Der Benutzername
  * steht fest (er ist der Anmeldename des Kontos), nur das Kennwort wird eingegeben. Enter oder „Anmelden“ melden
- * loginRequested(); „Abgemeldet bleiben“ meldet stayLoggedOutClicked().
+ * loginRequested(); „Abgemeldet bleiben“ meldet stayLoggedOutClicked(). Eine Meldung (setErrorMessage()) steht unter dem
+ * Kennwortfeld; ist die Kontoansicht niedriger als der Inhalt, rollt der Dialog zu ihr.
  */
 class OWNCLOUDGUI_EXPORT BasicAuthenticationWidget : public QWidget
 {
@@ -42,12 +45,18 @@ Q_SIGNALS:
     void loginRequested(const QString &password);
     void stayLoggedOutClicked();
 
+protected:
+    void showEvent(QShowEvent *event) override;
+
 private:
     void submit();
     void updateColors();
+    // rollt die Meldung in den sichtbaren Bereich, sobald das Layout steht
+    void revealErrorMessage();
 
     QLineEdit *_passwordField = nullptr;
     QLabel *_errorField = nullptr;
+    QScrollArea *_scrollArea = nullptr;
     QPushButton *_cancelButton = nullptr;
     QPushButton *_signInButton = nullptr;
 };

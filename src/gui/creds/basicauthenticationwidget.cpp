@@ -25,6 +25,8 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QScrollArea>
+#include <QScrollBar>
+#include <QTimer>
 #include <QVBoxLayout>
 
 namespace OCC {
@@ -139,8 +141,12 @@ BasicAuthenticationWidget::BasicAuthenticationWidget(const QUrl &serverUrl, cons
     QVBoxLayout *layout = new QVBoxLayout();
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(12);
-    layout->addWidget(createScrollableContent(this, contentLayout), 1);
+    _scrollArea = createScrollableContent(this, contentLayout);
+    layout->addWidget(_scrollArea, 1);
     layout->addLayout(buttonLayout);
+    // Die Meldung steht unter dem Kennwortfeld. Ist der Inhalt höher als die Ansicht, läge eine längere (der Hinweis zur
+    // Zwei-Faktor-Anmeldung, drei Zeilen) unter dem sichtbaren Bereich: Sobald der Bildlauf seine Größe kennt, rollt er zu ihr.
+    connect(_scrollArea->verticalScrollBar(), &QScrollBar::rangeChanged, this, &BasicAuthenticationWidget::revealErrorMessage);
 
     setLayout(layout);
     setFocusProxy(_passwordField);
@@ -163,6 +169,23 @@ void BasicAuthenticationWidget::submit()
 void BasicAuthenticationWidget::setErrorMessage(const QString &error)
 {
     _errorField->setText(error);
+    // erst nach dem neuen Layout (die Meldung kann den Inhalt verlängern)
+    QTimer::singleShot(0, this, &BasicAuthenticationWidget::revealErrorMessage);
+}
+
+void BasicAuthenticationWidget::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    QTimer::singleShot(0, this, &BasicAuthenticationWidget::revealErrorMessage);
+}
+
+void BasicAuthenticationWidget::revealErrorMessage()
+{
+    if (_errorField->text().isEmpty() || !isVisible()) {
+        return;
+    }
+    // das Kennwortfeld darüber bleibt sichtbar: Meldung und Feld zusammen sind niedriger als jede sinnvolle Ansicht
+    _scrollArea->ensureWidgetVisible(_errorField, 0, 12);
 }
 
 void BasicAuthenticationWidget::updateColors()
