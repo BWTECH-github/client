@@ -35,6 +35,7 @@ class QWidget;
 
 namespace OCC {
 
+class AccountState;
 class Folder;
 enum class FolderTreeItemKind;
 class FolderItem;
@@ -110,6 +111,9 @@ private:
     bool maybeRefreshFolderState(Folder *folder, FolderItem *rootItem);
     void attachPlaceholder(QStandardItem *parentItem);
     void requestListing(Folder *folder, const QString &relPath);
+    // Abfrage vormerken, bis das Konto verbunden ist, und danach nachholen
+    void deferListing(Folder *folder, const QString &relPath);
+    void runDeferredListings(AccountState *accountState);
     void populateListing(Folder *folder, const QString &parentRelPath, const QStringList &subfolders, const QStringList &files, const QHash<QString, qint64> &sizes);
     void onListingError(Folder *folder, const QString &parentRelPath, bool notFound);
 
@@ -142,6 +146,11 @@ private:
     QHash<QString, FolderSyncState> _syncStates;
     // folderKey() + '\x1f' + relPath of PROPFINDs in flight, to avoid duplicate jobs on re-expand
     QSet<QString> _pendingJobs;
+    // folderKey() -> relPaths, die aufgeklappt wurden, bevor das Konto verbunden war (beim Start liest der Client das
+    // Kennwort erst aus dem Schlüsselbund; eine frühere Abfrage ginge ohne Anmeldung hinaus)
+    QHash<QString, QSet<QString>> _deferredListings;
+    // Konten, deren Zustandswechsel schon beobachtet werden
+    QSet<AccountState *> _watchedAccountStates;
     // true while this controller mutates the model, so onItemChanged only reacts to the user
     bool _updatingModel = false;
     ExcludedFiles _excludedFiles;

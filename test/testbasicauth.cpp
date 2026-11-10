@@ -12,6 +12,7 @@
 
 #include "accountsgui/accountmodalwidget.h"
 #include "creds/basicauthenticationwidget.h"
+#include "creds/credentialssupport.h"
 #include "creds/httpcredentialsgui.h"
 #include "newaccountwizard/basiccredentialspagecontroller.h"
 #include "testutils/syncenginetestutils.h"
@@ -249,6 +250,41 @@ private Q_SLOTS:
         QCOMPARE(logout.size(), 1);
         QCOMPARE(fetched.size(), 1);
         modal.reset();
+    }
+
+    // Beim Start ging eine Abfrage hinaus, bevor das Kennwort aus dem Schlüsselbund kam. Ihr 401 (ohne Authorization-Kopf)
+    // darf das eben gelesene, richtige Kennwort nicht verwerfen, sonst fragt der Client nach jedem Start danach. Ebenso
+    // eine Antwort auf ein inzwischen ersetztes Kennwort. Nur ein 401 auf das aktuelle Kennwort gilt als Ablehnung.
+    void testUnauthorizedWithoutCurrentPasswordKeepsCredentials()
+    {
+        auto accountState = createDummyAccount();
+        auto *credentials = new MemoryHttpCredentialsGui(accountState->account(), QStringLiteral("anna"), QString());
+        credentials->replacePassword(QStringLiteral("app-kennwort"));
+        QVERIFY(credentials->ready());
+
+        const QNetworkRequest request(QUrl(serverUrl.toString() + QStringLiteral("/remote.php/dav/files/anna")));
+        const auto unauthorized = [](const QNetworkRequest &sent) {
+            return std::make_unique<FakeErrorReply>(QNetworkAccessManager::CustomOperation, sent, nullptr, 401);
+        };
+
+        auto beforeKeychain = unauthorized(request);
+        QVERIFY(!beforeKeychain->request().hasRawHeader(QByteArrayLiteral("Authorization")));
+        QVERIFY(credentials->stillValid(beforeKeychain.get()));
+
+        QNetworkRequest previous(request);
+        previous.setRawHeader(QByteArrayLiteral("Authorization"), basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("altes-kennwort")));
+        auto withPrevious = unauthorized(previous);
+        QVERIFY(credentials->stillValid(withPrevious.get()));
+
+        auto withCurrent = unauthorized(credentials->withAuthorization(request));
+        QCOMPARE(withCurrent->request().rawHeader(QByteArrayLiteral("Authorization")),
+            basicAuthorizationHeader(QStringLiteral("anna"), QStringLiteral("app-kennwort")));
+        QVERIFY(!credentials->stillValid(withCurrent.get()));
+
+        // ohne Kennwort (noch nicht gelesen) ist keine Antwort ein Urteil über ein Kennwort
+        credentials->invalidateToken();
+        QVERIFY(!credentials->ready());
+        QVERIFY(credentials->stillValid(withCurrent.get()));
     }
 };
 

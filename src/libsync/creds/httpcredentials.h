@@ -101,6 +101,8 @@ protected:
     void acceptPassword(const QString &password);
 
     void slotAuthentication(QNetworkReply *reply, QAuthenticator *authenticator);
+    // trug die Anfrage das Kennwort, das jetzt gilt? Nur dann sagt ein 401 etwas über das Kennwort
+    bool sentWithCurrentPassword(QNetworkReply *reply) const;
     void fetchPasswordFromKeychain();
     void writePassword();
     void setKeychainError(const QString &error);

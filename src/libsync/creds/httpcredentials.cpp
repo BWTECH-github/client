@@ -185,8 +185,23 @@ std::chrono::milliseconds HttpCredentials::keychainRetryDelay(int failedAttempts
     return std::min<milliseconds>(1s * (1 << std::clamp(failedAttempts - 1, 0, 9)), 5min);
 }
 
+bool HttpCredentials::sentWithCurrentPassword(QNetworkReply *reply) const
+{
+    if (!_ready || _password.isEmpty()) {
+        return false;
+    }
+    return reply->request().rawHeader(QByteArrayLiteral("Authorization")) == basicAuthorizationHeader(_loginUser, _password);
+}
+
 bool HttpCredentials::stillValid(QNetworkReply *reply)
 {
+    // Nur eine Ablehnung des Kennworts, das gerade gilt, sagt etwas über das Kennwort. Eine Anfrage, die vor dem Lesen
+    // aus dem Schlüsselbund hinausging, trug noch keinen Authorization-Kopf (etwa die Ordneransicht beim Start); ihr
+    // 401 gilt dem fehlenden Kopf. Dasselbe für eine Anfrage mit einem inzwischen ersetzten Kennwort. Sonst verwarf das
+    // Konto das eben gelesene, richtige Kennwort und fragte nach jedem Start erneut danach.
+    if (!sentWithCurrentPassword(reply)) {
+        return true;
+    }
     return reply->error() != QNetworkReply::AuthenticationRequiredError
         // QNAM bricht die Anfrage ab, wenn slotAuthentication() keine Zugangsdaten nachreicht
         && (reply->error() != QNetworkReply::OperationCanceledError || !reply->property(authenticationFailedC).toBool());
@@ -196,6 +211,12 @@ void HttpCredentials::slotAuthentication(QNetworkReply *reply, QAuthenticator *a
 {
     Q_UNUSED(authenticator)
     if (!_ready) {
+        return;
+    }
+    if (!sentWithCurrentPassword(reply)) {
+        // ging ohne das aktuelle Kennwort hinaus: kein Urteil über das Kennwort, die Anfrage wird wiederholt
+        qCInfo(lcHttpCredentials) << "Request was sent before the current password was available:" << reply->url().toString()
+                                  << reply->request().rawHeader("Original-Request-ID");
         return;
     }
     // Der Authorization-Kopf geht mit jeder Anfrage mit. Fragt QNAM trotzdem nach Zugangsdaten, hat der Server sie

@@ -273,6 +273,7 @@ void FolderBrowserController::onFolderRemoved(const QUuid &accountId, Folder *fo
     if (!folder)
         return;
     _syncStates.remove(folderKey(folder));
+    _deferredListings.remove(folderKey(folder));
     recomputePending();
 }
 
@@ -508,10 +509,46 @@ bool FolderBrowserController::maybeRefreshFolderState(Folder *folder, FolderItem
     return rebuilt;
 }
 
+void FolderBrowserController::deferListing(Folder *folder, const QString &relPath)
+{
+    _deferredListings[folderKey(folder)].insert(relPath);
+    AccountState *accountState = folder->accountState();
+    if (_watchedAccountStates.contains(accountState))
+        return;
+    _watchedAccountStates.insert(accountState);
+    connect(accountState, &AccountState::stateChanged, this, [this, accountState](AccountState::State state) {
+        if (state == AccountState::Connected)
+            runDeferredListings(accountState);
+    });
+    connect(accountState, &QObject::destroyed, this, [this, accountState] { _watchedAccountStates.remove(accountState); });
+}
+
+void FolderBrowserController::runDeferredListings(AccountState *accountState)
+{
+    if (_deferredListings.isEmpty())
+        return;
+    // nur Ordner, die es noch gibt; die Einträge entfernter Ordner räumt onFolderRemoved() ab
+    const auto folders = FolderMan::instance()->folders();
+    for (Folder *folder : folders) {
+        if (folder->accountState() != accountState)
+            continue;
+        const QSet<QString> relPaths = _deferredListings.take(folderKey(folder));
+        for (const QString &relPath : relPaths)
+            requestListing(folder, relPath);
+    }
+}
+
 void FolderBrowserController::requestListing(Folder *folder, const QString &relPath)
 {
     if (!folder->accountState() || !folder->accountState()->account())
         return;
+
+    // Beim Start liest der Client das Kennwort erst aus dem Schlüsselbund. Eine Abfrage davor ginge ohne Anmeldung hinaus,
+    // der Server antwortete mit 401. Bis das Konto verbunden ist, wird die Abfrage nur vorgemerkt.
+    if (!folder->accountState()->isConnected()) {
+        deferListing(folder, relPath);
+        return;
+    }
 
     const QString jobKey = folderKey(folder) + QLatin1Char('\x1f') + relPath;
     if (_pendingJobs.contains(jobKey))
