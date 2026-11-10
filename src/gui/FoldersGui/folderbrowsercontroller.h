@@ -95,6 +95,7 @@ private slots:
     void onFolderRemoved(const QUuid &accountId, OCC::Folder *folder);
     void onItemCompleted(OCC::Folder *folder, const OCC::SyncFileItemPtr &item);
     void onFilesTouched(OCC::Folder *folder, const QSet<QString> &relativePaths);
+    void onFilesTouchedBelow(OCC::Folder *folder, const QString &relativeDir);
 
 private:
     struct FolderSyncState

@@ -46,6 +46,7 @@ class Vfs;
 class SyncEngine;
 class SyncRunFileLog;
 class FolderWatcher;
+class FileProviderWatcher;
 class LocalDiscoveryTracker;
 
 
@@ -532,6 +533,8 @@ private:
     /// signed out or paused: the Finder shows the domain as disconnected, and why
     void updateFileProviderSuspension();
     bool _fileProviderHintShown = false;
+    // der sichtbare Ordner der Domain: Laden und Freigeben im Finder für die Ordneransicht
+    QPointer<FileProviderWatcher> _fileProviderWatcher;
 #endif
 
     enum LogStatus {

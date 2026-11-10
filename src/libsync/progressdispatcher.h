@@ -317,6 +317,12 @@ Q_SIGNALS:
     void filesTouched(Folder *folder, const QSet<QString> &relativePaths);
 
     /**
+     * @brief Unter relativeDir kann sich alles geändert haben ("" für den ganzen Ordner), etwa wenn der Dateisystem-Wächter
+     * Ereignisse zusammengefasst hat. Wer Zustände von Dateien zeigt, sieht dort alles neu an.
+     */
+    void filesTouchedBelow(Folder *folder, const QString &relativeDir);
+
+    /**
      * @brief A new folder-wide sync error was seen.
      */
     void syncError(Folder *folder, const QString &message, ErrorCategory category);

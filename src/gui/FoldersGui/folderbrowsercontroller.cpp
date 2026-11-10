@@ -191,6 +191,7 @@ FolderBrowserController::FolderBrowserController(QStandardItemModel *model, QObj
     connect(FolderMan::instance(), &FolderMan::folderRemoved, this, &FolderBrowserController::onFolderRemoved);
     connect(ProgressDispatcher::instance(), &ProgressDispatcher::itemCompleted, this, &FolderBrowserController::onItemCompleted);
     connect(ProgressDispatcher::instance(), &ProgressDispatcher::filesTouched, this, &FolderBrowserController::onFilesTouched);
+    connect(ProgressDispatcher::instance(), &ProgressDispatcher::filesTouchedBelow, this, &FolderBrowserController::onFilesTouchedBelow);
 
     // gesammelt: ein Sync schließt tausende Dateien in wenigen Sekunden ab
     _changedPathsTimer.setSingleShot(true);
@@ -287,6 +288,33 @@ void FolderBrowserController::onFilesTouched(Folder *folder, const QSet<QString>
     for (const QString &path : relativePaths) {
         noteChangedPath(folder, path);
     }
+}
+
+void FolderBrowserController::onFilesTouchedBelow(Folder *folder, const QString &relativeDir)
+{
+    if (!folder || !folder->virtualFilesEnabled()) {
+        return;
+    }
+    FolderItem *rootItem = rootItemForFolder(folder);
+    QStandardItem *start = rootItem ? itemForPath(rootItem, relativeDir) : nullptr;
+    if (!start) {
+        // nicht aufgeklappt: Beim Aufklappen entstehen die Zeilen mit dem aktuellen Stand
+        return;
+    }
+    // alle geladenen Zeilen darunter in Zeitscheiben, die Zeile selbst und die Ordner darüber wie bei einer einzelnen Änderung
+    QList<QStandardItem *> rows;
+    QList<const QStandardItem *> parents{start};
+    while (!parents.isEmpty()) {
+        const QStandardItem *parent = parents.takeLast();
+        const QList<QStandardItem *> subfolders = browserChildren(parent);
+        rows += subfolders;
+        rows += childrenOfKind(parent, FolderTreeItemKind::BrowserFile);
+        for (const QStandardItem *subfolder : subfolders) {
+            parents.append(subfolder);
+        }
+    }
+    queueAvailability(rows);
+    noteChangedPath(folder, relativeDir);
 }
 
 void FolderBrowserController::noteChangedPath(Folder *folder, QString relativePath)

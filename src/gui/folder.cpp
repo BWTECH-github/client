@@ -46,6 +46,7 @@
 #include <QLocale>
 #include <QMessageBox>
 #ifdef Q_OS_MACOS
+#include "fileproviderwatcher_mac.h"
 #include <QDesktopServices>
 #endif
 #include <QPushButton>
@@ -967,6 +968,20 @@ void Folder::startFileProviderSync()
     Q_EMIT syncStarted();
 
     _vfs->fileProviderRefresh();
+
+    // Lädt der Finder eine Datei oder gibt sie frei, erfährt der Client davon nur über den sichtbaren Ordner. Dessen Pfad kennt
+    // die Domain erst, sobald macOS sie eingerichtet hat, und nach einem Neuanlegen kann er ein anderer sein.
+    const QString visiblePath = userVisiblePath();
+    if (!visiblePath.isEmpty() && (!_fileProviderWatcher || _fileProviderWatcher->root() != visiblePath)) {
+        delete _fileProviderWatcher.data();
+        qCInfo(lcFolder) << "Watching" << visiblePath << "for downloads and freed space in the Finder";
+        _fileProviderWatcher = new FileProviderWatcher(visiblePath, this);
+        connect(_fileProviderWatcher, &FileProviderWatcher::changed, this,
+            [this](const QSet<QString> &relativePaths) { Q_EMIT ProgressDispatcher::instance()->filesTouched(this, relativePaths); });
+        connect(_fileProviderWatcher, &FileProviderWatcher::rescanNeeded, this,
+            [this](const QString &relativeDir) { Q_EMIT ProgressDispatcher::instance()->filesTouchedBelow(this, relativeDir); });
+    }
+
     bool needsSystemSettings = false;
     const QString problem = _vfs->fileProviderProblem(&needsSystemSettings);
     if (!problem.isEmpty()) {

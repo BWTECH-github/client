@@ -52,7 +52,14 @@ Implemented; sections 0–6 below are the original plan and kept for reference.
   both states were seen or 20,000 entries were read), so choices stored by 11.0.0 cannot show a
   wrong state; kept items are sent again at every start. The folder view refreshes the row, its
   loaded rows and the folders above it 3 s, 15 s, 1, 3, 10 and 30 min after a choice, and
-  shows at most 500 file rows per folder. macOS takes new item properties for known items only with a new metadata version and
+  shows at most 500 file rows per folder. What the Finder does by itself (opening a file
+  downloads it, "Remove Download" frees it) reaches the view through `FileProviderWatcher`:
+  FSEvents with file events on the visible domain folder (macOS reports a download as
+  `Modified` with `InodeMetaMod`, freeing as `Modified` with `XattrMod`), on its own dispatch
+  queue because Qt's event loop does not always serve the run loop, collected for 1 s and
+  passed on as `ProgressDispatcher::filesTouched` with paths relative to the domain. When FSEvents
+  coalesced or dropped events (`MustScanSubDirs`), `filesTouchedBelow` refreshes every loaded row
+  below that folder (the whole view for the domain root). macOS takes new item properties for known items only with a new metadata version and
   a full enumeration: `FileProviderItem.traitsVersion` is part of the metadata version, and
   the store answers `syncAnchorExpired` once when it differs from the stored value (bump it
   when capabilities change). Tested 2026-11-05 on macOS 27.2 with the real client menu and

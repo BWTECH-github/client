@@ -484,10 +484,16 @@ void VfsMac::checkDomain()
         if (!self || self->_domainIdentifier != identifier) {
             return;
         }
+        // Den sichtbaren Ordner beobachtet der Ordner bei jedem Lauf (Laden und Freigeben im Finder): Ein neuer Pfad braucht
+        // einen Lauf, auch wenn sich der Zustand nicht ändert. macOS nennt ihn mitunter erst nach dem ersten Lauf.
+        const bool newPath = !path.isEmpty() && path != self->_userVisiblePath;
         if (!path.isEmpty()) {
             self->_userVisiblePath = path;
         }
         if (result == self->_state) {
+            if (newPath) {
+                Q_EMIT self->needSync();
+            }
             return;
         }
         qCInfo(lcVfsMac) << "File Provider domain" << identifier << "is now"
