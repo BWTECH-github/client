@@ -1,5 +1,6 @@
 # Table of Contents
 
+* [Changelog for 11.0.2](#changelog-for-owncloudonline-desktop-client-1102-2026-11-11)
 * [Changelog for 11.0.1](#changelog-for-owncloudonline-desktop-client-1101-2026-11-06)
 * [Changelog for 11.0.0](#changelog-for-owncloudonline-desktop-client-1100-2026-11-04)
 * [Changelog for 7.1.1](#changelog-for-owncloud-desktop-client-711-2026-08-27)
@@ -44,6 +45,55 @@
 * [Changelog for 2.6.3](#changelog-for-owncloud-desktop-client-263-2020-06-10)
 * [Changelog for 2.6.2](#changelog-for-owncloud-desktop-client-262-2020-02-21)
 * [Changelog for 2.6.1 versions and below](#changelog-for-261-versions-and-below)
+# Changelog for owncloud.online Desktop Client [11.0.2] (2026-11-11)
+
+The following sections list the changes in owncloud.online Desktop Client 11.0.2 relevant to
+owncloud.online admins and users.
+
+[11.0.2]: https://github.com/BWTECH-github/client/compare/v11.0.1...v11.0.2
+
+## Summary
+
+* Change - Clear message when the server requires an app password
+* Bugfix - The client no longer asks for the password after every restart
+* Bugfix - The folder view shows what the Finder downloads or frees on macOS
+
+## Details
+
+* Change - Clear message when the server requires an app password
+
+   When the server requires two-factor authentication (or app passwords in
+   general) for an account that signs in with a user name and password, it
+   rejects even the correct password. The client said "The user name or password
+   is not correct." and asked again and again. It now says that the server no
+   longer accepts the password alone and that an app password from the web
+   interface (Settings → Security) is needed. After a rejected password, the
+   client also no longer sends the rejected password again with each retry.
+
+* Bugfix - The client no longer asks for the password after every restart
+
+   With an account that signs in with user name and password (for example an app
+   password on a server with two-factor authentication), the client asked for the
+   password again after every restart, although the password was stored in the
+   keychain. At startup the folder view listed an expanded folder before the
+   password had been read from the keychain. That request went out without
+   credentials, the server answered 401, and the client took this as a rejection
+   of the stored password. The folder view now waits until the account is
+   connected, and an answer to a request that did not carry the current password
+   no longer counts as a rejected password. When the client does ask for the
+   password, it no longer waits up to a minute after it was entered before it
+   connects: discarding a rejected password stopped requests that were still
+   running until they timed out.
+
+* Bugfix - The folder view shows what the Finder downloads or frees on macOS
+
+   When a file was opened in the Finder, macOS downloaded it, but the folder view
+   of the client still showed "Available online only". The same happened after
+   "Remove Download" in the Finder. The client only looked again after its own
+   menu actions or when a folder was expanded. It now watches the folder the
+   Finder shows and updates the affected rows and the folders above them within
+   about two seconds.
+
 # Changelog for owncloud.online Desktop Client [11.0.1] (2026-11-06)
 
 The following sections list the changes in owncloud.online Desktop Client 11.0.1 relevant to
