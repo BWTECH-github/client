@@ -39,6 +39,244 @@ enum AppGroup {
     /// Darwin notification asking the client for fresh credentials after the
     /// server rejected ours (the client observes it, src/plugins/vfs/mac).
     static var credentialsRequest: String? { identifier.map { "\($0).fileprovider.credentials" } }
+
+    /// Darwin notification: FileProviderTransfers-<domain>.json changed (TransferBoard; same name in fileproviderdomain.mm)
+    static var transfersChanged: String? { identifier.map { "\($0).fileprovider.transfers" } }
+}
+
+/// Was die Erweiterung gerade hoch- und herunterlädt, für die Ordneransicht des Clients: eine kleine Datei im App-Group-
+/// Container (FileProviderTransfers-<domain>.json) und eine Darwin-Nachricht. Beginn und Ende gehen höchstens alle 0,1 s
+/// hinaus, Fortschritt höchstens alle 0,5 s (gebündelt: viele kleine Dateien fluten den Client nicht), und solange etwas
+/// läuft, jede Sekunde (Herzschlag): Bricht die Erweiterung ab, sieht der Client am alten Zeitstempel, dass nichts mehr
+/// läuft. Beim Start schreibt sie „nichts läuft“.
+///
+/// Gemeldet wird je Richtung eine Runde: alles, was seit dem letzten Leerlauf begann, mit der Zahl der Operationen.
+/// Beendete Übertragungen zählen darin weiter, sonst spränge der Balken beim Kopieren vieler Dateien mit jeder fertigen
+/// zurück: eine vollständige mit ihrer Größe, eine abgebrochene oder gescheiterte nur mit dem, was übertragen wurde (der Rest
+/// steht nicht mehr aus). Erst 2 s ohne Übertragung beenden die Runde (das System beginnt die nächste Datei meist sofort);
+/// wurde darin nichts vollständig übertragen, endet sie sofort, statt „100 %“ zu zeigen. Für die Rate zählt die Erweiterung
+/// die tatsächlich bewegten Bytes fortlaufend mit (sent/received; sie fallen nur, wenn die Erweiterung neu startet).
+///
+/// macOS' eigener Gesamtfortschritt (NSFileProviderManager -globalProgressForKind:) taugt dafür nicht: Im Test meldete er
+/// Übertragungen nach rund zwei Minuten Ruhe nicht mehr (auch neu bezogen dasselbe Objekt) und führte die Operation einer
+/// abgebrochenen Erweiterung weiter.
+final class TransferBoard: @unchecked Sendable {
+    enum Kind { case upload, download }
+
+    private struct Entry {
+        let kind: Kind
+        var done: Int64
+        let total: Int64
+    }
+
+    /// eine Richtung der laufenden Runde
+    private struct Round {
+        /// Größe aller Übertragungen, die in der Runde begannen (abgebrochene nur mit dem übertragenen Teil)
+        var total: Int64 = 0
+        /// übertragene Bytes der beendeten
+        var finished: Int64 = 0
+        /// Operationen, die in der Runde begannen (der Client zeigt eine Restzeit nur für eine)
+        var operations = 0
+    }
+
+    /// so lange bleibt die Runde nach der letzten Übertragung offen
+    private static let linger: TimeInterval = 2
+    /// Abstand der Schreibvorgänge bei Beginn und Ende
+    private static let eventGap: TimeInterval = 0.1
+    /// Abstand der Schreibvorgänge für Fortschritt; dazwischen bringt ihn der Herzschlag
+    private static let progressGap: TimeInterval = 0.5
+
+    private let url: URL?
+    private let lock = NSLock()
+    private var entries: [UUID: Entry] = [:]
+    private var uploads = Round()
+    private var downloads = Round()
+    /// tatsächlich gesendete und empfangene Bytes seit dem Start der Erweiterung (für die Rate des Clients)
+    private var sent: Int64 = 0
+    private var received: Int64 = 0
+    /// seit wann (Systemlaufzeit) nichts mehr läuft; die Runde ist noch offen
+    private var idleSince: TimeInterval?
+    /// in der Runde vollständig übertragen
+    private var completedInRound = 0
+    /// läuft, solange die Runde offen ist
+    private var heartbeat: DispatchSourceTimer?
+    private var writeScheduled = false
+    private var lastWrite = -TimeInterval.infinity
+    /// schreibt in der Reihenfolge der Aufträge, immer den Stand beim Schreiben
+    private let queue = DispatchQueue(label: "online.owncloud.desktopclient.fileprovider.transfers")
+
+    init(domainIdentifier: String) {
+        url = AppGroup.container?.appendingPathComponent("FileProviderTransfers-\(domainIdentifier).json")
+        publish(force: true)
+    }
+
+    deinit {
+        heartbeat?.cancel()
+    }
+
+    /// Eine Übertragung beginnt; das Ergebnis für update() und end().
+    func begin(_ kind: Kind, bytes: Int64) -> UUID {
+        let id = UUID()
+        let total = max(bytes, 0)
+        lock.lock()
+        entries[id] = Entry(kind: kind, done: 0, total: total)
+        switch kind {
+        case .upload:
+            uploads.total += total
+            uploads.operations += 1
+        case .download:
+            downloads.total += total
+            downloads.operations += 1
+        }
+        idleSince = nil
+        // Anlegen und Eintragen unter derselben Sperre: Zwei gleichzeitige Anfänge legen nie zwei Zeitgeber an (einen nie
+        // gestarteten freizugeben, beendet den Prozess: „BUG IN CLIENT OF LIBDISPATCH: Release of an inactive object“).
+        var started: DispatchSourceTimer?
+        if heartbeat == nil {
+            let timer = DispatchSource.makeTimerSource(queue: queue)
+            timer.schedule(deadline: .now() + 1, repeating: 1)
+            timer.setEventHandler { [weak self, weak timer] in
+                guard let self = self, let timer = timer else { return }
+                self.tick(timer)
+            }
+            heartbeat = timer
+            started = timer
+        }
+        lock.unlock()
+        // gestartet, bevor ihn jemand beenden kann: tick() läuft erst danach, und end() beendet ihn erst, wenn auch diese
+        // Übertragung vorbei ist (bis dahin ist entries nicht leer)
+        started?.resume()
+        publish(force: true)
+        return id
+    }
+
+    /// Übertragene Bytes; eine erneute Übertragung (nach 401, Konfliktkopie) beginnt wieder bei 0.
+    func update(_ id: UUID, done: Int64) {
+        lock.lock()
+        if var entry = entries[id] {
+            let value = min(max(done, 0), entry.total)
+            // die bewegten Bytes zählen nur vorwärts
+            if value > entry.done {
+                switch entry.kind {
+                case .upload:
+                    sent += value - entry.done
+                case .download:
+                    received += value - entry.done
+                }
+            }
+            entry.done = value
+            entries[id] = entry
+        }
+        lock.unlock()
+        publish(force: false)
+    }
+
+    /// Die Operation ist zu Ende, erfolgreich oder nicht: Sie zählt mit dem, was übertragen wurde.
+    func end(_ id: UUID) {
+        lock.lock()
+        if let entry = entries.removeValue(forKey: id) {
+            // abgebrochen oder gescheitert: der Rest steht nicht mehr aus (die übertragenen Bytes bleiben, kein Rücksprung)
+            let missing = entry.total - entry.done
+            switch entry.kind {
+            case .upload:
+                uploads.finished += entry.done
+                uploads.total -= missing
+            case .download:
+                downloads.finished += entry.done
+                downloads.total -= missing
+            }
+            if missing == 0 {
+                completedInRound += 1
+            }
+        }
+        var stopped: DispatchSourceTimer?
+        if entries.isEmpty, let timer = heartbeat {
+            if completedInRound == 0 {
+                // nichts vollständig übertragen: nicht „100 %“ zeigen, gleich zurück zum Zustand des Ordners. Der Zeitgeber
+                // läuft schon (begin() startet ihn, bevor es die Nummer herausgibt, die end() braucht).
+                stopped = timer
+                closeRound()
+            } else if idleSince == nil {
+                idleSince = ProcessInfo.processInfo.systemUptime
+            }
+        }
+        lock.unlock()
+        stopped?.cancel()
+        publish(force: true)
+    }
+
+    /// Unter der Sperre: Die Runde ist vorbei, der Client zeigt wieder den Zustand des Ordners.
+    private func closeRound() {
+        heartbeat = nil
+        idleSince = nil
+        uploads = Round()
+        downloads = Round()
+        completedInRound = 0
+    }
+
+    /// Herzschlag: schreibt den Stand und beendet die Runde, wenn seit linger nichts mehr läuft.
+    private func tick(_ timer: DispatchSourceTimer) {
+        lock.lock()
+        guard heartbeat === timer else {
+            lock.unlock()
+            return
+        }
+        var finished = false
+        if entries.isEmpty, let since = idleSince, ProcessInfo.processInfo.systemUptime - since >= Self.linger {
+            closeRound()
+            finished = true
+        }
+        lock.unlock()
+        if finished {
+            timer.cancel()
+        }
+        publish(force: true)
+    }
+
+    private func publish(force: Bool) {
+        lock.lock()
+        defer { lock.unlock() }
+        // ein geplanter Schreibvorgang nimmt den Stand von dann
+        if writeScheduled {
+            return
+        }
+        let now = ProcessInfo.processInfo.systemUptime
+        let due = lastWrite + (force ? Self.eventGap : Self.progressGap)
+        if !force && now < due {
+            return
+        }
+        writeScheduled = true
+        queue.asyncAfter(deadline: .now() + max(due - now, 0)) { [weak self] in self?.write() }
+    }
+
+    private func write() {
+        lock.lock()
+        writeScheduled = false
+        lastWrite = ProcessInfo.processInfo.systemUptime
+        var uploaded = uploads.finished
+        var downloaded = downloads.finished
+        for entry in entries.values {
+            switch entry.kind {
+            case .upload:
+                uploaded += entry.done
+            case .download:
+                downloaded += entry.done
+            }
+        }
+        let state: [String: Any] = [
+            "updated": Int64(Date().timeIntervalSince1970 * 1000),
+            "uploaded": uploaded, "upload": uploads.total, "uploadOperations": uploads.operations, "sent": sent,
+            "downloaded": downloaded, "download": downloads.total, "downloadOperations": downloads.operations,
+            "received": received, "files": entries.count,
+        ]
+        lock.unlock()
+        guard let url = url, let data = try? JSONSerialization.data(withJSONObject: state) else { return }
+        try? data.write(to: url, options: .atomic)
+        if let name = AppGroup.transfersChanged {
+            CFNotificationCenterPostNotification(CFNotificationCenterGetDarwinNotifyCenter(),
+                                                 CFNotificationName(name as CFString), nil, nil, true)
+        }
+    }
 }
 
 /// Non-secret connection settings for one File Provider domain.
@@ -672,6 +910,115 @@ actor ItemStore {
     }
 }
 
+/// Fortschritt und Abbruch der Übertragungen einer Operation (createItem/modifyItem).
+///
+/// Delegat je Aufgabe für URLSession.upload(for:fromFile:delegate:) (macOS 12): Die Sitzung hat keinen eigenen
+/// Delegaten, die Aufgabe hält ihn bis zu ihrem Ende. Er schreibt die gesendeten Bytes in den Fortschritt, den das
+/// System im Finder zeigt, und auf das TransferBoard der Domain (Ordneransicht des Clients), und bricht auf
+/// Wunsch nur die laufende Übertragung ab - nie die Buchführung danach: Hat der Server den Inhalt angenommen, wird das
+/// Ergebnis noch gemeldet, sonst legte die Wiederholung des Systems eine zweite Kopie an.
+/// Kein addChild(task.progress) wie beim Laden: Die Wiederholung nach 401 und die Konfliktkopie senden den Inhalt
+/// erneut, jedes neue Kind brächte den Balken vorzeitig auf 100 %. So beginnt eine erneute Übertragung wieder bei 0.
+final class UploadTransfer: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    private let progress: Progress
+    /// Anteil der Übertragung am Fortschritt: die Größe des Inhalts in Bytes
+    private let bytes: Int64
+    private let lock = NSLock()
+    private var cancelled = false
+    private var tasks: [URLSessionTask] = []
+    /// meldet die Bytes auch dem Client (Ordneransicht); nil ohne Inhalt
+    private let board: TransferBoard?
+    /// erst mit dem ersten PUT (starting()), bis finish()
+    private var boardEntry: UUID?
+    private var finished = false
+
+    init(progress: Progress, bytes: Int64, board: TransferBoard? = nil) {
+        self.progress = progress
+        self.bytes = max(bytes, 0)
+        self.board = bytes > 0 ? board : nil
+        super.init()
+    }
+
+    /// Vor jedem PUT des Inhalts: Erst jetzt zeigt der Client die Übertragung, nicht schon beim Abgleich der Prüfsumme,
+    /// wenn der Server den Inhalt schon hat, oder beim Papierkorb.
+    func starting() throws {
+        try checkCancelled()
+        guard let board = board else { return }
+        lock.lock()
+        defer { lock.unlock() }
+        if boardEntry == nil && !finished {
+            boardEntry = board.begin(.upload, bytes: bytes)
+        }
+    }
+
+    /// Die Operation ist zu Ende (auch abgebrochen oder fehlgeschlagen): der Client zeigt sie nicht mehr.
+    func finish() {
+        lock.lock()
+        finished = true
+        let entry = boardEntry
+        boardEntry = nil
+        lock.unlock()
+        if let board = board, let entry = entry {
+            board.end(entry)
+        }
+    }
+
+    var isCancelled: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return cancelled
+    }
+
+    /// Das System bricht ab: laufende Übertragungen enden sofort, neue beginnen nicht mehr.
+    func cancel() {
+        lock.lock()
+        cancelled = true
+        let running = tasks
+        lock.unlock()
+        running.forEach { $0.cancel() }
+    }
+
+    /// Vor jedem Schritt, der Inhalt zum Server schickt.
+    func checkCancelled() throws {
+        if isCancelled {
+            throw CocoaError(.userCancelled)
+        }
+    }
+
+    /// Merkt sich die Aufgabe für cancel() und beendet sie gleich, wenn schon abgebrochen ist.
+    private func track(_ task: URLSessionTask) -> Bool {
+        lock.lock()
+        if !tasks.contains(where: { $0 === task }) {
+            tasks.append(task)
+        }
+        let stop = cancelled
+        lock.unlock()
+        if stop {
+            task.cancel()
+        }
+        return !stop
+    }
+
+    // macOS 13: synchron beim Anlegen der Aufgabe, vor resume()
+    func urlSession(_ session: URLSession, didCreateTask task: URLSessionTask) {
+        _ = track(task)
+    }
+
+    // Eine Wiederholung nach 401 und die Konfliktkopie beginnen wieder bei 0.
+    func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64,
+                    totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+        guard track(task) else { return }
+        let sent = min(totalBytesSent, bytes)
+        progress.completedUnitCount = sent
+        lock.lock()
+        let entry = boardEntry
+        lock.unlock()
+        if let board = board, let entry = entry {
+            board.update(entry, done: sent)
+        }
+    }
+}
+
 /// Minimal WebDAV client: PROPFIND/GET for reading, PUT/MKCOL/MOVE/DELETE for
 /// writing. Every write is conditional (If-Match / If-None-Match / Overwrite: F)
 /// so a concurrent change on the server is never silently overwritten.
@@ -879,9 +1226,12 @@ final class WebDavClient {
     /// Upload file contents (or an empty file). `ifMatch` guards against lost
     /// updates (send the base etag), `ifNoneMatch` = "*" refuses to overwrite an
     /// existing file (fresh creates). Returns the response (ETag, OC-FileId).
+    /// `transfer` zeigt die gesendeten Bytes im Fortschritt der Operation und kann die Übertragung abbrechen.
     @discardableResult
     func put(path: String, contents: URL?, modified: Date? = nil, sha1: String? = nil,
-             ifMatch: String? = nil, ifNoneMatch: String? = nil) async throws -> HTTPURLResponse {
+             ifMatch: String? = nil, ifNoneMatch: String? = nil,
+             transfer: UploadTransfer? = nil) async throws -> HTTPURLResponse {
+        try transfer?.starting()
         var base = try request(path: path, method: "PUT")
         if let etag = ifMatch { base.setValue(quoted(etag), forHTTPHeaderField: "If-Match") }
         if let inm = ifNoneMatch { base.setValue(inm, forHTTPHeaderField: "If-None-Match") }
@@ -895,9 +1245,9 @@ final class WebDavClient {
         }
         let (_, response) = try await perform(base) { request in
             if let contents = contents {
-                return try await self.session.upload(for: request, fromFile: contents)
+                return try await self.session.upload(for: request, fromFile: contents, delegate: transfer)
             }
-            return try await self.session.upload(for: request, from: Data())
+            return try await self.session.upload(for: request, from: Data(), delegate: transfer)
         }
         try expect(response, [200, 201, 204], "PUT", path)
         guard let http = response as? HTTPURLResponse else { throw DavError.parse }

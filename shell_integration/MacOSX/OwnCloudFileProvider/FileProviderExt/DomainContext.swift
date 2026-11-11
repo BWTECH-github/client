@@ -22,6 +22,8 @@ final class DomainContext {
     let domain: NSFileProviderDomain
     let backend: DomainBackend
     let store: ItemStore
+    /// was gerade hoch- und heruntergeladen wird, für die Ordneransicht des Clients
+    let transfers: TransferBoard
     private let manager: NSFileProviderManager?
     private let lock = NSLock()
     private var signalScheduled = false
@@ -36,6 +38,7 @@ final class DomainContext {
         self.domain = domain
         backend = DomainBackend(domainIdentifier: domain.identifier.rawValue)
         store = ItemStore(domainIdentifier: domain.identifier.rawValue)
+        transfers = TransferBoard(domainIdentifier: domain.identifier.rawValue)
         manager = NSFileProviderManager(for: domain)
     }
 

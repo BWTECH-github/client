@@ -94,13 +94,15 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
     /// upload it as "name (conflicted copy <date>).ext" next to it, like the
     /// desktop client does. Never overwrites anything.
     private func uploadConflictCopy(of contents: URL, named name: String, in parentPath: String,
-                                    modified: Date?, client: WebDavClient) async throws -> String {
+                                    modified: Date?, client: WebDavClient,
+                                    transfer: UploadTransfer? = nil) async throws -> String {
         let sha1 = sha1Hex(of: contents)
         for attempt in 0..<5 {
             let conflictName = SyncRules.conflictName(for: name, date: Date().addingTimeInterval(TimeInterval(attempt)))
             let path = joinPath(parentPath, conflictName)
             do {
-                try await client.put(path: path, contents: contents, modified: modified, sha1: sha1, ifNoneMatch: "*")
+                try await client.put(path: path, contents: contents, modified: modified, sha1: sha1, ifNoneMatch: "*",
+                                     transfer: transfer)
                 log.info("Kept the local version as \(path, privacy: .private(mask: .hash))")
                 context.signalWorkingSet()
                 return path
@@ -148,6 +150,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                        request: NSFileProviderRequest,
                        completionHandler: @escaping (URL?, NSFileProviderItem?, Error?) -> Void) -> Progress {
         let progress = Progress(totalUnitCount: 100)
+        let board = context.transfers
         let task = Task {
             do {
                 let client = try context.client()
@@ -155,7 +158,19 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                 guard !entry.isFolder else {
                     throw DavError.unknownItem
                 }
+                // für die Ordneransicht des Clients: die Bytes nach dem Anteil des Fortschritts
+                let size = max(entry.size, 0)
+                let boardEntry = board.begin(.download, bytes: size)
+                let watch = progress.observe(\.fractionCompleted) { progress, _ in
+                    board.update(boardEntry, done: Int64(progress.fractionCompleted * Double(size)))
+                }
+                defer {
+                    watch.invalidate()
+                    board.end(boardEntry)
+                }
                 let (url, response) = try await client.fetch(path: entry.path, into: context.temporaryDirectory(), progress: progress)
+                // vollständig, auch wenn der Anteil unbestimmt blieb (ohne Content-Length): sonst zählte sie als abgebrochen
+                board.update(boardEntry, done: size)
                 // the version we got: the file may have changed since the PROPFIND
                 var fetched = entry
                 if let etag = Self.responseEtag(response), etag != entry.etag {
@@ -192,9 +207,21 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
         let isFolder = type.conforms(to: .directory)
         let mayAlreadyExist = options.contains(.mayAlreadyExist)
         let modified = itemTemplate.contentModificationDate ?? nil
-        let progress = Progress(totalUnitCount: 1)
+        // Diesen Fortschritt zeigt der Finder bis zum completionHandler (NSFileProviderReplicatedExtension.h: „expected to
+        // include the upload progress“): die Bytes des Inhalts und eine Einheit für die Buchführung danach. Vorher meldete
+        // er 0 von 1 bis zum Ende, der Finder zeigte nur eine Uhr.
+        let bytes = isFolder ? 0 : (Self.fileSize(url) ?? 0)
+        let progress = Progress(totalUnitCount: bytes + 1)
+        let transfer = UploadTransfer(progress: progress, bytes: bytes, board: context.transfers)
+        // weak: der Fortschritt hält den Handler, transfer hält den Fortschritt
+        progress.cancellationHandler = { [weak transfer] in transfer?.cancel() }
 
         Task {
+            // auch nach den vorzeitigen return (Ordner, Kollision, Abgleich mit dem Server)
+            defer {
+                progress.completedUnitCount = progress.totalUnitCount
+                transfer.finish()
+            }
             do {
                 let client = try context.client()
                 // an unknown parent fails with noSuchItem: the system creates it first
@@ -243,6 +270,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     return
                 }
 
+                try transfer.checkCancelled()
                 let sha1 = url.flatMap { sha1Hex(of: $0) }
                 if mayAlreadyExist, let existing = try await client.stat(path: path, checksums: true) {
                     // the system re-imports what it found on disk
@@ -256,7 +284,8 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     }
                     // another version is on the server: keep both, the server version stays here
                     if let contents = url {
-                        _ = try await uploadConflictCopy(of: contents, named: name, in: parentPath, modified: modified, client: client)
+                        _ = try await uploadConflictCopy(of: contents, named: name, in: parentPath, modified: modified,
+                                                         client: client, transfer: transfer)
                     }
                     try await finish(existing, fetchContent: true)
                     return
@@ -264,17 +293,30 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
 
                 do {
                     // never replace a file that exists on the server
-                    let response = try await client.put(path: path, contents: url, modified: modified, sha1: sha1, ifNoneMatch: "*")
+                    let response = try await client.put(path: path, contents: url, modified: modified, sha1: sha1,
+                                                        ifNoneMatch: "*", transfer: transfer)
                     try await finish(try await uploadedEntry(at: path, response: response, contents: url, client: client))
                 } catch DavError.precondition {
+                    // Derselbe Inhalt liegt schon dort: unsere eigene Übertragung, deren Antwort verloren ging (Abbruch,
+                    // Zeitüberschreitung, Neustart der Erweiterung). Übernehmen - sonst benennt das System unsere Datei um
+                    // und lädt sie ein zweites Mal hoch („Name 2.ext“).
+                    if let local = sha1, let existing = try await client.stat(path: path, checksums: true),
+                       !existing.isFolder, existing.sha1 == local {
+                        try await finish(existing)
+                        return
+                    }
                     // the system renames ours and tries again
                     completionHandler(nil, [], false, try await collisionError(at: path, client: client))
                 }
             } catch {
-                log.error("Creating \(name, privacy: .private(mask: .hash)) failed: \(logDescription(error), privacy: .public)")
-                completionHandler(nil, [], false, WebDavClient.fileProviderError(for: error))
+                if progress.isCancelled {
+                    log.info("Creating \(name, privacy: .private(mask: .hash)) cancelled")
+                    completionHandler(nil, [], false, CocoaError(.userCancelled))
+                } else {
+                    log.error("Creating \(name, privacy: .private(mask: .hash)) failed: \(logDescription(error), privacy: .public)")
+                    completionHandler(nil, [], false, WebDavClient.fileProviderError(for: error))
+                }
             }
-            progress.completedUnitCount = 1
         }
         return progress
     }
@@ -288,12 +330,17 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     completionHandler: @escaping (NSFileProviderItem?, NSFileProviderItemFields, Bool, Error?) -> Void) -> Progress {
         let baseEtag = Self.etag(from: version)
         let identifier = item.itemIdentifier
-        let progress = Progress(totalUnitCount: 1)
+        // Nur neuer Inhalt wird übertragen (Bytes, wie in createItem); Umbenennen, Verschieben und Papierkorb sind eine Einheit.
+        let bytes = changedFields.contains(.contents) ? (Self.fileSize(newContents) ?? 0) : 0
+        let progress = Progress(totalUnitCount: bytes + 1)
+        let transfer = UploadTransfer(progress: progress, bytes: bytes, board: context.transfers)
+        progress.cancellationHandler = { [weak transfer] in transfer?.cancel() }
 
         if changedFields.contains(.parentItemIdentifier) && item.parentItemIdentifier == .trashContainer {
             Task {
                 await self.trash(identifier, baseEtag: baseEtag, completionHandler: completionHandler)
-                progress.completedUnitCount = 1
+                progress.completedUnitCount = progress.totalUnitCount
+                transfer.finish()
             }
             return progress
         }
@@ -305,11 +352,17 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
             // (NSFileProviderError.h, excludedFromSync), guarded there by its etag and kept
             // in the server's trash bin - as the desktop client's sync treats such a
             // rename. Refusing it instead would break the save-by-rename of applications.
+            transfer.finish()
             completionHandler(nil, [], false, NSFileProviderError(.excludedFromSync))
             return Progress()
         }
 
         Task {
+            // auch nach dem vorzeitigen return (Kollision beim Umbenennen)
+            defer {
+                progress.completedUnitCount = progress.totalUnitCount
+                transfer.finish()
+            }
             do {
                 let client = try context.client()
                 var current = try await context.entry(for: identifier, client: client)
@@ -345,13 +398,15 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                 // edit on the server yields 412 instead of being overwritten.
                 if changedFields.contains(.contents), !current.isFolder, let contents = newContents {
                     let modified = item.contentModificationDate ?? nil
+                    // ein Umbenennen davor bleibt; das System wiederholt den Rest (das MOVE entfällt dann)
+                    try transfer.checkCancelled()
                     let localSha1 = sha1Hex(of: contents)
                     do {
                         guard let base = putBase else {
                             throw DavError.precondition // never in sync: no version to build on
                         }
                         let response = try await client.put(path: current.path, contents: contents, modified: modified,
-                                                            sha1: localSha1, ifMatch: base)
+                                                            sha1: localSha1, ifMatch: base, transfer: transfer)
                         current = try await uploadedEntry(at: current.path, response: response, contents: contents, client: client)
                         log.info("Uploaded \(current.path, privacy: .private(mask: .hash))")
                     } catch DavError.precondition {
@@ -366,7 +421,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                             // up as a conflict copy, the server version comes down here.
                             log.error("Conflict on \(current.path, privacy: .private(mask: .hash)): keeping the local version as a conflict copy")
                             _ = try await uploadConflictCopy(of: contents, named: current.name, in: current.parentPath,
-                                                             modified: modified, client: client)
+                                                             modified: modified, client: client, transfer: transfer)
                             current = server
                             fetchContent = true
                         }
@@ -383,12 +438,16 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                 completionHandler(result, changedFields.subtracting(handled), fetchContent, nil)
                 context.signalWorkingSet()
             } catch {
-                log.error("Modifying \(identifier.rawValue, privacy: .private(mask: .hash)) failed: \(logDescription(error), privacy: .public)")
-                // noSuchItem (gone on the server): the system removes it, or re-creates
-                // it if it has local changes - local edits survive either way
-                completionHandler(nil, [], false, WebDavClient.fileProviderError(for: error))
+                if progress.isCancelled {
+                    log.info("Modifying \(identifier.rawValue, privacy: .private(mask: .hash)) cancelled")
+                    completionHandler(nil, [], false, CocoaError(.userCancelled))
+                } else {
+                    log.error("Modifying \(identifier.rawValue, privacy: .private(mask: .hash)) failed: \(logDescription(error), privacy: .public)")
+                    // noSuchItem (gone on the server): the system removes it, or re-creates
+                    // it if it has local changes - local edits survive either way
+                    completionHandler(nil, [], false, WebDavClient.fileProviderError(for: error))
+                }
             }
-            progress.completedUnitCount = 1
         }
         return progress
     }
