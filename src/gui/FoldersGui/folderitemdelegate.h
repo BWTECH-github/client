@@ -14,13 +14,15 @@
 
 #pragma once
 
+#include "gui/owncloudguilib.h"
+
 #include <QColor>
 #include <QItemDelegate>
 
 namespace OCC {
 
 
-class FolderItemDelegate : public QItemDelegate
+class OWNCLOUDGUI_EXPORT FolderItemDelegate : public QItemDelegate
 {
 public:
     explicit FolderItemDelegate(int treeIndentation, QObject *parent = nullptr);

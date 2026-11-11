@@ -76,6 +76,7 @@ owncloud_add_test(FileSystem)
 owncloud_add_test(FolderMan)
 # Ordneransicht: Ordner mit 20.000 Dateien ohne Hänger, Reihenfolge, höchstens 500 Dateizeilen
 owncloud_add_test(FolderBrowser)
+owncloud_add_test(FolderItemDelegate)
 if(APPLE)
     # Laden und Freigeben im Finder erreicht die Ordneransicht über FSEvents im sichtbaren Ordner der Domain
     owncloud_add_test(FileProviderWatcher)

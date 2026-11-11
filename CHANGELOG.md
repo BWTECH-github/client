@@ -55,6 +55,7 @@ owncloud.online admins and users.
 ## Summary
 
 * Change - Clear message when the server requires an app password
+* Enhancement - A progress bar shows how far a sync has got
 * Bugfix - The client no longer asks for the password after every restart
 * Bugfix - The folder view shows what the Finder downloads or frees on macOS
 
@@ -69,6 +70,13 @@ owncloud.online admins and users.
    longer accepts the password alone and that an app password from the web
    interface (Settings → Security) is needed. After a rejected password, the
    client also no longer sends the rejected password again with each retry.
+
+* Enhancement - A progress bar shows how far a sync has got
+
+   The folder view showed the progress of a sync only as text, for example
+   "Syncing 120 MB of 1.1 GB (11 %)". A bar below the status line now shows the
+   same progress at a glance while files are uploaded or downloaded. It appears
+   only while the folder actually transfers data.
 
 * Bugfix - The client no longer asks for the password after every restart
 

@@ -223,6 +223,11 @@ QVariant FolderItem::data(int role) const
         return IconResources::getCoreIcon(statusIconName());
     case FolderItemRoles::StatusStringRole:
         return _statusString;
+    case FolderItemRoles::ProgressRole:
+        // Balken nur, solange der Ordner wirklich überträgt; die Zahl stammt aus setProgress()
+        if (_totalSize > 0 && _folder->isConnected() && !_folder->syncPaused() && _folder->syncResult().status() == SyncResult::SyncRunning)
+            return _percentComplete;
+        return QVariant();
     case FolderItemRoles::SortPriorityRole:
         // everything will be sorted in descending order, multiply the priority by 100 and prefer A over Z by applying a negative factor
         return QVariant::fromValue(

@@ -29,7 +29,9 @@ namespace OCC {
 
 class FolderItemUpdater;
 
-enum FolderItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusStringRole, StatusInfoRole, SortPriorityRole, ItemKindRole, RemotePathRole, DetailStringRole };
+enum FolderItemRoles { DataRole = Qt::UserRole, StatusIconRole, StatusStringRole, StatusInfoRole, SortPriorityRole, ItemKindRole, RemotePathRole, DetailStringRole,
+    // Prozent (0-100) für den Fortschrittsbalken der Ordnerzeile, nur solange übertragen wird; sonst ungültig
+    ProgressRole };
 
 // Discriminates the child rows below a FolderItem. Error rows predate the kind role, so
 // Error doubles as the value an untagged row reports (an unset role decodes to 0).

@@ -15,6 +15,7 @@
 #include "folderitemdelegate.h"
 
 #include "folderitem.h"
+#include "mainwindow/colormanager.h"
 #include "theme.h"
 
 #include <QApplication>
@@ -131,6 +132,34 @@ void FolderItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         paintableArea.width() - iconRect.width() - _horizontalSpacing - statusIconRect.width() - _cellBorder, secondLineHeight);
     // the status strings are short enough that we should not need to elide them.
     painter->drawText(secondLineRect, Qt::TextSingleLine, index.data(FolderItemRoles::StatusStringRole).toString(), nullptr);
+
+    // Fortschrittsbalken unter der Statuszeile, im unteren Rand der Zeile (die Zeilenhöhe bleibt gleich)
+    const QVariant progress = index.data(FolderItemRoles::ProgressRole);
+    if (progress.isValid()) {
+        const int percent = qBound(0, progress.toInt(), 100);
+        const int barHeight = 4;
+        const int barLeft = statusIconRect.left();
+        const int barWidth = paintableArea.right() - _cellBorder - barLeft;
+        if (barWidth > 0) {
+            const QRectF track(barLeft, secondLineRect.bottom() + 3, barWidth, barHeight);
+            // dieselben Farben wie der Speicherplatz-Balken der Kontoansicht
+            QColor chunk = Theme::instance()->accentColor(ColorManager::isDarkPalette());
+            if (!chunk.isValid())
+                chunk = option.palette.color(QPalette::Highlight);
+            painter->setRenderHint(QPainter::Antialiasing, true);
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(QColor(127, 127, 127, 60));
+            painter->drawRoundedRect(track, barHeight / 2.0, barHeight / 2.0);
+            if (percent > 0) {
+                QRectF done(track);
+                done.setWidth(qMax<qreal>(barHeight, track.width() * percent / 100.0));
+                painter->setBrush(chunk);
+                painter->drawRoundedRect(done, barHeight / 2.0, barHeight / 2.0);
+            }
+            painter->setBrush(Qt::NoBrush);
+            painter->setRenderHint(QPainter::Antialiasing, false);
+        }
+    }
 
     painter->setPen(QPen(QBrush(_separatorColor), _cellSeparatorWidth));
     painter->drawLine(option.rect.left(), option.rect.bottom(), option.rect.right(), option.rect.bottom());
