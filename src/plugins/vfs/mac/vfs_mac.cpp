@@ -88,6 +88,7 @@ VfsMac::~VfsMac()
     if (_credentialRequestToken) {
         Mac::stopObservingCredentialRequests(_credentialRequestToken);
     }
+    stopObservingTransfers();
 }
 
 Vfs::Mode VfsMac::mode() const
@@ -101,11 +102,13 @@ void VfsMac::stop()
     // the Windows sync root does, otherwise the Finder entry would disappear
     // whenever the client quits. The extension keeps its credentials until they expire.
     _pollTimer.stop();
+    stopObservingTransfers();
 }
 
 void VfsMac::unregisterFolder()
 {
     _pollTimer.stop();
+    stopObservingTransfers();
     if (_domainIdentifier.isEmpty()) {
         return;
     }
@@ -422,7 +425,46 @@ void VfsMac::startImpl(const VfsSetupParams &params)
         self->applySuspension();
         self->resendKeptItems();
         self->_pollTimer.start();
+        self->observeTransfers();
     });
+}
+
+void VfsMac::observeTransfers()
+{
+    if (_transferToken || _domainIdentifier.isEmpty()) {
+        return;
+    }
+    // Hoch- und Herunterladen erledigt die Erweiterung, die Sync-Engine steht still: Ohne das zeigte die Ordnerzeile
+    // „Synchronisiert“, während der Finder noch Dateien überträgt. Eine Richtung ohne laufende Übertragung meldet 0 von 0.
+    QPointer<VfsMac> self(this);
+    const QString identifier = _domainIdentifier;
+    _transferToken = Mac::observeTransfers(identifier, [self, identifier](const Mac::Transfer &uploads, const Mac::Transfer &downloads) {
+        if (!self || self->_domainIdentifier != identifier) {
+            return;
+        }
+        VfsTransferProgress progress;
+        if (uploads.active) {
+            progress.uploadedBytes = uploads.completedBytes;
+            progress.uploadBytes = uploads.totalBytes;
+            progress.uploadOperations = uploads.operations;
+        }
+        progress.sentBytes = uploads.movedBytes;
+        if (downloads.active) {
+            progress.downloadedBytes = downloads.completedBytes;
+            progress.downloadBytes = downloads.totalBytes;
+            progress.downloadOperations = downloads.operations;
+        }
+        progress.receivedBytes = downloads.movedBytes;
+        Q_EMIT self->transferProgress(progress);
+    });
+}
+
+void VfsMac::stopObservingTransfers()
+{
+    if (_transferToken) {
+        Mac::stopObservingTransfers(_transferToken);
+        _transferToken = 0;
+    }
 }
 
 void VfsMac::poll()
@@ -501,6 +543,9 @@ void VfsMac::checkDomain()
         self->_state = result;
         if (result == Mac::DomainResult::Ok) {
             Mac::signalErrorsResolved(identifier);
+            // wieder benutzbar (Erweiterung ein- und ausgeschaltet): den Fortschritt neu beziehen, der alte hängt womöglich
+            self->stopObservingTransfers();
+            self->observeTransfers();
         }
         // the folder shows the new state
         Q_EMIT self->needSync();

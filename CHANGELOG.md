@@ -58,6 +58,7 @@ owncloud.online admins and users.
 * Enhancement - A progress bar shows how far a sync has got
 * Bugfix - The client no longer asks for the password after every restart
 * Bugfix - The folder view shows what the Finder downloads or frees on macOS
+* Bugfix - Uploads from the Finder show their progress on macOS
 
 ## Details
 
@@ -101,6 +102,18 @@ owncloud.online admins and users.
    menu actions or when a folder was expanded. It now watches the folder the
    Finder shows and updates the affected rows and the folders above them within
    about two seconds.
+
+* Bugfix - Uploads from the Finder show their progress on macOS
+
+   Files copied into the folder in the Finder were uploaded without any visible
+   progress: the Finder showed only a clock until each file was done, and the
+   folder view of the client still said "Synced". The File Provider extension now
+   reports the bytes it sends, so the Finder shows the progress of each upload,
+   and the folder view shows the uploads and downloads of the Finder with the
+   progress bar and the transfer rate, also while many files are copied at once,
+   and the remaining time while a single file is transferred. A cancelled upload
+   stops right away, and an upload the system repeats no longer creates a second
+   copy of a file the server already has.
 
 # Changelog for owncloud.online Desktop Client [11.0.1] (2026-11-06)
 

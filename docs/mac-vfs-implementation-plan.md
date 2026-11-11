@@ -59,7 +59,38 @@ Implemented; sections 0–6 below are the original plan and kept for reference.
   queue because Qt's event loop does not always serve the run loop, collected for 1 s and
   passed on as `ProgressDispatcher::filesTouched` with paths relative to the domain. When FSEvents
   coalesced or dropped events (`MustScanSubDirs`), `filesTouchedBelow` refreshes every loaded row
-  below that folder (the whole view for the domain root). macOS takes new item properties for known items only with a new metadata version and
+  below that folder (the whole view for the domain root). Transfer progress: `createItem` and
+  `modifyItem` return a progress of the content's bytes plus one unit for the bookkeeping after
+  the PUT; a per-task `URLSessionTaskDelegate` (`UploadTransfer`) sets the bytes sent and cancels
+  only the running transfer (a create whose PUT already reached the server adopts the file on
+  412 with the same SHA1 instead of producing "name 2"). The Finder shows that progress. For the app the extension reports its transfers itself
+  (`TransferBoard`: `FileProviderTransfers-<domain>.json` in the app group plus the Darwin
+  notification `<group>.fileprovider.transfers`). Per direction it reports a round: everything that
+  began since the board was last idle and how many operations began in it. A finished operation
+  keeps counting (a complete one with its size, a cancelled or failed one only with what it
+  transferred, the rest is no longer pending), so finished files no longer pull the bar back while
+  the Finder copies many files (it drops only when the system starts further files and the total
+  grows); the round ends 2 s after the last operation (the system usually starts the next file at
+  once), at once if nothing in it was transferred completely, so a cancelled upload does not show
+  "100 %". For the rate it counts the bytes actually sent and received since the extension started
+  (`sent`/`received`, they only grow; a retried PUT adds only what it sends again). The system hands
+  out further files only when one finishes, so the round never knows the whole copy: the row shows
+  a remaining time only while the round has a single operation, and the percentage is rounded
+  down (100 % only when everything is transferred). An upload appears with its first PUT, not while the SHA1 is compared or
+  when the server already has the content. Writes are coalesced: start and end at most every 0.1 s,
+  progress at most every 0.5 s, and a heartbeat every second while the round is open; on start it
+  writes "nothing runs". The heartbeat timer is created and stored under the board's lock (two
+  concurrent starts once created two timers and released the unstarted one, which aborts the
+  process). `Mac::observeTransfers` reads the file on every notification and every second while
+  something runs; a timestamp more than 5 s off (older: the extension died; newer: the clock was set
+  back) counts as idle. The file is removed with the domain, again after `removeDomain` finished.
+  macOS' own `NSFileProviderManager -globalProgressForKind:` was tried first and is not usable for
+  this: after about two minutes without transfers it no longer reported new ones (fetching it again
+  returns the same cached object), and it kept the operation of an extension that died mid-upload.
+  `Vfs::transferProgress` → `Folder::vfsTransferProgress` → `FolderItem::setTransferProgress` shows
+  them in the folder row like a sync run (status text with rates and remaining time, sync icon,
+  progress bar), because the sync engine itself stays idle; offline, paused, unavailable and errors
+  still win. macOS takes new item properties for known items only with a new metadata version and
   a full enumeration: `FileProviderItem.traitsVersion` is part of the metadata version, and
   the store answers `syncAnchorExpired` once when it differs from the stored value (bump it
   when capabilities change). Tested 2026-11-05 on macOS 27.2 with the real client menu and

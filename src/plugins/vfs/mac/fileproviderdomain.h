@@ -116,6 +116,36 @@ namespace Mac {
     int observeCredentialRequests(std::function<void()> handler);
     void stopObservingCredentialRequests(int token);
 
+    /** Was die Erweiterung in einer Richtung überträgt, wie sie es selbst meldet (FileProviderTransfers-<domain>.json,
+     *  TransferBoard in FileProviderExt): completedBytes/totalBytes über die laufende Runde (alles seit dem letzten
+     *  Leerlauf; beendete Übertragungen zählen mit dem, was übertragen wurde), operations die darin begonnenen
+     *  Operationen, movedBytes die seit dem Start der Erweiterung tatsächlich bewegten Bytes (wachsen nur, außer nach
+     *  einem Neustart; für die Rate). active false heißt Leerlauf. */
+    struct Transfer
+    {
+        bool active = false;
+        qint64 completedBytes = 0;
+        qint64 totalBytes = 0;
+        qint64 operations = 0;
+        qint64 movedBytes = 0;
+
+        bool operator==(const Transfer &other) const
+        {
+            return active == other.active && completedBytes == other.completedBytes && totalBytes == other.totalBytes
+                && operations == other.operations && movedBytes == other.movedBytes;
+        }
+        bool operator!=(const Transfer &other) const { return !(*this == other); }
+    };
+
+    /** Ruft @p handler im Hauptthread mit dem Fortschritt beim Hoch- und Herunterladen der Domain: zuerst mit dem Stand von
+     *  jetzt, dann bei jeder Meldung der Erweiterung (Darwin-Nachricht, höchstens alle 0,1 s) und, solange etwas läuft, jede
+     *  Sekunde, auch unverändert (Rate und Restzeit sinken bei einem Stillstand). Bleibt der Herzschlag der Erweiterung 5 s
+     *  aus (Absturz, Neustart), läuft nichts mehr. macOS' Gesamtfortschritt (NSFileProviderManager -globalProgressForKind:)
+     *  taugte dafür nicht: Im Test meldete er Übertragungen nach rund zwei Minuten Ruhe nicht mehr und führte die Operation
+     *  einer abgebrochenen Erweiterung weiter. Token für stopObservingTransfers(); ohne File Provider kommt nie ein Aufruf. */
+    int observeTransfers(const QString &identifier, std::function<void(const Transfer &uploads, const Transfer &downloads)> handler);
+    void stopObservingTransfers(int token);
+
     /** Human readable hint for a non-Ok result, ready to show in the GUI. */
     QString domainResultMessage(DomainResult result);
 

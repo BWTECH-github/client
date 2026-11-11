@@ -85,6 +85,9 @@ private:
     void applySuspension();
     void mirrorAuthorization(const QByteArray &authorization);
     void dropAuthorization();
+    // Gesamtfortschritt der Domain beim Hoch- und Herunterladen (Mac::observeTransfers()) für die Ordnerzeile
+    void observeTransfers();
+    void stopObservingTransfers();
 
     /// Stable identifier of the NSFileProviderDomain backing this folder.
     QString _domainIdentifier;
@@ -104,6 +107,7 @@ private:
     bool _suspendTemporary = true;
     bool _suspendApplied = false;
     int _credentialRequestToken = 0;
+    int _transferToken = 0;
 };
 
 class MacVfsPluginFactory : public QObject, public DefaultPluginFactory<VfsMac>

@@ -23,6 +23,8 @@
 #include <QList>
 #include <QPointer>
 
+#include <chrono>
+
 // #include "folderstatusupdater.h"
 
 namespace OCC {
@@ -50,6 +52,13 @@ public:
 
     void refresh();
     void setProgress(const ProgressInfo &progress);
+    /**
+     * Übertragungen der Plattform statt der Sync-Engine (macOS: die Erweiterung des Dateianbieters lädt hoch oder herunter,
+     * die Engine steht still). Solange sie laufen, zeigt die Zeile Fortschritt, Raten, Sync-Symbol und Balken wie bei einem
+     * Lauf; Gesamtzahlen 0 in beiden Richtungen beenden die Anzeige. Die Raten kommen aus den fortlaufend gezählten
+     * bewegten Bytes, nicht aus dem Fortschritt der Runde; eine Restzeit nur, wenn die Runde aus einer Operation besteht.
+     */
+    void setTransferProgress(const VfsTransferProgress &progress);
     void updateImage();
 
     Folder *folder();
@@ -64,6 +73,12 @@ private:
     quint64 _estimatedDownBw = 0;
     quint64 _estimatedEta = 0; //!< estimated remaining time in ms
     int _percentComplete = 0;
+    // die Plattform überträgt gerade (setTransferProgress()); die Zahlen stehen in _totalSize/_completedSize
+    bool _platformTransfer = false;
+    // letzter Stand der bewegten Bytes für die Raten der Plattform-Übertragung
+    qint64 _lastSent = 0;
+    qint64 _lastReceived = 0;
+    std::chrono::steady_clock::time_point _lastTransferSample;
 
     QString _statusString;
     QIcon _image;
@@ -72,6 +87,10 @@ private:
 
     QString statusIconName() const;
     QString statusAsString() const;
+    // „Synchronisiere 120 MB von 1,1 GB (11 %, …)“ aus den Zahlen des laufenden Laufs oder der Übertragung der Plattform
+    QString progressString() const;
+    // die Übertragung der Plattform bestimmt Symbol, Text und Balken (nicht bei Fehler oder nicht verfügbarem Ordner)
+    bool showsPlatformTransfer() const;
     void updateStatusString();
 };
 }

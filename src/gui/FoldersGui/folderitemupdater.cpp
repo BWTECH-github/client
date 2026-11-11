@@ -30,6 +30,10 @@ FolderItemUpdater::FolderItemUpdater(FolderItem *item)
             _imageChangeConnection = connect(_item->folder()->space(), &GraphApi::Space::imageChanged, this, &FolderItemUpdater::onImageChanged);
         connect(_item->folder(), &Folder::spaceChanged, this, &FolderItemUpdater::onSpaceChanged);
         connect(_item->folder(), &Folder::syncStateChange, this, &FolderItemUpdater::onSyncStateChanged);
+        // Übertragungen der Plattform (macOS: Erweiterung des Dateianbieters) kommen unabhängig vom Sync-Lauf; die Quelle
+        // bündelt schon (Erweiterung höchstens alle 0,1 s, dazu jede Sekunde, solange etwas läuft), Anfang und Ende müssen ankommen
+        connect(_item->folder(), &Folder::vfsTransferProgress, this,
+            [this](const VfsTransferProgress &progress) { _item->setTransferProgress(progress); });
         if (_item->folder()->accountState())
             connect(_item->folder()->accountState(), &AccountState::stateChanged, this, &FolderItemUpdater::onConnectedChanged);
     }

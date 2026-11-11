@@ -394,6 +394,8 @@ Q_SIGNALS:
     void displayNameChanged();
     void imageChanged(); // probably part of space changed
     void progressUpdate(const ProgressInfo &progress);
+    /// Übertragungen der Plattform statt der Sync-Engine (Vfs::transferProgress())
+    void vfsTransferProgress(const OCC::VfsTransferProgress &progress);
 
 
 public Q_SLOTS:

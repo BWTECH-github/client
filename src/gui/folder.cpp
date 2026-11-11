@@ -540,6 +540,8 @@ void Folder::startVfs()
         setSyncState(SyncResult::SetupError);
         _vfsIsReady = false;
     });
+    // Übertragungen der Plattform (macOS: Erweiterung des Dateianbieters) zeigt die Ordneransicht wie einen Sync-Lauf
+    connect(_vfs, &Vfs::transferProgress, this, &Folder::vfsTransferProgress);
 
     slotNextSyncFullLocalDiscovery();
 #ifdef Q_OS_MACOS

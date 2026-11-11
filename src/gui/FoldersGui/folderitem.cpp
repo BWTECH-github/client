@@ -96,6 +96,72 @@ void FolderItem::setProgress(const ProgressInfo &progress)
     refresh();
 }
 
+void FolderItem::setTransferProgress(const VfsTransferProgress &progress)
+{
+    const qint64 uploadBytes = std::max<qint64>(progress.uploadBytes, 0);
+    const qint64 downloadBytes = std::max<qint64>(progress.downloadBytes, 0);
+    const qint64 uploadedBytes = std::clamp<qint64>(progress.uploadedBytes, 0, uploadBytes);
+    const qint64 downloadedBytes = std::clamp<qint64>(progress.downloadedBytes, 0, downloadBytes);
+    const qint64 sentBytes = progress.sentBytes;
+    const qint64 receivedBytes = progress.receivedBytes;
+    const qint64 total = uploadBytes + downloadBytes;
+    if (total == 0) {
+        if (!_platformTransfer) {
+            return;
+        }
+        // fertig: zurück zum Zustand des Ordners („Synchronisiert“)
+        _platformTransfer = false;
+        _totalSize = 0;
+        _completedSize = 0;
+        _percentComplete = 0;
+        _estimatedUpBw = 0;
+        _estimatedDownBw = 0;
+        _estimatedEta = 0;
+        _lastTransferSample = {};
+        refresh();
+        return;
+    }
+
+    // Raten aus den bewegten Bytes seit dem letzten Stand, geglättet. Nicht aus dem Fortschritt der Runde: Der springt bei
+    // einer Wiederholung zurück. Fallen die Zähler, hat die Erweiterung neu begonnen: wieder bei 0.
+    const auto now = std::chrono::steady_clock::now();
+    if (!_platformTransfer || _lastTransferSample == std::chrono::steady_clock::time_point{}) {
+        _estimatedUpBw = 0;
+        _estimatedDownBw = 0;
+        _lastTransferSample = now;
+        _lastSent = sentBytes;
+        _lastReceived = receivedBytes;
+    } else {
+        const double seconds = std::chrono::duration<double>(now - _lastTransferSample).count();
+        if (seconds >= 0.5) {
+            const auto rate = [seconds](qint64 current, qint64 before, quint64 previousRate) -> quint64 {
+                if (current < before) {
+                    return 0;
+                }
+                const double measured = double(current - before) / seconds;
+                return static_cast<quint64>(previousRate == 0 ? measured : 0.7 * double(previousRate) + 0.3 * measured);
+            };
+            _estimatedUpBw = rate(sentBytes, _lastSent, _estimatedUpBw);
+            _estimatedDownBw = rate(receivedBytes, _lastReceived, _estimatedDownBw);
+            _lastTransferSample = now;
+            _lastSent = sentBytes;
+            _lastReceived = receivedBytes;
+        }
+    }
+
+    _platformTransfer = true;
+    _totalSize = static_cast<quint64>(total);
+    _completedSize = static_cast<quint64>(uploadedBytes + downloadedBytes);
+    // abgerundet: 100 % erst, wenn alles übertragen ist
+    _percentComplete = static_cast<int>(_completedSize * 100 / _totalSize);
+    // Eine Restzeit nur für eine einzelne Operation: Bei mehreren kennt die Runde nur die Dateien, die das System schon
+    // begonnen hat (weitere reicht es erst nach, wenn eine fertig ist), die Restzeit wäre viel zu kurz.
+    const bool single = std::max<qint64>(progress.uploadOperations, 0) + std::max<qint64>(progress.downloadOperations, 0) <= 1;
+    const quint64 bandwidth = _estimatedUpBw + _estimatedDownBw;
+    _estimatedEta = single && bandwidth > 0 ? static_cast<quint64>(double(_totalSize - _completedSize) / double(bandwidth) * 1000.0) : 0;
+    refresh();
+}
+
 Folder *FolderItem::folder()
 {
     return _folder;
@@ -106,6 +172,10 @@ QString FolderItem::statusIconName() const
     if (!_folder || !_folder->accountState())
         return {};
     SyncResult status = _folder->syncResult();
+    if (showsPlatformTransfer()) {
+        // die Erweiterung überträgt: dasselbe Symbol wie ein Sync-Lauf
+        status.setStatus(SyncResult::SyncRunning);
+    }
     if (!_folder->isConnected()) {
         status.setStatus(SyncResult::Status::Offline);
     } else if (_folder->syncPaused() || NetworkInformation::instance()->isBehindCaptivePortal()
@@ -133,6 +203,10 @@ QString FolderItem::statusAsString() const
     if (_folder->syncPaused())
         return tr("Sync paused");
 
+    // Die Erweiterung des Dateianbieters überträgt (macOS), die Sync-Engine steht still: wie ein Lauf zeigen
+    if (showsPlatformTransfer())
+        return progressString();
+
     SyncResult status = _folder->syncResult();
 
     switch (status.status()) {
@@ -154,29 +228,49 @@ QString FolderItem::statusAsString() const
         return tr("Offline");
     case SyncResult::NotYetStarted:
         return tr("Sync pending");
-    case SyncResult::SyncRunning: {
-        QString completedFormatted = Utility::octetsToString(_completedSize);
-        QString totalFormatted = Utility::octetsToString(_totalSize);
-        QString percentFormatted = QString::number(_percentComplete);
-        QString progress = tr("Syncing %1 of %2 (%3 %").arg(completedFormatted, totalFormatted, percentFormatted);
-
-        if (_estimatedDownBw > 0) {
-            QString formattedDownBw = Utility::octetsToString(_estimatedDownBw);
-            progress.append(tr(", ⬇️ %1/s").arg(formattedDownBw));
-        }
-        if (_estimatedUpBw > 0) {
-            QString formattedUpBw = Utility::octetsToString(_estimatedUpBw);
-            progress.append(tr(", ⬆️ %1/s").arg(formattedUpBw));
-        }
-        if (_estimatedEta > 0) {
-            progress.append(tr(", %1 left").arg(Utility::durationToDescriptiveString1(std::chrono::milliseconds(_estimatedEta))));
-        }
-        progress.append(")");
-        return progress;
-    }
+    case SyncResult::SyncRunning:
+        return progressString();
     };
 
     return {};
+}
+
+bool FolderItem::showsPlatformTransfer() const
+{
+    if (!_platformTransfer || _totalSize == 0 || !_folder || !_folder->isAvailable())
+        return false;
+    // ein Fehler des Ordners geht vor (Symbol und Text), die Übertragung der Erweiterung überdeckt ihn nicht
+    switch (_folder->syncResult().status()) {
+    case SyncResult::Error:
+    case SyncResult::SetupError:
+    case SyncResult::Problem:
+    case SyncResult::Unavailable:
+        return false;
+    default:
+        return true;
+    }
+}
+
+QString FolderItem::progressString() const
+{
+    QString completedFormatted = Utility::octetsToString(_completedSize);
+    QString totalFormatted = Utility::octetsToString(_totalSize);
+    QString percentFormatted = QString::number(_percentComplete);
+    QString progress = tr("Syncing %1 of %2 (%3 %").arg(completedFormatted, totalFormatted, percentFormatted);
+
+    if (_estimatedDownBw > 0) {
+        QString formattedDownBw = Utility::octetsToString(_estimatedDownBw);
+        progress.append(tr(", ⬇️ %1/s").arg(formattedDownBw));
+    }
+    if (_estimatedUpBw > 0) {
+        QString formattedUpBw = Utility::octetsToString(_estimatedUpBw);
+        progress.append(tr(", ⬆️ %1/s").arg(formattedUpBw));
+    }
+    if (_estimatedEta > 0) {
+        progress.append(tr(", %1 left").arg(Utility::durationToDescriptiveString1(std::chrono::milliseconds(_estimatedEta))));
+    }
+    progress.append(")");
+    return progress;
 }
 
 void FolderItem::updateStatusString()
@@ -224,8 +318,10 @@ QVariant FolderItem::data(int role) const
     case FolderItemRoles::StatusStringRole:
         return _statusString;
     case FolderItemRoles::ProgressRole:
-        // Balken nur, solange der Ordner wirklich überträgt; die Zahl stammt aus setProgress()
-        if (_totalSize > 0 && _folder->isConnected() && !_folder->syncPaused() && _folder->syncResult().status() == SyncResult::SyncRunning)
+        // Balken nur, solange der Ordner wirklich überträgt; die Zahl stammt aus setProgress() (Sync-Lauf) oder
+        // setTransferProgress() (die Erweiterung des Dateianbieters unter macOS)
+        if (_totalSize > 0 && _folder->isConnected() && !_folder->syncPaused()
+            && (showsPlatformTransfer() || _folder->syncResult().status() == SyncResult::SyncRunning))
             return _percentComplete;
         return QVariant();
     case FolderItemRoles::SortPriorityRole:

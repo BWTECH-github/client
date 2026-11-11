@@ -93,6 +93,26 @@ private:
     SyncEngine *_syncEngine;
 };
 
+/**
+ * Fortschritt der Übertragungen, die nicht die Sync-Engine ausführt, sondern die Plattform (macOS: die Erweiterung des
+ * Dateianbieters lädt hoch und herunter, was der Finder kopiert oder öffnet), siehe Vfs::transferProgress(). Je Richtung:
+ * übertragene und gesamte Bytes der laufenden Runde (alles seit dem letzten Leerlauf; beendete Übertragungen zählen mit,
+ * fertige Dateien ziehen den Balken nicht zurück), die Zahl der darin begonnenen Operationen und die fortlaufend gezählten,
+ * tatsächlich bewegten Bytes für die Rate (wachsen nur; kleiner heißt, die Quelle hat neu begonnen). Gesamtzahlen 0 in
+ * beiden Richtungen: es läuft nichts.
+ */
+struct VfsTransferProgress
+{
+    qint64 uploadedBytes = 0;
+    qint64 uploadBytes = 0;
+    qint64 uploadOperations = 0;
+    qint64 sentBytes = 0;
+    qint64 downloadedBytes = 0;
+    qint64 downloadBytes = 0;
+    qint64 downloadOperations = 0;
+    qint64 receivedBytes = 0;
+};
+
 /** Interface describing how to deal with virtual/placeholder files.
  *
  * There are different ways of representing files locally that will only
@@ -298,6 +318,12 @@ Q_SIGNALS:
 
     /// The vfs plugin detected that the metadata are out of sync and requests a sync with the server
     void needSync();
+
+    /**
+     * Übertragungen, die nicht die Sync-Engine ausführt, sondern die Plattform (macOS: die Erweiterung des Dateianbieters lädt
+     * hoch und herunter, was der Finder kopiert oder öffnet); siehe VfsTransferProgress.
+     */
+    void transferProgress(const OCC::VfsTransferProgress &progress);
 
 protected:
     /** Update placeholder metadata during discovery.

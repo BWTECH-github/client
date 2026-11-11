@@ -33,6 +33,12 @@
 #include <QRegularExpression>
 #include <QSaveFile>
 #include <QSet>
+#include <QTimer>
+
+#include <algorithm>
+#include <chrono>
+#include <map>
+#include <vector>
 
 #import <AppKit/AppKit.h>
 #import <FileProvider/FileProvider.h>
@@ -191,6 +197,134 @@ void credentialRequestPosted(CFNotificationCenterRef, void *, CFNotificationName
 
 }
 
+namespace {
+
+using OCC::Mac::Transfer;
+
+/// Same names in FileProviderExt/WebDavBackend.swift (AppGroup.transfersChanged, TransferBoard)
+QString transfersChangedName()
+{
+    return appGroup() + QStringLiteral(".fileprovider.transfers");
+}
+
+QString transfersFile(const QString &identifier)
+{
+    return containerFile(QStringLiteral("FileProviderTransfers-%1.json").arg(identifier));
+}
+
+// Ohne neuen Herzschlag der Erweiterung so lange (sie schreibt jede Sekunde, solange etwas läuft): dann gilt sie als beendet
+// (Absturz, Neustart), es läuft nichts mehr
+constexpr qint64 transferHeartbeatTimeoutMs = 5000;
+
+struct TransferObservation
+{
+    QString identifier;
+    QString path; // FileProviderTransfers-<domain>.json
+    std::function<void(const Transfer &, const Transfer &)> handler;
+    QTimer *ticker = nullptr; // jede Sekunde nachlesen, solange etwas läuft (Herzschlag)
+    bool reported = false;
+    bool shown = false;
+    Transfer uploads;
+    Transfer downloads;
+};
+
+/// nur im Hauptthread; std::map: Verweise bleiben gültig, wenn ein Handler Beobachtungen anlegt oder beendet
+std::map<int, TransferObservation> &transferObservations()
+{
+    static std::map<int, TransferObservation> observations;
+    return observations;
+}
+
+/// Liest den Stand, den die Erweiterung schreibt (TransferBoard); fehlt er oder ist er zu alt, läuft nichts.
+void readTransfers(const QString &path, Transfer &uploads, Transfer &downloads)
+{
+    uploads = Transfer();
+    downloads = Transfer();
+    QFile file(path);
+    if (path.isEmpty() || !file.open(QIODevice::ReadOnly)) {
+        return;
+    }
+    const QJsonObject state = QJsonDocument::fromJson(file.read(64 * 1024)).object();
+    const qint64 updated = state.value(QStringLiteral("updated")).toInteger();
+    // auch weit in der Zukunft (die Uhr wurde zurückgestellt): sonst hinge eine abgebrochene Übertragung so lange in der Zeile
+    if (qAbs(QDateTime::currentMSecsSinceEpoch() - updated) > transferHeartbeatTimeoutMs) {
+        return;
+    }
+    const auto direction = [&state](const QString &doneKey, const QString &totalKey, const QString &operationsKey, const QString &movedKey) {
+        Transfer transfer;
+        transfer.totalBytes = std::max<qint64>(state.value(totalKey).toInteger(), 0);
+        transfer.completedBytes = std::clamp<qint64>(state.value(doneKey).toInteger(), 0, transfer.totalBytes);
+        transfer.operations = std::max<qint64>(state.value(operationsKey).toInteger(), 0);
+        transfer.movedBytes = std::max<qint64>(state.value(movedKey).toInteger(), 0);
+        transfer.active = transfer.totalBytes > 0;
+        return transfer;
+    };
+    uploads = direction(QStringLiteral("uploaded"), QStringLiteral("upload"), QStringLiteral("uploadOperations"), QStringLiteral("sent"));
+    downloads = direction(
+        QStringLiteral("downloaded"), QStringLiteral("download"), QStringLiteral("downloadOperations"), QStringLiteral("received"));
+}
+
+void sampleTransfers(int token)
+{
+    auto it = transferObservations().find(token);
+    if (it == transferObservations().end()) {
+        return;
+    }
+    TransferObservation &observation = it->second;
+    Transfer uploads;
+    Transfer downloads;
+    readTransfers(observation.path, uploads, downloads);
+    const bool active = uploads.active || downloads.active;
+    const bool changed = !observation.reported || uploads != observation.uploads || downloads != observation.downloads;
+    if (changed) {
+        qCDebug(lcFileProviderDomain) << "Transfers of" << observation.identifier << "up" << uploads.completedBytes << "/"
+                                      << uploads.totalBytes << "B in" << uploads.operations << "operations, down"
+                                      << downloads.completedBytes << "/" << downloads.totalBytes << "B in" << downloads.operations
+                                      << "operations, sent" << uploads.movedBytes << "B, received" << downloads.movedBytes << "B";
+        observation.uploads = uploads;
+        observation.downloads = downloads;
+    }
+    // solange etwas läuft, den Herzschlag mitlesen: bleibt er aus, ist die Übertragung vorbei
+    if (active && !observation.ticker->isActive()) {
+        observation.ticker->start();
+    } else if (!active) {
+        observation.ticker->stop();
+    }
+    const bool wasShown = observation.shown;
+    if (active != wasShown) {
+        qCInfo(lcFileProviderDomain) << "Transfers of" << observation.identifier << (active ? "running" : "idle") << "up"
+                                     << uploads.completedBytes << "/" << uploads.totalBytes << "B, down" << downloads.completedBytes
+                                     << "/" << downloads.totalBytes << "B";
+    }
+    observation.shown = active;
+    observation.reported = true;
+    // Läuft etwas, geht auch ein unveränderter Stand hinaus: Rate und Restzeit sinken dann, statt stehen zu bleiben.
+    // eine Kopie: der Handler darf seine Beobachtung beenden
+    const auto handler = observation.handler;
+    if (active) {
+        handler(uploads, downloads);
+    } else if (wasShown || changed) {
+        handler(Transfer(), Transfer());
+    }
+}
+
+void transfersPosted(CFNotificationCenterRef, void *, CFNotificationName, const void *, CFDictionaryRef)
+{
+    onMainThread([] {
+        // eine Nachricht für alle Domains der App-Gruppe: jede liest ihre Datei
+        std::vector<int> tokens;
+        for (const auto &observation : transferObservations()) {
+            tokens.push_back(observation.first);
+        }
+        for (const int token : tokens) {
+            sampleTransfers(token);
+        }
+    });
+}
+
+}
+
+
 namespace OCC {
 namespace Mac {
 
@@ -233,7 +367,8 @@ namespace Mac {
 
     void removeDomainSettings(const QString &identifier)
     {
-        for (const QString &name : {QStringLiteral("FileProviderConfig-%1.json"), QStringLiteral("FileProviderStore-%1.json")}) {
+        for (const QString &name : {QStringLiteral("FileProviderConfig-%1.json"), QStringLiteral("FileProviderStore-%1.json"),
+                 QStringLiteral("FileProviderTransfers-%1.json")}) {
             const QString path = containerFile(name.arg(identifier));
             if (!path.isEmpty()) {
                 QFile::remove(path);
@@ -539,6 +674,10 @@ namespace Mac {
                                   logError("Failed to remove domain", identifier, error);
                                   showPreservedData(preservedLocation, identifier);
                                   qCInfo(lcFileProviderDomain) << "Unregistered File Provider domain" << identifier;
+                                  // removeDomainSettings() kam vor dem Entfernen: bis dahin schrieb die Erweiterung sie neu
+                                  if (!error) {
+                                      QFile::remove(transfersFile(identifier));
+                                  }
                                   if (callback) {
                                       onMainThread(callback);
                                   }
@@ -565,6 +704,10 @@ namespace Mac {
                                   completionHandler:^(NSURL *preservedLocation, NSError *removeError) {
                                       logError("Failed to remove domain", identifier, removeError);
                                       showPreservedData(preservedLocation, identifier);
+                                      // bis zum Entfernen schrieb die Erweiterung ihren Übertragungsstand womöglich neu
+                                      if (!removeError) {
+                                          QFile::remove(transfersFile(identifier));
+                                      }
                                   }];
                 removeDomainSettings(identifier);
                 removeAuthorization(identifier);
@@ -667,6 +810,42 @@ namespace Mac {
     void stopObservingCredentialRequests(int token)
     {
         credentialRequestHandlers().remove(token);
+    }
+
+    int observeTransfers(const QString &identifierRef, std::function<void(const Transfer &uploads, const Transfer &downloads)> handler)
+    {
+        const QString identifier = identifierRef;
+        static int nextToken = 0;
+        const int token = ++nextToken;
+        if (!fileProviderAvailable() || identifier.isEmpty() || appGroup().isEmpty()) {
+            return token;
+        }
+        static bool observing = false;
+        if (!observing) {
+            observing = true;
+            CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), nullptr, transfersPosted,
+                (__bridge CFStringRef)transfersChangedName().toNSString(), nullptr, CFNotificationSuspensionBehaviorDeliverImmediately);
+        }
+        TransferObservation &observation = transferObservations()[token];
+        observation.identifier = identifier;
+        observation.path = transfersFile(identifier);
+        observation.handler = std::move(handler);
+        observation.ticker = new QTimer(qApp);
+        observation.ticker->setInterval(std::chrono::seconds(1));
+        QObject::connect(observation.ticker, &QTimer::timeout, qApp, [token] { sampleTransfers(token); });
+        // der Stand von jetzt (die Erweiterung kann schon übertragen)
+        QTimer::singleShot(0, qApp, [token] { sampleTransfers(token); });
+        return token;
+    }
+
+    void stopObservingTransfers(int token)
+    {
+        auto it = transferObservations().find(token);
+        if (it == transferObservations().end()) {
+            return;
+        }
+        delete it->second.ticker;
+        transferObservations().erase(it);
     }
 
 } // namespace Mac
