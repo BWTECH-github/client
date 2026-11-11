@@ -86,6 +86,8 @@ void FolderItemUpdater::onSyncStateChanged()
     SyncResult::Status status = _item->folder()->syncResult().status();
     if (status == SyncResult::SyncRunning) {
         Q_ASSERT(!_progressInfoConnection); // ie it should not be connected already
+        // ein neuer Lauf: Zahlen und Balken erst mit seiner ersten Meldung, nicht die des vorigen Laufs
+        _item->resetRunProgress();
         _progressInfoConnection = connect(_item->folder(), &Folder::progressUpdate, this, &FolderItemUpdater::onProgressUpdated);
     } else {
         disconnect(_progressInfoConnection);

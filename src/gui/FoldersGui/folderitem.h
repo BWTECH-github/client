@@ -53,6 +53,12 @@ public:
     void refresh();
     void setProgress(const ProgressInfo &progress);
     /**
+     * Ein neuer Sync-Lauf beginnt: Zahlen, Raten und Balken des vorigen Laufs gelten nicht mehr. setProgress() bekommt nur
+     * Meldungen mit bekannter Gesamtgröße; ohne das Zurücksetzen zeigte ein Lauf ohne Übertragung (Verschieben, Löschen,
+     * Platzhalter) Text und Balken des letzten Laufs mit Übertragung. Eine laufende Übertragung der Plattform bleibt.
+     */
+    void resetRunProgress();
+    /**
      * Übertragungen der Plattform statt der Sync-Engine (macOS: die Erweiterung des Dateianbieters lädt hoch oder herunter,
      * die Engine steht still). Solange sie laufen, zeigt die Zeile Fortschritt, Raten, Sync-Symbol und Balken wie bei einem
      * Lauf; Gesamtzahlen 0 in beiden Richtungen beenden die Anzeige. Die Raten kommen aus den fortlaufend gezählten

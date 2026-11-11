@@ -19,6 +19,8 @@
 #include "progressdispatcher.h"
 #include "resources/iconresources.h"
 
+#include <QCoreApplication>
+
 namespace OCC {
 
 
@@ -94,6 +96,19 @@ void FolderItem::setProgress(const ProgressInfo &progress)
     _estimatedEta = progress.totalProgress().estimatedEta;
 
     refresh();
+}
+
+void FolderItem::resetRunProgress()
+{
+    // die Erweiterung des Dateianbieters (macOS) überträgt gerade: ihre Zahlen stehen in denselben Feldern und bleiben
+    if (_platformTransfer)
+        return;
+    _totalSize = 0;
+    _completedSize = 0;
+    _percentComplete = 0;
+    _estimatedUpBw = 0;
+    _estimatedDownBw = 0;
+    _estimatedEta = 0;
 }
 
 void FolderItem::setTransferProgress(const VfsTransferProgress &progress)
@@ -253,6 +268,11 @@ bool FolderItem::showsPlatformTransfer() const
 
 QString FolderItem::progressString() const
 {
+    // In diesem Lauf noch keine Meldung mit Gesamtgröße, oder er überträgt nichts (Verschieben, Löschen, Platzhalter):
+    // keine Zahlen („0 B von 0 B“). Der Text stammt aus dem Infobereich und ist dort in allen Katalogen übersetzt.
+    if (_totalSize == 0)
+        return QCoreApplication::translate("OCC::TrayMenuController", "Syncing");
+
     QString completedFormatted = Utility::octetsToString(_completedSize);
     QString totalFormatted = Utility::octetsToString(_totalSize);
     QString percentFormatted = QString::number(_percentComplete);
