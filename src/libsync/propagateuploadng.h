@@ -22,6 +22,7 @@
 #include "propagateuploadfile.h"
 #include "uploaddevice.h"
 
+#include <QElapsedTimer>
 #include <QHash>
 #include <QMap>
 #include <QVector>
@@ -98,6 +99,14 @@ private:
      * transaction deadlocks on the upload directory) for this transfer. */
     int _transientRetryCount = 0;
 
+    /** Zusammenbau im Hintergrund (OC-LazyOps): Der Server hat den abschließenden MOVE mit 202
+     * angenommen und nennt eine Adresse, unter der das Ergebnis abgefragt wird. */
+    QString _finalizeStatusPath; /// absoluter Pfad des Auftragsstatus auf dem Server
+    QByteArray _finalizeLastStatus; /// zuletzt gelesener Status, um Stillstand zu erkennen
+    QElapsedTimer _finalizeUnchangedSince; /// seit wann sich der Status nicht geändert hat
+    int _finalizePollCount = 0; /// bestimmt den Abstand zur nächsten Abfrage
+    int _finalizePollFailures = 0; /// fehlgeschlagene Abfragen in Folge
+
     /**
      * Return the path of a chunk.
      * If chunkOffset == -1, returns the URL of the parent folder containing the chunks
@@ -121,6 +130,11 @@ private:
     void startNewUpload();
     void scheduleChunks();
     void doFinalMove();
+    void finishFinalMove(const QByteArray &fileId, const QString &etag);
+    void startFinalizePolling(const QString &statusPath);
+    void scheduleFinalizePoll();
+    void pollFinalizeStatus();
+    void finalizeFailed(int httpCode, const QString &message);
 public Q_SLOTS:
     void abort(PropagatorJob::AbortType abortType) override;
 private Q_SLOTS:
@@ -131,6 +145,7 @@ private Q_SLOTS:
     void slotMkColFinished();
     void slotPutFinished();
     void slotMoveJobFinished();
+    void slotFinalizePollFinished();
     void slotUploadProgress(qint64, qint64);
 };
 }

@@ -34,6 +34,8 @@
 
 #include <QDir>
 #include <QFileInfo>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QRandomGenerator>
 #include <QTimer>
 
@@ -48,6 +50,15 @@ namespace {
     // Maximum number of in-run retries for transient server errors per transfer.
     // Enough to ride out a busy database without ever spinning forever.
     constexpr int maxTransientRetries = 10;
+
+    // Zusammenbau im Hintergrund: so viele Statusabfragen dürfen in Folge scheitern (Netz, Proxy,
+    // Neustart des Servers; bei 5 s Abstand rund anderthalb Minuten), bevor der Client aufgibt.
+    constexpr int maxFinalizePollFailures = 20;
+
+    // Zusammenbau im Hintergrund: Der Server meldet während des Zusammenbaus alle 10 s den
+    // Fortschritt. Phasen ohne Meldung (Virenprüfung, Versionskopie) können bei sehr großen
+    // Dateien lange dauern; erst nach einer Stunde ohne jede Änderung gibt der Client auf.
+    constexpr qint64 maxFinalizeSilenceMs = 60 * 60 * 1000;
 
     /* oc10 on MySQL/MariaDB occasionally rejects an operation on the uploads
      * directory with a rolled-back transaction when requests race each other:
@@ -481,6 +492,15 @@ void PropagateUploadFileNG::doFinalMove()
     headers[QByteArrayLiteral("OC-Total-Length")] = QByteArray::number(_bytesToUpload);
     headers[QByteArrayLiteral("OC-Total-File-Length")] = QByteArray::number(_item->_size);
 
+    // Große Dateien darf der Server im Hintergrund zusammenbauen: Er antwortet dann sofort mit
+    // 202 und einer Statusadresse (slotMoveJobFinished -> startFinalizePolling), statt die
+    // Verbindung über den ganzen Zusammenbau offen zu halten - das scheitert bei Minuten
+    // Laufzeit an den Zeitlimits von Proxys. Server ohne diese Fähigkeit ignorieren den Kopf.
+    const qint64 asyncFinalizeMinSize = propagator()->syncOptions()._asyncFinalizeMinSize;
+    if (asyncFinalizeMinSize >= 0 && _item->_size >= asyncFinalizeMinSize) {
+        headers[QByteArrayLiteral("OC-LazyOps")] = QByteArrayLiteral("true");
+    }
+
     const QString source = chunkPath() + QStringLiteral("/.file");
 
     auto job = new MoveJob(propagator()->account(), propagator()->account()->url(), source, destination, headers, this);
@@ -691,7 +711,13 @@ void PropagateUploadFileNG::slotMoveJobFinished()
     }
 
     if (_item->_httpErrorCode == 202) {
-        done(SyncFileItem::NormalError, tr("The server did ask for a removed legacy feature(polling)"));
+        // Der Server baut die Datei im Hintergrund zusammen (Antwort auf OC-LazyOps)
+        const QString statusPath = QString::fromUtf8(job->reply()->rawHeader("OC-JobStatus-Location"));
+        if (statusPath.isEmpty()) {
+            abortWithError(SyncFileItem::NormalError, tr("Unexpected return code from server (%1)").arg(_item->_httpErrorCode));
+            return;
+        }
+        startFinalizePolling(statusPath);
         return;
     }
 
@@ -700,26 +726,160 @@ void PropagateUploadFileNG::slotMoveJobFinished()
         return;
     }
 
-    QByteArray fid = job->reply()->rawHeader("OC-FileID");
-    if (fid.isEmpty()) {
+    finishFinalMove(job->reply()->rawHeader("OC-FileID"), getEtagFromReply(job->reply()));
+}
+
+void PropagateUploadFileNG::finishFinalMove(const QByteArray &fileId, const QString &etag)
+{
+    if (fileId.isEmpty()) {
         qCWarning(lcPropagateUploadNG) << "Server did not return a OC-FileID" << _item->_file;
         abortWithError(SyncFileItem::NormalError, tr("Missing File ID from server"));
         return;
-    } else {
-        // the old file id should only be empty for new files uploaded
-        if (!_item->_fileId.isEmpty() && _item->_fileId != fid) {
-            qCWarning(lcPropagateUploadNG) << "File ID changed!" << _item->_fileId << fid;
-        }
-        _item->_fileId = fid;
     }
+    // the old file id should only be empty for new files uploaded
+    if (!_item->_fileId.isEmpty() && _item->_fileId != fileId) {
+        qCWarning(lcPropagateUploadNG) << "File ID changed!" << _item->_fileId << fileId;
+    }
+    _item->_fileId = fileId;
 
-    _item->_etag = getEtagFromReply(job->reply());
+    _item->_etag = etag;
     if (_item->_etag.isEmpty()) {
         qCWarning(lcPropagateUploadNG) << "Server did not return an ETAG" << _item->_file;
         abortWithError(SyncFileItem::NormalError, tr("Missing ETag from server"));
         return;
     }
     finalize();
+}
+
+void PropagateUploadFileNG::startFinalizePolling(const QString &statusPath)
+{
+    qCInfo(lcPropagateUploadNG) << "The server assembles" << _item->_file << "in the background, status at" << statusPath;
+    _finalizeStatusPath = statusPath;
+    _finalizeLastStatus.clear();
+    _finalizePollCount = 0;
+    _finalizePollFailures = 0;
+    _finalizeUnchangedSince.start();
+    // Der Auftrag bleibt aktiv, bis das Ergebnis da ist (wie während des MOVE)
+    propagator()->_activeJobList.append(this);
+    scheduleFinalizePoll();
+}
+
+void PropagateUploadFileNG::scheduleFinalizePoll()
+{
+    // 0,5 s, 1 s, 2 s, 4 s, danach alle 5 s: kleine Dateien sind sofort fertig,
+    // der Zusammenbau großer Dateien wird nicht mit Abfragen überzogen
+    const auto delay = std::chrono::milliseconds(qMin(500 * (1 << qMin(_finalizePollCount, 4)), 5000));
+    ++_finalizePollCount;
+    QTimer::singleShot(delay, this, [this] {
+        if (_aborting || propagator()->_abortRequested) {
+            return;
+        }
+        pollFinalizeStatus();
+    });
+}
+
+void PropagateUploadFileNG::pollFinalizeStatus()
+{
+    // Die Statusadresse ist ein absoluter Pfad auf dem Server und enthält schon einen
+    // Unterordner der Installation, deshalb ohne den Pfad der Konto-Adresse zusammensetzen.
+    QUrl serverRoot = propagator()->account()->url();
+    serverRoot.setPath(QString());
+    auto job = new SimpleNetworkJob(propagator()->account(), serverRoot, _finalizeStatusPath, QByteArrayLiteral("GET"), nullptr, {}, this);
+    addChildJob(job);
+    connect(job, &SimpleNetworkJob::finishedSignal, this, &PropagateUploadFileNG::slotFinalizePollFinished);
+    job->start();
+}
+
+void PropagateUploadFileNG::slotFinalizePollFinished()
+{
+    auto job = qobject_cast<SimpleNetworkJob *>(sender());
+    const QNetworkReply::NetworkError err = job->reply()->error();
+    const int httpCode = job->reply()->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    const QByteArray body = job->reply()->readAll();
+
+    if (_aborting || propagator()->_abortRequested) {
+        return;
+    }
+
+    const QJsonObject status = QJsonDocument::fromJson(body).object();
+    const QString state = status.value(QLatin1String("status")).toString();
+
+    if (err != QNetworkReply::NoError || httpCode != 200 || state.isEmpty()) {
+        // Die Abfrage selbst ist gescheitert (Netz, Proxy, Server startet neu). Der Zusammenbau
+        // läuft auf dem Server unabhängig davon weiter, deshalb mehrfach nachfragen. Ein 404
+        // heißt dagegen: Der Server kennt den Auftrag nicht (mehr).
+        ++_finalizePollFailures;
+        qCWarning(lcPropagateUploadNG) << "Could not read the assembly status of" << _item->_file << "- HTTP" << httpCode << err
+                                       << "- attempt" << _finalizePollFailures << "of" << maxFinalizePollFailures;
+        if (httpCode == 404 || _finalizePollFailures >= maxFinalizePollFailures) {
+            propagator()->_activeJobList.removeOne(this);
+            // Ob die Datei auf dem Server angekommen ist, klärt der nächste Lauf am Serverstand
+            propagator()->_journal->schedulePathForRemoteDiscovery(_item->_file);
+            propagator()->_anotherSyncNeeded = true;
+            abortWithError(SyncFileItem::NormalError, tr("Unexpected return code from server (%1)").arg(httpCode));
+            return;
+        }
+        scheduleFinalizePoll();
+        return;
+    }
+    _finalizePollFailures = 0;
+    _item->_responseTimeStamp = job->responseTimestamp();
+    _item->_requestId = job->requestId();
+
+    if (state == QLatin1String("finished")) {
+        propagator()->_activeJobList.removeOne(this);
+        qCInfo(lcPropagateUploadNG) << "The server finished assembling" << _item->_file;
+        finishFinalMove(status.value(QLatin1String("fileId")).toString().toUtf8(),
+            Utility::normalizeEtag(status.value(QLatin1String("ETag")).toString()));
+        return;
+    }
+
+    if (state == QLatin1String("error")) {
+        propagator()->_activeJobList.removeOne(this);
+        finalizeFailed(status.value(QLatin1String("errorCode")).toInt(500), status.value(QLatin1String("errorMessage")).toString());
+        return;
+    }
+
+    // "init" oder "started": Der Server meldet beim Zusammenbau regelmäßig den Fortschritt.
+    // Ändert sich lange nichts mehr, arbeitet dort niemand mehr an dem Auftrag.
+    if (body != _finalizeLastStatus) {
+        _finalizeLastStatus = body;
+        _finalizeUnchangedSince.start();
+    } else if (_finalizeUnchangedSince.hasExpired(maxFinalizeSilenceMs)) {
+        propagator()->_activeJobList.removeOne(this);
+        qCWarning(lcPropagateUploadNG) << "The assembly status of" << _item->_file << "did not change any more:" << body;
+        propagator()->_journal->schedulePathForRemoteDiscovery(_item->_file);
+        propagator()->_anotherSyncNeeded = true;
+        abortWithError(SyncFileItem::NormalError, tr("The server did not finish processing the upload"));
+        return;
+    }
+    scheduleFinalizePoll();
+}
+
+void PropagateUploadFileNG::finalizeFailed(int httpCode, const QString &message)
+{
+    qCWarning(lcPropagateUploadNG) << "The server could not assemble" << _item->_file << "- HTTP" << httpCode << message;
+    _item->_httpErrorCode = httpCode;
+    const QByteArray errorBody = message.toUtf8();
+
+    // Wie beim MOVE, der die Verbindung offen hält: Ein Deadlock in der Server-Datenbank
+    // (zurückgerollte Transaktion) lässt die Stücke liegen, der MOVE ist gefahrlos wiederholbar.
+    if (isTransientServerError(httpCode, errorBody) && _transientRetryCount < maxTransientRetries) {
+        ++_transientRetryCount;
+        propagator()->_serializeChunkUploads = true;
+        qCWarning(lcPropagateUploadNG) << "Transient server error (transaction deadlock) on background assembly of" << _item->_file
+                                       << "- retry" << _transientRetryCount << "of" << maxTransientRetries;
+        _finished = false;
+        QTimer::singleShot(transientRetryDelay(_transientRetryCount), this, [this] {
+            if (!_finished && !_aborting && !propagator()->_abortRequested) {
+                doFinalMove();
+            }
+        });
+        return;
+    }
+
+    commonErrorHandling(QNetworkReply::UnknownServerError, errorBody,
+        message.isEmpty() ? tr("Unexpected return code from server (%1)").arg(httpCode) : message);
 }
 
 void PropagateUploadFileNG::slotUploadProgress(qint64 sent, qint64 total)

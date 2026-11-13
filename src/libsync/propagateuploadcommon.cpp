@@ -252,6 +252,11 @@ void PropagateUploadCommon::commonErrorHandling(AbstractNetworkJob *job)
 {
     QByteArray replyContent;
     QString errorString = job->errorStringParsingBody(&replyContent);
+    commonErrorHandling(job->reply()->error(), replyContent, errorString);
+}
+
+void PropagateUploadCommon::commonErrorHandling(QNetworkReply::NetworkError networkError, const QByteArray &replyContent, QString errorString)
+{
     qCDebug(lcPropagateUpload) << replyContent; // display the XML error in the debug
 
     // owncloud.online: Hat sich die lokale Datei während des Hochladens geändert, passen gesendeter Inhalt, Größe und
@@ -280,7 +285,7 @@ void PropagateUploadCommon::commonErrorHandling(AbstractNetworkJob *job)
     // Ensure errors that should eventually reset the chunked upload are tracked.
     checkResettingErrors();
 
-    SyncFileItem::Status status = classifyError(job->reply()->error(), _item->_httpErrorCode, &(propagator()->_anotherSyncNeeded), replyContent);
+    SyncFileItem::Status status = classifyError(networkError, _item->_httpErrorCode, &(propagator()->_anotherSyncNeeded), replyContent);
 
     // Insufficient remote storage.
     if (_item->_httpErrorCode == 507) {

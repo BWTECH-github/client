@@ -133,6 +133,13 @@ protected:
     void commonErrorHandling(AbstractNetworkJob *job);
 
     /**
+     * Dieselbe Fehlerbehandlung für ein Ergebnis, das nicht als Antwort auf die eigene Anfrage kam:
+     * Beim Zusammenbau im Hintergrund meldet der Server Statuscode (_item->_httpErrorCode) und
+     * Meldung erst über den Auftragsstatus.
+     */
+    void commonErrorHandling(QNetworkReply::NetworkError networkError, const QByteArray &replyContent, QString errorString);
+
+    /**
      * Increases the timeout for the final MOVE/PUT for large files.
      *
      * This is an unfortunate workaround since the drawback is not being able to

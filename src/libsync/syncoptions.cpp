@@ -55,6 +55,11 @@ void SyncOptions::fillFromEnvironmentVariables()
     if (maxParallel > 0)
         _parallelNetworkJobs = maxParallel;
 
+    bool asyncFinalizeMinSizeOk = false;
+    const qint64 asyncFinalizeMinSize = qEnvironmentVariable("OWNCLOUD_ASYNC_FINALIZE_MIN_SIZE").toLongLong(&asyncFinalizeMinSizeOk);
+    if (asyncFinalizeMinSizeOk)
+        _asyncFinalizeMinSize = asyncFinalizeMinSize;
+
     verifyChunkSizes();
 }
 

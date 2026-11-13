@@ -87,6 +87,16 @@ public:
      */
     std::chrono::milliseconds _targetChunkUploadDuration = std::chrono::minutes(1);
 
+    /** Ab dieser Dateigröße (Bytes) bittet der Client den Server, eine in Stücken hochgeladene
+     * Datei im Hintergrund zusammenzubauen (Kopf OC-LazyOps am abschließenden MOVE) und fragt das
+     * Ergebnis ab, statt die Verbindung über den ganzen Zusammenbau offen zu halten. Bei sehr
+     * großen Dateien dauert der Zusammenbau Minuten und scheitert sonst an den Zeitlimits von
+     * Proxys. Server ohne diese Fähigkeit ignorieren den Kopf und antworten wie bisher.
+     *
+     * Negativ schaltet das ab (Umgebungsvariable OWNCLOUD_ASYNC_FINALIZE_MIN_SIZE).
+     */
+    qint64 _asyncFinalizeMinSize = 100 * 1000 * 1000; // 100MB, ein Stück der größten Größe
+
     /** The maximum number of active jobs in parallel  */
     int _parallelNetworkJobs = 6;
 

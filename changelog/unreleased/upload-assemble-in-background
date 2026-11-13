@@ -1,0 +1,16 @@
+Enhancement: Let the server assemble large uploads in the background
+
+After the last chunk of a large file the client kept a single request open
+until the server had assembled the file. For files of several gigabytes this
+takes minutes, and proxies in front of the server cut the connection before the
+answer arrived: the upload was reported as failed although the file was
+complete on the server, and it was uploaded again.
+
+For files of 100 MB and more the client now asks the server to assemble the
+file in the background (header OC-LazyOps on the final MOVE) and polls the
+result: after 0.5, 1, 2 and 4 seconds, then every 5 seconds. Servers that do
+not offer this ignore the header and answer as before. A database deadlock
+reported for the assembly is retried like before, other errors are handled
+like the errors of a direct answer. The environment variable
+OWNCLOUD_ASYNC_FINALIZE_MIN_SIZE changes the size limit; a negative value
+turns the behaviour off.
