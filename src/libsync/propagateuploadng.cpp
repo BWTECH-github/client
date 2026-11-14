@@ -32,6 +32,7 @@
 #include "syncengine.h"
 #include "uploaddevice.h"
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
 #include <QJsonDocument>
@@ -714,7 +715,8 @@ void PropagateUploadFileNG::slotMoveJobFinished()
         // Der Server baut die Datei im Hintergrund zusammen (Antwort auf OC-LazyOps)
         const QString statusPath = QString::fromUtf8(job->reply()->rawHeader("OC-JobStatus-Location"));
         if (statusPath.isEmpty()) {
-            abortWithError(SyncFileItem::NormalError, tr("Unexpected return code from server (%1)").arg(_item->_httpErrorCode));
+            // 202 ohne Statusadresse: die alte Abfrage-Variante, die der Client nicht mehr kennt
+            abortWithError(SyncFileItem::NormalError, tr("The server did ask for a removed legacy feature(polling)"));
             return;
         }
         startFinalizePolling(statusPath);
@@ -850,7 +852,8 @@ void PropagateUploadFileNG::slotFinalizePollFinished()
         qCWarning(lcPropagateUploadNG) << "The assembly status of" << _item->_file << "did not change any more:" << body;
         propagator()->_journal->schedulePathForRemoteDiscovery(_item->_file);
         propagator()->_anotherSyncNeeded = true;
-        abortWithError(SyncFileItem::NormalError, tr("The server did not finish processing the upload"));
+        // vorhandener, in allen Sprachen übersetzter Text
+        abortWithError(SyncFileItem::NormalError, QCoreApplication::translate("OCC::AbstractNetworkJob", "Connection timed out"));
         return;
     }
     scheduleFinalizePoll();

@@ -3423,11 +3423,6 @@ Beachten Sie, dass Kommandozeilenoptionen zum Logging diese Einstellungen übers
         <translation>Der Server hat eine nicht mehr unterstützte Funktion angefordert (Polling).</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>The server did not finish processing the upload</source>
-        <translation>Der Server hat die hochgeladene Datei nicht fertig verarbeitet</translation>
-    </message>
-    <message>
         <location line="+12"/>
         <source>Missing File ID from server</source>
         <translation>Der Server hat keine Datei-ID geliefert</translation>
