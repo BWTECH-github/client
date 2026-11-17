@@ -225,7 +225,11 @@ void AbstractNetworkJob::slotFinished()
 
     if (!reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).isNull()
         && !(_isAuthenticationJob || reply()->request().hasRawHeader(QByteArrayLiteral("OC-Connection-Validator")))) {
-        Q_EMIT _account->unknownConnectionState();
+        // Die Verbindung nur neu prüfen lassen, solange der Auftrag danach wiederholt wird. Nach dem letzten Versuch brächte
+        // die Prüfung das Konto sofort wieder online, und wer den Auftrag gestartet hat, begänne ohne Pause von vorn.
+        if (needsRetry()) {
+            Q_EMIT _account->unknownConnectionState();
+        }
         qCWarning(lcNetworkJob) << this << "Unsupported redirect on" << _reply->url().toString() << "to"
                                 << reply()->attribute(QNetworkRequest::RedirectionTargetAttribute).toString();
         Q_EMIT networkError(_reply);

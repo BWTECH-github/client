@@ -1,7 +1,7 @@
 {
     "installed": true,
     "maintenance": @{maintenance},
-    "needsDbUpgrade": false,
+    "needsDbUpgrade": @{needsDbUpgrade},
     "version": "10.11.0.0",
     "versionstring": "10.11.0",
     "edition": "Community",

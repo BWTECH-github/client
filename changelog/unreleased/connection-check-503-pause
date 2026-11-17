@@ -1,0 +1,11 @@
+Bugfix: Wait between connection checks while the server answers 503
+
+While a server answered WebDAV requests with 503 but did not report maintenance
+mode, the client checked the connection again right after every answer, without
+any pause. That is the case while a database upgrade is pending and for
+accounts the server blocks. The account stayed at "Connecting" and the server
+received requests in a tight loop.
+
+A pending database upgrade (needsDbUpgrade in status.php) now counts as
+maintenance mode. In the other cases the account shows that the server is
+temporarily unavailable and the next check follows with the regular interval.

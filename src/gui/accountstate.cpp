@@ -198,10 +198,13 @@ void AccountState::setState(State state)
             // If we stop being voluntarily signed-out, try to connect and
             // auth right now!
             checkConnectivity();
-        } else if (_state == ServiceUnavailable) {
+        } else if (_state == ServiceUnavailable && oldState == Connected) {
             // Check if we are actually down for maintenance.
             // To do this we must clear the connection validator that just
             // produced the 503.
+            // Nur aus dem verbundenen Zustand: Dort kann die Prüfung ohne status.php gelaufen sein. War das Konto nicht
+            // verbunden, hat dieselbe Prüfung status.php gerade gefragt, und die nächste startet der Zeitgeber. Ohne diese
+            // Einschränkung folgte auf jedes 503 sofort die nächste Prüfung, ohne Pause und solange der Server so antwortet.
             resetConnectionValidator();
             checkConnectivity();
         } else if (_state == Connected) {
@@ -216,14 +219,17 @@ void AccountState::setState(State state)
     // todo: need to investigate whether it's ever the case that we go from connected to connected.
     // so far it looks to me as if this happens when the connection validator confirms all is still well?
     if (_state == Connected) {
+        // Die Verbindungsprüfung ist durch: Aufträge wieder zulassen, auch vor der Abfrage der Servereinstellungen. Deren
+        // Aufträge laufen selbst über die Warteschlange; blieb sie bis zum Ende der Abfrage gesperrt, wartete die Abfrage
+        // nach einer Weiterleitung für immer auf sich selbst, und das Konto synchronisierte bis zum Neustart nicht mehr.
+        // Synchronisiert wird ohnehin erst nach der Abfrage, siehe readyForSync().
+        _queueGuard.unblock();
         // the account is briefly connected when setting up. If we're in this setup state, don't fetch the
         // server settings yet!
         if (_needsServerSettingsRefresh && !_settingUp) {
             // update capabilities and fetch relevant settings
-            // in the code path we unblock the queue *after* the caps retrieval has succeeded
             fetchServerSettings();
-        } else
-            _queueGuard.unblock();
+        }
     }
 
     if (oldState != _state) {

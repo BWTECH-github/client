@@ -1,0 +1,10 @@
+Bugfix: Account no longer stops syncing after a redirected settings request
+
+If the server answered the first request for the server capabilities with a
+redirect, the client blocked its request queue to check the connection and
+never released it again, because the request it waited for was in that queue.
+The account looked connected but did not sync until the client was restarted.
+
+The queue is released as soon as the connection check has passed. A request
+that is still redirected after all retries now ends with an error and is tried
+again with the next regular connection check.

@@ -217,7 +217,9 @@ void ConnectionValidator::statusFound(const QUrl &url, const QJsonObject &info)
 
     // Check for maintenance mode: Servers send "true", so go through QVariant
     // to parse it correctly.
-    if (info[QStringLiteral("maintenance")].toVariant().toBool()) {
+    // Steht ein Datenbank-Upgrade aus, meldet der Server maintenance:false, antwortet auf DAV aber mit 503: auch das ist
+    // Wartung (wie in ServerDiagnostics). Sonst endete jede Prüfung mit ServiceUnavailable statt mit der Wartungsmeldung.
+    if (info[QStringLiteral("maintenance")].toVariant().toBool() || info[QStringLiteral("needsDbUpgrade")].toVariant().toBool()) {
         reportResult(MaintenanceMode);
         return;
     }

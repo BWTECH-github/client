@@ -57,11 +57,16 @@ private Q_SLOTS:
         QTest::addColumn<Values>("values");
         QTest::addColumn<ConnectionValidator::Status>("status");
 
-        const auto defaultValue = Values{{QStringLiteral("maintenance"), QStringLiteral("false")}, {QStringLiteral("version"), QStringLiteral("10.11.0.0")},
-            {QStringLiteral("productversion"), QStringLiteral("4.0.5")}};
+        const auto defaultValue = Values{{QStringLiteral("maintenance"), QStringLiteral("false")}, {QStringLiteral("needsDbUpgrade"), QStringLiteral("false")},
+            {QStringLiteral("version"), QStringLiteral("10.11.0.0")}, {QStringLiteral("productversion"), QStringLiteral("4.0.5")}};
 
         QTest::newRow("stauts.php maintenance") << FailStage::StatusPhp << [value = defaultValue]() mutable {
             value[QStringLiteral("maintenance")] = QStringLiteral("true");
+            return value;
+        }() << ConnectionValidator::MaintenanceMode;
+        // Steht ein Datenbank-Upgrade aus, meldet status.php maintenance:false, DAV antwortet aber mit 503: auch das ist Wartung
+        QTest::newRow("stauts.php needsDbUpgrade") << FailStage::StatusPhp << [value = defaultValue]() mutable {
+            value[QStringLiteral("needsDbUpgrade")] = QStringLiteral("true");
             return value;
         }() << ConnectionValidator::MaintenanceMode;
         QTest::newRow("stauts.php ServiceUnavailable") << FailStage::StatusPhp << defaultValue << ConnectionValidator::StatusNotFound;
