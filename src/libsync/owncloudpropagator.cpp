@@ -201,11 +201,7 @@ static SyncJournalErrorBlacklistRecord createBlacklistEntry(
     return entry;
 }
 
-/** Updates, creates or removes a blacklist entry for the given item.
- *
- * May adjust the status or item._errorString.
- */
-static void blacklistUpdate(SyncJournalDb *journal, SyncFileItem &item)
+void blacklistUpdate(SyncJournalDb *journal, SyncFileItem &item)
 {
     SyncJournalErrorBlacklistRecord oldEntry = journal->errorBlacklistEntry(item._file);
 
@@ -996,11 +992,10 @@ bool PropagatorCompositeJob::scheduleSelfOrChild()
             // endpoint has no per-file precondition, so batching an overwrite would
             // silently clobber a concurrent server-side change instead of producing a
             // conflict. New files never send If-Match, so bulk is safe for them.
-            const bool eligible = item->_direction == SyncFileItem::Up
-                && item->_type == ItemTypeFile
+            const bool eligible = item->_direction == SyncFileItem::Up && item->_type == ItemTypeFile
                 && item->instruction() == CSYNC_INSTRUCTION_NEW
-                && item->_size > 0
-                && item->_size <= BulkPropagatorJob::maxBulkFileSize
+                // nach einem Fehler einzeln per PUT: dort hat jede Datei ihren Statuscode (Kontingent, Rechte, Größe)
+                && !item->_hasBlacklistEntry && item->_size > 0 && item->_size <= BulkPropagatorJob::maxBulkFileSize
                 && (bulkBatchSize + item->_size) <= BulkPropagatorJob::maxBulkBatchSize;
             if (eligible) {
                 bulkBatchSize += item->_size;

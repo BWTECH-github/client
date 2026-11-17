@@ -1,0 +1,11 @@
+Bugfix: Do not resend files the server rejected in a bulk upload on every run
+
+Small new files are uploaded together in one request. When the server rejected
+single files of such a request, for example because the quota was exceeded, a
+virus was found or permissions were missing, the client did not remember the
+failure and sent the same files again with every sync run.
+
+Rejected files now get an entry in the error list like files of a single
+upload. The next attempt after the waiting time uploads the file on its own, so
+the usual handling of the status code applies, including the quota hint and
+growing waiting times.

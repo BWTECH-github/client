@@ -95,9 +95,10 @@ private:
     void finishBatch();
 
     /** Complete a single item exactly once: set status/etag/fileid, update the
-     *  blacklist, and notify the engine via itemCompleted so the journal is written. */
-    void completeItem(const SyncFileItemPtr &item, SyncFileItem::Status status,
-        const QString &etag, const QByteArray &fileId, const QString &errorString);
+     *  blacklist, and notify the engine via itemCompleted so the journal is written.
+     *  Mit blacklist kommt eine gescheiterte Datei wie in PropagateItemJob::done() in die Fehlerliste. */
+    void completeItem(const SyncFileItemPtr &item, SyncFileItem::Status status, const QString &etag, const QByteArray &fileId, const QString &errorString,
+        bool blacklist = false);
 
     void finishJob(SyncFileItem::Status status);
 

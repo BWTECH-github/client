@@ -157,7 +157,12 @@ void BulkPropagatorJob::slotUploadFinished()
         if (entry.isEmpty() || entry.value(QStringLiteral("error")).toBool(true)) {
             const QString msg = entry.value(QStringLiteral("message")).toString(tr("Server did not confirm the upload"));
             propagator()->_anotherSyncNeeded = true;
-            completeItem(item, SyncFileItem::SoftError, {}, {}, msg);
+            // Der Server hat diese Datei abgelehnt (volles Kontingent, Virenfund, fehlende Rechte) oder nicht bestätigt:
+            // in die Fehlerliste, sonst schickt jeder Lauf dieselben Dateien erneut. Mit dem Statuscode der Antwort gilt
+            // der Eintrag nicht als lokaler Fehler; solche verlängern sich bei jedem Lauf selbst und liefen nie ab. Der
+            // Versuch nach der Pause läuft einzeln per PUT, siehe PropagatorCompositeJob::scheduleSelfOrChild().
+            item->_httpErrorCode = static_cast<quint16>(httpCode);
+            completeItem(item, SyncFileItem::SoftError, {}, {}, msg, true);
         } else {
             const QString etag = Utility::normalizeEtag(entry.value(QStringLiteral("etag")).toString());
             const QByteArray fileId = entry.value(QStringLiteral("OC-FileID")).toVariant().toByteArray();
@@ -284,8 +289,8 @@ void BulkPropagatorJob::finishBatch()
     finishJob(status);
 }
 
-void BulkPropagatorJob::completeItem(const SyncFileItemPtr &item, SyncFileItem::Status status,
-    const QString &etag, const QByteArray &fileId, const QString &errorString)
+void BulkPropagatorJob::completeItem(
+    const SyncFileItemPtr &item, SyncFileItem::Status status, const QString &etag, const QByteArray &fileId, const QString &errorString, bool blacklist)
 {
     item->_status = status;
     if (status == SyncFileItem::Success) {
@@ -319,6 +324,9 @@ void BulkPropagatorJob::completeItem(const SyncFileItemPtr &item, SyncFileItem::
     } else {
         if (item->_errorString.isEmpty()) {
             item->_errorString = errorString;
+        }
+        if (blacklist) {
+            blacklistUpdate(propagator()->_journal, *item);
         }
     }
     // Mirror PropagateItemJob::done(): tell the engine so the sync journal is updated.

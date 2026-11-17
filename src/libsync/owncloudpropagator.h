@@ -48,6 +48,12 @@ class OwncloudPropagator;
 class PropagatorCompositeJob;
 class BandwidthManager;
 
+/** Updates, creates or removes the error blacklist entry of an item.
+ *
+ * May adjust item._status or item._errorString.
+ */
+void blacklistUpdate(SyncJournalDb *journal, SyncFileItem &item);
+
 /**
  * @brief the base class of propagator jobs
  *

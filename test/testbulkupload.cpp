@@ -62,6 +62,8 @@ public:
     int maxLookupsInFlight = 0;
     /// permissions the fake server reports for a stored file, keyed by its remote path
     QHash<QString, QString> permissions;
+    /// files the fake server refuses, keyed by their remote path, with the message it reports for them
+    QHash<QString, QString> rejected;
     /// optional custom answer for the lookups
     std::function<QNetworkReply *(QNetworkAccessManager::Operation, const QNetworkRequest &)> onLookup;
 
@@ -121,6 +123,14 @@ private:
             const QString remotePath = QString::fromUtf8(headers.value("x-file-path"));
             Q_ASSERT(remotePath.startsWith(QLatin1Char('/')));
             const QString relativePath = remotePath.mid(1);
+            if (rejected.contains(relativePath)) {
+                // wie der Server bei vollem Kontingent, Virenfund oder fehlenden Rechten: HTTP 200 und ein Fehler je Datei
+                QJsonObject entry;
+                entry.insert(QStringLiteral("error"), true);
+                entry.insert(QStringLiteral("message"), rejected.value(relativePath));
+                results.insert(remotePath, entry);
+                continue;
+            }
             FileInfo *file = _folder.remoteModifier().create(relativePath, data.size(), data.isEmpty() ? 'W' : data.at(0));
             file->setLastModifiedFromSecondsUTC(headers.value("x-oc-mtime").toLongLong());
             if (permissions.contains(relativePath)) {
@@ -291,6 +301,66 @@ private Q_SLOTS:
             QVERIFY2(record.isValid(), qPrintable(path));
             QVERIFY2(!record._remotePerm.isNull(), qPrintable(path));
         }
+    }
+
+    // Lehnt der Server eine einzelne Datei ab (volles Kontingent, Virenfund, fehlende Rechte), antwortet er mit HTTP 200
+    // und einem Fehler je Datei. Die Datei kommt wie beim Einzel-Upload in die Fehlerliste: Der nächste Lauf schickt sie
+    // nicht noch einmal, und der Versuch nach der Pause läuft einzeln per PUT, wo Statuscode und Kontingent greifen.
+    void testRejectedFileIsBlacklistedAndRetriedAsSinglePut()
+    {
+        FakeFolder fakeFolder(FileInfo::A12_B12_C12_S12());
+        fakeFolder.account()->setCapabilities({fakeFolder.account()->url(), bulkUploadCapabilities()});
+
+        FakeBulkEndpoint bulk(fakeFolder);
+        bulk.rejected.insert(QStringLiteral("A/a3"), QStringLiteral("Insufficient storage"));
+
+        ItemCompletedSpy completeSpy(fakeFolder);
+        fakeFolder.localModifier().insert(QStringLiteral("A/a3"), 8_B);
+        fakeFolder.localModifier().insert(QStringLiteral("B/b3"), 8_B);
+        QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
+        QCOMPARE(bulk.nPOST, 1);
+        QVERIFY(fakeFolder.currentRemoteState().find(QStringLiteral("B/b3")));
+        QVERIFY(!fakeFolder.currentRemoteState().find(QStringLiteral("A/a3")));
+        {
+            const auto item = completeSpy.findItem(QStringLiteral("A/a3"));
+            QVERIFY(!item.isNull());
+            QCOMPARE(item->_status, SyncFileItem::SoftError);
+            QCOMPARE(item->_errorString, QStringLiteral("Insufficient storage"));
+            const auto entry = fakeFolder.syncJournal()->errorBlacklistEntry(QStringLiteral("A/a3"));
+            QVERIFY(entry.isValid());
+            QCOMPARE(entry._retryCount, 1);
+            QVERIFY(entry._ignoreDuration > 0);
+            // kein lokaler Fehler: Einträge dieser Art verlängern sich bei jedem Lauf selbst und liefen nie ab
+            QCOMPARE(entry._errorCategory, SyncJournalErrorBlacklistRecord::Category::Normal);
+        }
+        completeSpy.clear();
+
+        // innerhalb der Pause: kein weiterer Versuch, weder gesammelt noch einzeln, und der Eintrag bleibt, wie er ist
+        bulk.nPOST = 0;
+        QVERIFY(!fakeFolder.applyLocalModificationsAndSync());
+        QCOMPARE(bulk.nPOST, 0);
+        QCOMPARE(bulk.nPUT, 0);
+        {
+            const auto item = completeSpy.findItem(QStringLiteral("A/a3"));
+            QVERIFY(!item.isNull());
+            QCOMPARE(item->instruction(), CSYNC_INSTRUCTION_IGNORE);
+            QCOMPARE(item->_status, SyncFileItem::BlacklistedError);
+            QCOMPARE(fakeFolder.syncJournal()->errorBlacklistEntry(QStringLiteral("A/a3"))._retryCount, 1);
+        }
+
+        // nach der Pause: einzeln per PUT (der Server nimmt die Datei jetzt an), der Eintrag verschwindet
+        {
+            auto entry = fakeFolder.syncJournal()->errorBlacklistEntry(QStringLiteral("A/a3"));
+            entry._ignoreDuration = 1;
+            entry._lastTryTime -= 1;
+            fakeFolder.syncJournal()->setErrorBlacklistEntry(entry);
+        }
+        QVERIFY(fakeFolder.applyLocalModificationsAndSync());
+        QCOMPARE(bulk.nPOST, 0);
+        QCOMPARE(bulk.nPUT, 1);
+        QVERIFY(fakeFolder.currentRemoteState().find(QStringLiteral("A/a3")));
+        QVERIFY(!fakeFolder.syncJournal()->errorBlacklistEntry(QStringLiteral("A/a3")).isValid());
+        QCOMPARE(fakeFolder.currentLocalState(), fakeFolder.currentRemoteState());
     }
 };
 
